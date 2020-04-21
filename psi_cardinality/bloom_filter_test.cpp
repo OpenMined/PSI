@@ -47,9 +47,9 @@ TEST_F(BloomFilterTest, TestFPR) {
         count++;
       }
     }
-    // Check if actual FPR matches the target FPR, allowing for 20% error.
+    // Check if actual FPR matches the target FPR, allowing for 10% error.
     double actual_fpr = count / num_tests;
-    EXPECT_LT(actual_fpr, 1.2 * target_fpr)
+    EXPECT_LT(actual_fpr, 1.1 * target_fpr)
         << absl::StrCat("max_elements: ", max_elements);
   }
 }

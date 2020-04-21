@@ -60,17 +60,24 @@ const std::string& BloomFilter::ToString() const { return bits_; }
 std::vector<int64_t> BloomFilter::Hash(const std::string& x) const {
   // Compute the number of bits (= size of the output domain) as an OpenSSL
   // BigNum.
-  auto bn_num_bits = context_->CreateBigNum(8 * bits_.size());
+  const int64_t num_bits = 8 * bits_.size();
+  const auto bn_num_bits = context_->CreateBigNum(num_bits);
 
-  // Compute the i-th hash function as SHA256(i || x) % bn_num_bits.
+  // Compute the i-th hash function as SHA256(1 || x) + i * SHA256(2 || x)
+  // (modulo num_bits).
   std::vector<int64_t> result(num_hash_functions_);
+  const int64_t h1 =
+      context_->CreateBigNum(context_->Sha256String(absl::StrCat(1, x)))
+          .Mod(bn_num_bits)
+          .ToIntValue()
+          .ValueOrDie();
+  const int64_t h2 =
+      context_->CreateBigNum(context_->Sha256String(absl::StrCat(2, x)))
+          .Mod(bn_num_bits)
+          .ToIntValue()
+          .ValueOrDie();
   for (int i = 0; i < num_hash_functions_; i++) {
-    result[i] =
-        context_->CreateBigNum(context_->Sha256String(absl::StrCat(i, x)))
-            .Mod(bn_num_bits)
-            .ToIntValue()
-            .ValueOrDie();  // ValueOrDie is safe here as the modulus
-                            // bn_num_bits was an int64 to begin with.
+    result[i] = (h1 + i * h2) % num_bits;
   }
   return result;
 }

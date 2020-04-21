@@ -50,8 +50,8 @@ class BloomFilter {
 
   // Hashes the input with all `num_hash_functions_` hash functions and returns
   // the result as a vector. The i-th hash  hash function is computed as
-  // SHA256(i || x) % num_bits, where x is the input and num_bits is the number
-  // of bits in the Bloom filter.
+  // SHA256(1 || x) + i * SHA256(2 || x) (modulo num_bits), where x is the input
+  // and num_bits is the number of bits in the Bloom filter.
   std::vector<int64_t> Hash(const std::string& input) const;
 
   // False-positive rate.
