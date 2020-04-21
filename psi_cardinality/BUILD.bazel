@@ -1,0 +1,16 @@
+package(default_visibility = ["//visibility:public"])
+
+cc_library(
+    name = "psi_cardinality_client",
+    srcs = ["psi_cardinality_client.cpp"],
+    hdrs = ["psi_cardinality_client.h"],
+    deps = [
+        "@boringssl//:crypto",
+        "@com_google_absl//absl/memory",
+        "@com_google_absl//absl/strings",
+        "@com_google_absl//absl/types:span",
+        "@com_tencent_rapidjson//:json",
+        "@private_join_and_compute//crypto:ec_commutative_cipher",
+        "@private_join_and_compute//util:status",
+    ],
+)
