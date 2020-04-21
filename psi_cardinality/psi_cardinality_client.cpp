@@ -17,8 +17,7 @@ PSICardinalityClient::PSICardinalityClient(
     std::unique_ptr<::private_join_and_compute::ECCommutativeCipher> ec_cipher)
     : ec_cipher_(std::move(ec_cipher)) {}
 
-::private_join_and_compute::StatusOr<std::unique_ptr<PSICardinalityClient>>
-PSICardinalityClient::Create() {
+StatusOr<std::unique_ptr<PSICardinalityClient>> PSICardinalityClient::Create() {
   // Create an EC cipher with curve secp224r1. This gives 112 bits of security.
   ASSIGN_OR_RETURN(
       auto ec_cipher,
@@ -28,8 +27,8 @@ PSICardinalityClient::Create() {
   return absl::WrapUnique(new PSICardinalityClient(std::move(ec_cipher)));
 }
 
-::private_join_and_compute::StatusOr<std::string>
-PSICardinalityClient::CreateRequest(absl::Span<const std::string> inputs) {
+StatusOr<std::string> PSICardinalityClient::CreateRequest(
+    absl::Span<const std::string> inputs) {
   // Encrypt inputs one by one and store in a JSON array.
   rapidjson::Document request;
   request.SetArray();
@@ -49,9 +48,8 @@ PSICardinalityClient::CreateRequest(absl::Span<const std::string> inputs) {
   return std::string(buffer.GetString());
 }
 
-::private_join_and_compute::StatusOr<int64_t>
-PSICardinalityClient::ProcessResponse(const std::string& server_setup,
-                                      const std::string& server_response) {
+StatusOr<int64_t> PSICardinalityClient::ProcessResponse(
+    const std::string& server_setup, const std::string& server_response) {
   // Parse setup and response message as JSON.
   rapidjson::Document setup, response;
   if (setup.Parse(server_setup.c_str()).HasParseError()) {
@@ -70,17 +68,22 @@ PSICardinalityClient::ProcessResponse(const std::string& server_setup,
   // TODO: Decode Bloom filter.
 
   // Decrypt all elements in the response.
+  int64_t counter = 0;
   if (!response.IsArray()) {
-    return ::private_join_and_compute::InvalidArgumentError("`server_response` must be a JSON array");
+    return ::private_join_and_compute::InvalidArgumentError(
+        "`server_response` must be a JSON array");
   }
   for (const auto& value : response.GetArray()) {
     if (!value.IsString()) {
-      return ::private_join_and_compute::InvalidArgumentError("`server_response` elements must be strings");
+      return ::private_join_and_compute::InvalidArgumentError(
+          "`server_response` elements must be strings");
     }
-    ASSIGN_OR_RETURN(std::string element, ec_cipher_->Decrypt(std::string(value.GetString(), value.GetStringLength())));
-    // TODO: Check if element is in the bloom filter.
+    ASSIGN_OR_RETURN(std::string element,
+                     ec_cipher_->Decrypt(std::string(value.GetString(),
+                                                     value.GetStringLength())));
+    // TODO: Check if element is in the bloom filter and increase counter if it is.
   }
-  return -1;
+  return counter;
 }
 
 }  // namespace psi_cardinality
