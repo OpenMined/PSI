@@ -23,12 +23,13 @@ class PSICardinalityClient {
   // Creates and returns a new client instance.
   //
   // Returns INTERNAL if any OpenSSL crypto operations fail.
-  StatusOr<std::unique_ptr<PSICardinalityClient>> Create();
+  static StatusOr<std::unique_ptr<PSICardinalityClient>> Create();
 
   // Creates a request message to be sent to the server.
   //
   // Returns INTERNAL if encryption fails.
-  StatusOr<std::string> CreateRequest(absl::Span<const std::string> inputs);
+  StatusOr<std::string> CreateRequest(
+      absl::Span<const std::string> inputs) const;
 
   // Processes the server's response and returns the PSI cardinality. The first
   // argument, `server_setup`, is a bloom filter that encodes encrypted server
@@ -39,7 +40,7 @@ class PSICardinalityClient {
   // Returns INVALID_ARGUMENT if any input messages are malformed, or INTERNAL
   // if decryption fails.
   StatusOr<int64_t> ProcessResponse(const std::string& server_setup,
-                                    const std::string& server_response);
+                                    const std::string& server_response) const;
 
  private:
   PSICardinalityClient() = delete;

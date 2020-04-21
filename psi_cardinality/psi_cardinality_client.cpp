@@ -28,7 +28,7 @@ StatusOr<std::unique_ptr<PSICardinalityClient>> PSICardinalityClient::Create() {
 }
 
 StatusOr<std::string> PSICardinalityClient::CreateRequest(
-    absl::Span<const std::string> inputs) {
+    absl::Span<const std::string> inputs) const {
   // Encrypt inputs one by one and store in a JSON array.
   rapidjson::Document request;
   request.SetArray();
@@ -49,7 +49,7 @@ StatusOr<std::string> PSICardinalityClient::CreateRequest(
 }
 
 StatusOr<int64_t> PSICardinalityClient::ProcessResponse(
-    const std::string& server_setup, const std::string& server_response) {
+    const std::string& server_setup, const std::string& server_response) const {
   // Parse setup and response message as JSON.
   rapidjson::Document setup, response;
   if (setup.Parse(server_setup.c_str()).HasParseError()) {
@@ -81,7 +81,8 @@ StatusOr<int64_t> PSICardinalityClient::ProcessResponse(
     ASSIGN_OR_RETURN(std::string element,
                      ec_cipher_->Decrypt(std::string(value.GetString(),
                                                      value.GetStringLength())));
-    // TODO: Check if element is in the bloom filter and increase counter if it is.
+    // TODO: Check if element is in the bloom filter and increase counter if it
+    // is.
   }
   return counter;
 }

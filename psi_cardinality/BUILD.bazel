@@ -1,6 +1,31 @@
 package(default_visibility = ["//visibility:public"])
 
 cc_library(
+    name = "bloom_filter",
+    srcs = ["bloom_filter.cpp"],
+    hdrs = ["bloom_filter.h"],
+    deps = [
+        "@com_google_absl//absl/memory",
+        "@com_google_absl//absl/strings",
+        "@com_google_absl//absl/types:span",
+        "@private_join_and_compute//crypto:bn_util",
+        "@private_join_and_compute//util:status",
+    ],
+)
+
+cc_test(
+    name = "bloom_filter_test",
+    srcs = ["bloom_filter_test.cpp"],
+    deps = [
+        ":bloom_filter",
+        "//util:status_matchers",
+        "@com_google_absl//absl/strings",
+        "@com_google_googletest//:gtest",
+        "@com_google_googletest//:gtest_main",
+    ],
+)
+
+cc_library(
     name = "psi_cardinality_client",
     srcs = ["psi_cardinality_client.cpp"],
     hdrs = ["psi_cardinality_client.h"],

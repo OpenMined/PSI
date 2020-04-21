@@ -34,6 +34,13 @@ http_archive(
 )
 
 http_archive(
+    name = "com_google_googletest",
+    sha256 = "94c634d499558a76fa649edb13721dce6e98fb1e7018dfaeba3cd7a083945e91",
+    strip_prefix = "googletest-release-1.10.0",
+    url = "https://github.com/google/googletest/archive/release-1.10.0.zip",
+)
+
+http_archive(
     name = "boringssl",
     sha256 = "7fefc298fa2a60fc04761768c2a3ded048cf69cc058e1167819546ef9efed325",
     strip_prefix = "boringssl-38496d7d00af11364b0fdc9dbf8b181277fa5dab",
