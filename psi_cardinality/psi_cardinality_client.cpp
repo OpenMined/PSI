@@ -30,15 +30,20 @@ StatusOr<std::unique_ptr<PSICardinalityClient>> PSICardinalityClient::Create() {
 
 StatusOr<std::string> PSICardinalityClient::CreateRequest(
     absl::Span<const std::string> inputs) const {
-  // Encrypt inputs one by one and store in a JSON array.
+  // Encrypt inputs one by one.
+  int64_t input_size = static_cast<int64_t>(inputs.size());
+  std::vector<std::string> encrypted_inputs(input_size);
+  for (int64_t i = 0; i < input_size; i++) {
+    ASSIGN_OR_RETURN(encrypted_inputs[i], ec_cipher_->Encrypt(inputs[i]));
+  }
+
+  // Sort inputs (same effect as shuffling as they are encrypted) and store them in a JSON array.
   rapidjson::Document request;
   request.SetArray();
-  for (int64_t i = 0; i < static_cast<int64_t>(inputs.size()); i++) {
-    ASSIGN_OR_RETURN(std::string encrypted_input,
-                     ec_cipher_->Encrypt(inputs[i]));
-    request.PushBack(rapidjson::Value().SetString(encrypted_input.data(),
-                                                  encrypted_input.size(),
-                                                  request.GetAllocator()),
+  std::sort(encrypted_inputs.begin(), encrypted_inputs.end());
+  for (int64_t i = 0; i < input_size; i++) {
+    request.PushBack(rapidjson::Value().SetString(encrypted_inputs[i].data(),
+                                                  encrypted_inputs[i].size()),
                      request.GetAllocator());
   }
 
@@ -53,7 +58,7 @@ StatusOr<int64_t> PSICardinalityClient::ProcessResponse(
     const std::string& server_setup, const std::string& server_response) const {
   // Parse setup and response message as JSON.
   rapidjson::Document setup, response;
-  if (setup.Parse(server_setup.c_str()).HasParseError()) {
+  if (setup.Parse(server_setup.data(), server_setup.size()).HasParseError()) {
     return ::private_join_and_compute::InvalidArgumentError(
         absl::StrCat("Error parsing `server_setup`: ",
                      rapidjson::GetParseError_En(setup.GetParseError()), "(",
