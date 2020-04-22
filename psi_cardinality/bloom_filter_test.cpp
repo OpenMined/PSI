@@ -54,5 +54,18 @@ TEST_F(BloomFilterTest, TestFPR) {
   }
 }
 
+TEST_F(BloomFilterTest, TestCreateFromBitString) {
+  std::vector<std::string> elements = {"a", "b", "c", "d"};
+  filter_->Add(elements);
+  std::string bits = filter_->ToString();
+  PSI_ASSERT_OK_AND_ASSIGN(
+      auto filter2, BloomFilter::CreateFromBitString(
+                        filter_->NumHashFunctions(), filter_->ToString()));
+  for (const auto& element : elements) {
+    EXPECT_TRUE(filter2->Check(element));
+  }
+  EXPECT_FALSE(filter2->Check("not present"));
+}
+
 }  // namespace
 }  // namespace psi_cardinality

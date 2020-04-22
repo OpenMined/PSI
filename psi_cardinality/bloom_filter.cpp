@@ -8,10 +8,9 @@
 namespace psi_cardinality {
 
 BloomFilter::BloomFilter(
-    double fpr, int num_hash_functions, std::string bits,
+    int num_hash_functions, std::string bits,
     std::unique_ptr<::private_join_and_compute::Context> context)
-    : fpr_(fpr),
-      num_hash_functions_(num_hash_functions),
+    : num_hash_functions_(num_hash_functions),
       bits_(std::move(bits)),
       context_(std::move(context)) {}
 
@@ -23,16 +22,30 @@ StatusOr<std::unique_ptr<BloomFilter>> BloomFilter::Create(
   }
   if (max_elements <= 0) {
     return ::private_join_and_compute::InvalidArgumentError(
-        "max_elements must be positive");
+        "`max_elements` must be positive");
   }
   int num_hash_functions = static_cast<int>(std::ceil(-std::log2(fpr)));
   int64_t num_bytes = static_cast<int64_t>(
       std::ceil(-1.44 * max_elements * std::log2(fpr) / 8));
   std::string bits(num_bytes, '\0');
-  std::unique_ptr<::private_join_and_compute::Context> context =
-      absl::WrapUnique(new ::private_join_and_compute::Context());
-  return absl::WrapUnique(new BloomFilter(fpr, num_hash_functions,
-                                          std::move(bits), std::move(context)));
+  auto context = absl::make_unique<::private_join_and_compute::Context>();
+  return absl::WrapUnique(
+      new BloomFilter(num_hash_functions, std::move(bits), std::move(context)));
+}
+
+StatusOr<std::unique_ptr<BloomFilter>> BloomFilter::CreateFromBitString(
+    int num_hash_functions, std::string bits) {
+  if (num_hash_functions < 0) {
+    return ::private_join_and_compute::InvalidArgumentError(
+        "`num_hash_functions` must be positive");
+  }
+  if (bits.empty()) {
+    return ::private_join_and_compute::InvalidArgumentError(
+        "`bits` must not be empty");
+  }
+  auto context = absl::make_unique<::private_join_and_compute::Context>();
+  return absl::WrapUnique(
+      new BloomFilter(num_hash_functions, std::move(bits), std::move(context)));
 }
 
 void BloomFilter::Add(const std::string& input) {
@@ -56,6 +69,8 @@ bool BloomFilter::Check(const std::string& input) const {
 }
 
 const std::string& BloomFilter::ToString() const { return bits_; }
+
+int BloomFilter::NumHashFunctions() const { return num_hash_functions_; }
 
 std::vector<int64_t> BloomFilter::Hash(const std::string& x) const {
   // Compute the number of bits (= size of the output domain) as an OpenSSL
