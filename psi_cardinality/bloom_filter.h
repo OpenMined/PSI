@@ -1,15 +1,18 @@
-// A Bloom filter succinctly encodes a set as an array of bits and can be used
-// for approximate membership tests. For a given number of hash functions h_1,
-// ..., h_k mapping strings to domain [m], an element x is inserted into the
-// Bloom filter by setting bits h_1(x), ..., h_k(x) to 1. To test if an element
-// was previously inserted, one just has to check if h_1(x) = ... = h_k(x) = 1.
-// Due to collisions in the hash function values, Bloom filters come with an
-// inherent false positive rate, which can be tuned by adjusting the number of
-// hash functions k and the number of bits m in the Bloom filter. For a given
-// false-positive rate e, we set m = -1.44 log2(e) * n, where n is the number of
-// elements to be inserted, and k = -log2(e). See
-// https://en.wikipedia.org/wiki/Bloom_filter#Optimal_number_of_hash_functions
-// for more details.
+//
+// Copyright 2020 the authors listed in CONTRIBUTORS.md
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//
 
 #ifndef PSI_CARDINALITY_BLOOM_FILTER_H_
 #define PSI_CARDINALITY_BLOOM_FILTER_H_
@@ -23,6 +26,18 @@ namespace psi_cardinality {
 
 using ::private_join_and_compute::StatusOr;
 
+// A Bloom filter succinctly encodes a set as an array of bits and can be used
+// for approximate membership tests. For a given number of hash functions h_1,
+// ..., h_k mapping strings to domain [m], an element x is inserted into the
+// Bloom filter by setting bits h_1(x), ..., h_k(x) to 1. To test if an element
+// was previously inserted, one just has to check if h_1(x) = ... = h_k(x) = 1.
+// Due to collisions in the hash function values, Bloom filters come with an
+// inherent false positive rate, which can be tuned by adjusting the number of
+// hash functions k and the number of bits m in the Bloom filter. For a given
+// false-positive rate e, we set m = -1.44 log2(e) * n, where n is the number of
+// elements to be inserted, and k = -log2(e). See
+// https://en.wikipedia.org/wiki/Bloom_filter#Optimal_number_of_hash_functions
+// for more details.
 class BloomFilter {
  public:
   BloomFilter() = delete;

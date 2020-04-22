@@ -1,3 +1,30 @@
+//
+// Copyright 2020 the authors listed in CONTRIBUTORS.md
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//
+
+#ifndef PSI_CARDINALITY_PSI_CARDINALITY_CLIENT_H_
+#define PSI_CARDINALITY_PSI_CARDINALITY_CLIENT_H_
+
+#include "absl/types/span.h"
+#include "crypto/ec_commutative_cipher.h"
+#include "util/statusor.h"
+
+namespace psi_cardinality {
+
+using ::private_join_and_compute::StatusOr;
+
 // Client side of a Private Set Intersection-Cardinality protocol. In
 // PSI-Cardinality, two parties (client and server) each hold a dataset, and at
 // the end of the protocol the client learns the size of the intersection of
@@ -48,18 +75,6 @@
 // their private key c, computing (H(x)^(cs))^(1/c) = H(x)^s. It then checks if
 // each element is present in the Bloom filter, and reports the number of
 // matches as the intersection size.
-
-#ifndef PSI_CARDINALITY_PSI_CARDINALITY_CLIENT_H_
-#define PSI_CARDINALITY_PSI_CARDINALITY_CLIENT_H_
-
-#include "absl/types/span.h"
-#include "crypto/ec_commutative_cipher.h"
-#include "util/statusor.h"
-
-namespace psi_cardinality {
-
-using ::private_join_and_compute::StatusOr;
-
 class PSICardinalityClient {
  public:
   PSICardinalityClient() = delete;
