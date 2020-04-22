@@ -100,3 +100,14 @@ cc_test(
         "@com_tencent_rapidjson//:json",
     ],
 )
+
+cc_binary(
+    name = "psi_cardinality_benchmark",
+    srcs = ["psi_cardinality_benchmark.cpp"],
+    deps = [
+        ":psi_cardinality_client",
+        ":psi_cardinality_server",
+        "@com_google_absl//absl/strings",
+        "@com_google_benchmark//:benchmark_main",
+    ],
+)
