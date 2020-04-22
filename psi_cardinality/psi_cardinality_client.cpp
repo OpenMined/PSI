@@ -4,6 +4,7 @@
 #include "absl/memory/memory.h"
 #include "absl/strings/str_cat.h"
 #include "openssl/obj_mac.h"
+#include "psi_cardinality/bloom_filter.h"
 #include "rapidjson/document.h"
 #include "rapidjson/error/en.h"
 #include "rapidjson/stringbuffer.h"
@@ -65,7 +66,17 @@ StatusOr<int64_t> PSICardinalityClient::ProcessResponse(
                      response.GetErrorOffset(), ")"));
   }
 
-  // TODO: Decode Bloom filter.
+  // Decode Bloom filter in from setup message.
+  if (!setup.HasMember("num_hash_functions") ||
+      !setup["num_hash_functions"].IsInt() || !setup.HasMember("bits") ||
+      !setup["bits"].IsString()) {
+    return ::private_join_and_compute::InvalidArgumentError(
+        "`server_setup` does not have the required form");
+  }
+  int num_hash_functions = setup["num_hash_functions"].GetInt();
+  std::string bits(setup["bits"].GetString(), setup["bits"].GetStringLength());
+  ASSIGN_OR_RETURN(auto bloom_filter, BloomFilter::CreateFromBitString(
+                                          num_hash_functions, std::move(bits)));
 
   // Decrypt all elements in the response.
   int64_t counter = 0;
@@ -81,8 +92,10 @@ StatusOr<int64_t> PSICardinalityClient::ProcessResponse(
     ASSIGN_OR_RETURN(std::string element,
                      ec_cipher_->Decrypt(std::string(value.GetString(),
                                                      value.GetStringLength())));
-    // TODO: Check if element is in the bloom filter and increase counter if it
-    // is.
+    // Increase intersection size if element is found in the bloom filter.
+    if (bloom_filter->Check(element)) {
+      counter++;
+    }
   }
   return counter;
 }

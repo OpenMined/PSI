@@ -30,6 +30,7 @@ cc_library(
     srcs = ["psi_cardinality_client.cpp"],
     hdrs = ["psi_cardinality_client.h"],
     deps = [
+        ":bloom_filter",
         "@boringssl//:crypto",
         "@com_google_absl//absl/memory",
         "@com_google_absl//absl/strings",

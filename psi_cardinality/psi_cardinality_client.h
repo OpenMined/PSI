@@ -1,11 +1,53 @@
 // Client side of a Private Set Intersection-Cardinality protocol. In
-// PSI-Cardinality, two parties (Client and Server) each hold a dataset, and at
-// the end of the protocol the Client learns the size of the intersection of
+// PSI-Cardinality, two parties (client and server) each hold a dataset, and at
+// the end of the protocol the client learns the size of the intersection of
 // both datasets, while no party learns anything beyond that.
 //
 // This variant of PSI-Cardinality introduces a small false-positive rate (i.e.,
 // the reported cardinality will be slightly larger than the actual cardinality.
 // The false positive rate can be tuned by the server.
+//
+// The protocol works as follows.
+//
+//
+// 1. Setup phase
+//
+// The server encrypts all its elements x under a commutative encryption scheme,
+// computing H(x)^s where s is its secret key. The encrypted elements are then
+// inserted in a Bloom filter, which is sent to the client encoded as JSON. The
+// message has the following form:
+//
+//   {
+//     "num_hash_functions": <int>,
+//     "bits": <string>
+//   }
+//
+//
+// 2. Client request
+//
+// The client encrypts all their elements x using the commutative encryption
+// scheme, computing H(x)^c, where c is the client's secret key. The encoded
+// elements are sent to the server as a JSON array of strings in shuffled order:
+//
+//   [ H(x_1)^c, H(x_2)^c, ... ]
+//
+//
+// 3. Server response
+//
+// For each encrypted element H(x)^c received from the client, the server
+// encrypts it again under the commutative encryption scheme with its private
+// key s, computing (H(x)^c)^s = H(x)^(cs). The result is sent back to the
+// client as a JSON array of strings in shuffled order:
+//
+//  [ H(x_1)^(cs), H(x_2)^(cs), ... ]
+//
+//
+// 4. Client computes intersection
+//
+// The client decrypts each element received from the server's response using
+// their private key c, computing (H(x)^(cs))^(1/c) = H(x)^s. It then checks if
+// each element is present in the Bloom filter, and reports the number of
+// matches as the intersection size.
 
 #ifndef PSI_CARDINALITY_PSI_CARDINALITY_CLIENT_H_
 #define PSI_CARDINALITY_PSI_CARDINALITY_CLIENT_H_
@@ -20,6 +62,8 @@ using ::private_join_and_compute::StatusOr;
 
 class PSICardinalityClient {
  public:
+  PSICardinalityClient() = delete;
+
   // Creates and returns a new client instance.
   //
   // Returns INTERNAL if any OpenSSL crypto operations fail.
@@ -43,8 +87,7 @@ class PSICardinalityClient {
                                     const std::string& server_response) const;
 
  private:
-  PSICardinalityClient() = delete;
-  PSICardinalityClient(
+  explicit PSICardinalityClient(
       std::unique_ptr<::private_join_and_compute::ECCommutativeCipher>
           ec_cipher);
 
