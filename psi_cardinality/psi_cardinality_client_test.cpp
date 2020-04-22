@@ -29,10 +29,10 @@ TEST_F(PSICardinalityClientTest, TestCorrectness) {
   // Create elements, such that 50% of the client's elements overlap with the
   // server.
   for (int i = 0; i < num_client_elements; i++) {
-    client_elements[i] = absl::StrCat(i);
+    client_elements[i] = absl::StrCat("Element ", i);
   }
   for (int i = 0; i < num_server_elements; i++) {
-    server_elements[i] = absl::StrCat(2 * i);
+    server_elements[i] = absl::StrCat("Element ", 2 * i);
   }
 
   // Insert server elements into Bloom filter.
@@ -41,7 +41,7 @@ TEST_F(PSICardinalityClientTest, TestCorrectness) {
   PSI_ASSERT_OK_AND_ASSIGN(
       auto server_ec_cipher,
       ::private_join_and_compute::ECCommutativeCipher::CreateWithNewKey(
-          NID_secp224r1,
+          NID_X9_62_prime256v1,
           ::private_join_and_compute::ECCommutativeCipher::HashType::SHA256));
   for (int i = 0; i < num_server_elements; i++) {
     PSI_ASSERT_OK_AND_ASSIGN(std::string encrypted_element,
@@ -94,11 +94,13 @@ TEST_F(PSICardinalityClientTest, TestCorrectness) {
   std::string server_response(buffer.GetString());
 
   // Compute intersection size.
-  PSI_ASSERT_OK_AND_ASSIGN(int64_t intersection_size, client_->ProcessResponse(server_setup, server_response));
+  PSI_ASSERT_OK_AND_ASSIGN(
+      int64_t intersection_size,
+      client_->ProcessResponse(server_setup, server_response));
 
-  // Test if size is approximately as expected (up to fpr + 10%).
+  // Test if size is approximately as expected (up to 10%).
   EXPECT_GE(intersection_size, num_client_elements / 2);
-  EXPECT_LT(intersection_size, (num_client_elements / 2) * (1 + fpr * 1.1));
+  EXPECT_LT(intersection_size, (num_client_elements / 2) * 1.1);
 }
 
 }  // namespace

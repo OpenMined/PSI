@@ -27,7 +27,7 @@
 //
 // The client encrypts all their elements x using the commutative encryption
 // scheme, computing H(x)^c, where c is the client's secret key. The encoded
-// elements are sent to the server as a JSON array of strings in shuffled order:
+// elements are sent to the server as a JSON array of strings in sorted order:
 //
 //   [ H(x_1)^c, H(x_2)^c, ... ]
 //
@@ -37,7 +37,7 @@
 // For each encrypted element H(x)^c received from the client, the server
 // encrypts it again under the commutative encryption scheme with its private
 // key s, computing (H(x)^c)^s = H(x)^(cs). The result is sent back to the
-// client as a JSON array of strings in shuffled order:
+// client as a JSON array of strings in sorted order:
 //
 //  [ H(x_1)^(cs), H(x_2)^(cs), ... ]
 //
@@ -69,7 +69,10 @@ class PSICardinalityClient {
   // Returns INTERNAL if any OpenSSL crypto operations fail.
   static StatusOr<std::unique_ptr<PSICardinalityClient>> Create();
 
-  // Creates a request message to be sent to the server.
+  // Creates a request message to be sent to the server. For each input element
+  // x, computes H(x)^c, where c is the secret key of ec_cipher_. The result is
+  // sorted to hide the initial ordering of `inputs` and encoded as a JSON
+  // array.
   //
   // Returns INTERNAL if encryption fails.
   StatusOr<std::string> CreateRequest(

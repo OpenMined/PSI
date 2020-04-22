@@ -19,11 +19,11 @@ PSICardinalityClient::PSICardinalityClient(
     : ec_cipher_(std::move(ec_cipher)) {}
 
 StatusOr<std::unique_ptr<PSICardinalityClient>> PSICardinalityClient::Create() {
-  // Create an EC cipher with curve secp224r1. This gives 112 bits of security.
+  // Create an EC cipher with curve P-256. This gives 128 bits of security.
   ASSIGN_OR_RETURN(
       auto ec_cipher,
       ::private_join_and_compute::ECCommutativeCipher::CreateWithNewKey(
-          NID_secp224r1,
+          NID_X9_62_prime256v1,
           ::private_join_and_compute::ECCommutativeCipher::HashType::SHA256));
   return absl::WrapUnique(new PSICardinalityClient(std::move(ec_cipher)));
 }
@@ -37,7 +37,8 @@ StatusOr<std::string> PSICardinalityClient::CreateRequest(
     ASSIGN_OR_RETURN(encrypted_inputs[i], ec_cipher_->Encrypt(inputs[i]));
   }
 
-  // Sort inputs (same effect as shuffling as they are encrypted) and store them in a JSON array.
+  // Sort inputs (same effect as shuffling as they are encrypted) and store them
+  // in a JSON array.
   rapidjson::Document request;
   request.SetArray();
   std::sort(encrypted_inputs.begin(), encrypted_inputs.end());
@@ -71,7 +72,7 @@ StatusOr<int64_t> PSICardinalityClient::ProcessResponse(
                      response.GetErrorOffset(), ")"));
   }
 
-  // Decode Bloom filter in from setup message.
+  // Decode Bloom filter from setup message.
   if (!setup.HasMember("num_hash_functions") ||
       !setup["num_hash_functions"].IsInt() || !setup.HasMember("bits") ||
       !setup["bits"].IsString()) {
