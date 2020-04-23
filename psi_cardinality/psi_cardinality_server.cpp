@@ -17,6 +17,7 @@
 #include "psi_cardinality_server.h"
 #include <vector>
 #include "absl/memory/memory.h"
+#include "absl/strings/escaping.h"
 #include "absl/strings/str_cat.h"
 #include "openssl/obj_mac.h"
 #include "psi_cardinality/bloom_filter.h"
@@ -67,19 +68,7 @@ StatusOr<std::string> PSICardinalityServer::CreateSetupMessage(
   }
 
   // Encode Bloom filter as JSON and return it.
-  rapidjson::Document setup;
-  setup.SetObject();
-  setup.AddMember("num_hash_functions",
-                  rapidjson::Value().SetInt(bloom_filter->NumHashFunctions()),
-                  setup.GetAllocator());
-  setup.AddMember("bits",
-                  rapidjson::Value().SetString(bloom_filter->ToString().data(),
-                                               bloom_filter->ToString().size()),
-                  setup.GetAllocator());
-  rapidjson::StringBuffer buffer;
-  rapidjson::Writer<rapidjson::StringBuffer> writer(buffer);
-  setup.Accept(writer);
-  return std::string(buffer.GetString());
+  return bloom_filter->ToJSON();
 }
 
 StatusOr<std::string> PSICardinalityServer::ProcessRequest(
@@ -106,10 +95,15 @@ StatusOr<std::string> PSICardinalityServer::ProcessRequest(
       return ::private_join_and_compute::InvalidArgumentError(
           "`client_request` elements must be strings");
     }
-    ASSIGN_OR_RETURN(
-        reencrypted_elements[i],
-        ec_cipher_->ReEncrypt(
-            std::string(request[i].GetString(), request[i].GetStringLength())));
+    std::string base64_encrypted_element(request[i].GetString(),
+                                         request[i].GetStringLength());
+    std::string encrypted_element;
+    if (!absl::Base64Unescape(base64_encrypted_element, &encrypted_element)) {
+      return ::private_join_and_compute::InvalidArgumentError(
+          "`client_request` elements must be valid Base64");
+    }
+    ASSIGN_OR_RETURN(reencrypted_elements[i],
+                     ec_cipher_->ReEncrypt(encrypted_element));
   }
   std::sort(reencrypted_elements.begin(), reencrypted_elements.end());
 
@@ -117,10 +111,11 @@ StatusOr<std::string> PSICardinalityServer::ProcessRequest(
   rapidjson::Document response;
   response.SetArray();
   for (int i = 0; i < num_client_elements; i++) {
-    response.PushBack(
-        rapidjson::Value().SetString(reencrypted_elements[i].data(),
-                                     reencrypted_elements[i].size()),
-        response.GetAllocator());
+    std::string base64_element = absl::Base64Escape(reencrypted_elements[i]);
+    response.PushBack(rapidjson::Value().SetString(base64_element.data(),
+                                                   base64_element.size(),
+                                                   response.GetAllocator()),
+                      response.GetAllocator());
   }
   rapidjson::StringBuffer buffer;
   rapidjson::Writer<rapidjson::StringBuffer> writer(buffer);

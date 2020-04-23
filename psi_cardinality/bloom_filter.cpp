@@ -17,7 +17,12 @@
 #include "bloom_filter.h"
 #include <cmath>
 #include "absl/memory/memory.h"
+#include "absl/strings/escaping.h"
 #include "absl/strings/str_cat.h"
+#include "rapidjson/document.h"
+#include "rapidjson/error/en.h"
+#include "rapidjson/stringbuffer.h"
+#include "rapidjson/writer.h"
 #include "util/canonical_errors.h"
 
 namespace psi_cardinality {
@@ -41,18 +46,40 @@ StatusOr<std::unique_ptr<BloomFilter>> BloomFilter::Create(
   }
   int num_hash_functions = static_cast<int>(std::ceil(-std::log2(fpr)));
   int64_t num_bytes = static_cast<int64_t>(
-      std::ceil(-1.44 * max_elements * std::log2(fpr) / 8));
+      std::ceil(-max_elements * std::log2(fpr) / std::log(2) / 8));
   std::string bits(num_bytes, '\0');
   auto context = absl::make_unique<::private_join_and_compute::Context>();
   return absl::WrapUnique(
       new BloomFilter(num_hash_functions, std::move(bits), std::move(context)));
 }
 
-StatusOr<std::unique_ptr<BloomFilter>> BloomFilter::CreateFromBitString(
-    int num_hash_functions, std::string bits) {
+StatusOr<std::unique_ptr<BloomFilter>> BloomFilter::CreateFromJSON(
+    const std::string& encoded_filter) {
+  rapidjson::Document json_filter;
+  if (json_filter.Parse(encoded_filter.data(), encoded_filter.size())
+          .HasParseError()) {
+    return ::private_join_and_compute::InvalidArgumentError(
+        absl::StrCat("Error parsing `encoded_filter`: ",
+                     rapidjson::GetParseError_En(json_filter.GetParseError()),
+                     "(", json_filter.GetErrorOffset(), ")"));
+  }
+  if (!json_filter.HasMember("num_hash_functions") ||
+      !json_filter["num_hash_functions"].IsInt() ||
+      !json_filter.HasMember("bits") || !json_filter["bits"].IsString()) {
+    return ::private_join_and_compute::InvalidArgumentError(
+        "`encoded_filter` does encode a valid Bloom filter");
+  }
+  int num_hash_functions = json_filter["num_hash_functions"].GetInt();
   if (num_hash_functions < 0) {
     return ::private_join_and_compute::InvalidArgumentError(
         "`num_hash_functions` must be positive");
+  }
+  std::string base64_bits(json_filter["bits"].GetString(),
+                          json_filter["bits"].GetStringLength());
+  std::string bits;
+  if (!absl::Base64Unescape(base64_bits, &bits)) {
+    return ::private_join_and_compute::InvalidArgumentError(
+        "`bits` is not a valid Base64 string");
   }
   if (bits.empty()) {
     return ::private_join_and_compute::InvalidArgumentError(
@@ -83,7 +110,24 @@ bool BloomFilter::Check(const std::string& input) const {
   return result;
 }
 
-const std::string& BloomFilter::ToString() const { return bits_; }
+std::string BloomFilter::ToJSON() const {
+  // Encode bits_ using Base64.
+  std::string base64_bits = absl::Base64Escape(bits_);
+  // Encode Bloom filter as JSON.
+  rapidjson::Document json_filter;
+  json_filter.SetObject();
+  json_filter.AddMember("num_hash_functions",
+                        rapidjson::Value().SetInt(NumHashFunctions()),
+                        json_filter.GetAllocator());
+  json_filter.AddMember(
+      "bits",
+      rapidjson::Value().SetString(base64_bits.data(), base64_bits.size()),
+      json_filter.GetAllocator());
+  rapidjson::StringBuffer buffer;
+  rapidjson::Writer<decltype(buffer)> writer(buffer);
+  json_filter.Accept(writer);
+  return std::string(buffer.GetString());
+}
 
 int BloomFilter::NumHashFunctions() const { return num_hash_functions_; }
 
@@ -100,7 +144,7 @@ std::vector<int64_t> BloomFilter::Hash(const std::string& x) const {
       context_->CreateBigNum(context_->Sha256String(absl::StrCat(1, x)))
           .Mod(bn_num_bits)
           .ToIntValue()
-          .ValueOrDie();
+          .ValueOrDie();  // ValueOrDie is safe here since bn_num_bits fits in an int64.
   const int64_t h2 =
       context_->CreateBigNum(context_->Sha256String(absl::StrCat(2, x)))
           .Mod(bn_num_bits)

@@ -49,14 +49,16 @@ using ::private_join_and_compute::StatusOr;
 //     "bits": <string>
 //   }
 //
+// Here, `bits` is a Base64-encoded string.
 //
 // 2. Client request
 //
 // The client encrypts all their elements x using the commutative encryption
 // scheme, computing H(x)^c, where c is the client's secret key. The encoded
-// elements are sent to the server as a JSON array of strings in sorted order:
+// elements are sent to the server as a JSON array of Base64 strings in sorted
+// order:
 //
-//   [ H(x_1)^c, H(x_2)^c, ... ]
+//   [ Base64(H(x_1)^c), Base64(H(x_2)^c), ... ]
 //
 //
 // 3. Server response
@@ -66,7 +68,7 @@ using ::private_join_and_compute::StatusOr;
 // key s, computing (H(x)^c)^s = H(x)^(cs). The result is sent back to the
 // client as a JSON array of strings in sorted order:
 //
-//  [ H(x_1)^(cs), H(x_2)^(cs), ... ]
+//  [ Base64(H(x_1)^(cs)), Base64(H(x_2)^(cs)), ... ]
 //
 //
 // 4. Client computes intersection

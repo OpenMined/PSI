@@ -15,6 +15,7 @@
 //
 
 #include "psi_cardinality_client.h"
+#include "absl/strings/escaping.h"
 #include "absl/strings/str_cat.h"
 #include "crypto/ec_commutative_cipher.h"
 #include "gtest/gtest.h"
@@ -64,21 +65,7 @@ TEST_F(PSICardinalityClientTest, TestCorrectness) {
                              server_ec_cipher->Encrypt(server_elements[i]));
     bloom_filter->Add(encrypted_element);
   }
-
-  // Encode Bloom filter as JSON.
-  rapidjson::Document setup;
-  setup.SetObject();
-  setup.AddMember("num_hash_functions",
-                  rapidjson::Value().SetInt(bloom_filter->NumHashFunctions()),
-                  setup.GetAllocator());
-  setup.AddMember("bits",
-                  rapidjson::Value().SetString(bloom_filter->ToString().data(),
-                                               bloom_filter->ToString().size()),
-                  setup.GetAllocator());
-  rapidjson::StringBuffer buffer;
-  rapidjson::Writer<rapidjson::StringBuffer> writer(buffer);
-  setup.Accept(writer);
-  std::string server_setup(buffer.GetString());
+  std::string server_setup = bloom_filter->ToJSON();
 
   // Compute client request.
   PSI_ASSERT_OK_AND_ASSIGN(std::string client_request,
@@ -93,19 +80,23 @@ TEST_F(PSICardinalityClientTest, TestCorrectness) {
   std::vector<std::string> reencrypted_elements(num_client_elements);
   for (int i = 0; i < num_client_elements; i++) {
     ASSERT_TRUE(request[i].IsString());
-    PSI_ASSERT_OK_AND_ASSIGN(
-        reencrypted_elements[i],
-        server_ec_cipher->ReEncrypt(
-            std::string(request[i].GetString(), request[i].GetStringLength())));
-    response.PushBack(
-        rapidjson::Value().SetString(reencrypted_elements[i].data(),
-                                     reencrypted_elements[i].size()),
-        response.GetAllocator());
+    std::string base64_element(request[i].GetString(),
+                               request[i].GetStringLength());
+    std::string encrypted_element;
+    ASSERT_TRUE(absl::Base64Unescape(base64_element, &encrypted_element));
+    PSI_ASSERT_OK_AND_ASSIGN(reencrypted_elements[i],
+                             server_ec_cipher->ReEncrypt(encrypted_element));
+
+    base64_element = absl::Base64Escape(reencrypted_elements[i]);
+    response.PushBack(rapidjson::Value().SetString(base64_element.data(),
+                                                   base64_element.size(),
+                                                   response.GetAllocator()),
+                      response.GetAllocator());
   }
 
   // Encode re-encrypted messages as JSON.
-  buffer.Clear();
-  writer.Reset(buffer);
+  rapidjson::StringBuffer buffer;
+  rapidjson::Writer<decltype(buffer)> writer(buffer);
   response.Accept(writer);
   std::string server_response(buffer.GetString());
 

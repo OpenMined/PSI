@@ -28,9 +28,9 @@ cc_library(
     visibility = ["//visibility:public"],
 )
     """,
-            sha256 = "8e00c38829d6785a2dfb951bb87c6974fa07dfe488aa5b25deec4b8bc0f6a3ab",
-            strip_prefix = "rapidjson-1.1.0/include",
-            url = "https://github.com/Tencent/rapidjson/archive/v1.1.0.zip",
+            sha256 = "e6fc99c7df7f29995838a764dd68df87b71db360f7727ace467b21b82c85efda",
+            strip_prefix = "rapidjson-8f4c021fa2f1e001d2376095928fc0532adf2ae6/include",
+            url = "https://github.com/Tencent/rapidjson/archive/8f4c021fa2f1e001d2376095928fc0532adf2ae6.zip",
         )
 
     if "private_join_and_compute" not in native.existing_rules():
