@@ -17,9 +17,6 @@
 #include "bloom_filter.h"
 #include "absl/strings/str_cat.h"
 #include "gtest/gtest.h"
-#include "rapidjson/document.h"
-#include "rapidjson/stringbuffer.h"
-#include "rapidjson/writer.h"
 #include "util/status_matchers.h"
 
 namespace psi_cardinality {
