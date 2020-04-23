@@ -53,6 +53,8 @@ class PSICardinalityServer {
   //     "bits": <string>
   //   }
   //
+  // `bits` is encoded as Base64.
+  //
   // Returns INTERNAL if encryption fails.
   StatusOr<std::string> CreateSetupMessage(
       double fpr, absl::Span<const std::string> inputs) const;

@@ -17,6 +17,9 @@
 #include "bloom_filter.h"
 #include "absl/strings/str_cat.h"
 #include "gtest/gtest.h"
+#include "rapidjson/document.h"
+#include "rapidjson/stringbuffer.h"
+#include "rapidjson/writer.h"
 #include "util/status_matchers.h"
 
 namespace psi_cardinality {
@@ -63,20 +66,37 @@ TEST_F(BloomFilterTest, TestFPR) {
         count++;
       }
     }
-    // Check if actual FPR matches the target FPR, allowing for 10% error.
+    // Check if actual FPR matches the target FPR, allowing for 20% error.
     double actual_fpr = count / num_tests;
-    EXPECT_LT(actual_fpr, 1.1 * target_fpr)
+    EXPECT_LT(actual_fpr, 1.2 * target_fpr)
         << absl::StrCat("max_elements: ", max_elements);
   }
 }
 
-TEST_F(BloomFilterTest, TestCreateFromBitString) {
+TEST_F(BloomFilterTest, TestToJSON) {
+  double fpr = 0.01;
+  int max_elements = 100;
+  SetUp(fpr, max_elements);
+  for (int i = 0; i < max_elements; i++) {
+    filter_->Add(absl::StrCat("Element ", i));
+  }
+
+  // Encode Bloom filter as JSON and check if it matches.
+  std::string encoded_filter = filter_->ToJSON();
+  std::string expected =
+      "{\"num_hash_functions\":7,\"bits\":\"VN3/"
+      "BXfUjEDvJLcxCTepUCTXGQwlTax0xHiMohCNb45uShFsznK099RH0CFVIMn91Bdc7jLkXHXr"
+      "Xp1NimmZSDrYSj5sd/"
+      "500nroNOdXbtd53u8cejPMGxbx7kR1E1zyO19mSkYLXq4xf7au5dFN0qhxqfLnjaCE\"}";
+  EXPECT_EQ(encoded_filter, expected);
+}
+
+TEST_F(BloomFilterTest, TestCreateFromJSON) {
   std::vector<std::string> elements = {"a", "b", "c", "d"};
   filter_->Add(elements);
-  std::string bits = filter_->ToString();
-  PSI_ASSERT_OK_AND_ASSIGN(
-      auto filter2, BloomFilter::CreateFromBitString(
-                        filter_->NumHashFunctions(), filter_->ToString()));
+  std::string encoded_filter = filter_->ToJSON();
+  PSI_ASSERT_OK_AND_ASSIGN(auto filter2,
+                           BloomFilter::CreateFromJSON(encoded_filter));
   for (const auto& element : elements) {
     EXPECT_TRUE(filter2->Check(element));
   }

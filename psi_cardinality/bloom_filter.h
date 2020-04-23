@@ -56,8 +56,8 @@ class BloomFilter {
   //
   // Returns INVALID_ARGUMENT if `num_hash_functions` is not positive or if
   // `bits` is empty.
-  static StatusOr<std::unique_ptr<BloomFilter>> CreateFromBitString(
-      int num_hash_functions, std::string bits);
+  static StatusOr<std::unique_ptr<BloomFilter>> CreateFromJSON(
+      const std::string& encoded_filter);
 
   // Adds `input` to the Bloom filter.
   void Add(const std::string& input);
@@ -68,8 +68,15 @@ class BloomFilter {
   // Checks if an element is present in the Bloom filter.
   bool Check(const std::string& input) const;
 
-  // Returns a string representation of the Bloom filter.
-  const std::string& ToString() const;
+  // Returns a JSON representation of the Bloom filter, in the following form:
+  //
+  //   {
+  //     "num_hash_functions": <int>,
+  //     "bits": <string>
+  //   }
+  //
+  // Where `bits` is encoded using Base64.
+  std::string ToJSON() const;
 
   // Returns the number of hash functions of the Bloom filter.
   int NumHashFunctions() const;

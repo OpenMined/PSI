@@ -17,6 +17,7 @@
 #include "psi_cardinality_client.h"
 #include <vector>
 #include "absl/memory/memory.h"
+#include "absl/strings/escaping.h"
 #include "absl/strings/str_cat.h"
 #include "openssl/obj_mac.h"
 #include "psi_cardinality/bloom_filter.h"
@@ -58,8 +59,10 @@ StatusOr<std::string> PSICardinalityClient::CreateRequest(
   request.SetArray();
   std::sort(encrypted_inputs.begin(), encrypted_inputs.end());
   for (int64_t i = 0; i < input_size; i++) {
-    request.PushBack(rapidjson::Value().SetString(encrypted_inputs[i].data(),
-                                                  encrypted_inputs[i].size()),
+    std::string base64_element = absl::Base64Escape(encrypted_inputs[i]);
+    request.PushBack(rapidjson::Value().SetString(base64_element.data(),
+                                                  base64_element.size(),
+                                                  request.GetAllocator()),
                      request.GetAllocator());
   }
 
@@ -88,16 +91,8 @@ StatusOr<int64_t> PSICardinalityClient::ProcessResponse(
   }
 
   // Decode Bloom filter from setup message.
-  if (!setup.HasMember("num_hash_functions") ||
-      !setup["num_hash_functions"].IsInt() || !setup.HasMember("bits") ||
-      !setup["bits"].IsString()) {
-    return ::private_join_and_compute::InvalidArgumentError(
-        "`server_setup` does not have the required form");
-  }
-  int num_hash_functions = setup["num_hash_functions"].GetInt();
-  std::string bits(setup["bits"].GetString(), setup["bits"].GetStringLength());
-  ASSIGN_OR_RETURN(auto bloom_filter, BloomFilter::CreateFromBitString(
-                                          num_hash_functions, std::move(bits)));
+  ASSIGN_OR_RETURN(auto bloom_filter,
+                   BloomFilter::CreateFromJSON(server_setup));
 
   // Decrypt all elements in the response.
   int64_t counter = 0;
@@ -110,9 +105,15 @@ StatusOr<int64_t> PSICardinalityClient::ProcessResponse(
       return ::private_join_and_compute::InvalidArgumentError(
           "`server_response` elements must be strings");
     }
+    std::string base64_encrypted_element(value.GetString(),
+                                         value.GetStringLength());
+    std::string encrypted_element;
+    if (!absl::Base64Unescape(base64_encrypted_element, &encrypted_element)) {
+      return ::private_join_and_compute::InvalidArgumentError(
+          "`server_response` elements must be valid Base64");
+    }
     ASSIGN_OR_RETURN(std::string element,
-                     ec_cipher_->Decrypt(std::string(value.GetString(),
-                                                     value.GetStringLength())));
+                     ec_cipher_->Decrypt(encrypted_element));
     // Increase intersection size if element is found in the bloom filter.
     if (bloom_filter->Check(element)) {
       counter++;
