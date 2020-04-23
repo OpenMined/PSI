@@ -100,7 +100,7 @@ StatusOr<std::string> PSICardinalityServer::ProcessRequest(
     std::string encrypted_element;
     if (!absl::Base64Unescape(base64_encrypted_element, &encrypted_element)) {
       return ::private_join_and_compute::InvalidArgumentError(
-          "`server_response` elements must be valid Base64");
+          "`client_request` elements must be valid Base64");
     }
     ASSIGN_OR_RETURN(reencrypted_elements[i],
                      ec_cipher_->ReEncrypt(encrypted_element));
