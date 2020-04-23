@@ -144,7 +144,7 @@ std::vector<int64_t> BloomFilter::Hash(const std::string& x) const {
       context_->CreateBigNum(context_->Sha256String(absl::StrCat(1, x)))
           .Mod(bn_num_bits)
           .ToIntValue()
-          .ValueOrDie();
+          .ValueOrDie();  // ValueOrDie is safe here since bn_num_bits fits in an int64.
   const int64_t h2 =
       context_->CreateBigNum(context_->Sha256String(absl::StrCat(2, x)))
           .Mod(bn_num_bits)
