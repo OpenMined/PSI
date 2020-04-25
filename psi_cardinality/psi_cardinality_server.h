@@ -44,9 +44,9 @@ class PSICardinalityServer {
       const std::string& key_bytes);
 
   // Creates a setup message from the server's dataset to be sent to the client.
-  // The setup message is a JSON-encoded Bloom filter with the given
-  // false-positive rate `fpr` containing H(x)^s for each element x in `inputs`,
-  // where s is the server's secret key. The message has the following form:
+  // The setup message is a JSON-encoded Bloom filter containing H(x)^s for each
+  // element x in `inputs`, where s is the server's secret key. The message has
+  // the following form:
   //
   //   {
   //     "num_hash_functions": <int>,
@@ -54,10 +54,13 @@ class PSICardinalityServer {
   //   }
   //
   // `bits` is encoded as Base64.
+  // The false-positive rate `fpr` is the probability that any query of size
+  // `num_client_inputs` will result in a false positive.
   //
   // Returns INTERNAL if encryption fails.
   StatusOr<std::string> CreateSetupMessage(
-      double fpr, absl::Span<const std::string> inputs) const;
+      double fpr, int64_t num_client_inputs,
+      absl::Span<const std::string> inputs) const;
 
   // Processes a client query and returns the corresponding server response to
   // be sent to the client. For each encrytped element H(x)^c in the decoded

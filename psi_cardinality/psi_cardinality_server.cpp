@@ -57,10 +57,15 @@ PSICardinalityServer::CreateFromKey(const std::string& key_bytes) {
 }
 
 StatusOr<std::string> PSICardinalityServer::CreateSetupMessage(
-    double fpr, absl::Span<const std::string> inputs) const {
-  // Create a Bloom filter and insert elements into it.
+    double fpr, int64_t num_client_inputs,
+    absl::Span<const std::string> inputs) const {
   int64_t num_inputs = static_cast<int64_t>(inputs.size());
-  ASSIGN_OR_RETURN(auto bloom_filter, BloomFilter::Create(fpr, num_inputs));
+  // Correct fpr to account for multiple client queries.
+  double corrected_fpr = fpr / num_client_inputs;
+
+  // Create a Bloom filter and insert elements into it.
+  ASSIGN_OR_RETURN(auto bloom_filter,
+                   BloomFilter::Create(corrected_fpr, num_inputs));
   for (int i = 0; i < num_inputs; i++) {
     ASSIGN_OR_RETURN(std::string encrypted_element,
                      ec_cipher_->Encrypt(inputs[i]));
