@@ -52,8 +52,9 @@ TEST_F(PSICardinalityServerTest, TestCorrectness) {
   }
 
   // Run Server setup.
-  PSI_ASSERT_OK_AND_ASSIGN(auto server_setup,
-                           server_->CreateSetupMessage(fpr, server_elements));
+  PSI_ASSERT_OK_AND_ASSIGN(
+      auto server_setup,
+      server_->CreateSetupMessage(fpr, num_client_elements, server_elements));
 
   // Create Client request.
   PSI_ASSERT_OK_AND_ASSIGN(auto client_request,

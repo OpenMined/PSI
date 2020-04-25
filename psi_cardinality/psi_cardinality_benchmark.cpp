@@ -9,6 +9,7 @@ namespace {
 void BM_ServerSetup(benchmark::State& state, double fpr) {
   auto server = PSICardinalityServer::CreateWithNewkey().ValueOrDie();
   int num_inputs = state.range(0);
+  int num_client_inputs = 10000;
   std::vector<std::string> inputs(num_inputs);
   for (int i = 0; i < num_inputs; i++) {
     inputs[i] = absl::StrCat("Element", i);
@@ -16,7 +17,8 @@ void BM_ServerSetup(benchmark::State& state, double fpr) {
   std::string setup;
   int64_t elements_processed = 0;
   for (auto _ : state) {
-    setup = server->CreateSetupMessage(fpr, inputs).ValueOrDie();
+    setup =
+        server->CreateSetupMessage(fpr, num_client_inputs, inputs).ValueOrDie();
     ::benchmark::DoNotOptimize(setup);
     elements_processed += num_inputs;
   }
@@ -27,7 +29,7 @@ void BM_ServerSetup(benchmark::State& state, double fpr) {
       static_cast<double>(elements_processed), benchmark::Counter::kIsRate);
 }
 // Range is for the number of inputs, and the captured argument is the false
-// positive rate.
+// positive rate for 10k client queries.
 BENCHMARK_CAPTURE(BM_ServerSetup, fpr = 0.001, 0.001)
     ->RangeMultiplier(100)
     ->Range(1, 1000000);
@@ -92,7 +94,8 @@ void BM_ClientProcessResponse(benchmark::State& state) {
   for (int i = 0; i < num_inputs; i++) {
     inputs[i] = absl::StrCat("Element", i);
   }
-  std::string setup = server->CreateSetupMessage(fpr, inputs).ValueOrDie();
+  std::string setup =
+      server->CreateSetupMessage(fpr, num_inputs, inputs).ValueOrDie();
   std::string request = client->CreateRequest(inputs).ValueOrDie();
   std::string response = server->ProcessRequest(request).ValueOrDie();
   int64_t elements_processed = 0;
