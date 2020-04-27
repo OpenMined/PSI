@@ -76,9 +76,9 @@ cc_library(
     if "com_github_glog_glog" not in native.existing_rules():
         http_archive(
             name = "com_github_glog_glog",
-            sha256 = "f28359aeba12f30d73d9e4711ef356dc842886968112162bc73002645139c39c",
-            strip_prefix = "glog-0.4.0",
-            urls = ["https://github.com/google/glog/archive/v0.4.0.tar.gz"],
+            sha256 = "cc5a309ac975a733c8c0d00ec822b362790862164d330ab08a742ab67c95ec34",
+            strip_prefix = "glog-226966ffa71ba6ea71ae5386d5188a08bea8d561",
+            urls = ["https://github.com/schoppmp/glog/archive/226966ffa71ba6ea71ae5386d5188a08bea8d561.zip"],
         )
 
     if "com_github_gflags_gflags" not in native.existing_rules():
