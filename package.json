@@ -1,0 +1,19 @@
+{
+  "name": "psi-cardinality",
+  "version": "1.0.0",
+  "description": "PSI cardinality for JS and WASM using Bazel and Emscripten",
+  "main": "index.js",
+  "license": "Apache-2.0",
+  "scripts": {
+    "demo:js": "RUN_DEMO=js node ./examples/demo.js",
+    "demo:wasm": "RUN_DEMO=wasm node ./examples/demo.js",
+    "build": "yarn build:native && yarn build:js && yarn build:wasm",
+    "build:native": "bash scripts/build-native.sh",
+    "build:js": "bash scripts/build-js.sh",
+    "build:wasm": "bash scripts/build-wasm.sh",
+    "clean": "bazel clean --expunge",
+    "submodule:update": "bash scripts/submodule-update.sh",
+    "em:update": "bash scripts/em-update.sh",
+    "em:init": "bash scripts/em-init.sh"
+  }
+}
