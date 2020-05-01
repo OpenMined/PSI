@@ -58,7 +58,7 @@ using ::private_join_and_compute::StatusOr;
 // elements are sent to the server as a JSON array of Base64 strings in sorted
 // order:
 //
-//   [ Base64(H(x_1)^c), Base64(H(x_2)^c), ... ]
+//   sort([ Base64(H(x_1)^c), Base64(H(x_2)^c), ... ])
 //
 //
 // 3. Server response
@@ -68,7 +68,7 @@ using ::private_join_and_compute::StatusOr;
 // key s, computing (H(x)^c)^s = H(x)^(cs). The result is sent back to the
 // client as a JSON array of strings in sorted order:
 //
-//  [ Base64(H(x_1)^(cs)), Base64(H(x_2)^(cs)), ... ]
+//   sort([ Base64(H(x_1)^(cs)), Base64(H(x_2)^(cs)), ... ])
 //
 //
 // 4. Client computes intersection
