@@ -2,4 +2,4 @@
 set -euo pipefail
 
 # Build the native variant
-bazel build -c opt //psi_cardinality:psi_cardinality_benchmark
+bazel build -c opt //src/cpp:psi_cardinality_benchmark

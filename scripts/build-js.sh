@@ -5,4 +5,4 @@ set -euo pipefail
 source ./submodules/emsdk/emsdk_env.sh
 
 # Build the pure JS variant
-bazel build -c opt //psi_cardinality:hello-world-js.js --config=js
+bazel build -c opt //src/javascript:psi_cardinality_benchmark_js.js --config=js

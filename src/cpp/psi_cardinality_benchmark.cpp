@@ -1,7 +1,7 @@
 #include "absl/strings/str_cat.h"
 #include "benchmark/benchmark.h"
-#include "psi_cardinality/psi_cardinality_client.h"
-#include "psi_cardinality/psi_cardinality_server.h"
+#include "psi_cardinality_client.h"
+#include "psi_cardinality_server.h"
 
 namespace psi_cardinality {
 namespace {

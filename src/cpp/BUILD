@@ -35,7 +35,7 @@ cc_test(
     srcs = ["bloom_filter_test.cpp"],
     deps = [
         ":bloom_filter",
-        "//util:status_matchers",
+        "//src/cpp/util:status_matchers",
         "@com_google_absl//absl/strings",
         "@com_google_googletest//:gtest",
         "@com_google_googletest//:gtest_main",
@@ -63,7 +63,7 @@ cc_test(
     srcs = ["psi_cardinality_client_test.cpp"],
     deps = [
         ":psi_cardinality_client",
-        "//util:status_matchers",
+        "//src/cpp/util:status_matchers",
         "@com_google_absl//absl/strings",
         "@com_google_googletest//:gtest",
         "@com_google_googletest//:gtest_main",
@@ -94,7 +94,7 @@ cc_test(
     deps = [
         ":psi_cardinality_client",
         ":psi_cardinality_server",
-        "//util:status_matchers",
+        "//src/cpp/util:status_matchers",
         "@com_google_absl//absl/strings",
         "@com_google_googletest//:gtest",
         "@com_google_googletest//:gtest_main",
@@ -110,35 +110,5 @@ cc_binary(
         ":psi_cardinality_server",
         "@com_google_absl//absl/strings",
         "@com_google_benchmark//:benchmark_main",
-    ],
-)
-
-cc_library(
-    name = "psi_cardinality_server_wasm.js",
-    srcs = ["psi_cardinality_server.cpp"],
-    hdrs = ["psi_cardinality_server.h"],
-    linkopts = [
-        "-flto",
-        "-s WASM=1",
-        "-s ALLOW_MEMORY_GROWTH=1",
-        "-s ASSERTIONS=0",
-        "-s SYSCALLS_REQUIRE_FILESYSTEM=1",
-        "-s FILESYSTEM=1",
-        "-s EXPORT_ES6=0",
-        "-s MODULARIZE=1",
-        "-s USE_ES6_IMPORT_META=0",
-        "-s SINGLE_FILE=1",
-        "-s EXIT_RUNTIME=0",
-        "--closure 0"
-    ],
-    deps = [
-        ":bloom_filter",
-        "@boringssl//:crypto",
-        "@com_google_absl//absl/memory",
-        "@com_google_absl//absl/strings",
-        "@com_google_absl//absl/types:span",
-        "@com_tencent_rapidjson//:json",
-        "@private_join_and_compute//crypto:ec_commutative_cipher",
-        "@private_join_and_compute//util:status",
     ],
 )
