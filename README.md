@@ -5,17 +5,20 @@ Private Set Intersection Cardinality protocol based on ECDH and Bloom Filters.
 
 There are requirements for the entire project which each language shares. There also could be requirements for each target language:
 
-#### Global Requirements
+### Global Requirements
+These are the common requirements across all target languages of this project.
 
 - [Bazel](https://bazel.build)
 
 
-#### Target Requirements
-C++:
+### Target Requirements
+Some target languages have additional requirements
+
+#### C++
 
 - None
 
-JavaScript:
+#### JavaScript
 
 - [NodeJS](https://nodejs.org/en/)
 - [Yarn](https://yarnpkg.com/)
@@ -23,14 +26,11 @@ JavaScript:
 
 ## Compiling and Running
 
-The repository uses a folder structure to isolate each supported target language from one another:
+The repository uses a folder structure to isolate the supported targets from one another:
 
 ```
-src/<target language>
+src/<target language>/<sources>
 ```
-
-Compilation instructions for each target are listed below.
-
 
 ### C++
 
@@ -40,7 +40,7 @@ Build all libraries (with all optimization levels), with a specific optimization
 # Build everything wth all optimization levels
 bazel build //src/cpp/...
 
-# With optimization flag 'opt'
+# With optimization flag '-c opt'
 bazel build -c opt //src/cpp/...
 
 # Specific module(s)
@@ -60,10 +60,6 @@ Build and run benchmarks
 bazel run -c opt //src/cpp:psi_cardinality_benchmark
 ```
 
-### Python
-
-TODO
-
 ### JavaScript
 
 First, ensure you have updated submodules
@@ -71,7 +67,6 @@ First, ensure you have updated submodules
 ```
 yarn submodule:update
 ```
-
 
 Then, update and initialize `emsdk`
 
