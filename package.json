@@ -5,8 +5,8 @@
   "main": "index.js",
   "license": "Apache-2.0",
   "scripts": {
-    "demo:js": "RUN_DEMO=js node ./examples/demo.js",
-    "demo:wasm": "RUN_DEMO=wasm node ./examples/demo.js",
+    "demo:js": "RUN_DEMO=js node ./src/javascript/demo.js",
+    "demo:wasm": "RUN_DEMO=wasm node ./src/javascript/demo.js",
     "build": "yarn build:native && yarn build:js && yarn build:wasm",
     "build:native": "bash scripts/build-native.sh",
     "build:js": "bash scripts/build-js.sh",
