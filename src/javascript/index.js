@@ -1,3 +1,4 @@
+
 /*
  * Emscripten output contains this callback (onRuntimeInitialized)
  * which fires when the library is fully initialized.
@@ -9,7 +10,17 @@ const waitUntilReady = src =>
     resolve => (src.onRuntimeInitialized = resolve)
   )
 
-module.exports = (variant) => {
-  const source = require(`../../bazel-out/wasm-opt/bin/src/javascript/psi_cardinality_benchmark_${variant}.js`)
-  return waitUntilReady(source())
+/**
+ * Export a default function which instantiates the library
+ * 
+ * @param {String} path Path to the build output from emscripten
+ * @returns {Object} PSICardinality
+ */
+module.exports = async (path) => {
+  const source = require(path)
+  const PSICardinality = source()
+  await waitUntilReady(PSICardinality)
+  return {
+    PSICardinality
+  }
 }
