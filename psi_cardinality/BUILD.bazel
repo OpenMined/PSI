@@ -18,8 +18,8 @@ package(default_visibility = ["//visibility:public"])
 
 cc_library(
     name = "bloom_filter",
-    srcs = ["bloom_filter.cpp"],
-    hdrs = ["bloom_filter.h"],
+    srcs = ["bloom_filter.cpp", "bloom_filter_c.cpp"],
+    hdrs = ["bloom_filter.h", "bloom_filter_c.h"],
     deps = [
         "@com_google_absl//absl/memory",
         "@com_google_absl//absl/strings",
@@ -32,7 +32,7 @@ cc_library(
 
 cc_test(
     name = "bloom_filter_test",
-    srcs = ["bloom_filter_test.cpp"],
+    srcs = ["bloom_filter_test.cpp", "bloom_filter_test_c.cpp"],
     deps = [
         ":bloom_filter",
         "//util:status_matchers",
@@ -44,8 +44,8 @@ cc_test(
 
 cc_library(
     name = "psi_cardinality_client",
-    srcs = ["psi_cardinality_client.cpp"],
-    hdrs = ["psi_cardinality_client.h"],
+    srcs = ["psi_cardinality_client.cpp", "psi_cardinality_client_c.cpp"],
+    hdrs = ["psi_cardinality_client.h", "psi_cardinality_client_c.h"],
     deps = [
         ":bloom_filter",
         "@boringssl//:crypto",
@@ -74,8 +74,8 @@ cc_test(
 
 cc_library(
     name = "psi_cardinality_server",
-    srcs = ["psi_cardinality_server.cpp"],
-    hdrs = ["psi_cardinality_server.h"],
+    srcs = ["psi_cardinality_server.cpp", "psi_cardinality_server_c.cpp"],
+    hdrs = ["psi_cardinality_server.h", "psi_cardinality_server_c.h"],
     deps = [
         ":bloom_filter",
         "@boringssl//:crypto",
