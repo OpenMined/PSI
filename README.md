@@ -37,10 +37,10 @@ src/<target language>/<sources>
 Build all libraries (with all optimization levels), with a specific optimization level (-c opt), or a specific module
 
 ```
-# Build everything wth all optimization levels
+# Build everything using the fastbuild optimization configuration
 bazel build //src/cpp/...
 
-# With optimization flag '-c opt'
+# With a specific optimization flag '-c opt'
 bazel build -c opt //src/cpp/...
 
 # Specific module(s)
