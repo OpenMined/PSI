@@ -8,8 +8,8 @@ There are requirements for the entire project which each language shares. There 
 ### Global Requirements
 These are the common requirements across all target languages of this project.
 
+- A compiler such as clang, gcc, or msvc
 - [Bazel](https://bazel.build)
-
 
 ### Target Requirements
 Some target languages have additional requirements
