@@ -46,6 +46,7 @@ cc_library(
     name = "psi_cardinality_client",
     srcs = ["psi_cardinality_client.cpp"],
     hdrs = ["psi_cardinality_client.h"],
+    includes = ["."],
     deps = [
         ":bloom_filter",
         "@boringssl//:crypto",
@@ -76,6 +77,7 @@ cc_library(
     name = "psi_cardinality_server",
     srcs = ["psi_cardinality_server.cpp"],
     hdrs = ["psi_cardinality_server.h"],
+    includes = ["."],
     deps = [
         ":bloom_filter",
         "@boringssl//:crypto",

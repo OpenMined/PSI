@@ -78,18 +78,18 @@ yarn em:init
 Next, build the WebAssembly, pure JS, or both variants
 
 ```
-yarn build:wasm
-yarn build:js
+yarn build:benchmark:wasm
+yarn build:benchmark:js
 
 # or both
-yarn build
+yarn build:benchmark
 ```
 
 Finally, run the benchmark for WebAssembly or pure JS
 
 ```
-yarn demo:wasm
-yarn demo:js
+yarn benchmark:wasm
+yarn benchmark:js
 ```
 
 TODO: Build the client and server library wrapped with our JS abstraction.
