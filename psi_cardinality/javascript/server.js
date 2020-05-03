@@ -13,7 +13,7 @@ const cpp_main = require('.');
     const numClientElements = 10
     const numServerElements = 100
 
-    const serverElements = Array.from({length: numServerElements}, (_, i) => `Element ${2 * i}`)
+    const serverElements = Array.from({length: numServerElements}, (_, i) => `Element ${i}`)
     const serverInputs = PSICardinality.vecFromJSArray(serverElements)
 
     console.time('Server Setup Message')
@@ -26,5 +26,5 @@ const cpp_main = require('.');
     console.time('Server Process Request')
     const response = server.ProcessRequest(clientRequest)
     console.timeEnd('Server Process Request')
-    console.log('response', response)
+    console.log(`Response: '${response}'`)
 })();
