@@ -1,5 +1,6 @@
 #include <emscripten/bind.h>
 #include "psi_cardinality_client.h"
+#include <iostream>
 
 using namespace emscripten;
 using namespace psi_cardinality;
@@ -52,6 +53,8 @@ EMSCRIPTEN_BINDINGS(PSI_Client) {
         }))
         .function("ProcessResponse", optional_override([](const PSICardinalityClient &self, 
             const std::string &setup, const std::string &response) {
-            return self.ProcessResponse(setup, response).ValueOrDie();
+            std::int64_t result = self.ProcessResponse(setup, response).ValueOrDie();
+            const std::int32_t intersection = (int32_t) result;
+            return intersection;
         }));
 }
