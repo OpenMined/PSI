@@ -40,10 +40,23 @@ EMSCRIPTEN_BINDINGS(PSI_Server) {
 
     register_vector<std::string>("std::vector<std::string>");
 
-    class_<PSICardinalityServer>("PSICardinalityServer")
-        .class_function("CreateWithNewkey", &PSICardinalityServer::CreateWithNewkey)
-        .class_function("CreateFromKey", &PSICardinalityServer::CreateFromKey)
-        .function("CreateSetupMessage", &PSICardinalityServer::CreateSetupMessage)
-        .function("ProcessRequest", &PSICardinalityServer::ProcessRequest)
-        .function("GetPrivateKeyBytes", &PSICardinalityServer::GetPrivateKeyBytes);
+    class_<std::unique_ptr<PSICardinalityServer>>("PSICardinalityServer")
+        .class_function("CreateWithNewkey", optional_override([]() {
+            return PSICardinalityServer::CreateWithNewkey().ValueOrDie();
+        }))
+        .class_function("CreateFromKey", optional_override([](const std::unique_ptr<PSICardinalityServer> self, 
+            const std::string &key_bytes) {
+            return PSICardinalityServer::CreateFromKey(key_bytes).ValueOrDie();
+        }))
+        .function("CreateSetupMessage", optional_override([](const std::unique_ptr<PSICardinalityServer> self, 
+            const double fpr, const int64_t num_client_inputs, const std::vector<std::string> &inputs) {
+            return self->CreateSetupMessage(fpr, num_client_inputs, inputs).ValueOrDie();
+        }))
+        .function("ProcessRequest", optional_override([](const std::unique_ptr<PSICardinalityServer> self, 
+            const std::string &client_request) {
+            return self->ProcessRequest(client_request).ValueOrDie();
+        }))
+        .function("GetPrivateKeyBytes", optional_override([](const std::unique_ptr<PSICardinalityServer> self) {
+            return self->GetPrivateKeyBytes();
+        }));
 }

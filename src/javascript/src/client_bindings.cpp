@@ -3,6 +3,7 @@
 
 using namespace emscripten;
 using namespace psi_cardinality;
+using namespace private_join_and_compute;
 
 int main() {
     // TODO: remove after working...
@@ -39,9 +40,17 @@ EMSCRIPTEN_BINDINGS(PSI_Client) {
     function("vecFromJSArray", select_overload<std::vector<std::string>(const val &)>(&vecFromJSArray));
 
     register_vector<std::string>("std::vector<std::string>");
-
-    class_<PSICardinalityClient>("PSICardinalityClient")
-        .class_function("Create", &PSICardinalityClient::Create)
-        .function("CreateRequest", &PSICardinalityClient::CreateRequest)
-        .function("ProcessResponse", &PSICardinalityClient::ProcessResponse);
+        
+    class_<std::unique_ptr<PSICardinalityClient>>("PSICardinalityClient")
+        .class_function("Create", optional_override([]() {
+            return PSICardinalityClient::Create().ValueOrDie();
+        }))
+        .function("CreateRequest", optional_override([](const std::unique_ptr<PSICardinalityClient> self, 
+            const std::vector<std::string> &vect) {
+            return self->CreateRequest(vect).ValueOrDie();
+        }))
+        .function("ProcessResponse", optional_override([](const std::unique_ptr<PSICardinalityClient> self, 
+            const std::string &setup, const std::string &response) {
+            return self->ProcessResponse(setup, response).ValueOrDie();
+        }));
 }
