@@ -64,7 +64,7 @@ using ::private_join_and_compute::StatusOr;
 // 3. Server response
 //
 // For each encrypted element H(x)^c received from the client, the server
-// encrypts it again under the commutative encryption scheme with its private
+// encrypts it again under the commutative encryption scheme with its secret
 // key s, computing (H(x)^c)^s = H(x)^(cs). The result is sent back to the
 // client as a JSON array of strings in sorted order:
 //
@@ -74,7 +74,7 @@ using ::private_join_and_compute::StatusOr;
 // 4. Client computes intersection
 //
 // The client decrypts each element received from the server's response using
-// their private key c, computing (H(x)^(cs))^(1/c) = H(x)^s. It then checks if
+// its secret key c, computing (H(x)^(cs))^(1/c) = H(x)^s. It then checks if
 // each element is present in the Bloom filter, and reports the number of
 // matches as the intersection size.
 class PSICardinalityClient {
