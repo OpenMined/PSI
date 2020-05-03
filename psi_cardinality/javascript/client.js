@@ -7,11 +7,12 @@ const cpp_main = require('.');
 
     const numClientElements = 10
     const clientElements = Array.from({length: numClientElements}, (_, i) => `Element ${i}`)
+    const clientInputs = PSICardinality.vecFromJSArray(clientElements)
 
-    const vector = PSICardinality.vecFromJSArray(clientElements)
-    
     const client = PSICardinality.PSICardinalityClient.Create()
 
-    const request = client.CreateRequest(vector)
+    console.time('Client Create Request')
+    const request = client.CreateRequest(clientInputs)
+    console.timeEnd('Client Create Request')
     console.log(`Request: '${request}'`)
 })();

@@ -5,4 +5,4 @@ set -euo pipefail
 source ./submodules/emsdk/emsdk_env.sh
 
 # Build the WASM variant
-bazel build -c dbg //psi_cardinality/javascript:psi_cardinality_server_wasm.js --config=wasm
+bazel build -c opt //psi_cardinality/javascript:psi_cardinality_server_wasm.js --config=wasm

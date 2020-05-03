@@ -42,30 +42,27 @@ EMSCRIPTEN_BINDINGS(PSI_Server) {
 
     register_vector<std::string>("std::vector<std::string>");
 
-    class_<std::unique_ptr<PSICardinalityServer>>("PSICardinalityServer")
+    class_<PSICardinalityServer>("PSICardinalityServer")
+        .smart_ptr<std::shared_ptr<PSICardinalityServer>>("std::shared_ptr<PSICardinalityServer>")
         .class_function("CreateWithNewkey", optional_override([]() {
-            return PSICardinalityServer::CreateWithNewkey().ValueOrDie();
+            std::shared_ptr<PSICardinalityServer> server = PSICardinalityServer::CreateWithNewkey().ValueOrDie();
+            return server;
         }))
-        .class_function("CreateFromKey", optional_override([](const std::unique_ptr<PSICardinalityServer> self, 
-            const std::string &key_bytes) {
-            return PSICardinalityServer::CreateFromKey(key_bytes).ValueOrDie();
+        .class_function("CreateFromKey", optional_override([](const std::string &key_bytes) {
+            std::shared_ptr<PSICardinalityServer> server = PSICardinalityServer::CreateFromKey(key_bytes).ValueOrDie();
+            return server;
         }))
-        .function("CreateSetupMessage", optional_override([](const std::unique_ptr<PSICardinalityServer> self, 
+        .function("CreateSetupMessage", optional_override([](const PSICardinalityServer &self, 
             const double fpr, const int32_t num_client_inputs, const std::vector<std::string> &inputs) {
-            return self->CreateSetupMessage(fpr, (int64_t)num_client_inputs, inputs).ValueOrDie();
+            std::string message = self.CreateSetupMessage(fpr, (int64_t)num_client_inputs, inputs).ValueOrDie();
+            return message;
         }))
-        .function("ProcessRequest", optional_override([](const std::unique_ptr<PSICardinalityServer> self, 
+        .function("ProcessRequest", optional_override([](const PSICardinalityServer &self, 
             const std::string &client_request) {
-            auto result = self->ProcessRequest(client_request);
-            if (!result.ok()) {
-                // Handle error.
-                std::cout << "GOT ERROR:\n" << result.status() << std::endl << OpenSSLErrorString() << std::endl;
-            } else {
-                std::cout << "GOT SUCCESS!" << std::endl;
-                return result.ValueOrDie(); // No error -> ValueOrDie is safe.
-            }
+            std::string response = self.ProcessRequest(client_request).ValueOrDie();
+            return response;
         }))
-        .function("GetPrivateKeyBytes", optional_override([](const std::unique_ptr<PSICardinalityServer> self) {
-            return self->GetPrivateKeyBytes();
+        .function("GetPrivateKeyBytes", optional_override([](const PSICardinalityServer &self) {
+            return self.GetPrivateKeyBytes();
         }));
 }

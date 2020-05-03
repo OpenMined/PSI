@@ -41,16 +41,17 @@ EMSCRIPTEN_BINDINGS(PSI_Client) {
 
     register_vector<std::string>("std::vector<std::string>");
         
-    class_<std::unique_ptr<PSICardinalityClient>>("PSICardinalityClient")
+    class_<PSICardinalityClient>("PSICardinalityClient")
+        .smart_ptr<std::shared_ptr<PSICardinalityClient>>("std::shared_ptr<PSICardinalityClient>")
         .class_function("Create", optional_override([]() {
             return PSICardinalityClient::Create().ValueOrDie();
         }))
-        .function("CreateRequest", optional_override([](const std::unique_ptr<PSICardinalityClient> self, 
+        .function("CreateRequest", optional_override([](const PSICardinalityClient &self, 
             const std::vector<std::string> &vect) {
-            return self->CreateRequest(vect).ValueOrDie();
+            return self.CreateRequest(vect).ValueOrDie();
         }))
-        .function("ProcessResponse", optional_override([](const std::unique_ptr<PSICardinalityClient> self, 
+        .function("ProcessResponse", optional_override([](const PSICardinalityClient &self, 
             const std::string &setup, const std::string &response) {
-            return self->ProcessResponse(setup, response).ValueOrDie();
+            return self.ProcessResponse(setup, response).ValueOrDie();
         }));
 }
