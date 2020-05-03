@@ -98,12 +98,13 @@ TODO: Build the client and server library wrapped with our JS abstraction.
 To use this library in another Bazel project, add the following in your WORKSPACE file:
 
 ```
-load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
+load("@bazel_tools//tools/build_defs/repo:git.bzl", "git_repository")
 
-http_archive(
+git_repository(
    name = "org_openmined_psi_cardinality",
-   strip_prefix = "psi-cardinality-master",
-   url = "https://github.com/OpenMined/psi-cardinality/archive/master.zip",
+   remote = "https://github.com/OpenMined/psi-cardinality",
+   branch = "master",
+   init_submodules = True,
 )
 
 load("@org_openmined_psi_cardinality//psi_cardinality:preload.bzl", "psi_cardinality_preload")
