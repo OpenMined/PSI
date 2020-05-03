@@ -1,6 +1,5 @@
 #include <emscripten/bind.h>
 #include "psi_cardinality_server.h"
-#include <iostream>
 
 using namespace emscripten;
 using namespace psi_cardinality;
@@ -63,6 +62,7 @@ EMSCRIPTEN_BINDINGS(PSI_Server) {
             return response;
         }))
         .function("GetPrivateKeyBytes", optional_override([](const PSICardinalityServer &self) {
-            return self.GetPrivateKeyBytes();
+            std::string bytes = self.GetPrivateKeyBytes();
+            return bytes;
         }));
 }

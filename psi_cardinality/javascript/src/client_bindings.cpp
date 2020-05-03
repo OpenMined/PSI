@@ -1,6 +1,5 @@
 #include <emscripten/bind.h>
 #include "psi_cardinality_client.h"
-#include <iostream>
 
 using namespace emscripten;
 using namespace psi_cardinality;
