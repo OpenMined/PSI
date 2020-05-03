@@ -51,13 +51,13 @@ cc_binary(
         "-s WASM=1",
         "-s ALLOW_MEMORY_GROWTH=1",
         "-s USE_PTHREADS=0",
-        "-s ASSERTIONS=0",
+        "-s ASSERTIONS=1",
         "-s EXPORT_ES6=0",
         "-s MODULARIZE=1",
         "-s USE_ES6_IMPORT_META=0",
         "-s SINGLE_FILE=1",
         "-s ERROR_ON_UNDEFINED_SYMBOLS=0",  # Ignore POSIX popen
-        "--closure 1",
+        "--closure 0",
     ],
     deps = [
         "//psi_cardinality/cpp:psi_cardinality_server",

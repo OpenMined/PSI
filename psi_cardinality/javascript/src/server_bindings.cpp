@@ -1,8 +1,10 @@
 #include <emscripten/bind.h>
 #include "psi_cardinality_server.h"
+#include <iostream>
 
 using namespace emscripten;
 using namespace psi_cardinality;
+using namespace private_join_and_compute;
 
 int main() {
     // TODO: remove after working...
@@ -49,12 +51,19 @@ EMSCRIPTEN_BINDINGS(PSI_Server) {
             return PSICardinalityServer::CreateFromKey(key_bytes).ValueOrDie();
         }))
         .function("CreateSetupMessage", optional_override([](const std::unique_ptr<PSICardinalityServer> self, 
-            const double fpr, const int64_t num_client_inputs, const std::vector<std::string> &inputs) {
-            return self->CreateSetupMessage(fpr, num_client_inputs, inputs).ValueOrDie();
+            const double fpr, const int32_t num_client_inputs, const std::vector<std::string> &inputs) {
+            return self->CreateSetupMessage(fpr, (int64_t)num_client_inputs, inputs).ValueOrDie();
         }))
         .function("ProcessRequest", optional_override([](const std::unique_ptr<PSICardinalityServer> self, 
             const std::string &client_request) {
-            return self->ProcessRequest(client_request).ValueOrDie();
+            auto result = self->ProcessRequest(client_request);
+            if (!result.ok()) {
+                // Handle error.
+                std::cout << "GOT ERROR:\n" << result.status() << std::endl << OpenSSLErrorString() << std::endl;
+            } else {
+                std::cout << "GOT SUCCESS!" << std::endl;
+                return result.ValueOrDie(); // No error -> ValueOrDie is safe.
+            }
         }))
         .function("GetPrivateKeyBytes", optional_override([](const std::unique_ptr<PSICardinalityServer> self) {
             return self->GetPrivateKeyBytes();
