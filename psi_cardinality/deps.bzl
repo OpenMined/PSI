@@ -16,8 +16,13 @@
 
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 load("@rules_proto//proto:repositories.bzl", "rules_proto_dependencies", "rules_proto_toolchains")
+load("//psi_cardinality/javascript/toolchain:cc_toolchain_config.bzl", "emsdk_configure")
 
 def psi_cardinality_deps():
+    # Make all files under submodules/emsdk/* visible to the toolchain. The files are
+    # available as external/emsdk/emsdk/*
+    emsdk_configure(name = "emsdk")
+
     if "com_tencent_rapidjson" not in native.existing_rules():
         http_archive(
             name = "com_tencent_rapidjson",
@@ -76,9 +81,9 @@ cc_library(
     if "com_github_glog_glog" not in native.existing_rules():
         http_archive(
             name = "com_github_glog_glog",
-            sha256 = "f28359aeba12f30d73d9e4711ef356dc842886968112162bc73002645139c39c",
-            strip_prefix = "glog-0.4.0",
-            urls = ["https://github.com/google/glog/archive/v0.4.0.tar.gz"],
+            sha256 = "ec64c82f3c2cd5be25d18f52bcca2840c1b29cf3d109cd61149935838645817b",
+            strip_prefix = "glog-381e349a5bc3fd858a84b80c48ac465ad79c4a71",
+            urls = ["https://github.com/schoppmp/glog/archive/381e349a5bc3fd858a84b80c48ac465ad79c4a71.zip"],
         )
 
     if "com_github_gflags_gflags" not in native.existing_rules():

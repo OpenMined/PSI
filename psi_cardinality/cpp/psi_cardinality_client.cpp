@@ -20,7 +20,7 @@
 #include "absl/strings/escaping.h"
 #include "absl/strings/str_cat.h"
 #include "openssl/obj_mac.h"
-#include "psi_cardinality/bloom_filter.h"
+#include "bloom_filter.h"
 #include "rapidjson/document.h"
 #include "rapidjson/error/en.h"
 #include "rapidjson/stringbuffer.h"

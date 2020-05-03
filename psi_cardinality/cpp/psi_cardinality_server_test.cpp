@@ -27,7 +27,7 @@ namespace {
 class PSICardinalityServerTest : public ::testing::Test {
  protected:
   void SetUp() {
-    PSI_ASSERT_OK_AND_ASSIGN(server_, PSICardinalityServer::CreateWithNewkey());
+    PSI_ASSERT_OK_AND_ASSIGN(server_, PSICardinalityServer::CreateWithNewKey());
   }
 
   std::unique_ptr<PSICardinalityServer> server_;

@@ -35,7 +35,7 @@ cc_test(
     srcs = ["bloom_filter_test.cpp"],
     deps = [
         ":bloom_filter",
-        "//util:status_matchers",
+        "//psi_cardinality/cpp/util:status_matchers",
         "@com_google_absl//absl/strings",
         "@com_google_googletest//:gtest",
         "@com_google_googletest//:gtest_main",
@@ -46,6 +46,7 @@ cc_library(
     name = "psi_cardinality_client",
     srcs = ["psi_cardinality_client.cpp"],
     hdrs = ["psi_cardinality_client.h"],
+    includes = ["."],
     deps = [
         ":bloom_filter",
         "@boringssl//:crypto",
@@ -63,7 +64,7 @@ cc_test(
     srcs = ["psi_cardinality_client_test.cpp"],
     deps = [
         ":psi_cardinality_client",
-        "//util:status_matchers",
+        "//psi_cardinality/cpp/util:status_matchers",
         "@com_google_absl//absl/strings",
         "@com_google_googletest//:gtest",
         "@com_google_googletest//:gtest_main",
@@ -76,6 +77,7 @@ cc_library(
     name = "psi_cardinality_server",
     srcs = ["psi_cardinality_server.cpp"],
     hdrs = ["psi_cardinality_server.h"],
+    includes = ["."],
     deps = [
         ":bloom_filter",
         "@boringssl//:crypto",
@@ -94,7 +96,7 @@ cc_test(
     deps = [
         ":psi_cardinality_client",
         ":psi_cardinality_server",
-        "//util:status_matchers",
+        "//psi_cardinality/cpp/util:status_matchers",
         "@com_google_absl//absl/strings",
         "@com_google_googletest//:gtest",
         "@com_google_googletest//:gtest_main",

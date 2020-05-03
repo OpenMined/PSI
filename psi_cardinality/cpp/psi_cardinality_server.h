@@ -35,7 +35,7 @@ class PSICardinalityServer {
   // Creates and returns a new server instance with a fresh private key.
   //
   // Returns INTERNAL if any OpenSSL crypto operations fail.
-  static StatusOr<std::unique_ptr<PSICardinalityServer>> CreateWithNewkey();
+  static StatusOr<std::unique_ptr<PSICardinalityServer>> CreateWithNewKey();
 
   // Creates and returns a new server instance with the provided private key.
   //

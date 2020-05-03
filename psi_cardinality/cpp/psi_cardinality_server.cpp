@@ -20,7 +20,7 @@
 #include "absl/strings/escaping.h"
 #include "absl/strings/str_cat.h"
 #include "openssl/obj_mac.h"
-#include "psi_cardinality/bloom_filter.h"
+#include "bloom_filter.h"
 #include "rapidjson/document.h"
 #include "rapidjson/error/en.h"
 #include "rapidjson/stringbuffer.h"
@@ -35,7 +35,7 @@ PSICardinalityServer::PSICardinalityServer(
     : ec_cipher_(std::move(ec_cipher)) {}
 
 StatusOr<std::unique_ptr<PSICardinalityServer>>
-PSICardinalityServer::CreateWithNewkey() {
+PSICardinalityServer::CreateWithNewKey() {
   // Create an EC cipher with curve P-256. This gives 128 bits of security.
   ASSIGN_OR_RETURN(
       auto ec_cipher,
