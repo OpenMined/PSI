@@ -25,25 +25,26 @@ bloom_filter_ctx bloom_filter_create_from_json(const char* encoded_filter) {
     }
     return nullptr;
 }
-void bloom_filter_delete(bloom_filter_ctx ctx) {
-    auto bloom = static_cast<BloomFilter*>(ctx);
+void bloom_filter_delete(bloom_filter_ctx* ctx) {
+    auto bloom = static_cast<BloomFilter*>(*ctx);
     if (bloom == nullptr) {
         return;
     }
     delete bloom;
-    bloom = nullptr;
+    *ctx = nullptr;
 }
 
-void bloom_filter_add(bloom_filter_ctx ctx, const char* input) {
+void bloom_filter_add(bloom_filter_ctx ctx, struct bloom_buffer_t input) {
     auto bloom = static_cast<BloomFilter*>(ctx);
     if (bloom == nullptr) {
         return;
     }
-    bloom->Add(input);
+    std::string buff(input.buff, input.buff_len);
+    bloom->Add(buff);
 }
 
-void bloom_filter_add_array(bloom_filter_ctx ctx, const char** input,
-                            size_t len) {
+void bloom_filter_add_array(bloom_filter_ctx ctx,
+                            const struct bloom_buffer_t* input, size_t len) {
     auto bloom = static_cast<BloomFilter*>(ctx);
     if (bloom == nullptr) {
         return;
@@ -51,30 +52,43 @@ void bloom_filter_add_array(bloom_filter_ctx ctx, const char** input,
 
     std::vector<std::string> in;
     for (size_t idx = 0; idx < len; ++idx) {
-        in.push_back(input[idx]);
+        std::string buff(input[idx].buff, input[idx].buff_len);
+        in.push_back(buff);
     }
     bloom->Add(in);
 }
 
-uint8_t bloom_filter_check(const bloom_filter_ctx ctx, const char* input) {
+uint8_t bloom_filter_check(const bloom_filter_ctx ctx,
+                           struct bloom_buffer_t input) {
     auto bloom = static_cast<BloomFilter*>(ctx);
     if (bloom == nullptr) {
         return 0;
     }
 
-    return (uint8_t)bloom->Check(input);
+    std::string buff(input.buff, input.buff_len);
+    return (uint8_t)bloom->Check(buff);
 }
 
-void bloom_filter_to_json(const bloom_filter_ctx ctx, char* out,
-                          size_t out_max_len) {
+void bloom_filter_to_json(const bloom_filter_ctx ctx, char** out,
+                          size_t* out_len) {
     auto bloom = static_cast<BloomFilter*>(ctx);
     if (bloom == nullptr) {
         return;
     }
 
     auto json = bloom->ToJSON();
-    size_t len = out_max_len < json.size() ? out_max_len : json.size();
-    strncpy(out, json.c_str(), len);
+
+    size_t len = json.size() + 1;
+    *out = new char[len];
+    strncpy(*out, json.c_str(), len);
+    *out_len = len;
+}
+
+void bloom_filter_delete_json(const bloom_filter_ctx ctx, char** json) {
+    if (json == nullptr) return;
+
+    delete[] * json;
+    *json = nullptr;
 }
 
 int bloom_filter_num_hash_functions(const bloom_filter_ctx ctx) {

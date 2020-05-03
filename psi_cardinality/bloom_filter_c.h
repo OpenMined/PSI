@@ -23,16 +23,24 @@
 extern "C" {
 #endif
 typedef void* bloom_filter_ctx;
+
+struct bloom_buffer_t {
+    const char* buff;
+    size_t buff_len;
+};
+
 bloom_filter_ctx bloom_filter_create(double fpr, int64_t max_elements);
 bloom_filter_ctx bloom_filter_create_from_json(const char* encoded_filter);
-void bloom_filter_delete(bloom_filter_ctx ctx);
+void bloom_filter_delete(bloom_filter_ctx* ctx);
 
-void bloom_filter_add(bloom_filter_ctx ctx, const char* input);
-void bloom_filter_add_array(bloom_filter_ctx ctx, const char** input,
-                            size_t len);
-uint8_t bloom_filter_check(const bloom_filter_ctx ctx, const char* input);
-void bloom_filter_to_json(const bloom_filter_ctx ctx, char* out,
-                          size_t out_max_len);
+void bloom_filter_add(bloom_filter_ctx ctx, struct bloom_buffer_t input);
+void bloom_filter_add_array(bloom_filter_ctx ctx,
+                            const struct bloom_buffer_t* input, size_t len);
+uint8_t bloom_filter_check(const bloom_filter_ctx ctx,
+                           struct bloom_buffer_t input);
+void bloom_filter_to_json(const bloom_filter_ctx ctx, char** out,
+                          size_t* out_len);
+void bloom_filter_delete_json(const bloom_filter_ctx ctx, char** json);
 int bloom_filter_num_hash_functions(const bloom_filter_ctx ctx);
 
 #ifdef __cplusplus

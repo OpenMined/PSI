@@ -29,13 +29,16 @@ class BloomFilterBindingTest : public ::testing::Test {
         filter_ = bloom_filter_create(fpr, max_elements);
         EXPECT_TRUE(filter_ != nullptr);
     }
-    void TearDown() { bloom_filter_delete(filter_); }
+    void TearDown() {
+        bloom_filter_delete(&filter_);
+        EXPECT_TRUE(filter_ == nullptr);
+    }
 
     bloom_filter_ctx filter_;
 };
 
 TEST_F(BloomFilterBindingTest, TestAdd) {
-    const char* elements[4] = {"a", "b", "c", "d"};
+    bloom_buffer_t elements[4] = {{"a", 1}, {"b", 1}, {"c", 1}, {"d", 1}};
 
     // Test both variants of Add.
     bloom_filter_add(filter_, elements[0]);
@@ -47,7 +50,8 @@ TEST_F(BloomFilterBindingTest, TestAdd) {
     for (size_t idx = 0; idx < 4; ++idx) {
         EXPECT_TRUE(bloom_filter_check(filter_, elements[idx]));
     }
-    EXPECT_FALSE(bloom_filter_check(filter_, "not present"));
+    const char* fail = "not present";
+    EXPECT_FALSE(bloom_filter_check(filter_, {fail, strlen(fail)}));
 }
 
 TEST_F(BloomFilterBindingTest, TestFPR) {
@@ -57,13 +61,15 @@ TEST_F(BloomFilterBindingTest, TestFPR) {
         SetUp(target_fpr, max_elements);
         // Insert `max_elements` elements.
         for (int i = 0; i < max_elements; i++) {
-            bloom_filter_add(filter_, absl::StrCat("Element ", i).c_str());
+            auto val = absl::StrCat("Element ", i);
+            bloom_filter_add(filter_, {val.c_str(), val.size()});
         }
         // Test 10k elements to measure FPR.
         double count = 0;
         int num_tests = 10000;
         for (int i = 0; i < num_tests; i++) {
-            if (bloom_filter_check(filter_, absl::StrCat("Test ", i).c_str())) {
+            auto val = absl::StrCat("Test ", i);
+            if (bloom_filter_check(filter_, {val.c_str(), val.size()})) {
                 count++;
             }
         }
@@ -71,6 +77,8 @@ TEST_F(BloomFilterBindingTest, TestFPR) {
         double actual_fpr = count / num_tests;
         EXPECT_LT(actual_fpr, 1.2 * target_fpr)
             << absl::StrCat("max_elements: ", max_elements);
+
+        TearDown();
     }
 }
 
@@ -79,12 +87,16 @@ TEST_F(BloomFilterBindingTest, TestToJSON) {
     int max_elements = 100;
     SetUp(fpr, max_elements);
     for (int i = 0; i < max_elements; i++) {
-        bloom_filter_add(filter_, absl::StrCat("Element ", i).c_str());
+        auto val = absl::StrCat("Element ", i);
+        bloom_filter_add(filter_, {val.c_str(), val.size()});
     }
 
     // Encode Bloom filter as JSON and check if it matches.
-    char encoded_filter[4096] = {0};
-    bloom_filter_to_json(filter_, encoded_filter, 4096);
+    char* encoded_filter{0};
+    size_t filter_len = 0;
+    bloom_filter_to_json(filter_, &encoded_filter, &filter_len);
+    EXPECT_TRUE(encoded_filter != nullptr);
+    EXPECT_TRUE(filter_len != 0);
 
     std::string expected =
         "{\"num_hash_functions\":7,\"bits\":\"VN3/"
@@ -93,14 +105,20 @@ TEST_F(BloomFilterBindingTest, TestToJSON) {
         "Xp1NimmZSDrYSj5sd/"
         "500nroNOdXbtd53u8cejPMGxbx7kR1E1zyO19mSkYLXq4xf7au5dFN0qhxqfLnjaCE\"}";
     EXPECT_EQ(encoded_filter, expected);
+
+    bloom_filter_delete_json(filter_, &encoded_filter);
 }
 
 TEST_F(BloomFilterBindingTest, TestCreateFromJSON) {
-    const char* elements[4] = {"a", "b", "c", "d"};
+    bloom_buffer_t elements[4] = {{"a", 1}, {"b", 1}, {"c", 1}, {"d", 1}};
     bloom_filter_add_array(filter_, elements, 4);
 
-    char encoded_filter[4096] = {0};
-    bloom_filter_to_json(filter_, encoded_filter, 4096);
+    char* encoded_filter = {0};
+    size_t filter_len = 0;
+
+    bloom_filter_to_json(filter_, &encoded_filter, &filter_len);
+    EXPECT_TRUE(encoded_filter != nullptr);
+    EXPECT_TRUE(filter_len != 0);
 
     auto filter2 = bloom_filter_create_from_json(encoded_filter);
     ASSERT_TRUE(filter2 != nullptr);
@@ -108,7 +126,10 @@ TEST_F(BloomFilterBindingTest, TestCreateFromJSON) {
     for (size_t idx = 0; idx < 4; ++idx) {
         EXPECT_TRUE(bloom_filter_check(filter2, elements[idx]));
     }
-    EXPECT_FALSE(bloom_filter_check(filter2, "not present"));
+    const char* fail = "not present";
+    EXPECT_FALSE(bloom_filter_check(filter2, {fail, strlen(fail)}));
+
+    bloom_filter_delete_json(filter_, &encoded_filter);
 }
 }  // namespace
 }  // namespace psi_cardinality

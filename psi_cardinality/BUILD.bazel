@@ -60,7 +60,7 @@ cc_library(
 
 cc_test(
     name = "psi_cardinality_client_test",
-    srcs = ["psi_cardinality_client_test.cpp"],
+    srcs = ["psi_cardinality_client_test.cpp", "psi_cardinality_client_test_c.cpp"],
     deps = [
         ":psi_cardinality_client",
         "//util:status_matchers",
@@ -90,7 +90,7 @@ cc_library(
 
 cc_test(
     name = "psi_cardinality_server_test",
-    srcs = ["psi_cardinality_server_test.cpp"],
+    srcs = ["psi_cardinality_server_test.cpp", "psi_cardinality_server_test_c.cpp"],
     deps = [
         ":psi_cardinality_client",
         ":psi_cardinality_server",
@@ -104,7 +104,7 @@ cc_test(
 
 cc_binary(
     name = "psi_cardinality_benchmark",
-    srcs = ["psi_cardinality_benchmark.cpp"],
+    srcs = ["psi_cardinality_benchmark.cpp", "psi_cardinality_benchmark_c.cpp"],
     deps = [
         ":psi_cardinality_client",
         ":psi_cardinality_server",

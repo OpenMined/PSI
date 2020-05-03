@@ -13,35 +13,46 @@ psi_cardinality_client_ctx psi_cardinality_client_create() {
     return nullptr;
 }
 
-void psi_cardinality_client_delete(psi_cardinality_client_ctx ctx) {
-    auto client = static_cast<PSICardinalityClient*>(ctx);
+void psi_cardinality_client_delete(psi_cardinality_client_ctx* ctx) {
+    auto client = static_cast<PSICardinalityClient*>(*ctx);
     if (client == nullptr) {
         return;
     }
     delete client;
-    client = nullptr;
+    *ctx = nullptr;
 }
 
-void psi_cardinality_client_create_request(psi_cardinality_client_ctx ctx,
-                                           const char** inputs,
-                                           size_t input_len, char* output,
-                                           size_t out_max_size) {
+int psi_cardinality_client_create_request(psi_cardinality_client_ctx ctx,
+                                          client_buffer_t* inputs,
+                                          size_t input_len, char** out,
+                                          size_t* out_len) {
     auto client = static_cast<PSICardinalityClient*>(ctx);
     if (client == nullptr) {
-        return;
+        return -1;
     }
     std::vector<std::string> in;
     for (size_t idx = 0; idx < input_len; ++idx) {
-        in.push_back(inputs[idx]);
+        in.push_back(std::string(inputs[idx].buff, inputs[idx].buff_len));
     }
 
     auto result = client->CreateRequest(in);
     if (!result.ok()) {
-        return;
+        return -1;
     }
     auto value = std::move(result).ValueOrDie();
-    size_t len = out_max_size < value.size() ? out_max_size : value.size();
-    strncpy(output, value.c_str(), len);
+
+    size_t len = value.size() + 1;
+    *out = new char[len];
+    strncpy(*out, value.c_str(), len);
+    *out_len = len;
+
+    return 0;
+}
+
+void psi_cardinality_client_delete_buffer(psi_cardinality_client_ctx ctx,
+                                          char** request) {
+    delete[] * request;
+    *request = nullptr;
 }
 
 int64_t psi_cardinality_client_process_response(psi_cardinality_client_ctx ctx,
