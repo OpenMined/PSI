@@ -7,7 +7,7 @@ namespace psi_cardinality {
 namespace {
 
 void BM_ServerSetup(benchmark::State& state, double fpr) {
-  auto server = PSICardinalityServer::CreateWithNewkey().ValueOrDie();
+  auto server = PSICardinalityServer::CreateWithNewKey().ValueOrDie();
   int num_inputs = state.range(0);
   int num_client_inputs = 10000;
   std::vector<std::string> inputs(num_inputs);
@@ -62,7 +62,7 @@ BENCHMARK(BM_ClientCreateRequest)->RangeMultiplier(10)->Range(1, 10000);
 
 void BM_ServerProcessRequest(benchmark::State& state) {
   auto client = PSICardinalityClient::Create().ValueOrDie();
-  auto server = PSICardinalityServer::CreateWithNewkey().ValueOrDie();
+  auto server = PSICardinalityServer::CreateWithNewKey().ValueOrDie();
   int num_inputs = state.range(0);
   std::vector<std::string> inputs(num_inputs);
   for (int i = 0; i < num_inputs; i++) {
@@ -87,7 +87,7 @@ BENCHMARK(BM_ServerProcessRequest)->RangeMultiplier(10)->Range(1, 10000);
 
 void BM_ClientProcessResponse(benchmark::State& state) {
   auto client = PSICardinalityClient::Create().ValueOrDie();
-  auto server = PSICardinalityServer::CreateWithNewkey().ValueOrDie();
+  auto server = PSICardinalityServer::CreateWithNewKey().ValueOrDie();
   int num_inputs = state.range(0);
   double fpr = 1. / (1000000);
   std::vector<std::string> inputs(num_inputs);

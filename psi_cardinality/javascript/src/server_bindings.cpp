@@ -44,8 +44,8 @@ EMSCRIPTEN_BINDINGS(PSI_Server) {
 
     class_<PSICardinalityServer>("PSICardinalityServer")
         .smart_ptr<std::shared_ptr<PSICardinalityServer>>("std::shared_ptr<PSICardinalityServer>")
-        .class_function("CreateWithNewkey", optional_override([]() {
-            std::shared_ptr<PSICardinalityServer> server = PSICardinalityServer::CreateWithNewkey().ValueOrDie();
+        .class_function("CreateWithNewKey", optional_override([]() {
+            std::shared_ptr<PSICardinalityServer> server = PSICardinalityServer::CreateWithNewKey().ValueOrDie();
             return server;
         }))
         .class_function("CreateFromKey", optional_override([](const std::string &key_bytes) {

@@ -5,9 +5,8 @@ const cpp_main = require('.');
     // Upon success, this will immediatly run our C++ main() function
     const { PSICardinality } = await cpp_main(`../../bazel-out/wasm-opt/bin/psi_cardinality/javascript/psi_cardinality_server_${process.env.RUN_DEMO}.js`) // RUN_DEMO = js|wasm
 
-    const server = PSICardinality.PSICardinalityServer.CreateWithNewkey()
+    const server = PSICardinality.PSICardinalityServer.CreateWithNewKey()
 
-    // TODO: Figure out why this causes a crash
     const bytes = server.GetPrivateKeyBytes()
     console.log(`Key Bytes: '${bytes}'`)
 
