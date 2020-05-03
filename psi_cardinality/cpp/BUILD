@@ -35,7 +35,7 @@ cc_test(
     srcs = ["bloom_filter_test.cpp"],
     deps = [
         ":bloom_filter",
-        "//src/cpp/util:status_matchers",
+        "//psi_cardinality/cpp/util:status_matchers",
         "@com_google_absl//absl/strings",
         "@com_google_googletest//:gtest",
         "@com_google_googletest//:gtest_main",
@@ -63,7 +63,7 @@ cc_test(
     srcs = ["psi_cardinality_client_test.cpp"],
     deps = [
         ":psi_cardinality_client",
-        "//src/cpp/util:status_matchers",
+        "//psi_cardinality/cpp/util:status_matchers",
         "@com_google_absl//absl/strings",
         "@com_google_googletest//:gtest",
         "@com_google_googletest//:gtest_main",
@@ -94,7 +94,7 @@ cc_test(
     deps = [
         ":psi_cardinality_client",
         ":psi_cardinality_server",
-        "//src/cpp/util:status_matchers",
+        "//psi_cardinality/cpp/util:status_matchers",
         "@com_google_absl//absl/strings",
         "@com_google_googletest//:gtest",
         "@com_google_googletest//:gtest_main",

@@ -1,6 +1,6 @@
 cc_binary(
     name = "psi_cardinality_benchmark_wasm.js",
-    srcs = ["//src/cpp:psi_cardinality_benchmark.cpp"],
+    srcs = ["//psi_cardinality/cpp:psi_cardinality_benchmark.cpp"],
     linkopts = [
         "-flto",
         "-s WASM=1",
@@ -12,19 +12,20 @@ cc_binary(
         "-s USE_ES6_IMPORT_META=0",
         "-s SINGLE_FILE=1",
         "-s EXIT_RUNTIME=0",
-        "-s ERROR_ON_UNDEFINED_SYMBOLS=0", # Ignore POSIX popen
-        "--closure 1"
+        "-s ERROR_ON_UNDEFINED_SYMBOLS=0",  # Ignore POSIX popen
+        "--closure 1",
     ],
     deps = [
-        "//src/cpp:psi_cardinality_client",
-        "//src/cpp:psi_cardinality_server",
+        "//psi_cardinality/cpp:psi_cardinality_client",
+        "//psi_cardinality/cpp:psi_cardinality_server",
         "@com_google_absl//absl/strings",
         "@com_google_benchmark//:benchmark_main",
     ],
 )
+
 cc_binary(
     name = "psi_cardinality_benchmark_js.js",
-    srcs = ["//src/cpp:psi_cardinality_benchmark.cpp"],
+    srcs = ["//psi_cardinality/cpp:psi_cardinality_benchmark.cpp"],
     linkopts = [
         "-flto",
         "-s WASM=0",
@@ -36,12 +37,12 @@ cc_binary(
         "-s USE_ES6_IMPORT_META=0",
         "-s SINGLE_FILE=1",
         "-s EXIT_RUNTIME=0",
-        "-s ERROR_ON_UNDEFINED_SYMBOLS=0", # Ignore POSIX popen
-        "--closure 0"
+        "-s ERROR_ON_UNDEFINED_SYMBOLS=0",  # Ignore POSIX popen
+        "--closure 0",
     ],
     deps = [
-        "//src/cpp:psi_cardinality_client",
-        "//src/cpp:psi_cardinality_server",
+        "//psi_cardinality/cpp:psi_cardinality_client",
+        "//psi_cardinality/cpp:psi_cardinality_server",
         "@com_google_absl//absl/strings",
         "@com_google_benchmark//:benchmark_main",
     ],

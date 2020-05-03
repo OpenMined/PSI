@@ -101,18 +101,19 @@ To use this library in another Bazel project, add the following in your WORKSPAC
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 
 http_archive(
-   name = "com_github_openmined_psi_cardinality",
+   name = "org_openmined_psi_cardinality",
    strip_prefix = "psi-cardinality-master",
    url = "https://github.com/OpenMined/psi-cardinality/archive/master.zip",
 )
 
-load("@com_github_openmined_psi_cardinality//src/cpp:preload.bzl", "psi_cardinality_preload")
+load("@org_openmined_psi_cardinality//psi_cardinality:preload.bzl", "psi_cardinality_preload")
 
 psi_cardinality_preload()
 
-load("@com_github_openmined_psi_cardinality//src/cpp:deps.bzl", "psi_cardinality_deps")
+load("@org_openmined_psi_cardinality//psi_cardinality:deps.bzl", "psi_cardinality_deps")
 
 psi_cardinality_deps()
+
 ```
 
 A full description of the protocol can be found in the documentation of the [PSICardinalityClient](src/cpp/psi_cardinality_client.h) class.

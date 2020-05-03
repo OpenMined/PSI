@@ -2,18 +2,17 @@
   "name": "psi-cardinality",
   "version": "0.0.1",
   "description": "PSI cardinality for JS and WASM using Bazel and Emscripten",
-  "main": "src/javascript/index.js",
+  "main": "psi_cardinality/javascript/index.js",
   "license": "Apache-2.0",
   "scripts": {
-    "demo:js": "RUN_DEMO=js node ./src/javascript/demo.js",
-    "demo:wasm": "RUN_DEMO=wasm node ./src/javascript/demo.js",
-    "build": "yarn build:native && yarn build:js && yarn build:wasm",
-    "build:native": "bash src/javascript/scripts/build-native.sh",
-    "build:js": "bash src/javascript/scripts/build-js.sh",
-    "build:wasm": "bash src/javascript/scripts/build-wasm.sh",
+    "demo:js": "RUN_DEMO=js node ./psi_cardinality/javascript/demo.js",
+    "demo:wasm": "RUN_DEMO=wasm node ./psi_cardinality/javascript/demo.js",
+    "build": "yarn build:js && yarn build:wasm",
+    "build:js": "bash psi_cardinality/javascript/scripts/build-js.sh",
+    "build:wasm": "bash psi_cardinality/javascript/scripts/build-wasm.sh",
     "clean": "bazel clean --expunge",
-    "submodule:update": "bash src/javascript/scripts/submodule-update.sh",
-    "em:update": "bash src/javascript/scripts/em-update.sh",
-    "em:init": "bash src/javascript/scripts/em-init.sh"
+    "submodule:update": "bash psi_cardinality/javascript/scripts/submodule-update.sh",
+    "em:update": "bash psi_cardinality/javascript/scripts/em-update.sh",
+    "em:init": "bash psi_cardinality/javascript/scripts/em-init.sh"
   }
 }

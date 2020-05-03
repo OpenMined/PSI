@@ -10,6 +10,6 @@ const waitUntilReady = src =>
   )
 
 module.exports = (variant) => {
-  const source = require(`../../bazel-out/wasm-opt/bin/src/javascript/psi_cardinality_benchmark_${variant}.js`)
+  const source = require(`../../bazel-out/wasm-opt/bin/psi_cardinality/javascript/psi_cardinality_benchmark_${variant}.js`)
   return waitUntilReady(source())
 }

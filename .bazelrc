@@ -3,7 +3,7 @@
 
 ##### WASM #####
 # Use our custom-configured c++ toolchain.
-build:wasm --crosstool_top=//src/javascript/toolchain:emscripten
+build:wasm --crosstool_top=//psi_cardinality/javascript/toolchain:emscripten
 
 # Use --cpu as a differentiator.
 build:wasm --cpu=wasm
@@ -23,7 +23,7 @@ build:wasm --spawn_strategy=local
 
 ##### Pure JS #####
 # Use our custom-configured c++ toolchain.
-build:js --crosstool_top=//src/javascript/toolchain:emscripten
+build:js --crosstool_top=//psi_cardinality/javascript/toolchain:emscripten
 
 # Use --cpu as a differentiator.
 build:js --cpu=wasm
