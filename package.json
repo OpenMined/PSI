@@ -20,6 +20,7 @@
     "build:benchmark:wasm": "bash psi_cardinality/javascript/scripts/build-benchmark-wasm.sh",
     "clean": "bazel clean --expunge",
     "test": "RUN_DEMO=wasm jest psi_cardinality/javascript/test",
+    "coverage": "RUN_DEMO=wasm jest psi_cardinality/javascript/test --coverage",
     "submodule:update": "bash psi_cardinality/javascript/scripts/submodule-update.sh",
     "em:update": "bash psi_cardinality/javascript/scripts/em-update.sh",
     "em:init": "bash psi_cardinality/javascript/scripts/em-init.sh"
