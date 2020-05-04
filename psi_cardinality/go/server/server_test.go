@@ -109,10 +109,9 @@ func TestServerClient(t *testing.T) {
 
 var dummyString string
 
-func benchmarkServerSetup(step int, fpr float64, b *testing.B) {
+func benchmarkServerSetup(cnt int, fpr float64, b *testing.B) {
 	b.ReportAllocs()
 	total := 0
-	cnt := step
 	for n := 0; n < b.N; n++ {
 		server, err := CreateWithNewKey()
 		if err != nil || server == nil {
@@ -130,7 +129,6 @@ func benchmarkServerSetup(step int, fpr float64, b *testing.B) {
 			b.Errorf("failed to create setup msg %v", err)
 		}
 		total += cnt
-		cnt += step
 		//ugly hack for preventing compiler optimizations
 		dummyString = setup
 	}
@@ -152,10 +150,9 @@ func BenchmarkServerSetup100fpr6(b *testing.B)   { benchmarkServerSetup(100, fpr
 func BenchmarkServerSetup1000fpr6(b *testing.B)  { benchmarkServerSetup(1000, fpr6, b) }
 func BenchmarkServerSetup10000fpr6(b *testing.B) { benchmarkServerSetup(10000, fpr6, b) }
 
-func benchmarkServerProcessRequest(step int, b *testing.B) {
+func benchmarkServerProcessRequest(cnt int, b *testing.B) {
 	b.ReportAllocs()
 	total := 0
-	cnt := step
 	for n := 0; n < b.N; n++ {
 		client, err := client.Create()
 		if err != nil || client == nil {
@@ -180,7 +177,6 @@ func benchmarkServerProcessRequest(step int, b *testing.B) {
 			b.Errorf("failed to process request %v", err)
 		}
 		total += cnt
-		cnt += step
 		b.ReportMetric(float64(len(serverResp)), "ResponseSize")
 		//ugly hack for preventing compiler optimizations
 		dummyString = serverResp

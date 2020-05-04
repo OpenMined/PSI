@@ -88,10 +88,9 @@ func TestClientServer(t *testing.T) {
 
 var result string
 
-func benchmarkClientCreateRequest(step int, b *testing.B) {
+func benchmarkClientCreateRequest(cnt int, b *testing.B) {
 	b.ReportAllocs()
 	total := 0
-	cnt := step
 	for n := 0; n < b.N; n++ {
 		client, err := Create()
 		if err != nil || client == nil {
@@ -110,7 +109,6 @@ func benchmarkClientCreateRequest(step int, b *testing.B) {
 		result = request
 
 		total += cnt
-		cnt += step
 		b.ReportMetric(float64(len(request)), "RequestSize")
 
 	}
@@ -125,10 +123,9 @@ func BenchmarkClientCreateRequest10000(b *testing.B) { benchmarkClientCreateRequ
 
 var dummyInt64 int64
 
-func benchmarkClientProcessResponse(step int, b *testing.B) {
+func benchmarkClientProcessResponse(cnt int, b *testing.B) {
 	b.ReportAllocs()
 	total := 0
-	cnt := step
 	for n := 0; n < b.N; n++ {
 		client, err := Create()
 		if err != nil || client == nil {
@@ -163,7 +160,6 @@ func benchmarkClientProcessResponse(step int, b *testing.B) {
 			b.Errorf("failed to process response %v", err)
 		}
 		total += cnt
-		cnt += step
 		//ugly hack for preventing compiler optimizations
 		dummyInt64 = intersectionCnt
 	}
