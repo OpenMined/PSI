@@ -100,7 +100,24 @@ yarn benchmark:wasm
 yarn benchmark:js
 ```
 
-TODO: Build the client and server library wrapped with our JS abstraction.
+To build the client, server, or both for WebAssembly and pure JS
+
+```
+yarn build:client
+yarn build:server
+
+# or both
+yarn build
+```
+
+Run the tests or generate coverage reports. **Note** tests are run using the WASM variant.
+
+```
+yarn test
+
+# or to see coverage
+yarn coverage
+```
 
 ## Using the Library
 
