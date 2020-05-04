@@ -3,9 +3,9 @@ const cpp_main = require('.');
 (async () => {
     // Wait for the initializer to complete loading
     // Upon success, this will immediatly run our C++ main() function
-    const { PSICardinality } = await cpp_main(`../../bazel-out/wasm-opt/bin/psi_cardinality/javascript/psi_cardinality_server_${process.env.RUN_DEMO}.js`) // RUN_DEMO = js|wasm
+    const {PSICardinality} = await cpp_main(`../../bazel-out/wasm-opt/bin/psi_cardinality/javascript/psi_cardinality_server_${process.env.RUN_DEMO}.js`) // RUN_DEMO = js|wasm
 
-    const server = PSICardinality.PSICardinalityServer.CreateWithNewKey()
+    var server = PSICardinality.PSICardinalityServer.CreateWithNewKey().Value
 
     const bytes = server.GetPrivateKeyBytes()
     console.log(`Key Bytes: '${bytes}'`)
@@ -13,18 +13,29 @@ const cpp_main = require('.');
     const numClientElements = 10
     const numServerElements = 100
 
-    const serverElements = Array.from({length: numServerElements}, (_, i) => `Element ${i}`)
-    const serverInputs = PSICardinality.vecFromJSArray(serverElements)
+    const serverInputs =
+        Array.from({length: numServerElements}, (_, i) => `Element ${i}`)
 
     console.time('Server Setup Message')
     const setup = server.CreateSetupMessage(0.001, numClientElements, serverInputs)
     console.timeEnd('Server Setup Message')
-    console.log(`setup: '${setup}'`)
+    console.assert(setup.Status === null)
+    console.log(`setup: '${setup.Value}'`)
 
-    const clientRequest = '["AiHdmxkmF/iOM0fFhny9917QYGcb9jq0GM9mP4L74ecM","AiK1rXzYeZsUYwNR9lYXBBmYlcTFMqLCcHjcrsaGmjYv","ArWL4Au/vSMRwzMSoQp/wx79LMbE9QVXUuUs0fQC7+jV","As86QtTWj3zXwEaNUszxND+XCggown/JmLjOEAub6gNZ","AwQIw0Q2APjfh4pZuezodFarGUObZuRsnSHRt6UUyEIW","AxUyZOrfnfSsfoKn6WU+MogxV86O84wGfY4YeIDuODV4","A1pd7KrYwkpOQACwUW4dzIHqqJLGqy3KEkpRGZoyjOyN","A5WV5wuo7dtwJ5VCU1gZZ6UIVEZ4nPEGSSzML/F2jsaz","A8kWr10ssqPj5HuPaM0M+sT3yK2NcLivaeb6OL//0uYK","A9kFLnXzVbmd0eV37TtL1d5vNl5IkKdaM1KZuhfnmD8Z"]'
+    const clientRequest =
+        '["AiHdmxkmF/iOM0fFhny9917QYGcb9jq0GM9mP4L74ecM","AiK1rXzYeZsUYwNR9lYXBBmYlcTFMqLCcHjcrsaGmjYv","ArWL4Au/vSMRwzMSoQp/wx79LMbE9QVXUuUs0fQC7+jV","As86QtTWj3zXwEaNUszxND+XCggown/JmLjOEAub6gNZ","AwQIw0Q2APjfh4pZuezodFarGUObZuRsnSHRt6UUyEIW","AxUyZOrfnfSsfoKn6WU+MogxV86O84wGfY4YeIDuODV4","A1pd7KrYwkpOQACwUW4dzIHqqJLGqy3KEkpRGZoyjOyN","A5WV5wuo7dtwJ5VCU1gZZ6UIVEZ4nPEGSSzML/F2jsaz","A8kWr10ssqPj5HuPaM0M+sT3yK2NcLivaeb6OL//0uYK","A9kFLnXzVbmd0eV37TtL1d5vNl5IkKdaM1KZuhfnmD8Z"]'
 
     console.time('Server Process Request')
     const response = server.ProcessRequest(clientRequest)
     console.timeEnd('Server Process Request')
-    console.log(`Response: '${response}'`)
+    console.assert(response.Status === null)
+    console.log(`Response: '${response.Value}'`)
+
+    const clientRequest2 = 'invalid'
+
+    console.time('Server Process Request')
+    const response2 = server.ProcessRequest(clientRequest2)
+    console.timeEnd('Server Process Request')
+    console.assert(response2.Value === null)
+    console.log(`ProcessRequest with invalid request: '${response2.Status.Message}'`)
 })();
