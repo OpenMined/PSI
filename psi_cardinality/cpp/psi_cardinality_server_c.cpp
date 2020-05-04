@@ -5,7 +5,7 @@
 using namespace psi_cardinality;
 
 psi_cardinality_server_ctx psi_cardinality_server_create_with_new_key() {
-    auto result = PSICardinalityServer::CreateWithNewkey();
+    auto result = PSICardinalityServer::CreateWithNewKey();
     if (result.ok()) {
         auto value = std::move(result).ValueOrDie();
         return value.release();
