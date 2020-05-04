@@ -7,7 +7,7 @@ const cpp_main = require('.');
 
     const numClientElements = 10
     const clientElements = Array.from({length: numClientElements}, (_, i) => `Element ${i}`)
-    const clientInputs = PSICardinality.vecFromJSArray(clientElements)
+    const clientInputs = PSICardinality.VecFromJSArray(clientElements)
 
     const client = PSICardinality.PSICardinalityClient.Create()
 

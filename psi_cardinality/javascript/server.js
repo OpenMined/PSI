@@ -14,7 +14,7 @@ const cpp_main = require('.');
     const numServerElements = 100
 
     const serverElements = Array.from({length: numServerElements}, (_, i) => `Element ${i}`)
-    const serverInputs = PSICardinality.vecFromJSArray(serverElements)
+    const serverInputs = PSICardinality.VecFromJSArray(serverElements)
 
     console.time('Server Setup Message')
     const setup = server.CreateSetupMessage(0.001, numClientElements, serverInputs)
