@@ -7,19 +7,6 @@
 
 namespace psi_cardinality {
 
-// Converts a Javascript array to a std::vector.
-template <typename T>
-std::vector<T> VecFromJSArray(const emscripten::val &v) {
-  auto l = v["length"].as<unsigned>();
-
-  std::vector<T> rv;
-  for (unsigned i = 0; i < l; ++i) {
-    rv.push_back(v[i].as<T>());
-  }
-
-  return rv;
-};
-
 // Converts a StatusOr<T> to a Javascript object with the following structure:
 // {
 //   Value: T

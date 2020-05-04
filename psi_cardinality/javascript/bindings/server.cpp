@@ -1,6 +1,7 @@
 #include <emscripten/bind.h>
 #include "psi_cardinality/cpp/psi_cardinality_server.h"
 #include "psi_cardinality/javascript/bindings/utils.h"
+#include <iostream>
 
 EMSCRIPTEN_BINDINGS(PSI_Server) {
   using emscripten::optional_override;
