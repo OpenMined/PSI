@@ -2,6 +2,7 @@ package client
 
 /*
 #cgo LDFLAGS: -L${SRCDIR}/../extern/lib/
+#cgo LDFLAGS: -Wl,-rpath,${SRCDIR}/../extern/lib
 #cgo CFLAGS: -I${SRCDIR}/../../cpp
 #cgo LDFLAGS:  -lpsi_cardinality_client -lec_commutative_cipher -lec_util -lelgamal -lbloom_filter -lbn_util -lcrypto -lopenssl_init -lstatus -lglog -lgflags -lstrings -linternal -lraw_logging_internal -lthrow_delegate -lint128
 

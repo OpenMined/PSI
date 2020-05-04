@@ -5,6 +5,59 @@ import (
 	"testing"
 )
 
+func TestServerSanity(t *testing.T) {
+	server, err := CreateWithNewKey()
+	if err != nil || server == nil {
+		t.Errorf("Failed to create a PSI server %v", err)
+	}
+	defer server.Destroy()
+
+	key, err := server.GetPrivateKeyBytes()
+	if err != nil {
+		t.Errorf("Failed to create a PSI server key %v", err)
+	}
+
+	newServer, err := CreateFromKey(key)
+	if err != nil || newServer == nil {
+		t.Errorf("Failed to create a PSI server from key %v", err)
+	}
+
+	newKey, err := newServer.GetPrivateKeyBytes()
+	if err != nil {
+		t.Errorf("Failed to create a new PSI server key %v", err)
+	}
+	if key != newKey {
+		t.Errorf("new server invalid")
+	}
+}
+
+func TestServerFailure(t *testing.T) {
+	server := &PSICardinalityServer{}
+	_, err := server.GetPrivateKeyBytes()
+	if err == nil {
+		t.Errorf("GetPrivateKeyBytes should fail with an invalid context %v", err)
+	}
+	_, err = server.CreateSetupMessage(0.1, 100, []string{"dummy"})
+	if err == nil {
+		t.Errorf("CreateSetupMessage should fail with an invalid context %v", err)
+	}
+
+	_, err = server.ProcessRequest("dummy")
+	if err == nil {
+		t.Errorf("ProcessRequest should fail with an invalid context %v", err)
+	}
+	err = server.Destroy()
+	if err == nil {
+		t.Errorf("Destroy should fail with an invalid context %v", err)
+	}
+
+	server, _ = CreateWithNewKey()
+	_, err = server.ProcessRequest("dummy")
+	if err == nil {
+		t.Errorf("ProcessRequest should fail with an invalid input %v", err)
+	}
+}
+
 func TestServerClient(t *testing.T) {
 	client, err := client.Create()
 	if err != nil || client == nil {
@@ -53,3 +106,90 @@ func TestServerClient(t *testing.T) {
 		t.Errorf("Invalid intersection. expected upper bound %v. got %v", float64(cntClientItems/2)*float64(1.1), intersectionCnt)
 	}
 }
+
+var dummyString string
+
+func benchmarkServerSetup(step int, fpr float64, b *testing.B) {
+	b.ReportAllocs()
+	total := 0
+	cnt := step
+	for n := 0; n < b.N; n++ {
+		server, err := CreateWithNewKey()
+		if err != nil || server == nil {
+			b.Errorf("failed to get server")
+		}
+
+		inputs := []string{}
+		for i := 0; i < cnt; i++ {
+			inputs = append(inputs, "Element "+string(i))
+		}
+
+		numClientInputs := 10000
+		setup, err := server.CreateSetupMessage(fpr, int64(numClientInputs), inputs)
+		if err != nil {
+			b.Errorf("failed to create setup msg %v", err)
+		}
+		total += cnt
+		cnt += step
+		//ugly hack for preventing compiler optimizations
+		dummyString = setup
+	}
+	b.ReportMetric(float64(total), "ElementsProcessed")
+}
+
+const fpr3 = 0.001
+const fpr6 = 0.000001
+
+func BenchmarkServerSetup1fpr3(b *testing.B)     { benchmarkServerSetup(10, fpr3, b) }
+func BenchmarkServerSetup10fpr3(b *testing.B)    { benchmarkServerSetup(10, fpr3, b) }
+func BenchmarkServerSetup100fpr3(b *testing.B)   { benchmarkServerSetup(100, fpr3, b) }
+func BenchmarkServerSetup1000fpr3(b *testing.B)  { benchmarkServerSetup(1000, fpr3, b) }
+func BenchmarkServerSetup10000fpr3(b *testing.B) { benchmarkServerSetup(10000, fpr3, b) }
+
+func BenchmarkServerSetup1fpr6(b *testing.B)     { benchmarkServerSetup(10, fpr6, b) }
+func BenchmarkServerSetup10fpr6(b *testing.B)    { benchmarkServerSetup(10, fpr6, b) }
+func BenchmarkServerSetup100fpr6(b *testing.B)   { benchmarkServerSetup(100, fpr6, b) }
+func BenchmarkServerSetup1000fpr6(b *testing.B)  { benchmarkServerSetup(1000, fpr6, b) }
+func BenchmarkServerSetup10000fpr6(b *testing.B) { benchmarkServerSetup(10000, fpr6, b) }
+
+func benchmarkServerProcessRequest(step int, b *testing.B) {
+	b.ReportAllocs()
+	total := 0
+	cnt := step
+	for n := 0; n < b.N; n++ {
+		client, err := client.Create()
+		if err != nil || client == nil {
+			b.Errorf("failed to get client")
+		}
+		server, err := CreateWithNewKey()
+		if err != nil || server == nil {
+			b.Errorf("failed to get server")
+		}
+
+		inputs := []string{}
+		for i := 0; i < cnt; i++ {
+			inputs = append(inputs, "Element "+string(i))
+		}
+
+		request, err := client.CreateRequest(inputs)
+		if err != nil {
+			b.Errorf("failed to create request %v", err)
+		}
+		serverResp, err := server.ProcessRequest(request)
+		if err != nil {
+			b.Errorf("failed to process request %v", err)
+		}
+		total += cnt
+		cnt += step
+		b.ReportMetric(float64(len(serverResp)), "ResponseSize")
+		//ugly hack for preventing compiler optimizations
+		dummyString = serverResp
+	}
+	b.ReportMetric(float64(total), "ElementsProcessed")
+}
+
+func BenchmarkServerProcessRequest1(b *testing.B)     { benchmarkServerProcessRequest(1, b) }
+func BenchmarkServerProcessRequest10(b *testing.B)    { benchmarkServerProcessRequest(10, b) }
+func BenchmarkServerProcessRequest100(b *testing.B)   { benchmarkServerProcessRequest(100, b) }
+func BenchmarkServerProcessRequest1000(b *testing.B)  { benchmarkServerProcessRequest(1000, b) }
+func BenchmarkServerProcessRequest10000(b *testing.B) { benchmarkServerProcessRequest(10000, b) }
