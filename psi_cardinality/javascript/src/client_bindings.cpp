@@ -44,11 +44,13 @@ EMSCRIPTEN_BINDINGS(PSI_Client) {
     class_<PSICardinalityClient>("PSICardinalityClient")
         .smart_ptr<std::shared_ptr<PSICardinalityClient>>("std::shared_ptr<PSICardinalityClient>")
         .class_function("Create", optional_override([]() {
-            return PSICardinalityClient::Create().ValueOrDie();
+            std::shared_ptr<PSICardinalityClient> client = PSICardinalityClient::Create().ValueOrDie();
+            return client;
         }))
         .function("CreateRequest", optional_override([](const PSICardinalityClient &self, 
             const std::vector<std::string> &vect) {
-            return self.CreateRequest(vect).ValueOrDie();
+            std::string request = self.CreateRequest(vect).ValueOrDie();
+            return request;
         }))
         .function("ProcessResponse", optional_override([](const PSICardinalityClient &self, 
             const std::string &setup, const std::string &response) {
