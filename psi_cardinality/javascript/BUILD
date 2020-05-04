@@ -21,6 +21,9 @@ cc_library(
     srcs = ["bindings/utils.cpp"],
     hdrs = ["bindings/utils.h"],
     visibility = ["//visibility:private"],
+    deps = [
+        "@private_join_and_compute//util:status",
+    ],
 )
 
 cc_binary(
