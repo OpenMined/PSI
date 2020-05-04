@@ -16,15 +16,14 @@
 
 #include "absl/strings/escaping.h"
 #include "absl/strings/str_cat.h"
+#include "bloom_filter_c.h"
 #include "crypto/ec_commutative_cipher.h"
 #include "gtest/gtest.h"
+#include "psi_cardinality_client_c.h"
 #include "rapidjson/document.h"
 #include "rapidjson/stringbuffer.h"
 #include "rapidjson/writer.h"
 #include "util/status_matchers.h"
-
-#include "bloom_filter_c.h"
-#include "psi_cardinality_client_c.h"
 
 namespace psi_cardinality {
 namespace {

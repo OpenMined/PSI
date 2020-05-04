@@ -2,7 +2,7 @@ package bloomfilter
 
 /*
 #cgo LDFLAGS: -L${SRCDIR}/../extern/lib/
-#cgo CFLAGS: -I${SRCDIR}/../extern/include/
+#cgo CFLAGS: -I${SRCDIR}/../../cpp
 #cgo LDFLAGS: -lbloom_filter -lbn_util -lcrypto -lopenssl_init -lstatus -lglog -lgflags -lstrings -linternal -lraw_logging_internal -lthrow_delegate -lint128
 
 #include "bloom_filter_c.h"

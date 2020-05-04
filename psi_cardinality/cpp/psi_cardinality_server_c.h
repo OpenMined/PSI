@@ -33,20 +33,20 @@ struct server_buffer_t {
 
 psi_cardinality_server_ctx psi_cardinality_server_create_with_new_key();
 psi_cardinality_server_ctx psi_cardinality_server_create_from_key(
-    server_buffer_t key_bytes);
+    struct server_buffer_t key_bytes);
 void psi_cardinality_server_delete(psi_cardinality_server_ctx* ctx);
 
 int psi_cardinality_server_create_setup_message(psi_cardinality_server_ctx ctx,
                                                 double fpr,
                                                 int64_t num_client_inputs,
-                                                server_buffer_t* input,
+                                                struct server_buffer_t* input,
                                                 size_t input_len, char** output,
                                                 size_t* output_len);
 void psi_cardinality_server_delete_buffer(psi_cardinality_server_ctx ctx,
                                           char** input);
 
 int psi_cardinality_server_process_request(psi_cardinality_server_ctx ctx,
-                                           server_buffer_t client_request,
+                                           struct server_buffer_t client_request,
                                            char** output, size_t* output_len);
 int psi_cardinality_server_get_private_key_bytes(psi_cardinality_server_ctx ctx,
                                                  char** output,
