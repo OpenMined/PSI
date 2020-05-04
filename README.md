@@ -1,4 +1,5 @@
 # PSI Cardinality
+
 Private Set Intersection Cardinality protocol based on ECDH and Bloom Filters.
 
 ## Requirements
@@ -6,12 +7,14 @@ Private Set Intersection Cardinality protocol based on ECDH and Bloom Filters.
 There are requirements for the entire project which each language shares. There also could be requirements for each target language:
 
 ### Global Requirements
+
 These are the common requirements across all target languages of this project.
 
 - A compiler such as clang, gcc, or msvc
 - [Bazel](https://bazel.build)
 
 ### Target Requirements
+
 Some target languages have additional requirements
 
 #### C++
@@ -22,7 +25,6 @@ Some target languages have additional requirements
 
 - [NodeJS](https://nodejs.org/en/)
 - [Yarn](https://yarnpkg.com/)
-
 
 ## Compiling and Running
 
@@ -75,6 +77,12 @@ yarn em:update
 yarn em:init
 ```
 
+Now, install the rest of the dev dependencies
+
+```
+yarn install
+```
+
 Next, build the WebAssembly, pure JS, or both variants
 
 ```
@@ -95,6 +103,7 @@ yarn benchmark:js
 TODO: Build the client and server library wrapped with our JS abstraction.
 
 ## Using the Library
+
 To use this library in another Bazel project, add the following in your WORKSPACE file:
 
 ```
