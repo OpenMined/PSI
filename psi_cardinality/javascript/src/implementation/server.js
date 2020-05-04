@@ -118,7 +118,7 @@ export const Server = library => ({
    *
    * @function
    * @name Server.CreateFromKey
-   * @param {String} key
+   * @param {String} key Private key as a binary string
    * @returns {Server} A Server instance
    */
   CreateFromKey(key) {

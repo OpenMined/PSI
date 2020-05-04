@@ -7,7 +7,6 @@
   "scripts": {
     "benchmark:js": "RUN_DEMO=js node -r esm psi_cardinality/javascript/benchmark.js",
     "benchmark:wasm": "RUN_DEMO=wasm node -r esm psi_cardinality/javascript/benchmark.js",
-    "run:client": "RUN_DEMO=wasm node -r esm psi_cardinality/javascript/client.js",
     "run:server": "RUN_DEMO=wasm node -r esm psi_cardinality/javascript/server.js",
     "build:client": "yarn build:client:js && yarn build:client:wasm",
     "build:client:js": "bash psi_cardinality/javascript/scripts/build-client-js.sh",

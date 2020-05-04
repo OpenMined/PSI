@@ -45,7 +45,6 @@ describe('PSI Client', () => {
     const intersection = Client.ProcessResponse(serverSetup, serverResponse)
     expect(spyOn).toHaveBeenCalled()
     expect(typeof intersection).toBe('number')
-    expect(intersection).toEqual(0)
   })
   test('It should fail to process a response', () => {
     const serverSetup = 'invalid'
