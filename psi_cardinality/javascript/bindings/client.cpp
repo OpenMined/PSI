@@ -18,8 +18,16 @@ EMSCRIPTEN_BINDINGS(PSI_Client) {
           }))
       .function("CreateRequest",
                 optional_override([](const PSICardinalityClient &self,
-                                     const std::vector<std::string> &vect) {
-                  return ToJSObject(self.CreateRequest(vect));
+                                     const emscripten::val &v) {
+                  std::vector<std::string> inputs;
+                  const auto l = v["length"].as<unsigned>();
+                  inputs.reserve(l);
+
+                  for (auto i = 0; i < l; ++i) {
+                    inputs.push_back(v[i].as<std::string>());
+                  }
+
+                  return ToJSObject(self.CreateRequest(inputs));
                 }))
       .function("ProcessResponse",
                 optional_override([](const PSICardinalityClient &self,

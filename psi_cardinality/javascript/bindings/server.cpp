@@ -20,14 +20,21 @@ EMSCRIPTEN_BINDINGS(PSI_Server) {
             return ToJSObject(
                 ToShared(PSICardinalityServer::CreateFromKey(key_bytes)));
           }))
-      .function("CreateSetupMessage",
-                optional_override([](const PSICardinalityServer &self,
-                                     const double fpr,
-                                     const int32_t num_client_inputs,
-                                     const std::vector<std::string> &inputs) {
-                  return ToJSObject(self.CreateSetupMessage(
-                      fpr, (int64_t)num_client_inputs, inputs));
-                }))
+      .function(
+          "CreateSetupMessage",
+          optional_override(
+              [](const PSICardinalityServer &self, const double fpr,
+                 const int32_t num_client_inputs, const emscripten::val &v) {
+                std::vector<std::string> inputs;
+                const auto l = v["length"].as<unsigned>();
+                inputs.reserve(l);
+
+                for (auto i = 0; i < l; ++i) {
+                  inputs.push_back(v[i].as<std::string>());
+                }
+                return ToJSObject(
+                    self.CreateSetupMessage(fpr, num_client_inputs, inputs));
+              }))
       .function("ProcessRequest",
                 optional_override([](const PSICardinalityServer &self,
                                      const std::string &client_request) {

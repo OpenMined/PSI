@@ -6,3 +6,6 @@ bazel-*
 
 # VScode
 .vscode
+
+# npm
+node_modules/

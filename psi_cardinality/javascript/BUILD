@@ -13,12 +13,8 @@ DEFAULT_EMSCRIPTEN_LINKOPTS = [
     "-s ERROR_ON_UNDEFINED_SYMBOLS=0",  # Ignore POSIX popen
 ]
 
-# Emscripten apparently needs all source files containing bindings to be explicitly mentioned.
-COMMON_SRCS = ["bindings/utils.cpp"]
-
 cc_library(
     name = "utils",
-    srcs = ["bindings/utils.cpp"],
     hdrs = ["bindings/utils.h"],
     visibility = ["//visibility:private"],
     deps = [
@@ -28,7 +24,7 @@ cc_library(
 
 cc_binary(
     name = "psi_cardinality_client_wasm.js",
-    srcs = COMMON_SRCS + ["bindings/client.cpp"],
+    srcs = ["bindings/client.cpp"],
     linkopts = DEFAULT_EMSCRIPTEN_LINKOPTS + [
         "-s WASM=1",
         "--closure 1",
@@ -41,7 +37,7 @@ cc_binary(
 
 cc_binary(
     name = "psi_cardinality_client_js.js",
-    srcs = COMMON_SRCS + ["bindings/client.cpp"],
+    srcs = ["bindings/client.cpp"],
     linkopts = DEFAULT_EMSCRIPTEN_LINKOPTS + [
         "-s WASM=0",
         "--closure 0",
@@ -54,7 +50,7 @@ cc_binary(
 
 cc_binary(
     name = "psi_cardinality_server_wasm.js",
-    srcs = COMMON_SRCS + ["bindings/server.cpp"],
+    srcs = ["bindings/server.cpp"],
     linkopts = DEFAULT_EMSCRIPTEN_LINKOPTS + [
         "-s WASM=1",
         "--closure 1",
@@ -67,7 +63,7 @@ cc_binary(
 
 cc_binary(
     name = "psi_cardinality_server_js.js",
-    srcs = COMMON_SRCS + ["bindings/server.cpp"],
+    srcs = ["bindings/server.cpp"],
     linkopts = DEFAULT_EMSCRIPTEN_LINKOPTS + [
         "-s WASM=0",
         "--closure 0",
