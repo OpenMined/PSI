@@ -38,7 +38,7 @@ func CreateFromJSON(encoded string) (*BloomFilter, error) {
 	return bf, nil
 }
 
-//Destroy cleans up the context
+//Destroy the context
 func (b *BloomFilter) Destroy() error {
 	if b.context == nil {
 		return errors.New("Destroy on nil context")
@@ -49,7 +49,7 @@ func (b *BloomFilter) Destroy() error {
 	return nil
 }
 
-//Add inserts a new element in the bloom filter
+//Add a new element to the bloom filter
 func (b *BloomFilter) Add(input string) error {
 	if b.context == nil {
 		return errors.New("Add on nil context")
@@ -62,7 +62,7 @@ func (b *BloomFilter) Add(input string) error {
 	return nil
 }
 
-//AddArray inserts every element in an array in the bloom filter
+//AddArray to the bloom filter
 func (b *BloomFilter) AddArray(rawInput []string) error {
 	if b.context == nil {
 		return errors.New("Add on nil context")
@@ -79,7 +79,7 @@ func (b *BloomFilter) AddArray(rawInput []string) error {
 	return nil
 }
 
-//Check checks for an element in the BloomFilter
+//Check for an element in the BloomFilter
 func (b *BloomFilter) Check(input string) (bool, error) {
 	if b.context == nil {
 		return false, errors.New("Check on nil context")

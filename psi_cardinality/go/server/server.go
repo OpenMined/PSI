@@ -114,7 +114,7 @@ func (s *PSICardinalityServer) GetPrivateKeyBytes() (string, error) {
 	return result, nil
 }
 
-//Destroy frees the context
+//Destroy context
 func (s *PSICardinalityServer) Destroy() error {
 	if s.context == nil {
 		return errors.New("invalid context")

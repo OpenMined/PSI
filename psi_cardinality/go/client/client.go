@@ -72,7 +72,7 @@ func (c *PSICardinalityClient) ProcessResponse(serverSetup, serverResponse strin
 	return int64(result), nil
 }
 
-//Destroy frees the context
+//Destroy the context
 func (c *PSICardinalityClient) Destroy() error {
 	if c.context == nil {
 		return errors.New("invalid context")
