@@ -3,3 +3,6 @@ bazel-*
 
 # CLion
 .clwb
+
+# VScode
+.vscode

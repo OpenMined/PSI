@@ -1,0 +1,42 @@
+##### Native #####
+ # No need to specify additional configs
+
+##### WASM #####
+# Use our custom-configured c++ toolchain.
+build:wasm --crosstool_top=//psi_cardinality/javascript/toolchain:emscripten
+
+# Use --cpu as a differentiator.
+build:wasm --cpu=wasm
+
+# Use the default C++ toolchain to build the tools used during the build.
+build:wasm --host_crosstool_top=@bazel_tools//tools/cpp:toolchain
+
+# These compile flags are active no matter which build mode we are in
+# (dbg vs opt). For flags specific to build mode, see cc_toolchain_config.bzl.
+#build:wasm --host_cxxopt="-fno-rtti"
+#build:wasm --host_cxxopt="-fno-exceptions"
+#build:wasm --host_cxxopt="-fomit-frame-pointer"
+
+# Disable sandbox environment because emsdk caches files by writing to
+# home directory.
+build:wasm --spawn_strategy=local
+
+##### Pure JS #####
+# Use our custom-configured c++ toolchain.
+build:js --crosstool_top=//psi_cardinality/javascript/toolchain:emscripten
+
+# Use --cpu as a differentiator.
+build:js --cpu=wasm
+
+# Use the default C++ toolchain to build the tools used during the build.
+build:js --host_crosstool_top=@bazel_tools//tools/cpp:toolchain
+
+# These compile flags are active no matter which build mode we are in
+# (dbg vs opt). For flags specific to build mode, see cc_toolchain_config.bzl.
+#build:js --host_cxxopt="-fno-rtti"
+#build:js --host_cxxopt="-fno-exceptions"
+#build:js --host_cxxopt="-fomit-frame-pointer"
+
+# Disable sandbox environment because emsdk caches files by writing to
+# home directory.
+build:js --spawn_strategy=local
