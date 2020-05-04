@@ -9,3 +9,6 @@ bazel-*
 
 # npm
 node_modules/
+
+# JS code coverage
+coverage/
