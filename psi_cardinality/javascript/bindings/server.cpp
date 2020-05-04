@@ -4,6 +4,7 @@
 
 EMSCRIPTEN_BINDINGS(PSI_Server) {
   using emscripten::optional_override;
+  using emscripten::val;
   using psi_cardinality::PSICardinalityServer;
 
   emscripten::class_<PSICardinalityServer>("PSICardinalityServer")
@@ -25,12 +26,18 @@ EMSCRIPTEN_BINDINGS(PSI_Server) {
                 optional_override([](const PSICardinalityServer &self,
                                      const double fpr,
                                      const int32_t num_client_inputs,
-                                     const std::vector<std::string> &inputs) {
-                  std::string message =
-                      self.CreateSetupMessage(fpr, (int64_t)num_client_inputs,
-                                              inputs)
-                          .ValueOrDie();
-                  return message;
+                                     const val &v) {
+            
+                    std::vector<std::string> inputs;
+                    const auto l = v["length"].as<unsigned>();
+                    inputs.reserve(l);
+
+                    for (auto i = 0; i < l; ++i) {
+                        inputs.push_back(v[i].as<std::string>());
+                    }
+
+                    std::string message = self.CreateSetupMessage(fpr, (int64_t)num_client_inputs, inputs).ValueOrDie();
+                    return message;
                 }))
       .function("ProcessRequest",
                 optional_override([](const PSICardinalityServer &self,

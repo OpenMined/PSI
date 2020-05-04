@@ -14,11 +14,10 @@ DEFAULT_EMSCRIPTEN_LINKOPTS = [
 ]
 
 # Emscripten apparently needs all source files containing bindings to be explicitly mentioned.
-COMMON_SRCS = ["bindings/utils.cpp"]
+COMMON_SRCS = []
 
 cc_library(
     name = "utils",
-    srcs = ["bindings/utils.cpp"],
     hdrs = ["bindings/utils.h"],
     visibility = ["//visibility:private"],
 )

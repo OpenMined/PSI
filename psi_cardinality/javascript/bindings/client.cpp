@@ -3,6 +3,7 @@
 
 EMSCRIPTEN_BINDINGS(PSI_Client) {
   using emscripten::optional_override;
+  using emscripten::val;
   using psi_cardinality::PSICardinalityClient;
 
   emscripten::class_<PSICardinalityClient>("PSICardinalityClient")
@@ -15,9 +16,17 @@ EMSCRIPTEN_BINDINGS(PSI_Client) {
                       }))
       .function("CreateRequest",
                 optional_override([](const PSICardinalityClient &self,
-                                     const std::vector<std::string> &vect) {
-                  std::string request = self.CreateRequest(vect).ValueOrDie();
-                  return request;
+                                     const val &v) {
+                    std::vector<std::string> inputs;
+                    const auto l = v["length"].as<unsigned>();
+                    inputs.reserve(l);
+
+                    for (auto i = 0; i < l; ++i) {
+                        inputs.push_back(v[i].as<std::string>());
+                    }
+
+                    std::string request = self.CreateRequest(inputs).ValueOrDie();
+                    return request;
                 }))
       .function("ProcessResponse",
                 optional_override([](const PSICardinalityClient &self,
