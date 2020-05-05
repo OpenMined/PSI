@@ -15,5 +15,13 @@ module.exports = {
     ecmaVersion: 2018,
     sourceType: 'module'
   },
-  plugins: ['@typescript-eslint', 'jsdoc', 'jest', 'prettier']
+  plugins: ['@typescript-eslint', 'jsdoc', 'jest', 'prettier'],
+  overrides: [
+    {
+      files: ['**/*.js'],
+      rules: {
+        '@typescript-eslint/explicit-function-return-type': 'off'
+      }
+    }
+  ]
 }
