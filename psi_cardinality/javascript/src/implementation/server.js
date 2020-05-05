@@ -89,10 +89,10 @@ const ServerImpl = instance => {
      *
      * @function
      * @name Server#GetPrivateKeyBytes
-     * @returns {String} A binary string representing the private key
+     * @returns {Uint8Array} A binary Uint8Array representing the private key
      */
     GetPrivateKeyBytes() {
-      return _instance.GetPrivateKeyBytes()
+      return Uint8Array.from(_instance.GetPrivateKeyBytes())
     }
   }
 }
@@ -118,7 +118,7 @@ export const Server = library => ({
    *
    * @function
    * @name Server.CreateFromKey
-   * @param {String} key Private key as a binary string
+   * @param {Uint8Array} key Private key as a binary Uint8Array
    * @returns {Server} A Server instance
    */
   CreateFromKey(key) {
