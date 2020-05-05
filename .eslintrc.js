@@ -6,6 +6,8 @@ module.exports = {
   },
   extends: [
     'eslint:recommended',
+    'plugin:@typescript-eslint/recommended',
+    'prettier/@typescript-eslint',
     'plugin:prettier/recommended',
     'plugin:jest/recommended'
   ],
@@ -13,5 +15,5 @@ module.exports = {
     ecmaVersion: 2018,
     sourceType: 'module'
   },
-  plugins: ['jsdoc', 'jest']
+  plugins: ['@typescript-eslint', 'jsdoc', 'jest', 'prettier']
 }
