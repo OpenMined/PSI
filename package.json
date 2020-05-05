@@ -39,6 +39,8 @@
     "publish:test": "npm --dry-run publish --access=public psi_cardinality/javascript/dist/openmined-psi-cardinality-*.tgz",
     "publish": "npm publish --access=public psi_cardinality/javascript/dist/openmined-psi-cardinality-*.tgz",
     "clean": "bazel clean --expunge",
+    "format": "prettier --write psi_cardinality/javascript",
+    "lint": "eslint \"psi_cardinality/javascript/**/*.{js,ts}\"",
     "test": "jest psi_cardinality/javascript/test",
     "coverage": "jest psi_cardinality/javascript/test --coverage",
     "submodule:update": "bash psi_cardinality/javascript/scripts/submodule-update.sh",
