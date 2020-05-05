@@ -32,13 +32,4 @@ PYBIND11_MODULE(_psi_cardinality_cpp, m) {
         .def("GetPrivateKeyBytes",
              &psi::PSICardinalityServer::GetPrivateKeyBytes);
 
-    py::class_<psi::BloomFilter>(m, "BloomFilter")
-        .def("Createconst std::string&", &psi::BloomFilter::Create)
-        .def("CreateFromJSON", &psi::BloomFilter::CreateFromJSON)
-        .def("Add",
-             py::overload_cast<const std::string&>(&psi::BloomFilter::Add))
-        .def("Add", py::overload_cast<absl::Span<const std::string>>(
-                        &psi::BloomFilter::Add))
-        .def("Check", &psi::BloomFilter::Check)
-        .def("ToJSON", &psi::BloomFilter::ToJSON);
 }
