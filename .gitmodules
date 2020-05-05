@@ -1,3 +1,6 @@
 [submodule "submodules/emsdk"]
 	path = submodules/emsdk
 	url = https://github.com/emscripten-core/emsdk.git
+[submodule "submodules/pybind11"]
+	path = submodules/pybind11
+	url = https://github.com/pybind/pybind11/
