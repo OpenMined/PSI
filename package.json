@@ -46,12 +46,7 @@
     "em:init": "bash psi_cardinality/javascript/scripts/em-init.sh"
   },
   "devDependencies": {
-    "@babel/core": "^7.9.6",
-    "@babel/plugin-transform-modules-commonjs": "^7.9.6",
-    "@babel/preset-env": "^7.9.6",
     "@types/jest": "^25.2.1",
-    "babel-jest": "^26.0.1",
-    "babel-loader": "^8.1.0",
     "eslint": "^6.8.0",
     "eslint-config-prettier": "^6.11.0",
     "eslint-plugin-jest": "^23.9.0",
