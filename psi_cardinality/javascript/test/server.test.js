@@ -14,7 +14,8 @@ beforeAll(async () => {
 
 describe('PSI Server', () => {
   test('It should create from an existing key', () => {
-    const key = 'some key bytes'
+    const server2 = PSICardinality.Server.CreateWithNewKey()
+    const key = server2.GetPrivateKeyBytes()
     const spyOn = jest.spyOn(PSICardinality.Server, 'CreateFromKey')
     const server = PSICardinality.Server.CreateFromKey(key)
     expect(spyOn).toHaveBeenCalledWith(key)
@@ -34,7 +35,7 @@ describe('PSI Server', () => {
     const spyOn = jest.spyOn(server, 'GetPrivateKeyBytes')
     const key = server.GetPrivateKeyBytes()
     expect(spyOn).toHaveBeenCalled()
-    expect(typeof key).toBe('string')
+    expect(key.constructor).toBe(Uint8Array)
   })
   test('It should create a setup message', () => {
     const fpr = 0.001

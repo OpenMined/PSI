@@ -17,9 +17,22 @@ EMSCRIPTEN_BINDINGS(PSI_Server) {
                             ToShared(PSICardinalityServer::CreateWithNewKey()));
                       }))
       .class_function(
-          "CreateFromKey", optional_override([](const std::string &key_bytes) {
+          "CreateFromKey", optional_override([](const emscripten::val &byte_array) {
+
+            std::vector<std::uint8_t> byte_vector;
+
+            const auto l = byte_array["length"].as<unsigned>();
+            byte_vector.reserve(l);
+
+            for (auto i = 0; i < l; ++i) {
+              std::uint8_t byte = byte_array[i].as<std::uint8_t>();
+              byte_vector.push_back(byte);
+            }
+              
+            const std::string key(byte_vector.begin(), byte_vector.end());
+
             return ToJSObject(
-                ToShared(PSICardinalityServer::CreateFromKey(key_bytes)));
+                ToShared(PSICardinalityServer::CreateFromKey(key)));
           }))
       .function(
           "CreateSetupMessage",
@@ -43,7 +56,9 @@ EMSCRIPTEN_BINDINGS(PSI_Server) {
                 }))
       .function("GetPrivateKeyBytes",
                 optional_override([](const PSICardinalityServer &self) {
-                  std::string bytes = self.GetPrivateKeyBytes();
-                  return bytes;
+                  const std::string bytes = self.GetPrivateKeyBytes();
+                  const std::vector<std::uint8_t> key_vector(bytes.begin(), bytes.end());
+                  emscripten::val key_bytes  = emscripten::val::array(key_vector.begin(), key_vector.end());
+                  return key_bytes;
                 }));
 }
