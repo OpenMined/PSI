@@ -97,6 +97,23 @@ cc_library(
             ],
         )
 
+    if "psi_cardinality_bindings" not in native.existing_rules():
+        http_archive(
+            name = "pybind11_bazel",
+            strip_prefix = "pybind11_bazel-<stable-commit>",
+            urls = ["https://github.com/pybind/pybind11_bazel/archive/<stable-commit>.zip"],
+        )
+
+        http_archive(
+            name = "pybind11",
+            build_file = "@pybind11_bazel//:pybind11.BUILD",
+            strip_prefix = "pybind11-<stable-version>",
+            urls = ["https://github.com/pybind/pybind11/archive/v<stable-version>.tar.gz"],
+        )
+
+        load("@pybind11_bazel//:python_configure.bzl", "python_configure")
+        python_configure(name = "local_config_python")
+
     rules_proto_dependencies()
 
     rules_proto_toolchains()
