@@ -24,13 +24,19 @@ describe('PSI Server', () => {
     expect(server.constructor.name).toBe('Object')
     expect(server.GetPrivateKeyBytes()).toEqual(key)
   })
+  test('It should fail to create from an invalid key', () => {
+    const key = Uint8Array.from({ length: 32 })
+    const spyOn = jest.spyOn(PSICardinality.Server, 'CreateFromKey')
+    expect(() => PSICardinality.Server.CreateFromKey(key)).toThrow()
+    expect(spyOn).toHaveBeenCalledWith(key)
+  })
   test("It should delete it's instance", () => {
     const server = PSICardinality.Server.CreateWithNewKey()
     const spyOn = jest.spyOn(server, 'delete')
     server.delete()
     expect(spyOn).toHaveBeenCalled()
   })
-  test('It should return the private key as a binary string', () => {
+  test('It should return the private key as a binary array', () => {
     const server = PSICardinality.Server.CreateWithNewKey()
     const spyOn = jest.spyOn(server, 'GetPrivateKeyBytes')
     const key = server.GetPrivateKeyBytes()

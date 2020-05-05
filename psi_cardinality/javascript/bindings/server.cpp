@@ -1,7 +1,6 @@
 #include <emscripten/bind.h>
 #include "psi_cardinality/cpp/psi_cardinality_server.h"
 #include "psi_cardinality/javascript/bindings/utils.h"
-#include <iostream>
 
 EMSCRIPTEN_BINDINGS(PSI_Server) {
   using emscripten::optional_override;
@@ -18,36 +17,31 @@ EMSCRIPTEN_BINDINGS(PSI_Server) {
                       }))
       .class_function(
           "CreateFromKey", optional_override([](const emscripten::val &byte_array) {
+            const std::uint32_t l = byte_array["length"].as<std::uint32_t>();
+            std::string byte_string(l, '\0');
 
-            std::vector<std::uint8_t> byte_vector;
-
-            const auto l = byte_array["length"].as<unsigned>();
-            byte_vector.reserve(l);
-
-            for (auto i = 0; i < l; ++i) {
-              std::uint8_t byte = byte_array[i].as<std::uint8_t>();
-              byte_vector.push_back(byte);
+            for (std::uint32_t i = 0; i < l; i++) {
+                byte_string[i] = byte_array[i].as<std::uint8_t>();
             }
-              
-            const std::string key(byte_vector.begin(), byte_vector.end());
 
             return ToJSObject(
-                ToShared(PSICardinalityServer::CreateFromKey(key)));
+                ToShared(PSICardinalityServer::CreateFromKey(byte_string)));
           }))
       .function(
           "CreateSetupMessage",
           optional_override(
               [](const PSICardinalityServer &self, const double fpr,
-                 const int32_t num_client_inputs, const emscripten::val &v) {
-                std::vector<std::string> inputs;
-                const auto l = v["length"].as<unsigned>();
-                inputs.reserve(l);
+                 const int32_t num_client_inputs, const emscripten::val &string_array) {
+                std::vector<std::string> string_vector;
+                const std::uint32_t l = string_array["length"].as<std::uint32_t>();
+                string_vector.reserve(l);
 
-                for (auto i = 0; i < l; ++i) {
-                  inputs.push_back(v[i].as<std::string>());
+                for (std::uint32_t i = 0; i < l; ++i) {
+                  string_vector.push_back(string_array[i].as<std::string>());
                 }
+
                 return ToJSObject(
-                    self.CreateSetupMessage(fpr, num_client_inputs, inputs));
+                    self.CreateSetupMessage(fpr, num_client_inputs, string_vector));
               }))
       .function("ProcessRequest",
                 optional_override([](const PSICardinalityServer &self,
@@ -56,9 +50,9 @@ EMSCRIPTEN_BINDINGS(PSI_Server) {
                 }))
       .function("GetPrivateKeyBytes",
                 optional_override([](const PSICardinalityServer &self) {
-                  const std::string bytes = self.GetPrivateKeyBytes();
-                  const std::vector<std::uint8_t> key_vector(bytes.begin(), bytes.end());
-                  emscripten::val key_bytes  = emscripten::val::array(key_vector.begin(), key_vector.end());
-                  return key_bytes;
+                  const std::string byte_string = self.GetPrivateKeyBytes();
+                  const std::vector<std::uint8_t> byte_vector(byte_string.begin(), byte_string.end());
+                  emscripten::val byte_array  = emscripten::val::array(byte_vector.begin(), byte_vector.end());
+                  return byte_array;
                 }));
 }
