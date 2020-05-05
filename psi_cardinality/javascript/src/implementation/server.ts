@@ -1,8 +1,29 @@
+import { CppLibraryInstance } from '../types'
+import { Loader } from '../loader'
+
+export type Server = {
+  readonly delete: () => void
+  readonly CreateSetupMessage: (
+    fpr: number,
+    numClientInputs: number,
+    inputs: readonly string[]
+  ) => string
+  readonly ProcessRequest: (clientRequest: string) => string
+  readonly GetPrivateKeyBytes: () => Uint8Array
+}
+
+export type ServerLibrary = {
+  readonly CreateWithNewKey: () => Promise<Server>
+  readonly CreateFromKey: (key: Uint8Array) => Promise<Server>
+}
+
+const INSTANCE_DELETED = 'Instance was deleted'
+
 /**
  * @implements Server
  */
-const ServerInstanceImpl = instance => {
-  let _instance = instance
+const ServerInstanceImpl = (instance: CppLibraryInstance): Server => {
+  let _instance: CppLibraryInstance | null = instance
 
   /**
    * @interface Server
@@ -16,7 +37,7 @@ const ServerInstanceImpl = instance => {
      * @function
      * @name Server#delete
      */
-    delete() {
+    delete(): void {
       if (_instance) {
         _instance.delete()
         _instance = null
@@ -49,7 +70,14 @@ const ServerInstanceImpl = instance => {
      * @param {Array<String>} inputs The server's dataset
      * @returns {SetupMessage} The serialized setup message
      */
-    CreateSetupMessage(fpr, numClientInputs, inputs) {
+    CreateSetupMessage(
+      fpr: number,
+      numClientInputs: number,
+      inputs: readonly string[]
+    ): string {
+      if (!_instance) {
+        throw new Error(INSTANCE_DELETED)
+      }
       const { Value, Status } = _instance.CreateSetupMessage(
         fpr,
         numClientInputs,
@@ -75,7 +103,10 @@ const ServerInstanceImpl = instance => {
      * @param {String} clientRequest The serialized client request
      * @returns {String} The PSI cardinality
      */
-    ProcessRequest(clientRequest) {
+    ProcessRequest(clientRequest: string): string {
+      if (!_instance) {
+        throw new Error(INSTANCE_DELETED)
+      }
       const { Value, Status } = _instance.ProcessRequest(clientRequest)
       if (Status) {
         throw new Error(Status.Message)
@@ -91,14 +122,17 @@ const ServerInstanceImpl = instance => {
      * @name Server#GetPrivateKeyBytes
      * @returns {Uint8Array} A binary Uint8Array representing the private key
      */
-    GetPrivateKeyBytes() {
+    GetPrivateKeyBytes(): Uint8Array {
+      if (!_instance) {
+        throw new Error(INSTANCE_DELETED)
+      }
       return Uint8Array.from(_instance.GetPrivateKeyBytes())
     }
   }
 }
 
-export const ServerImpl = ({ Loader }) => {
-  let library = null
+export const ServerImpl = ({ Loader }: { readonly Loader: Loader }) => {
+  let library: CppLibraryInstance
 
   const initialize = async () => {
     if (!library) {
@@ -134,7 +168,7 @@ export const ServerImpl = ({ Loader }) => {
      * @param {Uint8Array} key Private key as a binary Uint8Array
      * @returns {Server} A Server instance
      */
-    async CreateFromKey(key) {
+    async CreateFromKey(key: Uint8Array) {
       await initialize()
       const { Value, Status } = library.PSICardinalityServer.CreateFromKey(key)
       if (Status) {

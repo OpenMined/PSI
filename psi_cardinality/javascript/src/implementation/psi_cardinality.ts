@@ -1,7 +1,16 @@
+import { ClientLibrary } from './client'
+import { ServerLibrary } from './server'
+
 /**
  * @implements PSICardinality
  */
-export const PSICardinalityImpl = ({ ServerImpl, ClientImpl }) => {
+export const PSICardinalityImpl = ({
+  ServerImpl,
+  ClientImpl
+}: {
+  readonly ServerImpl: ServerLibrary
+  readonly ClientImpl: ClientLibrary
+}) => {
   /**
    * @interface PSICardinality
    */

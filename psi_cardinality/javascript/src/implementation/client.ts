@@ -1,8 +1,23 @@
+import { CppLibraryInstance } from '../types'
+import { Loader } from '../loader'
+
+export type Client = {
+  readonly delete: () => void
+  readonly CreateRequest: (clientInputs: readonly string[]) => {}
+  readonly ProcessResponse: (serverSetup: string, serverResponse: string) => {}
+}
+
+export type ClientLibrary = {
+  readonly Create: () => Promise<Client>
+}
+
+const INSTANCE_DELETED = 'Instance was deleted'
+
 /**
  * @implements Client
  */
-export const ClientInstanceImpl = instance => {
-  let _instance = instance
+const ClientInstanceImpl = (instance: CppLibraryInstance): Client => {
+  let _instance: CppLibraryInstance | null = instance
 
   /**
    * @interface Client
@@ -16,7 +31,7 @@ export const ClientInstanceImpl = instance => {
      * @function
      * @name Client#delete
      */
-    delete() {
+    delete(): void {
       if (_instance) {
         _instance.delete()
         _instance = null
@@ -34,7 +49,10 @@ export const ClientInstanceImpl = instance => {
      * @param {Array<String>} inputs
      * @returns {String} The serialized request
      */
-    CreateRequest(inputs) {
+    CreateRequest(inputs): string {
+      if (!_instance) {
+        throw new Error(INSTANCE_DELETED)
+      }
       const { Value, Status } = _instance.CreateRequest(inputs)
       if (Status) {
         throw new Error(Status.Message)
@@ -55,7 +73,10 @@ export const ClientInstanceImpl = instance => {
      * @param {String} response The serialized server response
      * @returns {Number} The PSI cardinality
      */
-    ProcessResponse(setup, response) {
+    ProcessResponse(setup, response): number {
+      if (!_instance) {
+        throw new Error(INSTANCE_DELETED)
+      }
       const { Value, Status } = _instance.ProcessResponse(setup, response)
       if (Status) {
         throw new Error(Status.Message)
@@ -65,8 +86,8 @@ export const ClientInstanceImpl = instance => {
   }
 }
 
-export const ClientImpl = ({ Loader }) => {
-  let library = null
+export const ClientImpl = ({ Loader }: { readonly Loader: Loader }) => {
+  let library: CppLibraryInstance
 
   const initialize = async () => {
     if (!library) {
