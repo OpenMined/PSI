@@ -13,7 +13,6 @@ func TestClientSanity(t *testing.T) {
 	if c == nil {
 		t.Errorf("Failed to create a PSI client: nil")
 	}
-	defer c.Destroy()
 }
 
 func TestClientFailure(t *testing.T) {
@@ -26,7 +25,7 @@ func TestClientFailure(t *testing.T) {
 	if err == nil {
 		t.Errorf("ProcessResponse with an invalid context should fail")
 	}
-	err = c.Destroy()
+	err = destroy(c)
 	if err == nil {
 		t.Errorf("Destroy with an invalid context should fail")
 	}
@@ -42,13 +41,11 @@ func TestClientServer(t *testing.T) {
 	if err != nil || client == nil {
 		t.Errorf("Failed to create a PSI client %v", err)
 	}
-	defer client.Destroy()
 
 	server, err := server.CreateWithNewKey()
 	if err != nil || server == nil {
 		t.Errorf("Failed to create a PSI server %v", err)
 	}
-	defer server.Destroy()
 
 	generateItems := func(cnt int, m int) (int, []string) {
 		items := []string{}

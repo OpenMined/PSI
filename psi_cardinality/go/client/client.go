@@ -7,6 +7,7 @@ import "C"
 import (
 	"errors"
 	"fmt"
+	"runtime"
 )
 
 //PSICardinalityClient context
@@ -27,6 +28,7 @@ func Create() (*PSICardinalityClient, error) {
 		return nil, errors.New("failed to create client context: null")
 	}
 
+	runtime.SetFinalizer(psiClient, destroy)
 	return psiClient, nil
 }
 
@@ -73,13 +75,11 @@ func (c *PSICardinalityClient) ProcessResponse(serverSetup, serverResponse strin
 	return int64(result), nil
 }
 
-//Destroy the context
-func (c *PSICardinalityClient) Destroy() error {
+func destroy(c *PSICardinalityClient) error {
 	if c.context == nil {
 		return errors.New("invalid context")
 	}
 	C.psi_cardinality_client_delete(&c.context)
 	c.context = nil
-
 	return nil
 }
