@@ -12,3 +12,6 @@ node_modules/
 
 # JS code coverage
 coverage/
+
+psi_cardinality/javascript/bin/
+psi_cardinality/javascript/dist/
