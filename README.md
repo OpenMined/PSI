@@ -13,19 +13,6 @@ These are the common requirements across all target languages of this project.
 - A compiler such as clang, gcc, or msvc
 - [Bazel](https://bazel.build)
 
-### Target Requirements
-
-Some target languages have additional requirements
-
-#### C++
-
-- None
-
-#### JavaScript
-
-- [NodeJS](https://nodejs.org/en/)
-- [Yarn](https://yarnpkg.com/)
-
 ## Compiling and Running
 
 The repository uses a folder structure to isolate the supported targets from one another:
