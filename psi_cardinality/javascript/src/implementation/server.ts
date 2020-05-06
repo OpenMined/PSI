@@ -1,16 +1,5 @@
-import { CppLibraryInstance } from '../types'
+import { CppLibrary, Server } from '../types'
 import { LoaderFn } from '../loader'
-
-export type Server = {
-  readonly delete: () => void
-  readonly CreateSetupMessage: (
-    fpr: number,
-    numClientInputs: number,
-    inputs: readonly string[]
-  ) => string
-  readonly ProcessRequest: (clientRequest: string) => string
-  readonly GetPrivateKeyBytes: () => Uint8Array
-}
 
 export type ServerLibrary = {
   readonly CreateWithNewKey: () => Promise<Server>
@@ -22,8 +11,8 @@ const INSTANCE_DELETED = 'Instance was deleted'
 /**
  * @implements Server
  */
-const ServerInstanceImpl = (instance: CppLibraryInstance): Server => {
-  let _instance: CppLibraryInstance | null = instance
+const ServerInstanceImpl = (instance: CppLibrary): Server => {
+  let _instance: CppLibrary | null = instance
 
   /**
    * @interface Server
@@ -136,7 +125,7 @@ export const ServerImpl = ({
 }: {
   readonly Loader: LoaderFn
 }): ServerLibrary => {
-  let library: CppLibraryInstance
+  let library: CppLibrary
 
   const initialize = async (): Promise<void> => {
     if (!library) {
