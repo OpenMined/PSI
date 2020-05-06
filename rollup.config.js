@@ -1,4 +1,4 @@
-// import { terser } from 'rollup-plugin-terser'
+import { terser } from 'rollup-plugin-terser'
 
 export default [
   /////////////////
@@ -10,8 +10,8 @@ export default [
       file: 'psi_cardinality/javascript/dist/client/wasm/index.js',
       sourcemap: true,
       format: 'umd',
-      name: 'PSICardinality'
-      // plugins: [terser()]
+      name: 'PSICardinality',
+      plugins: [terser()]
     }
   },
   {
@@ -20,8 +20,8 @@ export default [
       file: 'psi_cardinality/javascript/dist/client/js/index.js',
       sourcemap: true,
       format: 'umd',
-      name: 'PSICardinality'
-      // plugins: [terser()]
+      name: 'PSICardinality',
+      plugins: [terser()]
     }
   },
   /////////////////
@@ -33,8 +33,8 @@ export default [
       file: 'psi_cardinality/javascript/dist/server/wasm/index.js',
       sourcemap: true,
       format: 'umd',
-      name: 'PSICardinality'
-      // plugins: [terser()]
+      name: 'PSICardinality',
+      plugins: [terser()]
     }
   },
   {
@@ -43,8 +43,8 @@ export default [
       file: 'psi_cardinality/javascript/dist/server/js/index.js',
       sourcemap: true,
       format: 'umd',
-      name: 'PSICardinality'
-      // plugins: [terser()]
+      name: 'PSICardinality',
+      plugins: [terser()]
     }
   },
   /////////////////
@@ -56,8 +56,8 @@ export default [
       file: 'psi_cardinality/javascript/dist/combined/wasm/index.js',
       sourcemap: true,
       format: 'umd',
-      name: 'PSICardinality'
-      // plugins: [terser()]
+      name: 'PSICardinality',
+      plugins: [terser()]
     }
   },
   {
@@ -66,8 +66,8 @@ export default [
       file: 'psi_cardinality/javascript/dist/combined/js/index.js',
       sourcemap: true,
       format: 'umd',
-      name: 'PSICardinality'
-      // plugins: [terser()]
+      name: 'PSICardinality',
+      plugins: [terser()]
     }
   }
 ]
