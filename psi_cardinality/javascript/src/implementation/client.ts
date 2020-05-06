@@ -4,8 +4,11 @@ import { ERROR_INSTANCE_DELETED } from './constants'
 
 export type Client = {
   readonly delete: () => void
-  readonly createRequest: (clientInputs: readonly string[]) => {}
-  readonly processResponse: (serverSetup: string, serverResponse: string) => {}
+  readonly createRequest: (clientInputs: readonly string[]) => string
+  readonly processResponse: (
+    serverSetup: string,
+    serverResponse: string
+  ) => number
 }
 
 export type ClientWrapper = {
