@@ -1,7 +1,7 @@
 /**
  * @implements Server
  */
-const ServerImpl = instance => {
+const ServerInstanceImpl = instance => {
   let _instance = instance
 
   /**
@@ -97,36 +97,51 @@ const ServerImpl = instance => {
   }
 }
 
-export const Server = library => ({
-  /**
-   * Create a new PSI Cardinality server
-   *
-   * @function
-   * @name Server.CreateWithNewKey
-   * @returns {Server} A Server instance
-   */
-  CreateWithNewKey() {
-    const { Value, Status } = library.PSICardinalityServer.CreateWithNewKey()
-    if (Status) {
-      throw new Error(Status.Message)
-    }
+export const ServerImpl = ({ Loader }) => {
+  let library = null
 
-    return ServerImpl(Value)
-  },
-  /**
-   * Create a new PSI Cardinality server from a key
-   *
-   * @function
-   * @name Server.CreateFromKey
-   * @param {Uint8Array} key Private key as a binary Uint8Array
-   * @returns {Server} A Server instance
-   */
-  CreateFromKey(key) {
-    const { Value, Status } = library.PSICardinalityServer.CreateFromKey(key)
-    if (Status) {
-      throw new Error(Status.Message)
+  const initialize = async () => {
+    if (!library) {
+      const module = await Loader()
+      library = module.library
     }
-
-    return ServerImpl(Value)
   }
-})
+
+  return {
+    /**
+     * Create a new PSI Cardinality server
+     *
+     * @async
+     * @function
+     * @name Server.CreateWithNewKey
+     * @returns {Server} A Server instance
+     */
+    async CreateWithNewKey() {
+      await initialize()
+      const { Value, Status } = library.PSICardinalityServer.CreateWithNewKey()
+      if (Status) {
+        throw new Error(Status.Message)
+      }
+
+      return ServerInstanceImpl(Value)
+    },
+    /**
+     * Create a new PSI Cardinality server from a key
+     *
+     * @async
+     * @function
+     * @name Server.CreateFromKey
+     * @param {Uint8Array} key Private key as a binary Uint8Array
+     * @returns {Server} A Server instance
+     */
+    async CreateFromKey(key) {
+      await initialize()
+      const { Value, Status } = library.PSICardinalityServer.CreateFromKey(key)
+      if (Status) {
+        throw new Error(Status.Message)
+      }
+
+      return ServerInstanceImpl(Value)
+    }
+  }
+}

@@ -1,15 +1,27 @@
-import { Client as PSIClientImpl } from './implementation/client'
-
 /**
  * @implements PSICardinality
  */
-const PSICardinalityImpl = library => {
-  const Client = PSIClientImpl(library)
-
+export const PSICardinalityImpl = ({ ServerImpl, ClientImpl }) => {
   /**
    * @interface PSICardinality
    */
   return {
+    /**
+     * @description
+     * The server side of a Private Set Intersection Cardinality protocol.
+     * See the documentation in PSICardinality.Client for a full description of the
+     * protocol.
+     *
+     * @readonly
+     * @name PSICardinality.Server
+     * @type {Object}
+     * @returns {Server}
+     * @example
+     * import PSICardinality from 'psi.js'
+     * const server = await PSICardinality.Server.CreateWithNewKey()
+     */
+    Server: ServerImpl,
+
     /**
      * @description
      * Client side of a Private Set Intersection-Cardinality protocol. In
@@ -26,10 +38,10 @@ const PSICardinalityImpl = library => {
      * @type {Object}
      * @returns {Client}
      * @example
-     * import PSICardinality from 'psi.js/client'
-     * const client = PSICardinality.Client.Create()
+     * import PSICardinality from 'psi.js'
+     * const client = await PSICardinality.Client.Create()
      */
-    Client
+    Client: ClientImpl
   }
 }
 

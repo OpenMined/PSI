@@ -13,9 +13,8 @@ const waitUntilReady = src =>
  * @param {String} path Path to the build output from emscripten
  * @returns {Object} library
  */
-export default async path => {
-  const source = (await import(path)).default
-  const library = source()
+export const Loader = path => async () => {
+  const library = (await import(path)).default()
   await waitUntilReady(library)
   return {
     library
