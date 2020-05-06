@@ -9,8 +9,7 @@ const clientPath = `../../../bazel-out/wasm-opt/bin/psi_cardinality/javascript/p
 /**
  * Main export for the library
  */
-export default (() =>
-  PSICardinalityImpl({
-    ServerImpl: ServerImpl({ Loader: Loader(serverPath) }),
-    ClientImpl: ClientImpl({ Loader: Loader(clientPath) })
-  }))()
+export default PSICardinalityImpl({
+  ServerImpl: ServerImpl({ Loader: Loader(serverPath) }),
+  ClientImpl: ClientImpl({ Loader: Loader(clientPath) })
+})
