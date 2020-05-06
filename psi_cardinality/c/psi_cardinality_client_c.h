@@ -24,27 +24,27 @@
 extern "C" {
 #endif
 
-typedef void* psi_cardinality_client_ctx;
+typedef void *psi_cardinality_client_ctx;
 
 struct client_buffer_t {
-    const char* buff;
-    size_t buff_len;
+  const char *buff;
+  size_t buff_len;
 };
 
 psi_cardinality_client_ctx psi_cardinality_client_create();
-void psi_cardinality_client_delete(psi_cardinality_client_ctx* ctx);
+void psi_cardinality_client_delete(psi_cardinality_client_ctx *ctx);
 int psi_cardinality_client_create_request(psi_cardinality_client_ctx ctx,
-                                          struct client_buffer_t* inputs,
-                                          size_t input_len, char** output,
-                                          size_t* out_len);
+                                          struct client_buffer_t *inputs,
+                                          size_t input_len, char **output,
+                                          size_t *out_len);
 void psi_cardinality_client_delete_buffer(psi_cardinality_client_ctx ctx,
-                                          char** request);
+                                          char **request);
 int64_t psi_cardinality_client_process_response(psi_cardinality_client_ctx,
-                                                const char* server_setup,
-                                                const char* server_response);
+                                                const char *server_setup,
+                                                const char *server_response);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif  // PSI_CARDINALITY_PSI_CARDINALITY_CLIENT_C_H_
+#endif // PSI_CARDINALITY_PSI_CARDINALITY_CLIENT_C_H_

@@ -17,38 +17,13 @@
 package(default_visibility = ["//visibility:public"])
 
 cc_library(
-    name = "bloom_filter",
-    srcs = ["bloom_filter.cpp"],
-    hdrs = ["bloom_filter.h"],
-    deps = [
-        "@com_google_absl//absl/memory",
-        "@com_google_absl//absl/strings",
-        "@com_google_absl//absl/types:span",
-        "@com_tencent_rapidjson//:json",
-        "@private_join_and_compute//crypto:bn_util",
-        "@private_join_and_compute//util:status",
-    ],
-)
-
-cc_test(
-    name = "bloom_filter_test",
-    srcs = ["bloom_filter_test.cpp"],
-    deps = [
-        ":bloom_filter",
-        "//psi_cardinality/cpp/util:status_matchers",
-        "@com_google_absl//absl/strings",
-        "@com_google_googletest//:gtest",
-        "@com_google_googletest//:gtest_main",
-    ],
-)
-
-cc_library(
-    name = "psi_cardinality_client",
-    srcs = ["psi_cardinality_client.cpp"],
-    hdrs = ["psi_cardinality_client.h"],
+    name = "psi_cardinality_client_c",
+    srcs = ["psi_cardinality_client_c.cpp"],
+    hdrs = ["psi_cardinality_client_c.h"],
     includes = ["."],
     deps = [
-        ":bloom_filter",
+        "//psi_cardinality/cpp:bloom_filter",
+        "//psi_cardinality/cpp:psi_cardinality_client",
         "@boringssl//:crypto",
         "@com_google_absl//absl/memory",
         "@com_google_absl//absl/strings",
@@ -60,10 +35,10 @@ cc_library(
 )
 
 cc_test(
-    name = "psi_cardinality_client_test",
-    srcs = ["psi_cardinality_client_test.cpp"],
+    name = "psi_cardinality_client_c_test",
+    srcs = ["psi_cardinality_client_test_c.cpp"],
     deps = [
-        ":psi_cardinality_client",
+        ":psi_cardinality_client_c",
         "//psi_cardinality/cpp/util:status_matchers",
         "@com_google_absl//absl/strings",
         "@com_google_googletest//:gtest",
@@ -74,12 +49,13 @@ cc_test(
 )
 
 cc_library(
-    name = "psi_cardinality_server",
-    srcs = ["psi_cardinality_server.cpp"],
-    hdrs = ["psi_cardinality_server.h"],
+    name = "psi_cardinality_server_c",
+    srcs = ["psi_cardinality_server_c.cpp"],
+    hdrs = ["psi_cardinality_server_c.h"],
     includes = ["."],
     deps = [
-        ":bloom_filter",
+        "//psi_cardinality/cpp:bloom_filter",
+        "//psi_cardinality/cpp:psi_cardinality_server",
         "@boringssl//:crypto",
         "@com_google_absl//absl/memory",
         "@com_google_absl//absl/strings",
@@ -91,11 +67,11 @@ cc_library(
 )
 
 cc_test(
-    name = "psi_cardinality_server_test",
-    srcs = ["psi_cardinality_server_test.cpp"],
+    name = "psi_cardinality_server_c_test",
+    srcs = ["psi_cardinality_server_test_c.cpp"],
     deps = [
-        ":psi_cardinality_client",
-        ":psi_cardinality_server",
+        ":psi_cardinality_client_c",
+        ":psi_cardinality_server_c",
         "//psi_cardinality/cpp/util:status_matchers",
         "@com_google_absl//absl/strings",
         "@com_google_googletest//:gtest",
@@ -105,11 +81,11 @@ cc_test(
 )
 
 cc_binary(
-    name = "psi_cardinality_benchmark",
-    srcs = ["psi_cardinality_benchmark.cpp"],
+    name = "psi_cardinality_benchmark_c",
+    srcs = ["psi_cardinality_benchmark_c.cpp"],
     deps = [
-        ":psi_cardinality_client",
-        ":psi_cardinality_server",
+        ":psi_cardinality_client_c",
+        ":psi_cardinality_server_c",
         "@com_google_absl//absl/strings",
         "@com_google_benchmark//:benchmark_main",
     ],
