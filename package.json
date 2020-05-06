@@ -30,8 +30,8 @@
     "prerollup": "bash psi_cardinality/javascript/scripts/prerollup.sh",
     "rollup": "rollup -c",
     "clean": "bazel clean --expunge",
-    "test": "RUN_DEMO=wasm jest psi_cardinality/javascript/test",
-    "coverage": "RUN_DEMO=wasm jest psi_cardinality/javascript/test --coverage",
+    "test": "jest psi_cardinality/javascript/test",
+    "coverage": "jest psi_cardinality/javascript/test --coverage",
     "submodule:update": "bash psi_cardinality/javascript/scripts/submodule-update.sh",
     "em:update": "bash psi_cardinality/javascript/scripts/em-update.sh",
     "em:init": "bash psi_cardinality/javascript/scripts/em-init.sh"
