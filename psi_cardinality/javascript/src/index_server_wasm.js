@@ -1,4 +1,4 @@
-import serverJsLibrary from '../bin/psi_cardinality_server_js.js'
+import serverWasmLibrary from '../bin/psi_cardinality_server_wasm.js'
 
 import { Loader } from './loader'
 import { PSICardinalityImpl } from './implementation/psi_cardinality'
@@ -9,6 +9,6 @@ import { ServerImpl } from './implementation/server'
  */
 export default PSICardinalityImpl({
   ServerImpl: ServerImpl({
-    Loader: Loader(serverJsLibrary)
+    Loader: Loader(serverWasmLibrary)
   })
 })

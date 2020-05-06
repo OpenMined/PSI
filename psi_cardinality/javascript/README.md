@@ -133,6 +133,10 @@ Build both client and server
 
 `yarn build`
 
+Test your changes and check code coverage
+
+`yarn coverage`
+
 Then, bundle all the files
 
 `yarn rollup`
