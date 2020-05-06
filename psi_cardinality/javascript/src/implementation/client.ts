@@ -2,11 +2,11 @@ import { CppLibrary, Client } from '../types'
 import { Loader } from '../loader'
 import { ERROR_INSTANCE_DELETED } from './constants'
 
-export type ClientLibrary = {
+export type ClientWrapper = {
   readonly create: () => Promise<Client>
 }
 
-type ClientLibraryOptions = {
+type ClientWrapperOptions = {
   readonly Loader: Loader
 }
 
@@ -83,7 +83,7 @@ const ClientInstanceImpl = (instance: CppLibrary): Client => {
   }
 }
 
-export const ClientImpl = ({ Loader }: ClientLibraryOptions): ClientLibrary => {
+export const ClientImpl = ({ Loader }: ClientWrapperOptions): ClientWrapper => {
   let library: CppLibrary
 
   const initialize = async (): Promise<void> => {

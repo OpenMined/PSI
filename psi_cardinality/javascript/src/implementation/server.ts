@@ -2,12 +2,12 @@ import { CppLibrary, Server } from '../types'
 import { Loader } from '../loader'
 import { ERROR_INSTANCE_DELETED } from './constants'
 
-export type ServerLibrary = {
+export type ServerWrapper = {
   readonly createWithNewKey: () => Promise<Server>
   readonly createFromKey: (key: Uint8Array) => Promise<Server>
 }
 
-type ServerLibraryOptions = {
+type ServerWrapperOptions = {
   readonly Loader: Loader
 }
 
@@ -123,7 +123,7 @@ const ServerInstanceImpl = (instance: CppLibrary): Server => {
   }
 }
 
-export const ServerImpl = ({ Loader }: ServerLibraryOptions): ServerLibrary => {
+export const ServerImpl = ({ Loader }: ServerWrapperOptions): ServerWrapper => {
   let library: CppLibrary
 
   const initialize = async (): Promise<void> => {
