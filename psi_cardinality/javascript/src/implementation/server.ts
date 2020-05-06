@@ -1,9 +1,13 @@
 import { CppLibrary, Server } from '../types'
-import { LoaderFn } from '../loader'
+import { Loader } from '../loader'
 
 export type ServerLibrary = {
   readonly CreateWithNewKey: () => Promise<Server>
   readonly CreateFromKey: (key: Uint8Array) => Promise<Server>
+}
+
+type ServerLibraryOptions = {
+  readonly Loader: Loader
 }
 
 const INSTANCE_DELETED = 'Instance was deleted'
@@ -120,11 +124,7 @@ const ServerInstanceImpl = (instance: CppLibrary): Server => {
   }
 }
 
-export const ServerImpl = ({
-  Loader
-}: {
-  readonly Loader: LoaderFn
-}): ServerLibrary => {
+export const ServerImpl = ({ Loader }: ServerLibraryOptions): ServerLibrary => {
   let library: CppLibrary
 
   const initialize = async (): Promise<void> => {

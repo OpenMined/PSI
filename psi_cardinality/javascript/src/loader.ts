@@ -1,6 +1,6 @@
 import { CppLibrary } from './types'
 
-export type LoaderFn = () => Promise<{ readonly library: CppLibrary }>
+export type Loader = () => Promise<{ readonly library: CppLibrary }>
 
 /*
  * Emscripten output contains this callback (onRuntimeInitialized)
@@ -15,7 +15,9 @@ const waitUntilReady = (src: CppLibrary): Promise<void> =>
  * Export a default function which instantiates the library
  * @param {Object} bin Emscripten library to initialize
  */
-export const Loader = (bin: () => CppLibrary): LoaderFn => async (): Promise<{
+export const createLoader = (
+  bin: () => CppLibrary
+): Loader => async (): Promise<{
   readonly library: CppLibrary
 }> => {
   const library = bin()

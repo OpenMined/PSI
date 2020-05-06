@@ -1,8 +1,12 @@
 import { CppLibrary, Client } from '../types'
-import { LoaderFn } from '../loader'
+import { Loader } from '../loader'
 
 export type ClientLibrary = {
   readonly Create: () => Promise<Client>
+}
+
+type ClientLibraryOptions = {
+  readonly Loader: Loader
 }
 
 const INSTANCE_DELETED = 'Instance was deleted'
@@ -80,11 +84,7 @@ const ClientInstanceImpl = (instance: CppLibrary): Client => {
   }
 }
 
-export const ClientImpl = ({
-  Loader
-}: {
-  readonly Loader: LoaderFn
-}): ClientLibrary => {
+export const ClientImpl = ({ Loader }: ClientLibraryOptions): ClientLibrary => {
   let library: CppLibrary
 
   const initialize = async (): Promise<void> => {
