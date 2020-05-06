@@ -1,6 +1,17 @@
-import { CppLibrary, Server } from '../types'
+import bazel from 'bazel-psi-cardinality'
 import { Loader } from '../loader'
 import { ERROR_INSTANCE_DELETED } from './constants'
+
+export type Server = {
+  readonly delete: () => void
+  readonly createSetupMessage: (
+    fpr: number,
+    numClientInputs: number,
+    inputs: readonly string[]
+  ) => string
+  readonly processRequest: (clientRequest: string) => string
+  readonly getPrivateKeyBytes: () => Uint8Array
+}
 
 export type ServerWrapper = {
   readonly createWithNewKey: () => Promise<Server>
@@ -14,8 +25,8 @@ type ServerWrapperOptions = {
 /**
  * @implements Server
  */
-const ServerConstructor = (instance: CppLibrary): Server => {
-  let _instance: CppLibrary | null = instance
+const ServerConstructor = (instance: bazel.Server): Server => {
+  let _instance: bazel.Server | null = instance
 
   /**
    * @interface Server
@@ -126,7 +137,7 @@ const ServerConstructor = (instance: CppLibrary): Server => {
 export const ServerWrapperConstructor = ({
   loader
 }: ServerWrapperOptions): ServerWrapper => {
-  let library: CppLibrary
+  let library: bazel.Library
 
   const initialize = async (): Promise<void> => {
     if (!library) {

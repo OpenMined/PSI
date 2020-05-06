@@ -1,6 +1,7 @@
-import { CppLibrary } from './types'
+import bazel from 'bazel-psi-cardinality'
 
-export type Loader = () => Promise<{ readonly library: CppLibrary }>
+type NestedBazelLibrary = { readonly library: bazel.Library }
+export type Loader = () => Promise<NestedBazelLibrary>
 
 /*
  * Emscripten output contains this callback (onRuntimeInitialized)
@@ -8,7 +9,7 @@ export type Loader = () => Promise<{ readonly library: CppLibrary }>
  *
  * We're simply converting this into a promise.
  */
-const waitUntilReady = (src: CppLibrary): Promise<void> =>
+const waitUntilReady = (src: bazel.Library): Promise<void> =>
   new Promise(resolve => (src.onRuntimeInitialized = resolve))
 
 /**
@@ -16,10 +17,8 @@ const waitUntilReady = (src: CppLibrary): Promise<void> =>
  * @param {Object} bin Emscripten library to initialize
  */
 export const createLoader = (
-  bin: () => CppLibrary
-): Loader => async (): Promise<{
-  readonly library: CppLibrary
-}> => {
+  bin: () => bazel.Library
+): Loader => async (): Promise<NestedBazelLibrary> => {
   const library = bin()
   await waitUntilReady(library)
   return {

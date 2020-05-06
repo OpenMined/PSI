@@ -1,6 +1,12 @@
-import { CppLibrary, Client } from '../types'
+import bazel from 'bazel-psi-cardinality'
 import { Loader } from '../loader'
 import { ERROR_INSTANCE_DELETED } from './constants'
+
+export type Client = {
+  readonly delete: () => void
+  readonly createRequest: (clientInputs: readonly string[]) => {}
+  readonly processResponse: (serverSetup: string, serverResponse: string) => {}
+}
 
 export type ClientWrapper = {
   readonly create: () => Promise<Client>
@@ -13,8 +19,8 @@ type ClientWrapperOptions = {
 /**
  * @implements Client
  */
-const ClientConstructor = (instance: CppLibrary): Client => {
-  let _instance: CppLibrary | null = instance
+const ClientConstructor = (instance: bazel.Client): Client => {
+  let _instance: bazel.Client | null = instance
 
   /**
    * @interface Client
@@ -86,7 +92,7 @@ const ClientConstructor = (instance: CppLibrary): Client => {
 export const ClientWrapperConstructor = ({
   loader
 }: ClientWrapperOptions): ClientWrapper => {
-  let library: CppLibrary
+  let library: bazel.Library
 
   const initialize = async (): Promise<void> => {
     if (!library) {

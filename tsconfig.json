@@ -20,7 +20,11 @@
     "rootDir": "psi_cardinality/javascript/src",
     "sourceMap": true,
     "strict": true,
-    "target": "es2020"
+    "target": "es2020",
+    "typeRoots": [
+      "psi_cardinality/javascript/custom_types",
+      "./node_modules/@types"
+    ]
   },
   "include": ["psi_cardinality/javascript/src/**/*"]
 }
