@@ -5,7 +5,6 @@ set -euo pipefail
 cp -rf package.json psi_cardinality/javascript/dist
 cp -rf psi_cardinality/javascript/README.md psi_cardinality/javascript/dist
 cp -rf LICENSE psi_cardinality/javascript/dist
-cp -rf CONTRIBUTORS.md psi_cardinality/javascript/dist
 
 # Change directory into dist and pack to get
 # shorter deep import links.
