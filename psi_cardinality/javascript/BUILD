@@ -13,6 +13,15 @@ DEFAULT_EMSCRIPTEN_LINKOPTS = [
     "-s ERROR_ON_UNDEFINED_SYMBOLS=0",  # Ignore POSIX popen
 ]
 
+cc_library(
+    name = "utils",
+    hdrs = ["bindings/utils.h"],
+    visibility = ["//visibility:private"],
+    deps = [
+        "@private_join_and_compute//util:status",
+    ],
+)
+
 cc_binary(
     name = "psi_cardinality_client_wasm.js",
     srcs = ["bindings/client.cpp"],
@@ -21,6 +30,7 @@ cc_binary(
         "--closure 1",
     ],
     deps = [
+        ":utils",
         "//psi_cardinality/cpp:psi_cardinality_client",
     ],
 )
@@ -33,6 +43,7 @@ cc_binary(
         "--closure 0",
     ],
     deps = [
+        ":utils",
         "//psi_cardinality/cpp:psi_cardinality_client",
     ],
 )
@@ -45,6 +56,7 @@ cc_binary(
         "--closure 1",
     ],
     deps = [
+        ":utils",
         "//psi_cardinality/cpp:psi_cardinality_server",
     ],
 )
@@ -57,6 +69,7 @@ cc_binary(
         "--closure 0",
     ],
     deps = [
+        ":utils",
         "//psi_cardinality/cpp:psi_cardinality_server",
     ],
 )

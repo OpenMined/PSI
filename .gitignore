@@ -6,3 +6,9 @@ bazel-*
 
 # VScode
 .vscode
+
+# npm
+node_modules/
+
+# JS code coverage
+coverage/
