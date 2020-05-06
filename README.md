@@ -119,6 +119,32 @@ yarn test
 yarn coverage
 ```
 
+### Go
+
+For the client
+```
+import "github.com/openmined/psi-cardinality/client"
+```
+
+For the server
+```
+import "github.com/openmined/psi-cardinality/server"
+```
+
+
+Build and run tests
+
+```
+bazel test //psi_cardinality/go/... --test_output=all
+```
+
+Build and run benchmarks
+
+```
+bazel test //psi_cardinality/go/... --test_arg=-test.bench=. --test_output=all
+```
+
+
 ## Using the Library
 
 To use this library in another Bazel project, add the following in your WORKSPACE file:
