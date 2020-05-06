@@ -1,18 +1,18 @@
 export type Server = {
   readonly delete: () => void
-  readonly CreateSetupMessage: (
+  readonly createSetupMessage: (
     fpr: number,
     numClientInputs: number,
     inputs: readonly string[]
   ) => string
-  readonly ProcessRequest: (clientRequest: string) => string
-  readonly GetPrivateKeyBytes: () => Uint8Array
+  readonly processRequest: (clientRequest: string) => string
+  readonly getPrivateKeyBytes: () => Uint8Array
 }
 
 export type Client = {
   readonly delete: () => void
-  readonly CreateRequest: (clientInputs: readonly string[]) => {}
-  readonly ProcessResponse: (serverSetup: string, serverResponse: string) => {}
+  readonly createRequest: (clientInputs: readonly string[]) => {}
+  readonly processResponse: (serverSetup: string, serverResponse: string) => {}
 }
 
 export type Status = {

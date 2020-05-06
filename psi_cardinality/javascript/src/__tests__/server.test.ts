@@ -4,36 +4,36 @@ import { Server } from '../implementation/server'
 let ServerInstance: Server
 
 beforeAll(async () => {
-  ServerInstance = await PSICardinality.Server.CreateWithNewKey()
+  ServerInstance = await PSICardinality.Server.createWithNewKey()
 })
 
 describe('PSI Server', () => {
   test('It should create from an existing key', async () => {
-    const server2 = await PSICardinality.Server.CreateWithNewKey()
-    const key = server2.GetPrivateKeyBytes()
-    const spyOn = jest.spyOn(PSICardinality.Server, 'CreateFromKey')
-    const server = await PSICardinality.Server.CreateFromKey(key)
+    const server2 = await PSICardinality.Server.createWithNewKey()
+    const key = server2.getPrivateKeyBytes()
+    const spyOn = jest.spyOn(PSICardinality.Server, 'createFromKey')
+    const server = await PSICardinality.Server.createFromKey(key)
     expect(spyOn).toHaveBeenCalledWith(key)
     expect(server).toBeInstanceOf(Object)
     expect(server.constructor).toBe(Object)
     expect(server.constructor.name).toBe('Object')
-    expect(server.GetPrivateKeyBytes()).toEqual(key)
+    expect(server.getPrivateKeyBytes()).toEqual(key)
   })
   test('It should fail to create from an invalid key', async () => {
     const key = Uint8Array.from({ length: 32 })
-    const spyOn = jest.spyOn(PSICardinality.Server, 'CreateFromKey')
-    await expect(PSICardinality.Server.CreateFromKey(key)).rejects.toThrow()
+    const spyOn = jest.spyOn(PSICardinality.Server, 'createFromKey')
+    await expect(PSICardinality.Server.createFromKey(key)).rejects.toThrow()
     expect(spyOn).toHaveBeenCalledWith(key)
   })
   test("It should delete it's instance", async () => {
-    const server = await PSICardinality.Server.CreateWithNewKey()
+    const server = await PSICardinality.Server.createWithNewKey()
     const spyOn = jest.spyOn(server, 'delete')
     server.delete()
     expect(spyOn).toHaveBeenCalled()
   })
   test('It should return the private key as a binary array', () => {
-    const spyOn = jest.spyOn(ServerInstance, 'GetPrivateKeyBytes')
-    const key = ServerInstance.GetPrivateKeyBytes()
+    const spyOn = jest.spyOn(ServerInstance, 'getPrivateKeyBytes')
+    const key = ServerInstance.getPrivateKeyBytes()
     expect(spyOn).toHaveBeenCalled()
     expect(key.constructor).toBe(Uint8Array)
   })
@@ -42,8 +42,8 @@ describe('PSI Server', () => {
     const numClientElements = 10
     const serverInputs = Array.from({ length: 100 }, (_, i) => `Element ${i}`)
 
-    const spyOn = jest.spyOn(ServerInstance, 'CreateSetupMessage')
-    const setup = ServerInstance.CreateSetupMessage(
+    const spyOn = jest.spyOn(ServerInstance, 'createSetupMessage')
+    const setup = ServerInstance.createSetupMessage(
       fpr,
       numClientElements,
       serverInputs
@@ -56,23 +56,23 @@ describe('PSI Server', () => {
     const numClientElements = -10
     const serverInputs = Array.from({ length: 100 }, (_, i) => `Element ${i}`)
 
-    const spyOn = jest.spyOn(ServerInstance, 'CreateSetupMessage')
+    const spyOn = jest.spyOn(ServerInstance, 'createSetupMessage')
     expect(() =>
-      ServerInstance.CreateSetupMessage(fpr, numClientElements, serverInputs)
+      ServerInstance.createSetupMessage(fpr, numClientElements, serverInputs)
     ).toThrow()
     expect(spyOn).toHaveBeenCalledWith(fpr, numClientElements, serverInputs)
   })
   test('It should create a response to a client request', () => {
     const clientRequest = '["AiHdmxkmF/iOM0fFhny9917QYGcb9jq0GM9mP4L74ecM"]'
-    const spyOn = jest.spyOn(ServerInstance, 'ProcessRequest')
-    const response = ServerInstance.ProcessRequest(clientRequest)
+    const spyOn = jest.spyOn(ServerInstance, 'processRequest')
+    const response = ServerInstance.processRequest(clientRequest)
     expect(spyOn).toHaveBeenCalledWith(clientRequest)
     expect(typeof response).toBe('string')
   })
   test('It should fail to create a response from an invalid client request', () => {
     const clientRequest = 'invalid request'
-    const spyOn = jest.spyOn(ServerInstance, 'ProcessRequest')
-    expect(() => ServerInstance.ProcessRequest(clientRequest)).toThrow()
+    const spyOn = jest.spyOn(ServerInstance, 'processRequest')
+    expect(() => ServerInstance.processRequest(clientRequest)).toThrow()
     expect(spyOn).toHaveBeenCalledWith(clientRequest)
   })
 })

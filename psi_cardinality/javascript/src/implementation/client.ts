@@ -3,7 +3,7 @@ import { Loader } from '../loader'
 import { ERROR_INSTANCE_DELETED } from './constants'
 
 export type ClientLibrary = {
-  readonly Create: () => Promise<Client>
+  readonly create: () => Promise<Client>
 }
 
 type ClientLibraryOptions = {
@@ -42,11 +42,11 @@ const ClientInstanceImpl = (instance: CppLibrary): Client => {
      * array.
      *
      * @function
-     * @name Client#CreateRequest
+     * @name Client#createRequest
      * @param {Array<String>} inputs
      * @returns {String} The serialized request
      */
-    CreateRequest(inputs): string {
+    createRequest(inputs): string {
       if (!_instance) {
         throw new Error(ERROR_INSTANCE_DELETED)
       }
@@ -65,12 +65,12 @@ const ClientInstanceImpl = (instance: CppLibrary): Client => {
      * the result of `CreateRequest`.
      *
      * @function
-     * @name Client#ProcessResponse
+     * @name Client#processResponse
      * @param {String} setup The serialized server setup
      * @param {String} response The serialized server response
      * @returns {Number} The PSI cardinality
      */
-    ProcessResponse(setup, response): number {
+    processResponse(setup, response): number {
       if (!_instance) {
         throw new Error(ERROR_INSTANCE_DELETED)
       }
@@ -99,10 +99,10 @@ export const ClientImpl = ({ Loader }: ClientLibraryOptions): ClientLibrary => {
      *
      * @async
      * @function
-     * @name Client.Create
+     * @name Client.create
      * @returns {Client} A Client instance
      */
-    async Create(): Promise<Client> {
+    async create(): Promise<Client> {
       await initialize()
       const { Value, Status } = library.PSICardinalityClient.Create()
       if (Status) {

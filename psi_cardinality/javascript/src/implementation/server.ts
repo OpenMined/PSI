@@ -3,8 +3,8 @@ import { Loader } from '../loader'
 import { ERROR_INSTANCE_DELETED } from './constants'
 
 export type ServerLibrary = {
-  readonly CreateWithNewKey: () => Promise<Server>
-  readonly CreateFromKey: (key: Uint8Array) => Promise<Server>
+  readonly createWithNewKey: () => Promise<Server>
+  readonly createFromKey: (key: Uint8Array) => Promise<Server>
 }
 
 type ServerLibraryOptions = {
@@ -56,13 +56,13 @@ const ServerInstanceImpl = (instance: CppLibrary): Server => {
      * @property {String} bits - The base64 encoded bits from the underlying bloom filter
      *
      * @function
-     * @name Server#CreateSetupMessage
+     * @name Server#createSetupMessage
      * @param {Number} fpr False positive rate
      * @param {Number} numClientInputs The number of expected client inputs
      * @param {Array<String>} inputs The server's dataset
      * @returns {SetupMessage} The serialized setup message
      */
-    CreateSetupMessage(
+    createSetupMessage(
       fpr: number,
       numClientInputs: number,
       inputs: readonly string[]
@@ -91,11 +91,11 @@ const ServerInstanceImpl = (instance: CppLibrary): Server => {
      * intersection.
      *
      * @function
-     * @name Server#ProcessRequest
+     * @name Server#processRequest
      * @param {String} clientRequest The serialized client request
      * @returns {String} The PSI cardinality
      */
-    ProcessRequest(clientRequest: string): string {
+    processRequest(clientRequest: string): string {
       if (!_instance) {
         throw new Error(ERROR_INSTANCE_DELETED)
       }
@@ -111,10 +111,10 @@ const ServerInstanceImpl = (instance: CppLibrary): Server => {
      * other server instances. DO NOT SEND THIS KEY TO ANY OTHER PARTY!
      *
      * @function
-     * @name Server#GetPrivateKeyBytes
+     * @name Server#getPrivateKeyBytes
      * @returns {Uint8Array} A binary Uint8Array representing the private key
      */
-    GetPrivateKeyBytes(): Uint8Array {
+    getPrivateKeyBytes(): Uint8Array {
       if (!_instance) {
         throw new Error(ERROR_INSTANCE_DELETED)
       }
@@ -139,10 +139,10 @@ export const ServerImpl = ({ Loader }: ServerLibraryOptions): ServerLibrary => {
      *
      * @async
      * @function
-     * @name Server.CreateWithNewKey
+     * @name Server.createWithNewKey
      * @returns {Server} A Server instance
      */
-    async CreateWithNewKey(): Promise<Server> {
+    async createWithNewKey(): Promise<Server> {
       await initialize()
       const { Value, Status } = library.PSICardinalityServer.CreateWithNewKey()
       if (Status) {
@@ -156,11 +156,11 @@ export const ServerImpl = ({ Loader }: ServerLibraryOptions): ServerLibrary => {
      *
      * @async
      * @function
-     * @name Server.CreateFromKey
+     * @name Server.createFromKey
      * @param {Uint8Array} key Private key as a binary Uint8Array
      * @returns {Server} A Server instance
      */
-    async CreateFromKey(key: Uint8Array): Promise<Server> {
+    async createFromKey(key: Uint8Array): Promise<Server> {
       await initialize()
       const { Value, Status } = library.PSICardinalityServer.CreateFromKey(key)
       if (Status) {

@@ -4,12 +4,12 @@ import { Client } from '../implementation/client'
 let ClientInstance: Client
 
 beforeAll(async () => {
-  ClientInstance = await PSICardinality.Client.Create()
+  ClientInstance = await PSICardinality.Client.create()
 })
 
 describe('PSI Client', () => {
   test("It should delete it's instance", async () => {
-    const client = await PSICardinality.Client.Create()
+    const client = await PSICardinality.Client.create()
     const spyOn = jest.spyOn(client, 'delete')
     client.delete()
     expect(spyOn).toHaveBeenCalled()
@@ -20,14 +20,14 @@ describe('PSI Client', () => {
       { length: numClientElements },
       (_, i) => `Element ${i}`
     )
-    const request = ClientInstance.CreateRequest(clientInputs)
+    const request = ClientInstance.createRequest(clientInputs)
     expect(typeof request).toBe('string')
   })
   // test('It should fail to create a request', () => {
   //   const numClientElements = 10
   //   const clientInputs = Array.from({ length: numClientElements }, (_, i) => i)
-  //   const spyOn = jest.spyOn(ClientInstance, 'CreateRequest')
-  //   expect(() => ClientInstance.CreateRequest(clientInputs)).toThrow()
+  //   const spyOn = jest.spyOn(ClientInstance, 'createRequest')
+  //   expect(() => ClientInstance.createRequest(clientInputs)).toThrow()
   //   expect(spyOn).toHaveBeenCalled()
   // })
   test('It should process a response', () => {
@@ -36,8 +36,8 @@ describe('PSI Client', () => {
     const serverResponse =
       '["AiB2zX47wIFkO0VkHPiX4B2RPbzb2xre1/rcH3mARf6A","Aix7yJwCoTbF1RDFgLT7ntQ+DCdsxtQB5VKemNSbs95K","AlqATF16utJn0b2/mT4F/Tnxd7bQJUBc2em7H4OGkj7v","AnBfbcXx7YZ42/0zuIWyw0xECaf2bzlPWPe1TpD8LC1G","ArJt9KivSQERWNCAyUt1dAz4B2eud0qxnu206TJ0FxoT","AxfuH374m21PsyxFKQY9J2Seq/abvQv1cqDse8+f1DCv","AyHI21aQJyaa9HM3rPhhGt99iKHNg5wnwVeGwcmGggun","A0lFTmKUvyD7JzzR9J+syz+myC2metGmKb34FS4AkDQx","A2XvsIdnkPF6PJ6tPRI2LTdxguChs83Vd1VTM3DQXkdX","A606MaSef27r/KxUa1iRVWaX7lZqioxfz2iFpOR+6Yts"]'
 
-    const spyOn = jest.spyOn(ClientInstance, 'ProcessResponse')
-    const intersection = ClientInstance.ProcessResponse(
+    const spyOn = jest.spyOn(ClientInstance, 'processResponse')
+    const intersection = ClientInstance.processResponse(
       serverSetup,
       serverResponse
     )
@@ -47,9 +47,9 @@ describe('PSI Client', () => {
   test('It should fail to process a response', () => {
     const serverSetup = 'invalid'
     const serverResponse = 'invalid'
-    const spyOn = jest.spyOn(ClientInstance, 'ProcessResponse')
+    const spyOn = jest.spyOn(ClientInstance, 'processResponse')
     expect(() =>
-      ClientInstance.ProcessResponse(serverSetup, serverResponse)
+      ClientInstance.processResponse(serverSetup, serverResponse)
     ).toThrow()
     expect(spyOn).toHaveBeenCalled()
   })
