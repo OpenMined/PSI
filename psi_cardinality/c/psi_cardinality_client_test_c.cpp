@@ -31,8 +31,10 @@ namespace {
 class PSICardinalityClientBindingTest : public ::testing::Test {
 protected:
   void SetUp() {
-    client_ = psi_cardinality_client_create();
+    char *err;
+    int ret = psi_cardinality_client_create(&client_, &err);
     ASSERT_TRUE(client_ != nullptr);
+    ASSERT_TRUE(ret == 0);
   }
   void TearDown() {
     psi_cardinality_client_delete(&client_);

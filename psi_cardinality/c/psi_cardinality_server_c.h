@@ -31,9 +31,11 @@ struct server_buffer_t {
   size_t buff_len;
 };
 
-psi_cardinality_server_ctx psi_cardinality_server_create_with_new_key();
-psi_cardinality_server_ctx
-psi_cardinality_server_create_from_key(struct server_buffer_t key_bytes);
+int psi_cardinality_server_create_with_new_key(psi_cardinality_server_ctx *ctx,
+                                               char **error_out);
+int psi_cardinality_server_create_from_key(struct server_buffer_t key_bytes,
+                                           psi_cardinality_server_ctx *ctx,
+                                           char **error_out);
 void psi_cardinality_server_delete(psi_cardinality_server_ctx *ctx);
 
 int psi_cardinality_server_create_setup_message(psi_cardinality_server_ctx ctx,

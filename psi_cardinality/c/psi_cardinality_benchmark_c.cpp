@@ -7,7 +7,9 @@ namespace psi_cardinality {
 namespace {
 
 void BM_ServerBindingSetup(benchmark::State &state, double fpr) {
-  auto server_ = psi_cardinality_server_create_with_new_key();
+  psi_cardinality_server_ctx server_;
+  char *err;
+  psi_cardinality_server_create_with_new_key(&server_, &err);
 
   int num_inputs = state.range(0);
   int num_client_inputs = 10000;
@@ -49,7 +51,9 @@ BENCHMARK_CAPTURE(BM_ServerBindingSetup, fpr = 0.000001, 0.000001)
     ->Range(1, 1000000);
 
 void BM_ClientBindingCreateRequest(benchmark::State &state) {
-  auto client_ = psi_cardinality_client_create();
+  psi_cardinality_client_ctx client_;
+  char *err;
+  psi_cardinality_client_create(&client_, &err);
 
   int num_inputs = state.range(0);
   std::vector<std::string> inputs_orig(num_inputs);
@@ -82,8 +86,12 @@ void BM_ClientBindingCreateRequest(benchmark::State &state) {
 BENCHMARK(BM_ClientBindingCreateRequest)->RangeMultiplier(10)->Range(1, 10000);
 
 void BM_ServerBindingProcessRequest(benchmark::State &state) {
-  auto client_ = psi_cardinality_client_create();
-  auto server_ = psi_cardinality_server_create_with_new_key();
+  psi_cardinality_client_ctx client_;
+  psi_cardinality_server_ctx server_;
+  char *err;
+
+  psi_cardinality_client_create(&client_, &err);
+  psi_cardinality_server_create_with_new_key(&server_, &err);
 
   int num_inputs = state.range(0);
   std::vector<std::string> inputs_orig(num_inputs);
@@ -125,8 +133,11 @@ void BM_ServerBindingProcessRequest(benchmark::State &state) {
 BENCHMARK(BM_ServerBindingProcessRequest)->RangeMultiplier(10)->Range(1, 10000);
 
 void BM_ClientBindingProcessResponse(benchmark::State &state) {
-  auto client_ = psi_cardinality_client_create();
-  auto server_ = psi_cardinality_server_create_with_new_key();
+  psi_cardinality_client_ctx client_;
+  psi_cardinality_server_ctx server_;
+  char *err;
+  psi_cardinality_client_create(&client_, &err);
+  psi_cardinality_server_create_with_new_key(&server_, &err);
 
   int num_inputs = state.range(0);
   double fpr = 1. / (1000000);

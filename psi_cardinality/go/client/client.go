@@ -6,6 +6,7 @@ package client
 import "C"
 import (
 	"errors"
+	"fmt"
 )
 
 //PSICardinalityClient context
@@ -16,9 +17,14 @@ type PSICardinalityClient struct {
 //Create returns a new PSI client
 func Create() (*PSICardinalityClient, error) {
 	psiClient := new(PSICardinalityClient)
-	psiClient.context = C.psi_cardinality_client_create()
+
+	var err *C.char
+	ret := C.psi_cardinality_client_create(&psiClient.context, &err)
+	if ret != 0 {
+		return nil, fmt.Errorf("failed to create client context: %v(%v)", C.GoString(err), ret)
+	}
 	if psiClient.context == nil {
-		return nil, errors.New("failed to create client context")
+		return nil, errors.New("failed to create client context: null")
 	}
 
 	return psiClient, nil

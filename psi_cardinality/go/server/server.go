@@ -6,6 +6,7 @@ package server
 import "C"
 import (
 	"errors"
+	"fmt"
 )
 
 //PSICardinalityServer context
@@ -16,9 +17,14 @@ type PSICardinalityServer struct {
 //CreateWithNewKey returns a new PSI server
 func CreateWithNewKey() (*PSICardinalityServer, error) {
 	psiServer := new(PSICardinalityServer)
-	psiServer.context = C.psi_cardinality_server_create_with_new_key()
+
+	var err *C.char
+	ret := C.psi_cardinality_server_create_with_new_key(&psiServer.context, &err)
+	if ret != 0 {
+		return nil, fmt.Errorf("failed to create server context: %v(%v)", C.GoString(err), ret)
+	}
 	if psiServer.context == nil {
-		return nil, errors.New("failed to create server context")
+		return nil, errors.New("failed to create server context: null")
 	}
 
 	return psiServer, nil
@@ -27,12 +33,19 @@ func CreateWithNewKey() (*PSICardinalityServer, error) {
 //CreateFromKey returns a new PSI server
 func CreateFromKey(key string) (*PSICardinalityServer, error) {
 	psiServer := new(PSICardinalityServer)
-	psiServer.context = C.psi_cardinality_server_create_from_key(C.struct_server_buffer_t{
+
+	var err *C.char
+	ret := C.psi_cardinality_server_create_from_key(C.struct_server_buffer_t{
 		buff:     C.CString(key),
 		buff_len: C.ulong(len(key)),
-	})
+	},
+		&psiServer.context, &err)
+
+	if ret != 0 {
+		return nil, fmt.Errorf("failed to create server context: %v(%v)", C.GoString(err), ret)
+	}
 	if psiServer.context == nil {
-		return nil, errors.New("failed to create server context from key")
+		return nil, errors.New("failed to create server context: null")
 	}
 
 	return psiServer, nil

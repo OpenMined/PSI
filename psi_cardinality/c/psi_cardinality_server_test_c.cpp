@@ -27,8 +27,10 @@ namespace {
 class PSICardinalityServerBindingTest : public ::testing::Test {
 protected:
   void SetUp() {
-    server_ = psi_cardinality_server_create_with_new_key();
+    char *err;
+    int ret = psi_cardinality_server_create_with_new_key(&server_, &err);
     ASSERT_TRUE(server_ != nullptr);
+    ASSERT_TRUE(ret == 0);
   }
   void TearDown() {
     psi_cardinality_server_delete(&server_);
@@ -41,7 +43,10 @@ protected:
 TEST_F(PSICardinalityServerBindingTest, TestCorrectness) {
   // We use an actual client instance here, since we already test the client
   // on its own in psi_cardinality_client_test.cpp.
-  auto client_ = psi_cardinality_client_create();
+  psi_cardinality_client_ctx client_;
+  char *err;
+  psi_cardinality_client_create(&client_, &err);
+
   ASSERT_TRUE(client_ != nullptr);
 
   int num_client_elements = 1000, num_server_elements = 10000;

@@ -1,16 +1,19 @@
 #include "psi_cardinality_client_c.h"
 
+#include "internal_utils.h"
 #include "psi_cardinality_client.h"
 
 using namespace psi_cardinality;
 
-psi_cardinality_client_ctx psi_cardinality_client_create() {
+int psi_cardinality_client_create(psi_cardinality_client_ctx *ctx,
+                                  char **error_out) {
   auto result = PSICardinalityClient::Create();
   if (result.ok()) {
-    auto value = std::move(result).ValueOrDie();
-    return value.release();
+    *ctx = std::move(result).ValueOrDie().release();
+    return 0;
   }
-  return nullptr;
+
+  return generate_error(result.status(), error_out);
 }
 
 void psi_cardinality_client_delete(psi_cardinality_client_ctx *ctx) {

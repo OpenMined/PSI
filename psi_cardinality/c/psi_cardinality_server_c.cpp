@@ -1,27 +1,31 @@
 #include "psi_cardinality_server_c.h"
 
+#include "internal_utils.h"
 #include "psi_cardinality_server.h"
 
 using namespace psi_cardinality;
 
-psi_cardinality_server_ctx psi_cardinality_server_create_with_new_key() {
+int psi_cardinality_server_create_with_new_key(psi_cardinality_server_ctx *ctx,
+                                               char **error_out) {
   auto result = PSICardinalityServer::CreateWithNewKey();
   if (result.ok()) {
-    auto value = std::move(result).ValueOrDie();
-    return value.release();
+    *ctx = std::move(result).ValueOrDie().release();
+    return 0;
   }
-  return nullptr;
+
+  return generate_error(result.status(), error_out);
 }
 
-psi_cardinality_server_ctx
-psi_cardinality_server_create_from_key(server_buffer_t key_bytes) {
+int psi_cardinality_server_create_from_key(server_buffer_t key_bytes,
+                                           psi_cardinality_server_ctx *ctx,
+                                           char **error_out) {
   auto result = PSICardinalityServer::CreateFromKey(
       std::string(key_bytes.buff, key_bytes.buff_len));
   if (result.ok()) {
-    auto value = std::move(result).ValueOrDie();
-    return value.release();
+    *ctx = std::move(result).ValueOrDie().release();
+    return 0;
   }
-  return nullptr;
+  return generate_error(result.status(), error_out);
 }
 
 void psi_cardinality_server_delete(psi_cardinality_server_ctx *ctx) {

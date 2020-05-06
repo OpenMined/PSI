@@ -18,7 +18,7 @@ package(default_visibility = ["//visibility:public"])
 
 cc_library(
     name = "psi_cardinality_client_c",
-    srcs = ["psi_cardinality_client_c.cpp"],
+    srcs = ["psi_cardinality_client_c.cpp", "internal_utils.h", "internal_utils.cpp"],
     hdrs = ["psi_cardinality_client_c.h"],
     includes = ["."],
     deps = [
@@ -50,7 +50,7 @@ cc_test(
 
 cc_library(
     name = "psi_cardinality_server_c",
-    srcs = ["psi_cardinality_server_c.cpp"],
+    srcs = ["psi_cardinality_server_c.cpp", "internal_utils.h", "internal_utils.cpp"],
     hdrs = ["psi_cardinality_server_c.h"],
     includes = ["."],
     deps = [
