@@ -16,7 +16,7 @@
 
 #include "absl/strings/escaping.h"
 #include "absl/strings/str_cat.h"
-#include "bloom_filter_c.h"
+#include "bloom_filter.h"
 #include "crypto/ec_commutative_cipher.h"
 #include "gtest/gtest.h"
 #include "psi_cardinality_client_c.h"
@@ -61,9 +61,9 @@ TEST_F(PSICardinalityClientBindingTest, TestCorrectness) {
     }
 
     // Insert server elements into Bloom filter.
-    auto bloom_filter =
-        bloom_filter_create(fpr / num_client_elements, num_server_elements);
-    ASSERT_TRUE(bloom_filter != nullptr);
+    PSI_ASSERT_OK_AND_ASSIGN(
+        auto bloom_filter,
+        BloomFilter::Create(fpr / num_client_elements, num_server_elements));
 
     PSI_ASSERT_OK_AND_ASSIGN(
         auto server_ec_cipher,
@@ -73,13 +73,11 @@ TEST_F(PSICardinalityClientBindingTest, TestCorrectness) {
     for (int i = 0; i < num_server_elements; i++) {
         PSI_ASSERT_OK_AND_ASSIGN(std::string encrypted_element,
                                  server_ec_cipher->Encrypt(server_elements[i]));
-        bloom_filter_add(bloom_filter,
-                         {encrypted_element.c_str(), encrypted_element.size()});
+
+        bloom_filter->Add(encrypted_element);
     }
 
-    char* server_setup = {0};
-    size_t buf_len = 0;
-    bloom_filter_to_json(bloom_filter, &server_setup, &buf_len);
+    std::string server_setup = bloom_filter->ToJSON();
 
     // Compute client request.
     char* client_request = {0};
@@ -124,7 +122,7 @@ TEST_F(PSICardinalityClientBindingTest, TestCorrectness) {
 
     // Compute intersection size.
     int64_t intersection_size = psi_cardinality_client_process_response(
-        client_, server_setup, server_response.c_str());
+        client_, server_setup.c_str(), server_response.c_str());
     ASSERT_TRUE(intersection_size > 0);
 
     // Test if size is approximately as expected (up to 10%).
@@ -132,8 +130,6 @@ TEST_F(PSICardinalityClientBindingTest, TestCorrectness) {
     EXPECT_GE(intersection_size, num_client_elements / 2);
     EXPECT_LT(intersection_size, (num_client_elements / 2) * 1.1);
 
-    bloom_filter_delete_json(bloom_filter, &server_setup);
-    bloom_filter_delete(&bloom_filter);
     psi_cardinality_client_delete_buffer(client_, &client_request);
 }
 

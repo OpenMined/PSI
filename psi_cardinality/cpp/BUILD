@@ -18,8 +18,8 @@ package(default_visibility = ["//visibility:public"])
 
 cc_library(
     name = "bloom_filter",
-    srcs = ["bloom_filter.cpp", "bloom_filter_c.cpp"],
-    hdrs = ["bloom_filter.h", "bloom_filter_c.h"],
+    srcs = ["bloom_filter.cpp"],
+    hdrs = ["bloom_filter.h"],
     deps = [
         "@com_google_absl//absl/memory",
         "@com_google_absl//absl/strings",
@@ -32,7 +32,7 @@ cc_library(
 
 cc_test(
     name = "bloom_filter_test",
-    srcs = ["bloom_filter_test.cpp", "bloom_filter_test_c.cpp"],
+    srcs = ["bloom_filter_test.cpp"],
     deps = [
         ":bloom_filter",
         "//psi_cardinality/cpp/util:status_matchers",
