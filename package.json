@@ -1,7 +1,7 @@
 {
-  "name": "psi-cardinality",
+  "name": "@openmined/psi-cardinality",
   "version": "0.1.0",
-  "description": "PSI cardinality for JS and WASM using Bazel and Emscripten",
+  "description": "PSI cardinality for JavaScript",
   "repository": {
     "type": "git",
     "url": "https://github.com/OpenMined/psi-cardinality"
