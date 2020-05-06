@@ -64,60 +64,7 @@ bazel run -c opt //psi_cardinality/cpp:psi_cardinality_benchmark
 
 ### JavaScript
 
-First, ensure you have updated submodules
-
-```
-yarn submodule:update
-```
-
-Then, update and initialize `emsdk`
-
-```
-yarn em:update
-yarn em:init
-```
-
-Now, install the rest of the dev dependencies
-
-```
-yarn install
-```
-
-Next, build the WebAssembly, pure JS, or both variants
-
-```
-yarn build:benchmark:wasm
-yarn build:benchmark:js
-
-# or both
-yarn build:benchmark
-```
-
-Finally, run the benchmark for WebAssembly or pure JS
-
-```
-yarn benchmark:wasm
-yarn benchmark:js
-```
-
-To build the client, server, or both for WebAssembly and pure JS
-
-```
-yarn build:client
-yarn build:server
-
-# or both
-yarn build
-```
-
-Run the tests or generate coverage reports. **Note** tests are run using the WASM variant.
-
-```
-yarn test
-
-# or to see coverage
-yarn coverage
-```
+See the [JavaScript README.md](psi_cardinality/javascript/README.md)
 
 ## Using the Library
 

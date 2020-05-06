@@ -4,7 +4,7 @@
   "description": "PSI cardinality for JavaScript",
   "repository": {
     "type": "git",
-    "url": "https://github.com/OpenMined/psi-cardinality"
+    "url": "https://github.com/OpenMined/psi-cardinality/tree/master/psi_cardinality/javascript"
   },
   "license": "Apache-2.0",
   "keywords": [
