@@ -1,5 +1,5 @@
-import PSICardinality from '../src/index_combined_wasm'
-import { Server } from '../src/implementation/server'
+import PSICardinality from '../index_combined_wasm'
+import { Server } from '../implementation/server'
 
 let ServerInstance: Server
 

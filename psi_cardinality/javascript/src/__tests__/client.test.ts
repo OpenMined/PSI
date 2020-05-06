@@ -1,5 +1,5 @@
-import PSICardinality from '../src/index_combined_wasm'
-import { Client } from '../src/implementation/client'
+import PSICardinality from '../index_combined_wasm'
+import { Client } from '../implementation/client'
 
 let ClientInstance: Client
 

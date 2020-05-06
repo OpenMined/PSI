@@ -42,8 +42,9 @@
     "compile": "tsc",
     "format": "prettier --write psi_cardinality/javascript",
     "lint": "eslint \"psi_cardinality/javascript/**/*.{js,ts}\"",
-    "test": "jest psi_cardinality/javascript/test",
-    "coverage": "jest psi_cardinality/javascript/test --coverage",
+    "test": "jest psi_cardinality/javascript/src/",
+    "test:js": "jest psi_cardinality/javascript/tsc-out/__tests__/",
+    "coverage": "jest psi_cardinality/javascript/src --coverage",
     "submodule:update": "bash psi_cardinality/javascript/scripts/submodule-update.sh",
     "em:update": "bash psi_cardinality/javascript/scripts/em-update.sh",
     "em:init": "bash psi_cardinality/javascript/scripts/em-init.sh"
