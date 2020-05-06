@@ -8,7 +8,7 @@ describe('PSI Client', () => {
     client = await PSICardinality.client.create()
   })
 
-  test("It should delete it's instance", async () => {
+  test('It should delete its instance', async () => {
     const client2 = await PSICardinality.client.create()
     const spyOn = jest.spyOn(client2, 'delete')
     client2.delete()

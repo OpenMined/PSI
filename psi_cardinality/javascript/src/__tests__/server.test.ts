@@ -25,7 +25,7 @@ describe('PSI Server', () => {
     await expect(PSICardinality.server.createFromKey(key)).rejects.toThrow()
     expect(spyOn).toHaveBeenCalledWith(key)
   })
-  test("It should delete it's instance", async () => {
+  test('It should delete its instance', async () => {
     const server = await PSICardinality.server.createWithNewKey()
     const spyOn = jest.spyOn(server, 'delete')
     server.delete()
