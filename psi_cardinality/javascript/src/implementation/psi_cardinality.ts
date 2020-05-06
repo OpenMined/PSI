@@ -58,5 +58,3 @@ export const PSICardinalityConstructor = ({
     ...(clientWrapper && { client: clientWrapper })
   }
 }
-
-export default PSICardinalityConstructor
