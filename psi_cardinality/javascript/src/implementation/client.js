@@ -79,6 +79,7 @@ export const ClientImpl = ({ Loader }) => {
     /**
      * Create a new PSI Cardinality client
      *
+     * @async
      * @function
      * @name Client.Create
      * @returns {Client} A Client instance

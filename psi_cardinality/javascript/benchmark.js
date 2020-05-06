@@ -1,8 +1,13 @@
-import cpp_main from '.'
+import benchmarkWasmLibrary from './bin/psi_cardinality_benchmark_wasm.js'
+import benchmarkJsLibrary from './bin/psi_cardinality_benchmark_js.js'
+
+import { Loader } from './src/loader'
+
+/**
+ * Detect which source to run, defaults to wasm
+ */
+const runJs = process.env.RUN_DEMO === 'js'
+
 ;(async () => {
-  // Wait for the initializer to complete loading
-  // Upon success, this will immediatly run our C++ main() function
-  await cpp_main(
-    `../../bazel-out/wasm-opt/bin/psi_cardinality/javascript/psi_cardinality_benchmark_${process.env.RUN_DEMO}.js`
-  ) // RUN_DEMO = js|wasm
+  await Loader(runJs ? benchmarkJsLibrary : benchmarkWasmLibrary)()
 })()
