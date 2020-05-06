@@ -119,18 +119,14 @@ yarn test
 yarn coverage
 ```
 
-### Go
+### Go [![Go Report Card](https://goreportcard.com/badge/github.com/bcebere/psi-cardinality)](https://goreportcard.com/report/github.com/bcebere/psi-cardinality)
 
-[![Go Report Card](https://goreportcard.com/badge/github.com/bcebere/psi-cardinality)](https://goreportcard.com/report/github.com/bcebere/psi-cardinality)
-
-#### PSI client
-[![Documentation](https://img.shields.io/badge/godoc-reference-blue.svg)](https://pkg.go.dev/github.com/bcebere/psi-cardinality/psi_cardinality/go/client)
+#### PSI client [![Documentation](https://img.shields.io/badge/godoc-reference-blue.svg)](https://pkg.go.dev/github.com/bcebere/psi-cardinality/psi_cardinality/go/client)
 ```
 import "github.com/openmined/psi-cardinality/client"
 ```
 
-#### PSI server
-[![Documentation](https://img.shields.io/badge/godoc-reference-blue.svg)](https://pkg.go.dev/github.com/bcebere/psi-cardinality/psi_cardinality/go/server)
+#### PSI server [![Documentation](https://img.shields.io/badge/godoc-reference-blue.svg)](https://pkg.go.dev/github.com/bcebere/psi-cardinality/psi_cardinality/go/server)
 ```
 import "github.com/openmined/psi-cardinality/server"
 ```
