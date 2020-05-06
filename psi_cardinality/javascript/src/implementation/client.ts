@@ -1,5 +1,5 @@
 import { CppLibraryInstance } from '../types'
-import { Loader } from '../loader'
+import { LoaderFn } from '../loader'
 
 export type Client = {
   readonly delete: () => void
@@ -86,10 +86,14 @@ const ClientInstanceImpl = (instance: CppLibraryInstance): Client => {
   }
 }
 
-export const ClientImpl = ({ Loader }: { readonly Loader: Loader }) => {
+export const ClientImpl = ({
+  Loader
+}: {
+  readonly Loader: LoaderFn
+}): ClientLibrary => {
   let library: CppLibraryInstance
 
-  const initialize = async () => {
+  const initialize = async (): Promise<void> => {
     if (!library) {
       const module = await Loader()
       library = module.library
@@ -105,7 +109,7 @@ export const ClientImpl = ({ Loader }: { readonly Loader: Loader }) => {
      * @name Client.Create
      * @returns {Client} A Client instance
      */
-    async Create() {
+    async Create(): Promise<Client> {
       await initialize()
       const { Value, Status } = library.PSICardinalityClient.Create()
       if (Status) {

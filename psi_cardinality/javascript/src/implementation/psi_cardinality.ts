@@ -1,6 +1,11 @@
 import { ClientLibrary } from './client'
 import { ServerLibrary } from './server'
 
+type PSICardinalityLibrary = {
+  readonly Server: ServerLibrary
+  readonly Client: ClientLibrary
+}
+
 /**
  * @implements PSICardinality
  */
@@ -10,7 +15,7 @@ export const PSICardinalityImpl = ({
 }: {
   readonly ServerImpl: ServerLibrary
   readonly ClientImpl: ClientLibrary
-}) => {
+}): PSICardinalityLibrary => {
   /**
    * @interface PSICardinality
    */

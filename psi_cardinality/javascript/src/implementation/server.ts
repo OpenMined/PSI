@@ -1,5 +1,5 @@
 import { CppLibraryInstance } from '../types'
-import { Loader } from '../loader'
+import { LoaderFn } from '../loader'
 
 export type Server = {
   readonly delete: () => void
@@ -131,10 +131,14 @@ const ServerInstanceImpl = (instance: CppLibraryInstance): Server => {
   }
 }
 
-export const ServerImpl = ({ Loader }: { readonly Loader: Loader }) => {
+export const ServerImpl = ({
+  Loader
+}: {
+  readonly Loader: LoaderFn
+}): ServerLibrary => {
   let library: CppLibraryInstance
 
-  const initialize = async () => {
+  const initialize = async (): Promise<void> => {
     if (!library) {
       const module = await Loader()
       library = module.library
@@ -150,7 +154,7 @@ export const ServerImpl = ({ Loader }: { readonly Loader: Loader }) => {
      * @name Server.CreateWithNewKey
      * @returns {Server} A Server instance
      */
-    async CreateWithNewKey() {
+    async CreateWithNewKey(): Promise<Server> {
       await initialize()
       const { Value, Status } = library.PSICardinalityServer.CreateWithNewKey()
       if (Status) {
@@ -168,7 +172,7 @@ export const ServerImpl = ({ Loader }: { readonly Loader: Loader }) => {
      * @param {Uint8Array} key Private key as a binary Uint8Array
      * @returns {Server} A Server instance
      */
-    async CreateFromKey(key: Uint8Array) {
+    async CreateFromKey(key: Uint8Array): Promise<Server> {
       await initialize()
       const { Value, Status } = library.PSICardinalityServer.CreateFromKey(key)
       if (Status) {
