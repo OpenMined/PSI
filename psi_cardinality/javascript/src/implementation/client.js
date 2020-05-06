@@ -1,7 +1,7 @@
 /**
  * @implements Client
  */
-const ClientImpl = instance => {
+export const ClientInstanceImpl = instance => {
   let _instance = instance
 
   /**
@@ -65,19 +65,31 @@ const ClientImpl = instance => {
   }
 }
 
-export const Client = library => ({
-  /**
-   * Create a new PSI Cardinality client
-   *
-   * @function
-   * @name Client.Create
-   * @returns {Client} A Client instance
-   */
-  Create() {
-    const { Value, Status } = library.PSICardinalityClient.Create()
-    if (Status) {
-      throw new Error(Status.Message)
+export const ClientImpl = ({ Loader }) => {
+  let library = null
+
+  const initialize = async () => {
+    if (!library) {
+      const module = await Loader()
+      library = module.library
     }
-    return ClientImpl(Value)
   }
-})
+
+  return {
+    /**
+     * Create a new PSI Cardinality client
+     *
+     * @function
+     * @name Client.Create
+     * @returns {Client} A Client instance
+     */
+    async Create() {
+      await initialize()
+      const { Value, Status } = library.PSICardinalityClient.Create()
+      if (Status) {
+        throw new Error(Status.Message)
+      }
+      return ClientInstanceImpl(Value)
+    }
+  }
+}

@@ -1,20 +1,13 @@
-import cpp_main from '../'
-import Library from '../src/psiClient'
+import PSICardinality from '../src/'
 
-let PSICardinality,
-  Client = null
+let Client = null
 beforeAll(async () => {
-  const { library } = await cpp_main(
-    `../../bazel-out/wasm-opt/bin/psi_cardinality/javascript/psi_cardinality_client_${process.env.RUN_DEMO}.js`
-  ) // RUN_DEMO = js|wasm
-
-  PSICardinality = Library(library)
-  Client = PSICardinality.Client.Create()
+  Client = await PSICardinality.Client.Create()
 })
 
 describe('PSI Client', () => {
-  test("It should delete it's instance", () => {
-    const client = PSICardinality.Client.Create()
+  test("It should delete it's instance", async () => {
+    const client = await PSICardinality.Client.Create()
     const spyOn = jest.spyOn(client, 'delete')
     client.delete()
     expect(spyOn).toHaveBeenCalled()
