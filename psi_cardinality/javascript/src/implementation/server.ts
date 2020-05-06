@@ -1,5 +1,6 @@
 import { CppLibrary, Server } from '../types'
 import { Loader } from '../loader'
+import { ERROR_INSTANCE_DELETED } from './constants'
 
 export type ServerLibrary = {
   readonly CreateWithNewKey: () => Promise<Server>
@@ -9,8 +10,6 @@ export type ServerLibrary = {
 type ServerLibraryOptions = {
   readonly Loader: Loader
 }
-
-const INSTANCE_DELETED = 'Instance was deleted'
 
 /**
  * @implements Server
@@ -69,7 +68,7 @@ const ServerInstanceImpl = (instance: CppLibrary): Server => {
       inputs: readonly string[]
     ): string {
       if (!_instance) {
-        throw new Error(INSTANCE_DELETED)
+        throw new Error(ERROR_INSTANCE_DELETED)
       }
       const { Value, Status } = _instance.CreateSetupMessage(
         fpr,
@@ -98,7 +97,7 @@ const ServerInstanceImpl = (instance: CppLibrary): Server => {
      */
     ProcessRequest(clientRequest: string): string {
       if (!_instance) {
-        throw new Error(INSTANCE_DELETED)
+        throw new Error(ERROR_INSTANCE_DELETED)
       }
       const { Value, Status } = _instance.ProcessRequest(clientRequest)
       if (Status) {
@@ -117,7 +116,7 @@ const ServerInstanceImpl = (instance: CppLibrary): Server => {
      */
     GetPrivateKeyBytes(): Uint8Array {
       if (!_instance) {
-        throw new Error(INSTANCE_DELETED)
+        throw new Error(ERROR_INSTANCE_DELETED)
       }
       return Uint8Array.from(_instance.GetPrivateKeyBytes())
     }

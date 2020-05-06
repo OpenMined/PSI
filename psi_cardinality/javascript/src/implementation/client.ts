@@ -1,5 +1,6 @@
 import { CppLibrary, Client } from '../types'
 import { Loader } from '../loader'
+import { ERROR_INSTANCE_DELETED } from './constants'
 
 export type ClientLibrary = {
   readonly Create: () => Promise<Client>
@@ -8,8 +9,6 @@ export type ClientLibrary = {
 type ClientLibraryOptions = {
   readonly Loader: Loader
 }
-
-const INSTANCE_DELETED = 'Instance was deleted'
 
 /**
  * @implements Client
@@ -49,7 +48,7 @@ const ClientInstanceImpl = (instance: CppLibrary): Client => {
      */
     CreateRequest(inputs): string {
       if (!_instance) {
-        throw new Error(INSTANCE_DELETED)
+        throw new Error(ERROR_INSTANCE_DELETED)
       }
       const { Value, Status } = _instance.CreateRequest(inputs)
       if (Status) {
@@ -73,7 +72,7 @@ const ClientInstanceImpl = (instance: CppLibrary): Client => {
      */
     ProcessResponse(setup, response): number {
       if (!_instance) {
-        throw new Error(INSTANCE_DELETED)
+        throw new Error(ERROR_INSTANCE_DELETED)
       }
       const { Value, Status } = _instance.ProcessResponse(setup, response)
       if (Status) {
