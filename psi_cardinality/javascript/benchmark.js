@@ -6,10 +6,8 @@ import { Loader } from './src/loader'
 /**
  * Detect which source to run, defaults to wasm
  */
-const runWasm = process.env.RUN_DEMO
-  ? Boolean(process.env.RUN_DEMO === 'wasm')
-  : true
+const runJs = process.env.RUN_DEMO === 'js'
 
 ;(async () => {
-  await Loader(runWasm ? benchmarkWasmLibrary : benchmarkJsLibrary)()
+  await Loader(runJs ? benchmarkJsLibrary : benchmarkWasmLibrary)()
 })()

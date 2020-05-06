@@ -11,18 +11,16 @@ import { ClientImpl } from './implementation/client'
 /**
  * Detect which source to run, defaults to wasm
  */
-const runWasm = process.env.RUN_DEMO
-  ? Boolean(process.env.RUN_DEMO === 'wasm')
-  : true
+const runJs = process.env.RUN_DEMO === 'js'
 
 /**
  * Main export for the library
  */
 export default PSICardinalityImpl({
   ServerImpl: ServerImpl({
-    Loader: Loader(runWasm ? serverWasmLibrary : serverJsLibrary)
+    Loader: Loader(runJs ? serverJsLibrary : serverWasmLibrary)
   }),
   ClientImpl: ClientImpl({
-    Loader: Loader(runWasm ? clientWasmLibrary : clientJsLibrary)
+    Loader: Loader(runJs ? clientJsLibrary : clientWasmLibrary)
   })
 })
