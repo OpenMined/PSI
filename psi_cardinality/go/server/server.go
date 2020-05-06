@@ -1,12 +1,7 @@
 package server
 
 /*
-#cgo LDFLAGS: -L${SRCDIR}/../extern/lib/
-#cgo LDFLAGS: -Wl,-rpath,${SRCDIR}/../extern/lib
-#cgo CFLAGS: -I${SRCDIR}/../../c -I${SRCDIR}/../../cpp/util
-#cgo LDFLAGS:  -lpsi_cardinality_server_c -lpsi_cardinality_server -lec_commutative_cipher -lec_util -lelgamal -lbloom_filter -lbn_util -lcrypto -lopenssl_init -lstatus -lglog -lgflags -lstrings -linternal -lraw_logging_internal -lthrow_delegate -lint128
-
-#include "psi_cardinality_server_c.h"
+#include "psi_cardinality/c/psi_cardinality_server_c.h"
 */
 import "C"
 import (

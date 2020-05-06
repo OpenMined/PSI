@@ -1,7 +1,7 @@
 package client
 
 import (
-	"openmined/psi-cardinality/server"
+	"github.com/openmined/psi-cardinality/server"
 	"testing"
 )
 
