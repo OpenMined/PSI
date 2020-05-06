@@ -1,13 +1,13 @@
 import PSICardinality from '../index_combined_wasm'
 import { Server } from '../implementation/server'
 
-let server: Server
-
-beforeAll(async () => {
-  server = await PSICardinality.server.createWithNewKey()
-})
-
 describe('PSI Server', () => {
+  let server: Server
+
+  beforeAll(async () => {
+    server = await PSICardinality.server.createWithNewKey()
+  })
+
   test('It should create from an existing key', async () => {
     const server2 = await PSICardinality.server.createWithNewKey()
     const key = server2.getPrivateKeyBytes()

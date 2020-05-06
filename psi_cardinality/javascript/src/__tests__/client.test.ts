@@ -1,13 +1,13 @@
 import PSICardinality from '../index_combined_wasm'
 import { Client } from '../implementation/client'
 
-let client: Client
-
-beforeAll(async () => {
-  client = await PSICardinality.client.create()
-})
-
 describe('PSI Client', () => {
+  let client: Client
+
+  beforeAll(async () => {
+    client = await PSICardinality.client.create()
+  })
+
   test("It should delete it's instance", async () => {
     const client2 = await PSICardinality.client.create()
     const spyOn = jest.spyOn(client2, 'delete')
