@@ -8,13 +8,13 @@ export type ServerWrapper = {
 }
 
 type ServerWrapperOptions = {
-  readonly Loader: Loader
+  readonly loader: Loader
 }
 
 /**
  * @implements Server
  */
-const ServerInstanceImpl = (instance: CppLibrary): Server => {
+const ServerConstructor = (instance: CppLibrary): Server => {
   let _instance: CppLibrary | null = instance
 
   /**
@@ -123,12 +123,14 @@ const ServerInstanceImpl = (instance: CppLibrary): Server => {
   }
 }
 
-export const ServerImpl = ({ Loader }: ServerWrapperOptions): ServerWrapper => {
+export const ServerWrapperConstructor = ({
+  loader
+}: ServerWrapperOptions): ServerWrapper => {
   let library: CppLibrary
 
   const initialize = async (): Promise<void> => {
     if (!library) {
-      const module = await Loader()
+      const module = await loader()
       library = module.library
     }
   }
@@ -149,7 +151,7 @@ export const ServerImpl = ({ Loader }: ServerWrapperOptions): ServerWrapper => {
         throw new Error(Status.Message)
       }
 
-      return ServerInstanceImpl(Value)
+      return ServerConstructor(Value)
     },
     /**
      * Create a new PSI Cardinality server from a key
@@ -167,7 +169,7 @@ export const ServerImpl = ({ Loader }: ServerWrapperOptions): ServerWrapper => {
         throw new Error(Status.Message)
       }
 
-      return ServerInstanceImpl(Value)
+      return ServerConstructor(Value)
     }
   }
 }

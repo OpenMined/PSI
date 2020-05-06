@@ -9,12 +9,12 @@ type PSICardinalityLibrary = {
 /**
  * @implements PSICardinality
  */
-export const PSICardinalityImpl = ({
-  ServerImpl,
-  ClientImpl
+export const PSICardinalityConstructor = ({
+  serverWrapper,
+  clientWrapper
 }: {
-  readonly ServerImpl: ServerWrapper
-  readonly ClientImpl: ClientWrapper
+  readonly serverWrapper: ServerWrapper
+  readonly clientWrapper: ClientWrapper
 }): PSICardinalityLibrary => {
   /**
    * @interface PSICardinality
@@ -34,7 +34,7 @@ export const PSICardinalityImpl = ({
      * import PSICardinality from 'psi.js'
      * const server = await PSICardinality.Server.CreateWithNewKey()
      */
-    ...(ServerImpl && { server: ServerImpl }),
+    ...(serverWrapper && { server: serverWrapper }),
 
     /**
      * @description
@@ -55,8 +55,8 @@ export const PSICardinalityImpl = ({
      * import PSICardinality from 'psi.js'
      * const client = await PSICardinality.Client.Create()
      */
-    ...(ClientImpl && { client: ClientImpl })
+    ...(clientWrapper && { client: clientWrapper })
   }
 }
 
-export default PSICardinalityImpl
+export default PSICardinalityConstructor

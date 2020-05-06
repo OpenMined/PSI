@@ -7,13 +7,13 @@ export type ClientWrapper = {
 }
 
 type ClientWrapperOptions = {
-  readonly Loader: Loader
+  readonly loader: Loader
 }
 
 /**
  * @implements Client
  */
-const ClientInstanceImpl = (instance: CppLibrary): Client => {
+const ClientConstructor = (instance: CppLibrary): Client => {
   let _instance: CppLibrary | null = instance
 
   /**
@@ -83,12 +83,14 @@ const ClientInstanceImpl = (instance: CppLibrary): Client => {
   }
 }
 
-export const ClientImpl = ({ Loader }: ClientWrapperOptions): ClientWrapper => {
+export const ClientWrapperConstructor = ({
+  loader
+}: ClientWrapperOptions): ClientWrapper => {
   let library: CppLibrary
 
   const initialize = async (): Promise<void> => {
     if (!library) {
-      const module = await Loader()
+      const module = await loader()
       library = module.library
     }
   }
@@ -108,7 +110,7 @@ export const ClientImpl = ({ Loader }: ClientWrapperOptions): ClientWrapper => {
       if (Status) {
         throw new Error(Status.Message)
       }
-      return ClientInstanceImpl(Value)
+      return ClientConstructor(Value)
     }
   }
 }
