@@ -41,10 +41,11 @@ const ServerConstructor = (instance: bazel.Server): Server => {
      * @name Server#delete
      */
     delete(): void {
-      if (_instance) {
-        _instance.delete()
-        _instance = null
+      if (!_instance) {
+        throw new Error(ERROR_INSTANCE_DELETED)
       }
+      _instance.delete()
+      _instance = null
     },
 
     /**
