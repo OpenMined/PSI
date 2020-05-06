@@ -1,6 +1,6 @@
 {
   "name": "@openmined/psi-cardinality",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "PSI cardinality for JavaScript",
   "repository": {
     "type": "git",
@@ -12,7 +12,12 @@
     "private set intersection",
     "private join and compute"
   ],
-  "main": "psi_cardinality/javascript/index.js",
+  "main": "combined/wasm/umd/index.js",
+  "browser": "combined/wasm/umd/index.js",
+  "module": "combined/wasm/es/index.js",
+  "files": [
+    "**/*.js"
+  ],
   "scripts": {
     "benchmark:js": "RUN_DEMO=js node -r esm psi_cardinality/javascript/benchmark.js",
     "benchmark:wasm": "RUN_DEMO=wasm node -r esm psi_cardinality/javascript/benchmark.js",
@@ -29,6 +34,8 @@
     "build:copy": "bash psi_cardinality/javascript/scripts/build-copy.sh",
     "prerollup": "bash psi_cardinality/javascript/scripts/prerollup.sh",
     "rollup": "rollup -c",
+    "postrollup": "bash psi_cardinality/javascript/scripts/postrollup.sh",
+    "publish": "npm --dry-run publish psi_cardinality/javascript/dist/openmined-psi-cardinality-*.tar.gz",
     "clean": "bazel clean --expunge",
     "test": "jest psi_cardinality/javascript/test",
     "coverage": "jest psi_cardinality/javascript/test --coverage",

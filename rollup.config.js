@@ -1,73 +1,36 @@
 import { terser } from 'rollup-plugin-terser'
 
-export default [
-  /////////////////
-  // Client
-  /////////////////
-  {
-    input: 'psi_cardinality/javascript/src/index_client_wasm.js',
-    output: {
-      file: 'psi_cardinality/javascript/dist/client/wasm/index.js',
-      sourcemap: true,
-      format: 'umd',
-      name: 'PSICardinality',
-      plugins: [terser()]
-    }
-  },
-  {
-    input: 'psi_cardinality/javascript/src/index_client_js.js',
-    output: {
-      file: 'psi_cardinality/javascript/dist/client/js/index.js',
-      sourcemap: true,
-      format: 'umd',
-      name: 'PSICardinality',
-      plugins: [terser()]
-    }
-  },
-  /////////////////
-  // Server
-  /////////////////
-  {
-    input: 'psi_cardinality/javascript/src/index_server_wasm.js',
-    output: {
-      file: 'psi_cardinality/javascript/dist/server/wasm/index.js',
-      sourcemap: true,
-      format: 'umd',
-      name: 'PSICardinality',
-      plugins: [terser()]
-    }
-  },
-  {
-    input: 'psi_cardinality/javascript/src/index_server_js.js',
-    output: {
-      file: 'psi_cardinality/javascript/dist/server/js/index.js',
-      sourcemap: true,
-      format: 'umd',
-      name: 'PSICardinality',
-      plugins: [terser()]
-    }
-  },
-  /////////////////
-  // Combined
-  /////////////////
-  {
-    input: 'psi_cardinality/javascript/src/index_combined_wasm.js',
-    output: {
-      file: 'psi_cardinality/javascript/dist/combined/wasm/index.js',
-      sourcemap: true,
-      format: 'umd',
-      name: 'PSICardinality',
-      plugins: [terser()]
-    }
-  },
-  {
-    input: 'psi_cardinality/javascript/src/index_combined_js.js',
-    output: {
-      file: 'psi_cardinality/javascript/dist/combined/js/index.js',
-      sourcemap: true,
-      format: 'umd',
-      name: 'PSICardinality',
-      plugins: [terser()]
-    }
-  }
-]
+const targets = ['client', 'server', 'combined']
+const variants = ['wasm', 'js']
+const formats = ['umd', 'es']
+
+const outputs = targets.reduce(
+  (acc, t) => [
+    ...acc,
+    ...variants.reduce(
+      (acc, v) => [
+        ...acc,
+        {
+          input: `psi_cardinality/javascript/src/index_${t}_${v}.js`,
+          output: formats.reduce(
+            (acc, f) => [
+              ...acc,
+              {
+                file: `psi_cardinality/javascript/dist/${t}/${v}/${f}/index.js`,
+                sourcemap: true,
+                format: `${f}`,
+                name: 'PSICardinality',
+                plugins: [terser()]
+              }
+            ],
+            []
+          )
+        }
+      ],
+      []
+    )
+  ],
+  []
+)
+
+export default outputs
