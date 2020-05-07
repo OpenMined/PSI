@@ -20,15 +20,15 @@ func CreateWithNewKey() (*PSICardinalityServer, error) {
 	psiServer := new(PSICardinalityServer)
 
 	var err *C.char
-	ret := C.psi_cardinality_server_create_with_new_key(&psiServer.context, &err)
-	if ret != 0 {
-		return nil, fmt.Errorf("failed to create server context: %v(%v)", C.GoString(err), ret)
+	rcode := C.psi_cardinality_server_create_with_new_key(&psiServer.context, &err)
+	if rcode != 0 {
+		return nil, fmt.Errorf("failed to create server context: %v(%v)", psiServer.loadCString(&err), rcode)
 	}
 	if psiServer.context == nil {
 		return nil, errors.New("failed to create server context: null")
 	}
 
-	runtime.SetFinalizer(psiServer, destroy)
+	runtime.SetFinalizer(psiServer, func(s *PSICardinalityServer) { s.destroy() })
 	return psiServer, nil
 }
 
@@ -37,20 +37,20 @@ func CreateFromKey(key string) (*PSICardinalityServer, error) {
 	psiServer := new(PSICardinalityServer)
 
 	var err *C.char
-	ret := C.psi_cardinality_server_create_from_key(C.struct_server_buffer_t{
+	rcode := C.psi_cardinality_server_create_from_key(C.struct_server_buffer_t{
 		buff:     C.CString(key),
 		buff_len: C.ulong(len(key)),
 	},
 		&psiServer.context, &err)
 
-	if ret != 0 {
-		return nil, fmt.Errorf("failed to create server context: %v(%v)", C.GoString(err), ret)
+	if rcode != 0 {
+		return nil, fmt.Errorf("failed to create server context: %v(%v)", psiServer.loadCString(&err), rcode)
 	}
 	if psiServer.context == nil {
 		return nil, errors.New("failed to create server context: null")
 	}
 
-	runtime.SetFinalizer(psiServer, destroy)
+	runtime.SetFinalizer(psiServer, func(s *PSICardinalityServer) { s.destroy() })
 	return psiServer, nil
 }
 
@@ -69,12 +69,15 @@ func (s *PSICardinalityServer) CreateSetupMessage(fpr float64, inputCount int64,
 	}
 
 	var out *C.char
+	var err *C.char
 	var outlen C.ulong
 
-	C.psi_cardinality_server_create_setup_message(s.context, C.double(fpr), C.long(inputCount), &input[0], C.ulong(len(input)), &out, &outlen)
+	rcode := C.psi_cardinality_server_create_setup_message(s.context, C.double(fpr), C.long(inputCount), &input[0], C.ulong(len(input)), &out, &outlen, &err)
 
-	result := C.GoString(out)
-	C.psi_cardinality_server_delete_buffer(s.context, &out)
+	if rcode != 0 {
+		return "", fmt.Errorf("setup_message failed: %v(%v)", s.loadCString(&err), rcode)
+	}
+	result := s.loadCString(&out)
 
 	return result, nil
 }
@@ -86,20 +89,19 @@ func (s *PSICardinalityServer) ProcessRequest(request string) (string, error) {
 	}
 
 	var out *C.char
+	var err *C.char
 	var outlen C.ulong
 
-	ret := C.psi_cardinality_server_process_request(s.context, C.struct_server_buffer_t{
+	rcode := C.psi_cardinality_server_process_request(s.context, C.struct_server_buffer_t{
 		buff:     C.CString(request),
 		buff_len: C.ulong(len(request)),
-	}, &out, &outlen)
+	}, &out, &outlen, &err)
 
-	if ret < 0 {
-		return "", errors.New("process request failed")
+	if rcode != 0 {
+		return "", fmt.Errorf("process request failed: %v(%v)", s.loadCString(&err), rcode)
 	}
 
-	result := C.GoString(out)
-	C.psi_cardinality_server_delete_buffer(s.context, &out)
-
+	result := s.loadCString(&out)
 	return result, nil
 
 }
@@ -112,24 +114,30 @@ func (s *PSICardinalityServer) GetPrivateKeyBytes() (string, error) {
 
 	var out *C.char
 	var outlen C.ulong
+	var err *C.char
 
-	ret := C.psi_cardinality_server_get_private_key_bytes(s.context, &out, &outlen)
+	rcode := C.psi_cardinality_server_get_private_key_bytes(s.context, &out, &outlen, &err)
 
-	if ret < 0 {
-		return "", errors.New("get private keys failed")
+	if rcode != 0 {
+		return "", fmt.Errorf("get private keys failed: %v(%v)", s.loadCString(&err), rcode)
 	}
 
-	result := C.GoString(out)
-	C.psi_cardinality_server_delete_buffer(s.context, &out)
+	result := s.loadCString(&out)
 
 	return result, nil
 }
 
-func destroy(s *PSICardinalityServer) error {
+func (s *PSICardinalityServer) destroy() error {
 	if s.context == nil {
 		return errors.New("invalid context")
 	}
 	C.psi_cardinality_server_delete(&s.context)
 	s.context = nil
 	return nil
+}
+
+func (c *PSICardinalityServer) loadCString(buff **C.char) string {
+	str := C.GoString(*buff)
+	C.psi_cardinality_server_delete_buffer(c.context, buff)
+	return str
 }

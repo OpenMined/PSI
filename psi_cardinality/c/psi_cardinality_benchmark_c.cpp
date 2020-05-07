@@ -27,7 +27,7 @@ void BM_ServerSetup(benchmark::State &state, double fpr) {
     size_t server_setup_buff_len = 0;
     psi_cardinality_server_create_setup_message(
         server_, fpr, num_client_inputs, inputs.data(), inputs.size(),
-        &server_setup, &server_setup_buff_len);
+        &server_setup, &server_setup_buff_len, &err);
 
     ::benchmark::DoNotOptimize(server_setup);
     ::benchmark::ClobberMemory();
@@ -68,8 +68,9 @@ void BM_ClientCreateRequest(benchmark::State &state) {
   for (auto _ : state) {
     char *client_request = {0};
     size_t req_len = 0;
+    char *err;
     psi_cardinality_client_create_request(client_, inputs.data(), inputs.size(),
-                                          &client_request, &req_len);
+                                          &client_request, &req_len, &err);
 
     ::benchmark::DoNotOptimize(client_request);
     ::benchmark::ClobberMemory();
@@ -105,7 +106,7 @@ void BM_ServerProcessRequest(benchmark::State &state) {
   char *client_request = nullptr;
   size_t req_len = 0;
   psi_cardinality_client_create_request(client_, inputs.data(), inputs.size(),
-                                        &client_request, &req_len);
+                                        &client_request, &req_len, &err);
 
   std::string response;
 
@@ -114,7 +115,8 @@ void BM_ServerProcessRequest(benchmark::State &state) {
     char *server_response = nullptr;
     size_t response_len = 0;
     psi_cardinality_server_process_request(server_, {client_request, req_len},
-                                           &server_response, &response_len);
+                                           &server_response, &response_len,
+                                           &err);
     ::benchmark::DoNotOptimize(server_response);
     ::benchmark::ClobberMemory();
 
@@ -156,22 +158,24 @@ void BM_ClientProcessResponse(benchmark::State &state) {
   size_t server_setup_buff_len = 0;
   psi_cardinality_server_create_setup_message(
       server_, fpr, num_inputs, srv_inputs.data(), srv_inputs.size(),
-      &server_setup, &server_setup_buff_len);
+      &server_setup, &server_setup_buff_len, &err);
 
   char *client_request = nullptr;
   size_t req_len = 0;
-  psi_cardinality_client_create_request(
-      client_, cl_inputs.data(), cl_inputs.size(), &client_request, &req_len);
+  psi_cardinality_client_create_request(client_, cl_inputs.data(),
+                                        cl_inputs.size(), &client_request,
+                                        &req_len, &err);
 
   char *server_response = nullptr;
   size_t response_len = 0;
   psi_cardinality_server_process_request(server_, {client_request, req_len},
-                                         &server_response, &response_len);
+                                         &server_response, &response_len, &err);
 
   int64_t elements_processed = 0;
   for (auto _ : state) {
-    int64_t count = psi_cardinality_client_process_response(
-        client_, server_setup, server_response);
+    int64_t count = 0;
+    psi_cardinality_client_process_response(client_, server_setup,
+                                            server_response, &count, &err);
 
     ::benchmark::DoNotOptimize(count);
     elements_processed += num_inputs;

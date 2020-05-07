@@ -74,7 +74,7 @@ TEST_F(PSICardinalityServerTest, TestCorrectness) {
   size_t server_setup_buff_len = 0;
   psi_cardinality_server_create_setup_message(
       server_, fpr, num_client_elements, server_elements.data(),
-      server_elements.size(), &server_setup, &server_setup_buff_len);
+      server_elements.size(), &server_setup, &server_setup_buff_len, &err);
 
   ASSERT_TRUE(server_setup != nullptr);
   ASSERT_TRUE(server_setup_buff_len != 0);
@@ -84,7 +84,7 @@ TEST_F(PSICardinalityServerTest, TestCorrectness) {
   size_t req_len = 0;
   int ret = psi_cardinality_client_create_request(
       client_, client_elements.data(), client_elements.size(), &client_request,
-      &req_len);
+      &req_len, &err);
 
   ASSERT_TRUE(ret == 0);
   ASSERT_TRUE(req_len > 0);
@@ -94,14 +94,16 @@ TEST_F(PSICardinalityServerTest, TestCorrectness) {
   char *server_response = nullptr;
   size_t response_len = 0;
   ret = psi_cardinality_server_process_request(
-      server_, {client_request, req_len}, &server_response, &response_len);
+      server_, {client_request, req_len}, &server_response, &response_len,
+      &err);
   ASSERT_TRUE(server_response != nullptr);
   ASSERT_TRUE(response_len >= 0);
   ASSERT_TRUE(ret == 0);
 
   // Compute intersection size.
-  int64_t intersection_size = psi_cardinality_client_process_response(
-      client_, server_setup, server_response);
+  int64_t intersection_size = 0;
+  psi_cardinality_client_process_response(
+      client_, server_setup, server_response, &intersection_size, &err);
 
   // Test if size is approximately as expected (up to 10%).
   EXPECT_GE(intersection_size, num_client_elements / 2);

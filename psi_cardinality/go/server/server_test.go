@@ -45,7 +45,7 @@ func TestServerFailure(t *testing.T) {
 	if err == nil {
 		t.Errorf("ProcessRequest should fail with an invalid context %v", err)
 	}
-	err = destroy(server)
+	err = server.destroy()
 	if err == nil {
 		t.Errorf("Destroy should fail with an invalid context %v", err)
 	}

@@ -84,9 +84,10 @@ TEST_F(PSICardinalityClientTest, TestCorrectness) {
   // Compute client request.
   char *client_request = {0};
   size_t req_len = 0;
+  char *err;
   int ret = psi_cardinality_client_create_request(
       client_, client_elements.data(), client_elements.size(), &client_request,
-      &req_len);
+      &req_len, &err);
 
   ASSERT_TRUE(ret == 0);
   ASSERT_TRUE(req_len > 0);
@@ -122,8 +123,11 @@ TEST_F(PSICardinalityClientTest, TestCorrectness) {
   std::string server_response(buffer.GetString());
 
   // Compute intersection size.
-  int64_t intersection_size = psi_cardinality_client_process_response(
-      client_, server_setup.c_str(), server_response.c_str());
+  int64_t intersection_size = 0;
+  ret = psi_cardinality_client_process_response(client_, server_setup.c_str(),
+                                                server_response.c_str(),
+                                                &intersection_size, &err);
+  ASSERT_TRUE(ret == 0);
   ASSERT_TRUE(intersection_size > 0);
 
   // Test if size is approximately as expected (up to 10%).

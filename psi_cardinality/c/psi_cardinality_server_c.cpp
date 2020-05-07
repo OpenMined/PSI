@@ -39,15 +39,16 @@ void psi_cardinality_server_delete(psi_cardinality_server_ctx *ctx) {
   *ctx = nullptr;
 }
 
-int psi_cardinality_server_create_setup_message(psi_cardinality_server_ctx ctx,
-                                                double fpr,
-                                                int64_t num_client_inputs,
-                                                server_buffer_t *input,
-                                                size_t input_len, char **output,
-                                                size_t *output_len) {
+int psi_cardinality_server_create_setup_message(
+    psi_cardinality_server_ctx ctx, double fpr, int64_t num_client_inputs,
+    server_buffer_t *input, size_t input_len, char **output, size_t *output_len,
+    char **error_out) {
   auto server = static_cast<Server *>(ctx);
   if (server == nullptr) {
-    return -1;
+    return psi_cardinality::c_bindings_internal::generate_error(
+        ::private_join_and_compute::InvalidArgumentError(
+            "invalid server context"),
+        error_out);
   }
 
   std::vector<std::string> in;
@@ -57,7 +58,9 @@ int psi_cardinality_server_create_setup_message(psi_cardinality_server_ctx ctx,
 
   auto result = server->CreateSetupMessage(fpr, num_client_inputs, in);
   if (!result.ok()) {
-    return -1;
+
+    return psi_cardinality::c_bindings_internal::generate_error(result.status(),
+                                                                error_out);
   }
 
   auto value = result.ValueOrDie();
@@ -71,16 +74,21 @@ int psi_cardinality_server_create_setup_message(psi_cardinality_server_ctx ctx,
 
 int psi_cardinality_server_process_request(psi_cardinality_server_ctx ctx,
                                            server_buffer_t client_request,
-                                           char **output, size_t *output_len) {
+                                           char **output, size_t *output_len,
+                                           char **error_out) {
   auto server = static_cast<Server *>(ctx);
   if (server == nullptr) {
-    return -1;
+    return psi_cardinality::c_bindings_internal::generate_error(
+        ::private_join_and_compute::InvalidArgumentError(
+            "invalid server context"),
+        error_out);
   }
 
   auto result = server->ProcessRequest(
       std::string(client_request.buff, client_request.buff_len));
   if (!result.ok()) {
-    return -1;
+    return psi_cardinality::c_bindings_internal::generate_error(result.status(),
+                                                                error_out);
   }
 
   auto value = result.ValueOrDie();
@@ -94,10 +102,14 @@ int psi_cardinality_server_process_request(psi_cardinality_server_ctx ctx,
 
 int psi_cardinality_server_get_private_key_bytes(psi_cardinality_server_ctx ctx,
                                                  char **output,
-                                                 size_t *output_len) {
+                                                 size_t *output_len,
+                                                 char **error_out) {
   auto server = static_cast<Server *>(ctx);
   if (server == nullptr) {
-    return -1;
+    return psi_cardinality::c_bindings_internal::generate_error(
+        ::private_join_and_compute::InvalidArgumentError(
+            "invalid server context"),
+        error_out);
   }
   auto value = server->GetPrivateKeyBytes();
   size_t len = value.size() + 1;

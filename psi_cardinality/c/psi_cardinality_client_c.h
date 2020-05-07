@@ -37,12 +37,13 @@ void psi_cardinality_client_delete(psi_cardinality_client_ctx *ctx);
 int psi_cardinality_client_create_request(psi_cardinality_client_ctx ctx,
                                           struct client_buffer_t *inputs,
                                           size_t input_len, char **output,
-                                          size_t *out_len);
+                                          size_t *out_len, char **error_out);
 void psi_cardinality_client_delete_buffer(psi_cardinality_client_ctx ctx,
                                           char **request);
-int64_t psi_cardinality_client_process_response(psi_cardinality_client_ctx,
-                                                const char *server_setup,
-                                                const char *server_response);
+int psi_cardinality_client_process_response(psi_cardinality_client_ctx,
+                                            const char *server_setup,
+                                            const char *server_responsei,
+                                            int64_t *out, char **error_out);
 
 #ifdef __cplusplus
 }

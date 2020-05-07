@@ -20,15 +20,15 @@ func Create() (*PSICardinalityClient, error) {
 	psiClient := new(PSICardinalityClient)
 
 	var err *C.char
-	ret := C.psi_cardinality_client_create(&psiClient.context, &err)
-	if ret != 0 {
-		return nil, fmt.Errorf("failed to create client context: %v(%v)", C.GoString(err), ret)
+	rcode := C.psi_cardinality_client_create(&psiClient.context, &err)
+	if rcode != 0 {
+		return nil, fmt.Errorf("failed to create client context: %v(%v)", psiClient.loadCString(&err), rcode)
 	}
 	if psiClient.context == nil {
 		return nil, errors.New("failed to create client context: null")
 	}
 
-	runtime.SetFinalizer(psiClient, destroy)
+	runtime.SetFinalizer(psiClient, func(c *PSICardinalityClient) { c.destroy() })
 	return psiClient, nil
 }
 
@@ -48,17 +48,14 @@ func (c *PSICardinalityClient) CreateRequest(rawInput []string) (string, error) 
 
 	var out *C.char
 	var outlen C.ulong
+	var err *C.char
 
-	ret := C.psi_cardinality_client_create_request(c.context, &inputs[0], C.ulong(len(inputs)), &out, &outlen)
-	if ret < 0 {
-		return "", errors.New("create request failed")
+	rcode := C.psi_cardinality_client_create_request(c.context, &inputs[0], C.ulong(len(inputs)), &out, &outlen, &err)
+	if rcode != 0 {
+		return "", fmt.Errorf("create request failed %v(%v)", c.loadCString(&err), rcode)
 	}
 
-	result := C.GoString(out)
-
-	C.psi_cardinality_client_delete_buffer(c.context, &out)
-
-	return result, nil
+	return c.loadCString(&out), nil
 }
 
 //ProcessResponse returns the intersection size
@@ -67,19 +64,28 @@ func (c *PSICardinalityClient) ProcessResponse(serverSetup, serverResponse strin
 		return 0, errors.New("invalid context")
 	}
 
-	result := C.psi_cardinality_client_process_response(c.context, C.CString(serverSetup), C.CString(serverResponse))
+	var result C.long
+	var err *C.char
 
-	if result < 0 {
-		return 0, errors.New("process response failed")
+	rcode := C.psi_cardinality_client_process_response(c.context, C.CString(serverSetup), C.CString(serverResponse), &result, &err)
+
+	if rcode != 0 {
+		return 0, fmt.Errorf("process response failed: %v(%v)", c.loadCString(&err), rcode)
 	}
 	return int64(result), nil
 }
 
-func destroy(c *PSICardinalityClient) error {
+func (c *PSICardinalityClient) destroy() error {
 	if c.context == nil {
 		return errors.New("invalid context")
 	}
 	C.psi_cardinality_client_delete(&c.context)
 	c.context = nil
 	return nil
+}
+
+func (c *PSICardinalityClient) loadCString(buff **C.char) string {
+	str := C.GoString(*buff)
+	C.psi_cardinality_client_delete_buffer(c.context, buff)
+	return str
 }

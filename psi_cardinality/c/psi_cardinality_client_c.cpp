@@ -29,10 +29,13 @@ void psi_cardinality_client_delete(psi_cardinality_client_ctx *ctx) {
 int psi_cardinality_client_create_request(psi_cardinality_client_ctx ctx,
                                           client_buffer_t *inputs,
                                           size_t input_len, char **out,
-                                          size_t *out_len) {
+                                          size_t *out_len, char **error_out) {
   auto client = static_cast<Client *>(ctx);
   if (client == nullptr) {
-    return -1;
+    return psi_cardinality::c_bindings_internal::generate_error(
+        ::private_join_and_compute::InvalidArgumentError(
+            "invalid client context"),
+        error_out);
   }
   std::vector<std::string> in;
   for (size_t idx = 0; idx < input_len; ++idx) {
@@ -41,7 +44,8 @@ int psi_cardinality_client_create_request(psi_cardinality_client_ctx ctx,
 
   auto result = client->CreateRequest(in);
   if (!result.ok()) {
-    return -1;
+    return psi_cardinality::c_bindings_internal::generate_error(result.status(),
+                                                                error_out);
   }
   auto value = std::move(result).ValueOrDie();
 
@@ -59,16 +63,24 @@ void psi_cardinality_client_delete_buffer(psi_cardinality_client_ctx ctx,
   *request = nullptr;
 }
 
-int64_t psi_cardinality_client_process_response(psi_cardinality_client_ctx ctx,
-                                                const char *server_setup,
-                                                const char *server_response) {
+int psi_cardinality_client_process_response(psi_cardinality_client_ctx ctx,
+                                            const char *server_setup,
+                                            const char *server_response,
+                                            int64_t *out, char **error_out) {
   auto client = static_cast<Client *>(ctx);
   if (client == nullptr) {
-    return -1;
+    return psi_cardinality::c_bindings_internal::generate_error(
+        ::private_join_and_compute::InvalidArgumentError(
+            "invalid client context"),
+        error_out);
   }
   auto result = client->ProcessResponse(server_setup, server_response);
   if (!result.ok()) {
-    return -1;
+    return psi_cardinality::c_bindings_internal::generate_error(result.status(),
+                                                                error_out);
   }
-  return result.ValueOrDie();
+  if (out != nullptr) {
+    *out = result.ValueOrDie();
+  }
+  return 0;
 }

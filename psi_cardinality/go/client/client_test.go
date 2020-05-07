@@ -25,7 +25,7 @@ func TestClientFailure(t *testing.T) {
 	if err == nil {
 		t.Errorf("ProcessResponse with an invalid context should fail")
 	}
-	err = destroy(c)
+	err = c.destroy()
 	if err == nil {
 		t.Errorf("Destroy with an invalid context should fail")
 	}

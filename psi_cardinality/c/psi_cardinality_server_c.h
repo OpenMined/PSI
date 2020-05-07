@@ -38,21 +38,20 @@ int psi_cardinality_server_create_from_key(struct server_buffer_t key_bytes,
                                            char **error_out);
 void psi_cardinality_server_delete(psi_cardinality_server_ctx *ctx);
 
-int psi_cardinality_server_create_setup_message(psi_cardinality_server_ctx ctx,
-                                                double fpr,
-                                                int64_t num_client_inputs,
-                                                struct server_buffer_t *input,
-                                                size_t input_len, char **output,
-                                                size_t *output_len);
+int psi_cardinality_server_create_setup_message(
+    psi_cardinality_server_ctx ctx, double fpr, int64_t num_client_inputs,
+    struct server_buffer_t *input, size_t input_len, char **output,
+    size_t *output_len, char **error_out);
 void psi_cardinality_server_delete_buffer(psi_cardinality_server_ctx ctx,
                                           char **input);
 
 int psi_cardinality_server_process_request(
     psi_cardinality_server_ctx ctx, struct server_buffer_t client_request,
-    char **output, size_t *output_len);
+    char **output, size_t *output_len, char **error_out);
 int psi_cardinality_server_get_private_key_bytes(psi_cardinality_server_ctx ctx,
                                                  char **output,
-                                                 size_t *output_len);
+                                                 size_t *output_len,
+                                                 char **error_out);
 
 #ifdef __cplusplus
 }
