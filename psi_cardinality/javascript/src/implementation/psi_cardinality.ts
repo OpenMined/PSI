@@ -2,8 +2,13 @@ import { ClientWrapper } from './client'
 import { ServerWrapper } from './server'
 
 type PSICardinalityLibrary = {
-  readonly server: ServerWrapper
-  readonly client: ClientWrapper
+  readonly server?: ServerWrapper
+  readonly client?: ClientWrapper
+}
+
+type PSICardinalityConstructorOptions = {
+  readonly serverWrapper?: ServerWrapper
+  readonly clientWrapper?: ClientWrapper
 }
 
 /**
@@ -12,10 +17,7 @@ type PSICardinalityLibrary = {
 export const PSICardinalityConstructor = ({
   serverWrapper,
   clientWrapper
-}: {
-  readonly serverWrapper: ServerWrapper
-  readonly clientWrapper: ClientWrapper
-}): PSICardinalityLibrary => {
+}: PSICardinalityConstructorOptions): PSICardinalityLibrary => {
   /**
    * @interface PSICardinality
    */

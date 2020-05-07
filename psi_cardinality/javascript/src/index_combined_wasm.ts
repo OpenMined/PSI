@@ -1,19 +1,19 @@
 import serverWasmLibrary from '../bin/psi_cardinality_server_wasm.js'
 import clientWasmLibrary from '../bin/psi_cardinality_client_wasm.js'
 
-import { Loader } from './loader'
-import { PSICardinalityImpl } from './implementation/psi_cardinality'
-import { ServerImpl } from './implementation/server'
-import { ClientImpl } from './implementation/client'
+import { createLoader } from './loader'
+import { PSICardinalityConstructor } from './implementation/psi_cardinality'
+import { ServerWrapperConstructor } from './implementation/server'
+import { ClientWrapperConstructor } from './implementation/client'
 
 /**
  * Main export for the library
  */
-export default PSICardinalityImpl({
-  ServerImpl: ServerImpl({
-    Loader: Loader(serverWasmLibrary)
+export default PSICardinalityConstructor({
+  serverWrapper: ServerWrapperConstructor({
+    loader: createLoader(serverWasmLibrary)
   }),
-  ClientImpl: ClientImpl({
-    Loader: Loader(clientWasmLibrary)
+  clientWrapper: ClientWrapperConstructor({
+    loader: createLoader(clientWasmLibrary)
   })
 })
