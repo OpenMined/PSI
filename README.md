@@ -23,35 +23,15 @@ psi_cardinality/<target language>/<sources>
 
 ### C++
 
-Build all libraries with or without optimizations, or build a specific module
-
-```
-# Build everything using the fastbuild optimization configuration
-bazel build //psi_cardinality/cpp/...
-
-# With a specific optimization flag '-c opt'
-bazel build -c opt //psi_cardinality/cpp/...
-
-# Specific module(s)
-bazel build -c opt //psi_cardinality/cpp:psi_cardinality_client
-bazel build -c opt //psi_cardinality/cpp:psi_cardinality_server
-```
-
-Build and run tests
-
-```
-bazel test //psi_cardinality/cpp/...
-```
-
-Build and run benchmarks
-
-```
-bazel run -c opt //psi_cardinality/cpp:psi_cardinality_benchmark
-```
+See the [C++ README.md](psi_cardinality/cpp/README.md)
 
 ### JavaScript
 
 See the [JavaScript README.md](psi_cardinality/javascript/README.md)
+
+### Go
+
+See the [Go README.md](psi_cardinality/go/README.md)
 
 ## Using the Library
 
