@@ -39,7 +39,7 @@ func CreateFromKey(key string) (*PSICardinalityServer, error) {
 	var err *C.char
 	rcode := C.psi_cardinality_server_create_from_key(C.struct_server_buffer_t{
 		buff:     C.CString(key),
-		buff_len: C.uint64_t(len(key)),
+		buff_len: C.size_t(len(key)),
 	},
 		&psiServer.context, &err)
 
@@ -64,15 +64,15 @@ func (s *PSICardinalityServer) CreateSetupMessage(fpr float64, inputCount int64,
 	for idx := range rawInput {
 		input = append(input, C.struct_server_buffer_t{
 			buff:     C.CString(rawInput[idx]),
-			buff_len: C.uint64_t(len(rawInput[idx])),
+			buff_len: C.size_t(len(rawInput[idx])),
 		})
 	}
 
 	var out *C.char
 	var err *C.char
-	var outlen C.uint64_t
+	var outlen C.size_t
 
-	rcode := C.psi_cardinality_server_create_setup_message(s.context, C.double(fpr), C.int64_t(inputCount), &input[0], C.uint64_t(len(input)), &out, &outlen, &err)
+	rcode := C.psi_cardinality_server_create_setup_message(s.context, C.double(fpr), C.int64_t(inputCount), &input[0], C.size_t(len(input)), &out, &outlen, &err)
 
 	if rcode != 0 {
 		return "", fmt.Errorf("setup_message failed: %v(%v)", s.loadCString(&err), rcode)
@@ -90,11 +90,11 @@ func (s *PSICardinalityServer) ProcessRequest(request string) (string, error) {
 
 	var out *C.char
 	var err *C.char
-	var outlen C.uint64_t
+	var outlen C.size_t
 
 	rcode := C.psi_cardinality_server_process_request(s.context, C.struct_server_buffer_t{
 		buff:     C.CString(request),
-		buff_len: C.uint64_t(len(request)),
+		buff_len: C.size_t(len(request)),
 	}, &out, &outlen, &err)
 
 	if rcode != 0 {
@@ -113,7 +113,7 @@ func (s *PSICardinalityServer) GetPrivateKeyBytes() (string, error) {
 	}
 
 	var out *C.char
-	var outlen C.uint64_t
+	var outlen C.size_t
 	var err *C.char
 
 	rcode := C.psi_cardinality_server_get_private_key_bytes(s.context, &out, &outlen, &err)

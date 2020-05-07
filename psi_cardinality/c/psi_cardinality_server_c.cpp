@@ -41,8 +41,8 @@ void psi_cardinality_server_delete(psi_cardinality_server_ctx *ctx) {
 
 int psi_cardinality_server_create_setup_message(
     psi_cardinality_server_ctx ctx, double fpr, int64_t num_client_inputs,
-    server_buffer_t *input, uint64_t input_len, char **output,
-    uint64_t *output_len, char **error_out) {
+    server_buffer_t *input, size_t input_len, char **output,
+    size_t *output_len, char **error_out) {
   auto server = static_cast<Server *>(ctx);
   if (server == nullptr) {
     return psi_cardinality::c_bindings_internal::generate_error(
@@ -67,14 +67,14 @@ int psi_cardinality_server_create_setup_message(
   size_t len = value.size() + 1;
   *output = new char[len];
   strncpy(*output, value.c_str(), len);
-  *output_len = uint64_t(len);
+  *output_len = len;
 
   return 0;
 }
 
 int psi_cardinality_server_process_request(psi_cardinality_server_ctx ctx,
                                            server_buffer_t client_request,
-                                           char **output, uint64_t *output_len,
+                                           char **output, size_t *output_len,
                                            char **error_out) {
   auto server = static_cast<Server *>(ctx);
   if (server == nullptr) {
@@ -95,14 +95,14 @@ int psi_cardinality_server_process_request(psi_cardinality_server_ctx ctx,
   size_t len = value.size() + 1;
   *output = new char[len];
   strncpy(*output, value.c_str(), len);
-  *output_len = uint64_t(len);
+  *output_len = len;
 
   return 0;
 }
 
 int psi_cardinality_server_get_private_key_bytes(psi_cardinality_server_ctx ctx,
                                                  char **output,
-                                                 uint64_t *output_len,
+                                                 size_t *output_len,
                                                  char **error_out) {
   auto server = static_cast<Server *>(ctx);
   if (server == nullptr) {
@@ -115,7 +115,7 @@ int psi_cardinality_server_get_private_key_bytes(psi_cardinality_server_ctx ctx,
   size_t len = value.size() + 1;
   *output = new char[len];
   strncpy(*output, value.c_str(), len);
-  *output_len = uint64_t(len);
+  *output_len = len;
 
   return 0;
 }
