@@ -1,40 +1,39 @@
-import cpp_main from '..'
-import Library from '../src/psiServer'
+import PSICardinality from '../src/index_combined_wasm'
 
-let PSICardinality,
-  Server = null
+let Server = null
 beforeAll(async () => {
-  const { library } = await cpp_main(
-    `../../bazel-out/wasm-opt/bin/psi_cardinality/javascript/psi_cardinality_server_${process.env.RUN_DEMO}.js`
-  ) // RUN_DEMO = js|wasm
-
-  PSICardinality = Library(library)
-  Server = PSICardinality.Server.CreateWithNewKey()
+  Server = await PSICardinality.Server.CreateWithNewKey()
 })
 
 describe('PSI Server', () => {
-  test('It should create from an existing key', () => {
-    const key = 'some key bytes'
+  test('It should create from an existing key', async () => {
+    const server2 = await PSICardinality.Server.CreateWithNewKey()
+    const key = server2.GetPrivateKeyBytes()
     const spyOn = jest.spyOn(PSICardinality.Server, 'CreateFromKey')
-    const server = PSICardinality.Server.CreateFromKey(key)
+    const server = await PSICardinality.Server.CreateFromKey(key)
     expect(spyOn).toHaveBeenCalledWith(key)
     expect(server).toBeInstanceOf(Object)
     expect(server.constructor).toBe(Object)
     expect(server.constructor.name).toBe('Object')
     expect(server.GetPrivateKeyBytes()).toEqual(key)
   })
-  test("It should delete it's instance", () => {
-    const server = PSICardinality.Server.CreateWithNewKey()
+  test('It should fail to create from an invalid key', async () => {
+    const key = Uint8Array.from({ length: 32 })
+    const spyOn = jest.spyOn(PSICardinality.Server, 'CreateFromKey')
+    await expect(PSICardinality.Server.CreateFromKey(key)).rejects.toThrow()
+    expect(spyOn).toHaveBeenCalledWith(key)
+  })
+  test("It should delete it's instance", async () => {
+    const server = await PSICardinality.Server.CreateWithNewKey()
     const spyOn = jest.spyOn(server, 'delete')
     server.delete()
     expect(spyOn).toHaveBeenCalled()
   })
-  test('It should return the private key as a binary string', () => {
-    const server = PSICardinality.Server.CreateWithNewKey()
-    const spyOn = jest.spyOn(server, 'GetPrivateKeyBytes')
-    const key = server.GetPrivateKeyBytes()
+  test('It should return the private key as a binary array', () => {
+    const spyOn = jest.spyOn(Server, 'GetPrivateKeyBytes')
+    const key = Server.GetPrivateKeyBytes()
     expect(spyOn).toHaveBeenCalled()
-    expect(typeof key).toBe('string')
+    expect(key.constructor).toBe(Uint8Array)
   })
   test('It should create a setup message', () => {
     const fpr = 0.001

@@ -9,13 +9,10 @@ const waitUntilReady = src =>
 
 /**
  * Export a default function which instantiates the library
- *
- * @param {String} path Path to the build output from emscripten
- * @returns {Object} library
+ * @param {Object} bin Emscripten library to initialize
  */
-export default async path => {
-  const source = (await import(path)).default
-  const library = source()
+export const Loader = bin => async () => {
+  const library = bin()
   await waitUntilReady(library)
   return {
     library
