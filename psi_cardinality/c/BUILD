@@ -20,7 +20,6 @@ cc_library(
     name = "internal_utils",
     srcs = ["internal_utils.cpp"],
     hdrs = ["internal_utils.h"],
-    includes = ["."],
     deps = [
         "@private_join_and_compute//util:status",
     ],
@@ -31,7 +30,6 @@ cc_library(
     name = "psi_cardinality_client",
     srcs = ["psi_cardinality_client_c.cpp"],
     hdrs = ["psi_cardinality_client_c.h"],
-    includes = ["."],
     deps = [
         "//psi_cardinality/cpp:bloom_filter",
         "//psi_cardinality/cpp:psi_cardinality_client",
@@ -64,7 +62,6 @@ cc_library(
     name = "psi_cardinality_server",
     srcs = ["psi_cardinality_server_c.cpp"],
     hdrs = ["psi_cardinality_server_c.h"],
-    includes = ["."],
     deps = [
         "//psi_cardinality/cpp:bloom_filter",
         "//psi_cardinality/cpp:psi_cardinality_server",

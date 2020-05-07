@@ -25,7 +25,7 @@ func CreateWithNewKey() (*PSICardinalityServer, error) {
 		return nil, fmt.Errorf("failed to create server context: %v(%v)", psiServer.loadCString(&err), rcode)
 	}
 	if psiServer.context == nil {
-		return nil, errors.New("failed to create server context: null")
+		return nil, errors.New("failed to create server context: Context is NULL. This should never happen")
 	}
 
 	runtime.SetFinalizer(psiServer, func(s *PSICardinalityServer) { s.Destroy() })
@@ -47,7 +47,7 @@ func CreateFromKey(key string) (*PSICardinalityServer, error) {
 		return nil, fmt.Errorf("failed to create server context: %v(%v)", psiServer.loadCString(&err), rcode)
 	}
 	if psiServer.context == nil {
-		return nil, errors.New("failed to create server context: null")
+		return nil, errors.New("failed to create server context: Context is NULL. This should never happen")
 	}
 
 	runtime.SetFinalizer(psiServer, func(s *PSICardinalityServer) { s.Destroy() })
