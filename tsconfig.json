@@ -1,8 +1,8 @@
 {
   "compilerOptions": {
-    "baseUrl": ".",
+    "baseUrl": "./psi_cardinality/javascript",
     "declaration": true,
-    "declarationDir": "psi_cardinality/javascript/tsc-out/types",
+    "declarationDir": "./psi_cardinality/javascript/tsc-out/types",
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "module": "commonjs",
@@ -13,18 +13,21 @@
     "noImplicitReturns": true,
     "noUnusedLocals": false,
     "noUnusedParameters": false,
-    "outDir": "psi_cardinality/javascript/tsc-out",
+    "outDir": "./psi_cardinality/javascript/tsc-out",
+    "paths": {
+      "psi_cardinality*": ["./psi_cardinality/javascript/bin/psi_cardinality*"]
+    },
     "pretty": true,
     "removeComments": true,
     "resolveJsonModule": true,
-    "rootDir": "psi_cardinality/javascript/src",
+    "rootDir": "./psi_cardinality/javascript/src",
     "sourceMap": true,
     "strict": true,
     "target": "es2020",
     "typeRoots": [
-      "psi_cardinality/javascript/custom_types",
+      "./psi_cardinality/javascript/custom_types",
       "./node_modules/@types"
     ]
   },
-  "include": ["psi_cardinality/javascript/src/**/*"]
+  "include": ["./psi_cardinality/javascript/src/**/*"]
 }
