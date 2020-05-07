@@ -20,7 +20,7 @@ export const PSICardinalityImpl = ({ ServerImpl, ClientImpl }) => {
      * import PSICardinality from 'psi.js'
      * const server = await PSICardinality.Server.CreateWithNewKey()
      */
-    Server: ServerImpl,
+    ...(ServerImpl && { Server: ServerImpl }),
 
     /**
      * @description
@@ -41,7 +41,7 @@ export const PSICardinalityImpl = ({ ServerImpl, ClientImpl }) => {
      * import PSICardinality from 'psi.js'
      * const client = await PSICardinality.Client.Create()
      */
-    Client: ClientImpl
+    ...(ClientImpl && { Client: ClientImpl })
   }
 }
 

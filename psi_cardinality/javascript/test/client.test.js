@@ -1,4 +1,4 @@
-import PSICardinality from '../src/'
+import PSICardinality from '../src/index_combined_wasm'
 
 let Client = null
 beforeAll(async () => {
