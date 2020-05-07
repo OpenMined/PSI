@@ -133,9 +133,22 @@ Build both client and server
 
 `yarn build`
 
+Compile typescript
+
+`yarn compile`
+
 Test your changes and check code coverage
 
-`yarn coverage`
+```bash
+# Test TS
+yarn test
+
+# Test compiled JS
+yarn test:js
+
+# Generate coverage report
+yarn coverage
+```
 
 Then, bundle all the files
 
