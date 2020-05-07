@@ -5,7 +5,7 @@
     "declarationDir": "./psi_cardinality/javascript/tsc-out/types",
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
-    "module": "commonjs",
+    "module": "ESNext",
     "moduleResolution": "node",
     "newLine": "LF",
     "noEmitOnError": true,
@@ -23,7 +23,7 @@
     "rootDir": "./psi_cardinality/javascript/src",
     "sourceMap": true,
     "strict": true,
-    "target": "es2020",
+    "target": "ESNext",
     "typeRoots": [
       "./psi_cardinality/javascript/custom_types",
       "./node_modules/@types"

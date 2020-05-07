@@ -1,10 +1,10 @@
 {
-  "name": "@openmined/psi-cardinality",
+  "name": "@openmined/psi.js",
   "version": "1.0.0",
-  "description": "PSI cardinality for JavaScript",
+  "description": "Private Set Intersection for JavaScript",
   "repository": {
     "type": "git",
-    "url": "https://github.com/OpenMined/psi-cardinality/tree/master/psi_cardinality/javascript"
+    "url": "https://github.com/OpenMined/PSI/tree/master/psi_cardinality/javascript"
   },
   "license": "Apache-2.0",
   "keywords": [
@@ -52,6 +52,7 @@
   "devDependencies": {
     "@babel/core": "^7.9.6",
     "@babel/preset-env": "^7.9.6",
+    "@rollup/plugin-alias": "^3.1.0",
     "@rollup/plugin-typescript": "^4.1.1",
     "@types/jest": "^25.2.1",
     "@typescript-eslint/eslint-plugin": "^2.31.0",

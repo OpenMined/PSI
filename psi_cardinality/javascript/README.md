@@ -7,15 +7,15 @@ Private Set Intersection Cardinality protocol based on ECDH and Bloom Filters.
 To install, run:
 
 ```bash
-npm install @openmined/psi-cardinality
+npm install @openmined/psi.js
 # or with yarn
-yarn add @openmined/psi-cardinality
+yarn add @openmined/psi.js
 ```
 
 Then import the package:
 
 ```javascript
-import PSI from '@openmined/psi-cardinality'
+import PSI from '@openmined/psi.js'
 
 const server = await PSI.Server.CreateWithNewKey()
 const client = await PSI.Client.Create()
@@ -33,10 +33,10 @@ To only load the `Client`:
 ```javascript
 // Loads only the client, supporting WebAssembly or asm.js
 // with either `umd` (Browser + NodeJS) or `es` (ES6 modules)
-import PSI from '@openmined/psi-cardinality/client/wasm/umd'
-import PSI from '@openmined/psi-cardinality/client/wasm/es'
-import PSI from '@openmined/psi-cardinality/client/js/umd'
-import PSI from '@openmined/psi-cardinality/client/js/es'
+import PSI from '@openmined/psi.js/client/wasm/umd'
+import PSI from '@openmined/psi.js/client/wasm/es'
+import PSI from '@openmined/psi.js/client/js/umd'
+import PSI from '@openmined/psi.js/client/js/es'
 
 const client = await PSI.Client.Create()
 // PSI.Server is not implemented
@@ -47,10 +47,10 @@ To only load the `Server`:
 ```javascript
 // Loads only the server, supporting WebAssembly or asm.js
 // with either `umd` (Browser + NodeJS) or `es` (ES6 modules)
-import PSI from '@openmined/psi-cardinality/server/wasm/umd'
-import PSI from '@openmined/psi-cardinality/server/wasm/es'
-import PSI from '@openmined/psi-cardinality/server/js/umd'
-import PSI from '@openmined/psi-cardinality/server/js/es'
+import PSI from '@openmined/psi.js/server/wasm/umd'
+import PSI from '@openmined/psi.js/server/wasm/es'
+import PSI from '@openmined/psi.js/server/js/umd'
+import PSI from '@openmined/psi.js/server/js/es'
 
 const server = await PSI.Server.CreateWithNewKey()
 // PSI.Client is not implemented
