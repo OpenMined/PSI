@@ -1,4 +1,5 @@
 import { terser } from 'rollup-plugin-terser'
+import alias from '@rollup/plugin-alias'
 
 const targets = ['client', 'server', 'combined']
 const variants = ['wasm', 'js']
@@ -24,7 +25,18 @@ const outputs = targets.reduce(
               }
             ],
             []
-          )
+          ),
+          plugins: [
+            alias({
+              entries: [
+                {
+                  find: /^psi_cardinality(.*)$/,
+                  replacement:
+                    './psi_cardinality/javascript/bin/psi_cardinality$1.js'
+                }
+              ]
+            })
+          ]
         }
       ],
       []
