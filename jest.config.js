@@ -21,9 +21,7 @@ module.exports = {
   // collectCoverage: false,
 
   // An array of glob patterns indicating a set of files for which coverage information should be collected
-  collectCoverageFrom: [
-    'psi_cardinality/javascript/src/implementation/**/*.js'
-  ],
+  collectCoverageFrom: ['src/implementation/**/*.ts'],
 
   // The directory where Jest should output its coverage files
   coverageDirectory: 'coverage',
@@ -78,7 +76,12 @@ module.exports = {
   // ],
 
   // A map from regular expressions to module names that allow to stub out resources with a single module
-  // moduleNameMapper: {},
+  // moduleNameMapper: pathsToModuleNameMapper(
+  //   compilerOptions.paths /*, { prefix: '<rootDir>/' } */
+  // ),
+  moduleNameMapper: {
+    '^psi_cardinality(.*)$': '<rootDir>/bin/psi_cardinality$1'
+  },
 
   // An array of regexp pattern strings, matched against all module paths before considered 'visible' to the module loader
   // modulePathIgnorePatterns: [],
@@ -90,7 +93,7 @@ module.exports = {
   // notifyMode: "failure-change",
 
   // A preset that is used as a base for Jest's configuration
-  // preset: null,
+  preset: 'ts-jest/presets/js-with-babel',
 
   // Run tests from one or more projects
   // projects: null,
@@ -111,7 +114,7 @@ module.exports = {
   // restoreMocks: false,
 
   // The root directory that Jest should scan for tests and modules within
-  // rootDir: null,
+  rootDir: './psi_cardinality/javascript',
 
   // A list of paths to directories that Jest should use to search for files in
   // roots: [

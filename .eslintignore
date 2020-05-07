@@ -1,3 +1,4 @@
 /psi_cardinality/cpp/*
 /node_modules/*
 /submodules/*
+tsc-out/

@@ -1,8 +1,29 @@
+import * as psiCardinality from 'psi_cardinality'
+import { Loader } from '../loader'
+import { ERROR_INSTANCE_DELETED } from './constants'
+
+export type Client = {
+  readonly delete: () => void
+  readonly createRequest: (clientInputs: readonly string[]) => string
+  readonly processResponse: (
+    serverSetup: string,
+    serverResponse: string
+  ) => number
+}
+
+export type ClientWrapper = {
+  readonly create: () => Promise<Client>
+}
+
+type ClientWrapperOptions = {
+  readonly loader: Loader
+}
+
 /**
  * @implements Client
  */
-export const ClientInstanceImpl = instance => {
-  let _instance = instance
+const ClientConstructor = (instance: psiCardinality.Client): Client => {
+  let _instance: psiCardinality.Client | null = instance
 
   /**
    * @interface Client
@@ -16,11 +37,12 @@ export const ClientInstanceImpl = instance => {
      * @function
      * @name Client#delete
      */
-    delete() {
-      if (_instance) {
-        _instance.delete()
-        _instance = null
+    delete(): void {
+      if (!_instance) {
+        throw new Error(ERROR_INSTANCE_DELETED)
       }
+      _instance.delete()
+      _instance = null
     },
 
     /**
@@ -30,11 +52,14 @@ export const ClientInstanceImpl = instance => {
      * array.
      *
      * @function
-     * @name Client#CreateRequest
+     * @name Client#createRequest
      * @param {Array<String>} inputs
      * @returns {String} The serialized request
      */
-    CreateRequest(inputs) {
+    createRequest(inputs): string {
+      if (!_instance) {
+        throw new Error(ERROR_INSTANCE_DELETED)
+      }
       const { Value, Status } = _instance.CreateRequest(inputs)
       if (Status) {
         throw new Error(Status.Message)
@@ -50,12 +75,15 @@ export const ClientInstanceImpl = instance => {
      * the result of `CreateRequest`.
      *
      * @function
-     * @name Client#ProcessResponse
+     * @name Client#processResponse
      * @param {String} setup The serialized server setup
      * @param {String} response The serialized server response
      * @returns {Number} The PSI cardinality
      */
-    ProcessResponse(setup, response) {
+    processResponse(setup, response): number {
+      if (!_instance) {
+        throw new Error(ERROR_INSTANCE_DELETED)
+      }
       const { Value, Status } = _instance.ProcessResponse(setup, response)
       if (Status) {
         throw new Error(Status.Message)
@@ -65,12 +93,14 @@ export const ClientInstanceImpl = instance => {
   }
 }
 
-export const ClientImpl = ({ Loader }) => {
-  let library = null
+export const ClientWrapperConstructor = ({
+  loader
+}: ClientWrapperOptions): ClientWrapper => {
+  let library: psiCardinality.Library
 
-  const initialize = async () => {
+  const initialize = async (): Promise<void> => {
     if (!library) {
-      const module = await Loader()
+      const module = await loader()
       library = module.library
     }
   }
@@ -81,16 +111,16 @@ export const ClientImpl = ({ Loader }) => {
      *
      * @async
      * @function
-     * @name Client.Create
+     * @name Client.create
      * @returns {Client} A Client instance
      */
-    async Create() {
+    async create(): Promise<Client> {
       await initialize()
       const { Value, Status } = library.PSICardinalityClient.Create()
       if (Status) {
         throw new Error(Status.Message)
       }
-      return ClientInstanceImpl(Value)
+      return ClientConstructor(Value)
     }
   }
 }
