@@ -28,6 +28,13 @@ func TestServerSanity(t *testing.T) {
 	if key != newKey {
 		t.Errorf("new server invalid")
 	}
+	server.Destroy()
+	for i := 0; i < 5; i++ {
+		err = server.Destroy()
+		if err == nil {
+			t.Errorf("Failed to detect invalid server ctx")
+		}
+	}
 }
 
 func TestServerFailure(t *testing.T) {
@@ -45,7 +52,7 @@ func TestServerFailure(t *testing.T) {
 	if err == nil {
 		t.Errorf("ProcessRequest should fail with an invalid context %v", err)
 	}
-	err = server.destroy()
+	err = server.Destroy()
 	if err == nil {
 		t.Errorf("Destroy should fail with an invalid context %v", err)
 	}

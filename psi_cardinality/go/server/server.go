@@ -28,7 +28,7 @@ func CreateWithNewKey() (*PSICardinalityServer, error) {
 		return nil, errors.New("failed to create server context: null")
 	}
 
-	runtime.SetFinalizer(psiServer, func(s *PSICardinalityServer) { s.destroy() })
+	runtime.SetFinalizer(psiServer, func(s *PSICardinalityServer) { s.Destroy() })
 	return psiServer, nil
 }
 
@@ -50,7 +50,7 @@ func CreateFromKey(key string) (*PSICardinalityServer, error) {
 		return nil, errors.New("failed to create server context: null")
 	}
 
-	runtime.SetFinalizer(psiServer, func(s *PSICardinalityServer) { s.destroy() })
+	runtime.SetFinalizer(psiServer, func(s *PSICardinalityServer) { s.Destroy() })
 	return psiServer, nil
 }
 
@@ -127,7 +127,7 @@ func (s *PSICardinalityServer) GetPrivateKeyBytes() (string, error) {
 	return result, nil
 }
 
-func (s *PSICardinalityServer) destroy() error {
+func (s *PSICardinalityServer) Destroy() error {
 	if s.context == nil {
 		return errors.New("invalid context")
 	}

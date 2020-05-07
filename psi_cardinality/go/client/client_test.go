@@ -13,6 +13,13 @@ func TestClientSanity(t *testing.T) {
 	if c == nil {
 		t.Errorf("Failed to create a PSI client: nil")
 	}
+	c.Destroy()
+	for i := 0; i < 5; i++ {
+		err := c.Destroy()
+		if err == nil {
+			t.Errorf("Failed to ignore nil client")
+		}
+	}
 }
 
 func TestClientFailure(t *testing.T) {
@@ -25,7 +32,7 @@ func TestClientFailure(t *testing.T) {
 	if err == nil {
 		t.Errorf("ProcessResponse with an invalid context should fail")
 	}
-	err = c.destroy()
+	err = c.Destroy()
 	if err == nil {
 		t.Errorf("Destroy with an invalid context should fail")
 	}

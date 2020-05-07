@@ -25,10 +25,10 @@ func Create() (*PSICardinalityClient, error) {
 		return nil, fmt.Errorf("failed to create client context: %v(%v)", psiClient.loadCString(&err), rcode)
 	}
 	if psiClient.context == nil {
-		return nil, errors.New("failed to create client context: null")
+		return nil, errors.New("failed to create client context: Context is NULL. This should never happen")
 	}
 
-	runtime.SetFinalizer(psiClient, func(c *PSICardinalityClient) { c.destroy() })
+	runtime.SetFinalizer(psiClient, func(c *PSICardinalityClient) { c.Destroy() })
 	return psiClient, nil
 }
 
@@ -75,7 +75,7 @@ func (c *PSICardinalityClient) ProcessResponse(serverSetup, serverResponse strin
 	return int64(result), nil
 }
 
-func (c *PSICardinalityClient) destroy() error {
+func (c *PSICardinalityClient) Destroy() error {
 	if c.context == nil {
 		return errors.New("invalid context")
 	}
