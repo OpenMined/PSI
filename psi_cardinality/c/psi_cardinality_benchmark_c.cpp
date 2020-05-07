@@ -29,8 +29,8 @@ void BM_ServerSetup(benchmark::State &state, double fpr) {
         server_, fpr, num_client_inputs, inputs.data(), inputs.size(),
         &server_setup, &server_setup_buff_len);
 
-    ::benchmark::DoNotOptimize(
-        std::string(server_setup, server_setup_buff_len));
+    ::benchmark::DoNotOptimize(server_setup);
+    ::benchmark::ClobberMemory();
     elements_processed += num_inputs;
     psi_cardinality_server_delete_buffer(server_, &server_setup);
   }
@@ -71,7 +71,8 @@ void BM_ClientCreateRequest(benchmark::State &state) {
     psi_cardinality_client_create_request(client_, inputs.data(), inputs.size(),
                                           &client_request, &req_len);
 
-    ::benchmark::DoNotOptimize(std::string(client_request, req_len));
+    ::benchmark::DoNotOptimize(client_request);
+    ::benchmark::ClobberMemory();
     elements_processed += num_inputs;
 
     psi_cardinality_client_delete_buffer(client_, &client_request);
@@ -114,8 +115,9 @@ void BM_ServerProcessRequest(benchmark::State &state) {
     size_t response_len = 0;
     psi_cardinality_server_process_request(server_, {client_request, req_len},
                                            &server_response, &response_len);
-    response = std::string(server_response, response_len);
-    ::benchmark::DoNotOptimize(response);
+    ::benchmark::DoNotOptimize(server_response);
+    ::benchmark::ClobberMemory();
+
     elements_processed += num_inputs;
 
     psi_cardinality_server_delete_buffer(server_, &server_response);
@@ -183,9 +185,7 @@ void BM_ClientProcessResponse(benchmark::State &state) {
       static_cast<double>(elements_processed), benchmark::Counter::kIsRate);
 }
 // Range is for the number of inputs.
-BENCHMARK(BM_ClientProcessResponse)
-    ->RangeMultiplier(10)
-    ->Range(1, 10000);
+BENCHMARK(BM_ClientProcessResponse)->RangeMultiplier(10)->Range(1, 10000);
 
 } // namespace
 } // namespace psi_cardinality
