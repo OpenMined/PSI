@@ -15,10 +15,7 @@ func TestClientSanity(t *testing.T) {
 	}
 	c.Destroy()
 	for i := 0; i < 5; i++ {
-		err := c.Destroy()
-		if err == nil {
-			t.Errorf("Failed to ignore nil client")
-		}
+		c.Destroy()
 	}
 }
 
@@ -31,10 +28,6 @@ func TestClientFailure(t *testing.T) {
 	_, err = c.ProcessResponse("dummy1", "dummy2")
 	if err == nil {
 		t.Errorf("ProcessResponse with an invalid context should fail")
-	}
-	err = c.Destroy()
-	if err == nil {
-		t.Errorf("Destroy with an invalid context should fail")
 	}
 	c, _ = Create()
 	_, err = c.ProcessResponse("dummy1", "dummy2")

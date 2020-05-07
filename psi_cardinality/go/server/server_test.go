@@ -30,10 +30,7 @@ func TestServerSanity(t *testing.T) {
 	}
 	server.Destroy()
 	for i := 0; i < 5; i++ {
-		err = server.Destroy()
-		if err == nil {
-			t.Errorf("Failed to detect invalid server ctx")
-		}
+		server.Destroy()
 	}
 }
 
@@ -51,10 +48,6 @@ func TestServerFailure(t *testing.T) {
 	_, err = server.ProcessRequest("dummy")
 	if err == nil {
 		t.Errorf("ProcessRequest should fail with an invalid context %v", err)
-	}
-	err = server.Destroy()
-	if err == nil {
-		t.Errorf("Destroy should fail with an invalid context %v", err)
 	}
 
 	server, _ = CreateWithNewKey()

@@ -127,13 +127,12 @@ func (s *PSICardinalityServer) GetPrivateKeyBytes() (string, error) {
 	return result, nil
 }
 
-func (s *PSICardinalityServer) Destroy() error {
+func (s *PSICardinalityServer) Destroy() {
 	if s.context == nil {
-		return errors.New("invalid context")
+		return
 	}
 	C.psi_cardinality_server_delete(&s.context)
 	s.context = nil
-	return nil
 }
 
 func (c *PSICardinalityServer) loadCString(buff **C.char) string {

@@ -75,13 +75,12 @@ func (c *PSICardinalityClient) ProcessResponse(serverSetup, serverResponse strin
 	return int64(result), nil
 }
 
-func (c *PSICardinalityClient) Destroy() error {
+func (c *PSICardinalityClient) Destroy() {
 	if c.context == nil {
-		return errors.New("invalid context")
+		return
 	}
 	C.psi_cardinality_client_delete(&c.context)
 	c.context = nil
-	return nil
 }
 
 func (c *PSICardinalityClient) loadCString(buff **C.char) string {
