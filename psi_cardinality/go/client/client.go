@@ -42,15 +42,15 @@ func (c *PSICardinalityClient) CreateRequest(rawInput []string) (string, error) 
 	for idx := range rawInput {
 		inputs = append(inputs, C.struct_client_buffer_t{
 			buff:     C.CString(rawInput[idx]),
-			buff_len: C.ulong(len(rawInput[idx])),
+			buff_len: C.uint(len(rawInput[idx])),
 		})
 	}
 
 	var out *C.char
-	var outlen C.ulong
+	var outlen C.uint
 	var err *C.char
 
-	rcode := C.psi_cardinality_client_create_request(c.context, &inputs[0], C.ulong(len(inputs)), &out, &outlen, &err)
+	rcode := C.psi_cardinality_client_create_request(c.context, &inputs[0], C.uint(len(inputs)), &out, &outlen, &err)
 	if rcode != 0 {
 		return "", fmt.Errorf("create request failed %v(%v)", c.loadCString(&err), rcode)
 	}

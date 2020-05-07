@@ -28,8 +28,8 @@ void psi_cardinality_client_delete(psi_cardinality_client_ctx *ctx) {
 
 int psi_cardinality_client_create_request(psi_cardinality_client_ctx ctx,
                                           client_buffer_t *inputs,
-                                          size_t input_len, char **out,
-                                          size_t *out_len, char **error_out) {
+                                          uint32_t input_len, char **out,
+                                          uint32_t *out_len, char **error_out) {
   auto client = static_cast<Client *>(ctx);
   if (client == nullptr) {
     return psi_cardinality::c_bindings_internal::generate_error(
@@ -52,7 +52,7 @@ int psi_cardinality_client_create_request(psi_cardinality_client_ctx ctx,
   size_t len = value.size() + 1;
   *out = new char[len];
   strncpy(*out, value.c_str(), len);
-  *out_len = len;
+  *out_len = uint32_t(len);
 
   return 0;
 }
