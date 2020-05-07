@@ -127,6 +127,7 @@ func (s *PSICardinalityServer) GetPrivateKeyBytes() (string, error) {
 	return result, nil
 }
 
+//Destroy the context
 func (s *PSICardinalityServer) Destroy() {
 	if s.context == nil {
 		return
@@ -135,8 +136,8 @@ func (s *PSICardinalityServer) Destroy() {
 	s.context = nil
 }
 
-func (c *PSICardinalityServer) loadCString(buff **C.char) string {
+func (s *PSICardinalityServer) loadCString(buff **C.char) string {
 	str := C.GoString(*buff)
-	C.psi_cardinality_server_delete_buffer(c.context, buff)
+	C.psi_cardinality_server_delete_buffer(s.context, buff)
 	return str
 }
