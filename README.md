@@ -53,18 +53,6 @@ bazel run -c opt //psi_cardinality/cpp:psi_cardinality_benchmark
 
 See the [JavaScript README.md](psi_cardinality/javascript/README.md)
 
-To compile the TypeScript source code to JS
-
-```
-yarn compile
-```
-
-Then tests can be run against the compiled JS:
-
-```
-yarn test:js
-```
-
 ## Using the Library
 
 To use this library in another Bazel project, add the following in your WORKSPACE file:
