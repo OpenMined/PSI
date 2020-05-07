@@ -18,13 +18,13 @@ void BM_ServerSetup(benchmark::State &state, double fpr) {
 
   for (int i = 0; i < num_inputs; i++) {
     orig_inputs[i] = absl::StrCat("Element", i);
-    inputs[i] = {orig_inputs[i].c_str(), orig_inputs[i].size()};
+    inputs[i] = {orig_inputs[i].c_str(), uint64_t(orig_inputs[i].size())};
   }
   std::string setup;
   int64_t elements_processed = 0;
   for (auto _ : state) {
     char *server_setup = nullptr;
-    size_t server_setup_buff_len = 0;
+    uint64_t server_setup_buff_len = 0;
     psi_cardinality_server_create_setup_message(
         server_, fpr, num_client_inputs, inputs.data(), inputs.size(),
         &server_setup, &server_setup_buff_len, &err);
@@ -61,13 +61,13 @@ void BM_ClientCreateRequest(benchmark::State &state) {
 
   for (int i = 0; i < num_inputs; i++) {
     inputs_orig[i] = absl::StrCat("Element", i);
-    inputs[i] = {inputs_orig[i].c_str(), inputs_orig[i].size()};
+    inputs[i] = {inputs_orig[i].c_str(), uint64_t(inputs_orig[i].size())};
   }
   std::string request;
   int64_t elements_processed = 0;
   for (auto _ : state) {
     char *client_request = {0};
-    size_t req_len = 0;
+    uint64_t req_len = 0;
     char *err;
     psi_cardinality_client_create_request(client_, inputs.data(), inputs.size(),
                                           &client_request, &req_len, &err);
@@ -100,11 +100,11 @@ void BM_ServerProcessRequest(benchmark::State &state) {
   std::vector<client_buffer_t> inputs(num_inputs);
   for (int i = 0; i < num_inputs; i++) {
     inputs_orig[i] = absl::StrCat("Element", i);
-    inputs[i] = {inputs_orig[i].c_str(), inputs_orig[i].size()};
+    inputs[i] = {inputs_orig[i].c_str(), uint64_t(inputs_orig[i].size())};
   }
 
   char *client_request = nullptr;
-  size_t req_len = 0;
+  uint64_t req_len = 0;
   psi_cardinality_client_create_request(client_, inputs.data(), inputs.size(),
                                         &client_request, &req_len, &err);
 
@@ -113,7 +113,7 @@ void BM_ServerProcessRequest(benchmark::State &state) {
   int64_t elements_processed = 0;
   for (auto _ : state) {
     char *server_response = nullptr;
-    size_t response_len = 0;
+    uint64_t response_len = 0;
     psi_cardinality_server_process_request(server_, {client_request, req_len},
                                            &server_response, &response_len,
                                            &err);
@@ -150,24 +150,24 @@ void BM_ClientProcessResponse(benchmark::State &state) {
   std::vector<client_buffer_t> cl_inputs(num_inputs);
   for (int i = 0; i < num_inputs; i++) {
     inputs_orig[i] = absl::StrCat("Element", i);
-    srv_inputs[i] = {inputs_orig[i].c_str(), inputs_orig[i].size()};
-    cl_inputs[i] = {inputs_orig[i].c_str(), inputs_orig[i].size()};
+    srv_inputs[i] = {inputs_orig[i].c_str(), uint64_t(inputs_orig[i].size())};
+    cl_inputs[i] = {inputs_orig[i].c_str(), uint64_t(inputs_orig[i].size())};
   }
 
   char *server_setup = nullptr;
-  size_t server_setup_buff_len = 0;
+  uint64_t server_setup_buff_len = 0;
   psi_cardinality_server_create_setup_message(
       server_, fpr, num_inputs, srv_inputs.data(), srv_inputs.size(),
       &server_setup, &server_setup_buff_len, &err);
 
   char *client_request = nullptr;
-  size_t req_len = 0;
+  uint64_t req_len = 0;
   psi_cardinality_client_create_request(client_, cl_inputs.data(),
                                         cl_inputs.size(), &client_request,
                                         &req_len, &err);
 
   char *server_response = nullptr;
-  size_t response_len = 0;
+  uint64_t response_len = 0;
   psi_cardinality_server_process_request(server_, {client_request, req_len},
                                          &server_response, &response_len, &err);
 

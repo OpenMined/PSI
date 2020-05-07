@@ -61,17 +61,17 @@ TEST_F(PSICardinalityServerTest, TestCorrectness) {
   for (int i = 0; i < num_client_elements; i++) {
     client_orig_elements[i] = absl::StrCat("Element ", i);
     client_elements[i] = {client_orig_elements[i].c_str(),
-                          client_orig_elements[i].size()};
+                          uint64_t(client_orig_elements[i].size())};
   }
   for (int i = 0; i < num_server_elements; i++) {
     server_orig_elements[i] = absl::StrCat("Element ", 2 * i);
     server_elements[i] = {server_orig_elements[i].c_str(),
-                          server_orig_elements[i].size()};
+                          uint64_t(server_orig_elements[i].size())};
   }
 
   // Run Server setup.
   char *server_setup = nullptr;
-  size_t server_setup_buff_len = 0;
+  uint64_t server_setup_buff_len = 0;
   psi_cardinality_server_create_setup_message(
       server_, fpr, num_client_elements, server_elements.data(),
       server_elements.size(), &server_setup, &server_setup_buff_len, &err);
@@ -81,7 +81,7 @@ TEST_F(PSICardinalityServerTest, TestCorrectness) {
 
   // Create Client request.
   char *client_request = {0};
-  size_t req_len = 0;
+  uint64_t req_len = 0;
   int ret = psi_cardinality_client_create_request(
       client_, client_elements.data(), client_elements.size(), &client_request,
       &req_len, &err);
@@ -92,7 +92,7 @@ TEST_F(PSICardinalityServerTest, TestCorrectness) {
 
   // Create Server response.
   char *server_response = nullptr;
-  size_t response_len = 0;
+  uint64_t response_len = 0;
   ret = psi_cardinality_server_process_request(
       server_, {client_request, req_len}, &server_response, &response_len,
       &err);

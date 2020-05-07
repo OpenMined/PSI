@@ -28,7 +28,7 @@ typedef void *psi_cardinality_client_ctx;
 
 struct client_buffer_t {
   const char *buff;
-  size_t buff_len;
+  uint64_t buff_len;
 };
 
 int psi_cardinality_client_create(psi_cardinality_client_ctx *ctx,
@@ -36,8 +36,8 @@ int psi_cardinality_client_create(psi_cardinality_client_ctx *ctx,
 void psi_cardinality_client_delete(psi_cardinality_client_ctx *ctx);
 int psi_cardinality_client_create_request(psi_cardinality_client_ctx ctx,
                                           struct client_buffer_t *inputs,
-                                          size_t input_len, char **output,
-                                          size_t *out_len, char **error_out);
+                                          uint64_t input_len, char **output,
+                                          uint64_t *out_len, char **error_out);
 void psi_cardinality_client_delete_buffer(psi_cardinality_client_ctx ctx,
                                           char **request);
 int psi_cardinality_client_process_response(psi_cardinality_client_ctx,

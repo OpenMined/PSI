@@ -56,7 +56,7 @@ TEST_F(PSICardinalityClientTest, TestCorrectness) {
   for (int i = 0; i < num_client_elements; i++) {
     client_orig_elements[i] = absl::StrCat("Element ", i);
     client_elements[i] = {client_orig_elements[i].c_str(),
-                          client_orig_elements[i].size()};
+                          uint64_t(client_orig_elements[i].size())};
   }
   for (int i = 0; i < num_server_elements; i++) {
     server_elements[i] = absl::StrCat("Element ", 2 * i);
@@ -83,7 +83,7 @@ TEST_F(PSICardinalityClientTest, TestCorrectness) {
 
   // Compute client request.
   char *client_request = {0};
-  size_t req_len = 0;
+  uint64_t req_len = 0;
   char *err;
   int ret = psi_cardinality_client_create_request(
       client_, client_elements.data(), client_elements.size(), &client_request,
