@@ -22,6 +22,12 @@ module.exports = {
       rules: {
         '@typescript-eslint/explicit-function-return-type': 'off'
       }
+    },
+    {
+      files: ['**/__tests__/**/*.ts'],
+      rules: {
+        '@typescript-eslint/no-non-null-assertion': 'off'
+      }
     }
   ]
 }
