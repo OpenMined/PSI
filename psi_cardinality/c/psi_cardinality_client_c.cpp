@@ -1,24 +1,24 @@
 #include "psi_cardinality_client_c.h"
 
 #include "internal_utils.h"
-#include "psi_cardinality_client.h"
+#include "psi_cardinality/cpp/psi_cardinality_client.h"
 
-using namespace psi_cardinality;
-using namespace psi_cardinality::c_bindings_internal;
+using Client = psi_cardinality::PSICardinalityClient;
 
 int psi_cardinality_client_create(psi_cardinality_client_ctx *ctx,
                                   char **error_out) {
-  auto result = PSICardinalityClient::Create();
+  auto result = Client::Create();
   if (result.ok()) {
     *ctx = std::move(result).ValueOrDie().release();
     return 0;
   }
 
-  return generate_error(result.status(), error_out);
+  return psi_cardinality::c_bindings_internal::generate_error(result.status(),
+                                                              error_out);
 }
 
 void psi_cardinality_client_delete(psi_cardinality_client_ctx *ctx) {
-  auto client = static_cast<PSICardinalityClient *>(*ctx);
+  auto client = static_cast<Client *>(*ctx);
   if (client == nullptr) {
     return;
   }
@@ -30,7 +30,7 @@ int psi_cardinality_client_create_request(psi_cardinality_client_ctx ctx,
                                           client_buffer_t *inputs,
                                           size_t input_len, char **out,
                                           size_t *out_len) {
-  auto client = static_cast<PSICardinalityClient *>(ctx);
+  auto client = static_cast<Client *>(ctx);
   if (client == nullptr) {
     return -1;
   }
@@ -62,7 +62,7 @@ void psi_cardinality_client_delete_buffer(psi_cardinality_client_ctx ctx,
 int64_t psi_cardinality_client_process_response(psi_cardinality_client_ctx ctx,
                                                 const char *server_setup,
                                                 const char *server_response) {
-  auto client = static_cast<PSICardinalityClient *>(ctx);
+  auto client = static_cast<Client *>(ctx);
   if (client == nullptr) {
     return -1;
   }

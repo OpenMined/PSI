@@ -1,36 +1,37 @@
 #include "psi_cardinality_server_c.h"
 
 #include "internal_utils.h"
-#include "psi_cardinality_server.h"
+#include "psi_cardinality/cpp/psi_cardinality_server.h"
 
-using namespace psi_cardinality;
-using namespace psi_cardinality::c_bindings_internal;
+using Server = psi_cardinality::PSICardinalityServer;
 
 int psi_cardinality_server_create_with_new_key(psi_cardinality_server_ctx *ctx,
                                                char **error_out) {
-  auto result = PSICardinalityServer::CreateWithNewKey();
+  auto result = Server::CreateWithNewKey();
   if (result.ok()) {
     *ctx = std::move(result).ValueOrDie().release();
     return 0;
   }
 
-  return generate_error(result.status(), error_out);
+  return psi_cardinality::c_bindings_internal::generate_error(result.status(),
+                                                              error_out);
 }
 
 int psi_cardinality_server_create_from_key(server_buffer_t key_bytes,
                                            psi_cardinality_server_ctx *ctx,
                                            char **error_out) {
-  auto result = PSICardinalityServer::CreateFromKey(
-      std::string(key_bytes.buff, key_bytes.buff_len));
+  auto result =
+      Server::CreateFromKey(std::string(key_bytes.buff, key_bytes.buff_len));
   if (result.ok()) {
     *ctx = std::move(result).ValueOrDie().release();
     return 0;
   }
-  return generate_error(result.status(), error_out);
+  return psi_cardinality::c_bindings_internal::generate_error(result.status(),
+                                                              error_out);
 }
 
 void psi_cardinality_server_delete(psi_cardinality_server_ctx *ctx) {
-  auto server = static_cast<PSICardinalityServer *>(*ctx);
+  auto server = static_cast<Server *>(*ctx);
   if (server == nullptr) {
     return;
   }
@@ -44,7 +45,7 @@ int psi_cardinality_server_create_setup_message(psi_cardinality_server_ctx ctx,
                                                 server_buffer_t *input,
                                                 size_t input_len, char **output,
                                                 size_t *output_len) {
-  auto server = static_cast<PSICardinalityServer *>(ctx);
+  auto server = static_cast<Server *>(ctx);
   if (server == nullptr) {
     return -1;
   }
@@ -71,7 +72,7 @@ int psi_cardinality_server_create_setup_message(psi_cardinality_server_ctx ctx,
 int psi_cardinality_server_process_request(psi_cardinality_server_ctx ctx,
                                            server_buffer_t client_request,
                                            char **output, size_t *output_len) {
-  auto server = static_cast<PSICardinalityServer *>(ctx);
+  auto server = static_cast<Server *>(ctx);
   if (server == nullptr) {
     return -1;
   }
@@ -94,7 +95,7 @@ int psi_cardinality_server_process_request(psi_cardinality_server_ctx ctx,
 int psi_cardinality_server_get_private_key_bytes(psi_cardinality_server_ctx ctx,
                                                  char **output,
                                                  size_t *output_len) {
-  auto server = static_cast<PSICardinalityServer *>(ctx);
+  auto server = static_cast<Server *>(ctx);
   if (server == nullptr) {
     return -1;
   }
