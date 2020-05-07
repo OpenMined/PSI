@@ -18,7 +18,7 @@ void BM_ServerSetup(benchmark::State &state, double fpr) {
 
   for (int i = 0; i < num_inputs; i++) {
     orig_inputs[i] = absl::StrCat("Element", i);
-    inputs[i] = {orig_inputs[i].c_str(), uint64_t(orig_inputs[i].size())};
+    inputs[i] = {orig_inputs[i].c_str(), orig_inputs[i].size()};
   }
   std::string setup;
   int64_t elements_processed = 0;
@@ -61,7 +61,7 @@ void BM_ClientCreateRequest(benchmark::State &state) {
 
   for (int i = 0; i < num_inputs; i++) {
     inputs_orig[i] = absl::StrCat("Element", i);
-    inputs[i] = {inputs_orig[i].c_str(), uint64_t(inputs_orig[i].size())};
+    inputs[i] = {inputs_orig[i].c_str(), inputs_orig[i].size()};
   }
   std::string request;
   int64_t elements_processed = 0;
@@ -100,7 +100,7 @@ void BM_ServerProcessRequest(benchmark::State &state) {
   std::vector<client_buffer_t> inputs(num_inputs);
   for (int i = 0; i < num_inputs; i++) {
     inputs_orig[i] = absl::StrCat("Element", i);
-    inputs[i] = {inputs_orig[i].c_str(), uint64_t(inputs_orig[i].size())};
+    inputs[i] = {inputs_orig[i].c_str(), inputs_orig[i].size()};
   }
 
   char *client_request = nullptr;
