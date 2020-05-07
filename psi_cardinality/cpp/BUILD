@@ -16,6 +16,13 @@
 
 package(default_visibility = ["//visibility:public"])
 
+PSI_CARDINALITY_DEFAULT_LINKOPTS = [
+    # Needed on some Linux systems. See also
+    # https://github.com/google/cctz/issues/47
+    # https://github.com/tensorflow/tensorflow/issues/15129
+    "-lrt",
+]
+
 cc_library(
     name = "bloom_filter",
     srcs = ["bloom_filter.cpp"],
@@ -33,7 +40,7 @@ cc_library(
 cc_test(
     name = "bloom_filter_test",
     srcs = ["bloom_filter_test.cpp"],
-    linkopts = ["-lrt"],
+    linkopts = PSI_CARDINALITY_DEFAULT_LINKOPTS,
     deps = [
         ":bloom_filter",
         "//psi_cardinality/cpp/util:status_matchers",
@@ -63,7 +70,7 @@ cc_library(
 cc_test(
     name = "psi_cardinality_client_test",
     srcs = ["psi_cardinality_client_test.cpp"],
-    linkopts = ["-lrt"],
+    linkopts = PSI_CARDINALITY_DEFAULT_LINKOPTS,
     deps = [
         ":psi_cardinality_client",
         "//psi_cardinality/cpp/util:status_matchers",
@@ -95,7 +102,7 @@ cc_library(
 cc_test(
     name = "psi_cardinality_server_test",
     srcs = ["psi_cardinality_server_test.cpp"],
-    linkopts = ["-lrt"],
+    linkopts = PSI_CARDINALITY_DEFAULT_LINKOPTS,
     deps = [
         ":psi_cardinality_client",
         ":psi_cardinality_server",
@@ -110,7 +117,7 @@ cc_test(
 cc_binary(
     name = "psi_cardinality_benchmark",
     srcs = ["psi_cardinality_benchmark.cpp"],
-    linkopts = ["-lrt"],
+    linkopts = PSI_CARDINALITY_DEFAULT_LINKOPTS,
     deps = [
         ":psi_cardinality_client",
         ":psi_cardinality_server",
