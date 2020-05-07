@@ -28,7 +28,7 @@
 namespace psi_cardinality {
 namespace {
 
-class PSICardinalityClientBindingTest : public ::testing::Test {
+class PSICardinalityClientTest : public ::testing::Test {
 protected:
   void SetUp() {
     char *err;
@@ -44,7 +44,7 @@ protected:
   psi_cardinality_client_ctx client_;
 };
 
-TEST_F(PSICardinalityClientBindingTest, TestCorrectness) {
+TEST_F(PSICardinalityClientTest, TestCorrectness) {
   constexpr int num_client_elements = 1000, num_server_elements = 10000;
   double fpr = 0.01;
   std::vector<client_buffer_t> client_elements(num_client_elements);

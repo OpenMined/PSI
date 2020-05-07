@@ -6,7 +6,7 @@
 namespace psi_cardinality {
 namespace {
 
-void BM_ServerBindingSetup(benchmark::State &state, double fpr) {
+void BM_ServerSetup(benchmark::State &state, double fpr) {
   psi_cardinality_server_ctx server_;
   char *err;
   psi_cardinality_server_create_with_new_key(&server_, &err);
@@ -43,14 +43,14 @@ void BM_ServerBindingSetup(benchmark::State &state, double fpr) {
 
 // Range is for the number of inputs, and the captured argument is the false
 // positive rate for 10k client queries.
-BENCHMARK_CAPTURE(BM_ServerBindingSetup, fpr = 0.001, 0.001)
+BENCHMARK_CAPTURE(BM_ServerSetup, fpr = 0.001, 0.001)
     ->RangeMultiplier(100)
     ->Range(1, 1000000);
-BENCHMARK_CAPTURE(BM_ServerBindingSetup, fpr = 0.000001, 0.000001)
+BENCHMARK_CAPTURE(BM_ServerSetup, fpr = 0.000001, 0.000001)
     ->RangeMultiplier(100)
     ->Range(1, 1000000);
 
-void BM_ClientBindingCreateRequest(benchmark::State &state) {
+void BM_ClientCreateRequest(benchmark::State &state) {
   psi_cardinality_client_ctx client_;
   char *err;
   psi_cardinality_client_create(&client_, &err);
@@ -83,9 +83,9 @@ void BM_ClientBindingCreateRequest(benchmark::State &state) {
       static_cast<double>(elements_processed), benchmark::Counter::kIsRate);
 }
 // Range is for the number of inputs.
-BENCHMARK(BM_ClientBindingCreateRequest)->RangeMultiplier(10)->Range(1, 10000);
+BENCHMARK(BM_ClientCreateRequest)->RangeMultiplier(10)->Range(1, 10000);
 
-void BM_ServerBindingProcessRequest(benchmark::State &state) {
+void BM_ServerProcessRequest(benchmark::State &state) {
   psi_cardinality_client_ctx client_;
   psi_cardinality_server_ctx server_;
   char *err;
@@ -130,9 +130,9 @@ void BM_ServerBindingProcessRequest(benchmark::State &state) {
 }
 
 // Range is for the number of inputs.
-BENCHMARK(BM_ServerBindingProcessRequest)->RangeMultiplier(10)->Range(1, 10000);
+BENCHMARK(BM_ServerProcessRequest)->RangeMultiplier(10)->Range(1, 10000);
 
-void BM_ClientBindingProcessResponse(benchmark::State &state) {
+void BM_ClientProcessResponse(benchmark::State &state) {
   psi_cardinality_client_ctx client_;
   psi_cardinality_server_ctx server_;
   char *err;
@@ -183,7 +183,7 @@ void BM_ClientBindingProcessResponse(benchmark::State &state) {
       static_cast<double>(elements_processed), benchmark::Counter::kIsRate);
 }
 // Range is for the number of inputs.
-BENCHMARK(BM_ClientBindingProcessResponse)
+BENCHMARK(BM_ClientProcessResponse)
     ->RangeMultiplier(10)
     ->Range(1, 10000);
 

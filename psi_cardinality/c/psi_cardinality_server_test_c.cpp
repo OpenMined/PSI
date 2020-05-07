@@ -24,7 +24,7 @@
 namespace psi_cardinality {
 namespace {
 
-class PSICardinalityServerBindingTest : public ::testing::Test {
+class PSICardinalityServerTest : public ::testing::Test {
 protected:
   void SetUp() {
     char *err;
@@ -40,7 +40,7 @@ protected:
   psi_cardinality_server_ctx server_;
 };
 
-TEST_F(PSICardinalityServerBindingTest, TestCorrectness) {
+TEST_F(PSICardinalityServerTest, TestCorrectness) {
   // We use an actual client instance here, since we already test the client
   // on its own in psi_cardinality_client_test.cpp.
   psi_cardinality_client_ctx client_;
