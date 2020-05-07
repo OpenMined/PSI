@@ -23,58 +23,15 @@ psi_cardinality/<target language>/<sources>
 
 ### C++
 
-Build all libraries with or without optimizations, or build a specific module
-
-```
-# Build everything using the fastbuild optimization configuration
-bazel build //psi_cardinality/cpp/...
-
-# With a specific optimization flag '-c opt'
-bazel build -c opt //psi_cardinality/cpp/...
-
-# Specific module(s)
-bazel build -c opt //psi_cardinality/cpp:psi_cardinality_client
-bazel build -c opt //psi_cardinality/cpp:psi_cardinality_server
-```
-
-Build and run tests
-
-```
-bazel test //psi_cardinality/cpp/...
-```
-
-Build and run benchmarks
-
-```
-bazel run -c opt //psi_cardinality/cpp:psi_cardinality_benchmark
-```
+See the [C++ README.md](psi_cardinality/cpp/README.md)
 
 ### JavaScript
 
 See the [JavaScript README.md](psi_cardinality/javascript/README.md)
 
-### Go [![Go Report Card](https://goreportcard.com/badge/github.com/bcebere/psi-cardinality)](https://goreportcard.com/report/github.com/bcebere/psi-cardinality)
+### Go
 
-#### PSI client [![Documentation](https://img.shields.io/badge/godoc-reference-blue.svg)](https://pkg.go.dev/github.com/bcebere/psi-cardinality/psi_cardinality/go/client)
-```
-import "github.com/openmined/psi-cardinality/client"
-```
-
-#### PSI server [![Documentation](https://img.shields.io/badge/godoc-reference-blue.svg)](https://pkg.go.dev/github.com/bcebere/psi-cardinality/psi_cardinality/go/server)
-```
-import "github.com/openmined/psi-cardinality/server"
-```
-
-#### Tests
-```
-bazel test //psi_cardinality/go/... --test_output=all
-```
-
-#### Benchmarks
-```
-bazel test //psi_cardinality/go/... --test_arg=-test.bench=. --test_output=all
-```
-
+See the [Go README.md](psi_cardinality/go/README.md)
 
 ## Using the Library
 
