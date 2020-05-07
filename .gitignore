@@ -12,3 +12,6 @@ node_modules/
 
 # JS code coverage
 coverage/
+
+# TS output
+tsc-out/

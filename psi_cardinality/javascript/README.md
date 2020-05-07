@@ -7,53 +7,53 @@ Private Set Intersection Cardinality protocol based on ECDH and Bloom Filters.
 To install, run:
 
 ```bash
-npm install @openmined/psi-cardinality
+npm install @openmined/psi.js
 # or with yarn
-yarn add @openmined/psi-cardinality
+yarn add @openmined/psi.js
 ```
 
 Then import the package:
 
 ```javascript
-import PSI from '@openmined/psi-cardinality'
+import PSI from '@openmined/psi.js'
 
-const server = await PSI.Server.CreateWithNewKey()
-const client = await PSI.Client.Create()
+const server = await PSI.server.createWithNewKey()
+const client = await PSI.client.create()
 ```
 
 By default, the package will use the `combined` build with the `wasm` variant for getting started.
-This includes both `Client` and `Server` implementations, but often only one is used. We offer deep import
+This includes both `client` and `server` implementations, but often only one is used. We offer deep import
 links to only load what is needed for your specific environment.
 
 The deep import structure is as follows:
 `<package name>/<client|server|combined>/<wasm|js>/<umd|es>`
 
-To only load the `Client`:
+To only load the `client`:
 
 ```javascript
 // Loads only the client, supporting WebAssembly or asm.js
 // with either `umd` (Browser + NodeJS) or `es` (ES6 modules)
-import PSI from '@openmined/psi-cardinality/client/wasm/umd'
-import PSI from '@openmined/psi-cardinality/client/wasm/es'
-import PSI from '@openmined/psi-cardinality/client/js/umd'
-import PSI from '@openmined/psi-cardinality/client/js/es'
+import PSI from '@openmined/psi.js/client/wasm/umd'
+import PSI from '@openmined/psi.js/client/wasm/es'
+import PSI from '@openmined/psi.js/client/js/umd'
+import PSI from '@openmined/psi.js/client/js/es'
 
-const client = await PSI.Client.Create()
-// PSI.Server is not implemented
+const client = await PSI.client.create()
+// PSI.server is not implemented
 ```
 
-To only load the `Server`:
+To only load the `server`:
 
 ```javascript
 // Loads only the server, supporting WebAssembly or asm.js
 // with either `umd` (Browser + NodeJS) or `es` (ES6 modules)
-import PSI from '@openmined/psi-cardinality/server/wasm/umd'
-import PSI from '@openmined/psi-cardinality/server/wasm/es'
-import PSI from '@openmined/psi-cardinality/server/js/umd'
-import PSI from '@openmined/psi-cardinality/server/js/es'
+import PSI from '@openmined/psi.js/server/wasm/umd'
+import PSI from '@openmined/psi.js/server/wasm/es'
+import PSI from '@openmined/psi.js/server/js/umd'
+import PSI from '@openmined/psi.js/server/js/es'
 
-const server = await PSI.Server.CreateWithNewKey()
-// PSI.Client is not implemented
+const server = await PSI.server.createWithNewKey()
+// PSI.client is not implemented
 ```
 
 ## Compiling and Running
@@ -133,9 +133,22 @@ Build both client and server
 
 `yarn build`
 
+Compile typescript
+
+`yarn compile`
+
 Test your changes and check code coverage
 
-`yarn coverage`
+```bash
+# Test TS
+yarn test
+
+# Test compiled JS
+yarn test:js
+
+# Generate coverage report
+yarn coverage
+```
 
 Then, bundle all the files
 

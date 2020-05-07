@@ -1,7 +1,23 @@
+import { ClientWrapper } from './client'
+import { ServerWrapper } from './server'
+
+type PSICardinalityLibrary = {
+  readonly server?: ServerWrapper
+  readonly client?: ClientWrapper
+}
+
+type PSICardinalityConstructorOptions = {
+  readonly serverWrapper?: ServerWrapper
+  readonly clientWrapper?: ClientWrapper
+}
+
 /**
  * @implements PSICardinality
  */
-export const PSICardinalityImpl = ({ ServerImpl, ClientImpl }) => {
+export const PSICardinalityConstructor = ({
+  serverWrapper,
+  clientWrapper
+}: PSICardinalityConstructorOptions): PSICardinalityLibrary => {
   /**
    * @interface PSICardinality
    */
@@ -13,14 +29,14 @@ export const PSICardinalityImpl = ({ ServerImpl, ClientImpl }) => {
      * protocol.
      *
      * @readonly
-     * @name PSICardinality.Server
+     * @name PSICardinality.server
      * @type {Object}
      * @returns {Server}
      * @example
      * import PSICardinality from 'psi.js'
      * const server = await PSICardinality.Server.CreateWithNewKey()
      */
-    ...(ServerImpl && { Server: ServerImpl }),
+    ...(serverWrapper && { server: serverWrapper }),
 
     /**
      * @description
@@ -34,15 +50,13 @@ export const PSICardinalityImpl = ({ ServerImpl, ClientImpl }) => {
      * The false positive rate can be tuned by the server.
      *
      * @readonly
-     * @name PSICardinality.Client
+     * @name PSICardinality.client
      * @type {Object}
      * @returns {Client}
      * @example
      * import PSICardinality from 'psi.js'
      * const client = await PSICardinality.Client.Create()
      */
-    ...(ClientImpl && { Client: ClientImpl })
+    ...(clientWrapper && { client: clientWrapper })
   }
 }
-
-export default PSICardinalityImpl

@@ -1,8 +1,32 @@
+import * as psiCardinality from 'psi_cardinality'
+import { Loader } from '../loader'
+import { ERROR_INSTANCE_DELETED } from './constants'
+
+export type Server = {
+  readonly delete: () => void
+  readonly createSetupMessage: (
+    fpr: number,
+    numClientInputs: number,
+    inputs: readonly string[]
+  ) => string
+  readonly processRequest: (clientRequest: string) => string
+  readonly getPrivateKeyBytes: () => Uint8Array
+}
+
+export type ServerWrapper = {
+  readonly createWithNewKey: () => Promise<Server>
+  readonly createFromKey: (key: Uint8Array) => Promise<Server>
+}
+
+type ServerWrapperOptions = {
+  readonly loader: Loader
+}
+
 /**
  * @implements Server
  */
-const ServerInstanceImpl = instance => {
-  let _instance = instance
+const ServerConstructor = (instance: psiCardinality.Server): Server => {
+  let _instance: psiCardinality.Server | null = instance
 
   /**
    * @interface Server
@@ -16,11 +40,12 @@ const ServerInstanceImpl = instance => {
      * @function
      * @name Server#delete
      */
-    delete() {
-      if (_instance) {
-        _instance.delete()
-        _instance = null
+    delete(): void {
+      if (!_instance) {
+        throw new Error(ERROR_INSTANCE_DELETED)
       }
+      _instance.delete()
+      _instance = null
     },
 
     /**
@@ -43,13 +68,20 @@ const ServerInstanceImpl = instance => {
      * @property {String} bits - The base64 encoded bits from the underlying bloom filter
      *
      * @function
-     * @name Server#CreateSetupMessage
+     * @name Server#createSetupMessage
      * @param {Number} fpr False positive rate
      * @param {Number} numClientInputs The number of expected client inputs
      * @param {Array<String>} inputs The server's dataset
      * @returns {SetupMessage} The serialized setup message
      */
-    CreateSetupMessage(fpr, numClientInputs, inputs) {
+    createSetupMessage(
+      fpr: number,
+      numClientInputs: number,
+      inputs: readonly string[]
+    ): string {
+      if (!_instance) {
+        throw new Error(ERROR_INSTANCE_DELETED)
+      }
       const { Value, Status } = _instance.CreateSetupMessage(
         fpr,
         numClientInputs,
@@ -71,11 +103,14 @@ const ServerInstanceImpl = instance => {
      * intersection.
      *
      * @function
-     * @name Server#ProcessRequest
+     * @name Server#processRequest
      * @param {String} clientRequest The serialized client request
      * @returns {String} The PSI cardinality
      */
-    ProcessRequest(clientRequest) {
+    processRequest(clientRequest: string): string {
+      if (!_instance) {
+        throw new Error(ERROR_INSTANCE_DELETED)
+      }
       const { Value, Status } = _instance.ProcessRequest(clientRequest)
       if (Status) {
         throw new Error(Status.Message)
@@ -88,21 +123,26 @@ const ServerInstanceImpl = instance => {
      * other server instances. DO NOT SEND THIS KEY TO ANY OTHER PARTY!
      *
      * @function
-     * @name Server#GetPrivateKeyBytes
+     * @name Server#getPrivateKeyBytes
      * @returns {Uint8Array} A binary Uint8Array representing the private key
      */
-    GetPrivateKeyBytes() {
+    getPrivateKeyBytes(): Uint8Array {
+      if (!_instance) {
+        throw new Error(ERROR_INSTANCE_DELETED)
+      }
       return Uint8Array.from(_instance.GetPrivateKeyBytes())
     }
   }
 }
 
-export const ServerImpl = ({ Loader }) => {
-  let library = null
+export const ServerWrapperConstructor = ({
+  loader
+}: ServerWrapperOptions): ServerWrapper => {
+  let library: psiCardinality.Library
 
-  const initialize = async () => {
+  const initialize = async (): Promise<void> => {
     if (!library) {
-      const module = await Loader()
+      const module = await loader()
       library = module.library
     }
   }
@@ -113,35 +153,35 @@ export const ServerImpl = ({ Loader }) => {
      *
      * @async
      * @function
-     * @name Server.CreateWithNewKey
+     * @name Server.createWithNewKey
      * @returns {Server} A Server instance
      */
-    async CreateWithNewKey() {
+    async createWithNewKey(): Promise<Server> {
       await initialize()
       const { Value, Status } = library.PSICardinalityServer.CreateWithNewKey()
       if (Status) {
         throw new Error(Status.Message)
       }
 
-      return ServerInstanceImpl(Value)
+      return ServerConstructor(Value)
     },
     /**
      * Create a new PSI Cardinality server from a key
      *
      * @async
      * @function
-     * @name Server.CreateFromKey
+     * @name Server.createFromKey
      * @param {Uint8Array} key Private key as a binary Uint8Array
      * @returns {Server} A Server instance
      */
-    async CreateFromKey(key) {
+    async createFromKey(key: Uint8Array): Promise<Server> {
       await initialize()
       const { Value, Status } = library.PSICardinalityServer.CreateFromKey(key)
       if (Status) {
         throw new Error(Status.Message)
       }
 
-      return ServerInstanceImpl(Value)
+      return ServerConstructor(Value)
     }
   }
 }
