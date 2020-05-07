@@ -4,6 +4,7 @@
 #include "psi_cardinality_client.h"
 
 using namespace psi_cardinality;
+using namespace psi_cardinality::c_bindings_internal;
 
 int psi_cardinality_client_create(psi_cardinality_client_ctx *ctx,
                                   char **error_out) {

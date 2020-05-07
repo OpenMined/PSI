@@ -4,6 +4,7 @@
 #include "psi_cardinality_server.h"
 
 using namespace psi_cardinality;
+using namespace psi_cardinality::c_bindings_internal;
 
 int psi_cardinality_server_create_with_new_key(psi_cardinality_server_ctx *ctx,
                                                char **error_out) {

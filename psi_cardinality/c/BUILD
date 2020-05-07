@@ -17,13 +17,25 @@
 package(default_visibility = ["//visibility:public"])
 
 cc_library(
+    name = "internal_utils",
+    srcs = ["internal_utils.cpp"],
+    hdrs = ["internal_utils.h"],
+    includes = ["."],
+    deps = [
+        "@private_join_and_compute//util:status",
+    ],
+    visibility = ["//visibility:private"],
+)
+
+cc_library(
     name = "psi_cardinality_client_c",
-    srcs = ["psi_cardinality_client_c.cpp", "internal_utils.h", "internal_utils.cpp"],
+    srcs = ["psi_cardinality_client_c.cpp"],
     hdrs = ["psi_cardinality_client_c.h"],
     includes = ["."],
     deps = [
         "//psi_cardinality/cpp:bloom_filter",
         "//psi_cardinality/cpp:psi_cardinality_client",
+        "//psi_cardinality/c:internal_utils",
         "@boringssl//:crypto",
         "@com_google_absl//absl/memory",
         "@com_google_absl//absl/strings",
@@ -50,12 +62,13 @@ cc_test(
 
 cc_library(
     name = "psi_cardinality_server_c",
-    srcs = ["psi_cardinality_server_c.cpp", "internal_utils.h", "internal_utils.cpp"],
+    srcs = ["psi_cardinality_server_c.cpp"],
     hdrs = ["psi_cardinality_server_c.h"],
     includes = ["."],
     deps = [
         "//psi_cardinality/cpp:bloom_filter",
         "//psi_cardinality/cpp:psi_cardinality_server",
+        "//psi_cardinality/c:internal_utils",
         "@boringssl//:crypto",
         "@com_google_absl//absl/memory",
         "@com_google_absl//absl/strings",
