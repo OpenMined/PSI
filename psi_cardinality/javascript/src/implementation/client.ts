@@ -1,4 +1,4 @@
-import bazel from 'bazel-psi-cardinality'
+import * as psiCardinality from 'psi_cardinality'
 import { Loader } from '../loader'
 import { ERROR_INSTANCE_DELETED } from './constants'
 
@@ -22,8 +22,8 @@ type ClientWrapperOptions = {
 /**
  * @implements Client
  */
-const ClientConstructor = (instance: bazel.Client): Client => {
-  let _instance: bazel.Client | null = instance
+const ClientConstructor = (instance: psiCardinality.Client): Client => {
+  let _instance: psiCardinality.Client | null = instance
 
   /**
    * @interface Client
@@ -96,7 +96,7 @@ const ClientConstructor = (instance: bazel.Client): Client => {
 export const ClientWrapperConstructor = ({
   loader
 }: ClientWrapperOptions): ClientWrapper => {
-  let library: bazel.Library
+  let library: psiCardinality.Library
 
   const initialize = async (): Promise<void> => {
     if (!library) {

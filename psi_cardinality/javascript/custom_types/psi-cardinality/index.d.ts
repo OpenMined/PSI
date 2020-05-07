@@ -1,4 +1,4 @@
-declare module 'bazel-psi-cardinality' {
+declare module 'psi_cardinality*' {
   type Status = {
     readonly Message: string
   }
@@ -73,4 +73,6 @@ declare module 'bazel-psi-cardinality' {
       readonly CreateFromKey: (key: Uint8Array) => CreateServerResult
     }
   }
+
+  export default function bin(): Library
 }

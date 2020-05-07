@@ -1,4 +1,4 @@
-import serverJsLibrary from '../bin/psi_cardinality_server_js.js'
+import serverJsLibrary from 'psi_cardinality_server_js'
 
 import { createLoader } from './loader'
 import { PSICardinalityConstructor } from './implementation/psi_cardinality'

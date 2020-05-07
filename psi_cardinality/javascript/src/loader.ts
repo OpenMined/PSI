@@ -1,7 +1,7 @@
-import bazel from 'bazel-psi-cardinality'
+import * as psiCardinality from 'psi_cardinality'
 
-type NestedBazelLibrary = { readonly library: bazel.Library }
-export type Loader = () => Promise<NestedBazelLibrary>
+type NestedLibrary = { readonly library: psiCardinality.Library }
+export type Loader = () => Promise<NestedLibrary>
 
 /*
  * Emscripten output contains this callback (onRuntimeInitialized)
@@ -9,7 +9,7 @@ export type Loader = () => Promise<NestedBazelLibrary>
  *
  * We're simply converting this into a promise.
  */
-const waitUntilReady = (src: bazel.Library): Promise<void> =>
+const waitUntilReady = (src: psiCardinality.Library): Promise<void> =>
   new Promise(resolve => (src.onRuntimeInitialized = resolve))
 
 /**
@@ -17,8 +17,8 @@ const waitUntilReady = (src: bazel.Library): Promise<void> =>
  * @param {Object} bin Emscripten library to initialize
  */
 export const createLoader = (
-  bin: () => bazel.Library
-): Loader => async (): Promise<NestedBazelLibrary> => {
+  bin: () => psiCardinality.Library
+): Loader => async (): Promise<NestedLibrary> => {
   const library = bin()
   await waitUntilReady(library)
   return {
