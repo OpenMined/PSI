@@ -33,6 +33,7 @@ cc_library(
 cc_test(
     name = "bloom_filter_test",
     srcs = ["bloom_filter_test.cpp"],
+    linkopts = ["-lrt"],
     deps = [
         ":bloom_filter",
         "//psi_cardinality/cpp/util:status_matchers",
@@ -62,6 +63,7 @@ cc_library(
 cc_test(
     name = "psi_cardinality_client_test",
     srcs = ["psi_cardinality_client_test.cpp"],
+    linkopts = ["-lrt"],
     deps = [
         ":psi_cardinality_client",
         "//psi_cardinality/cpp/util:status_matchers",
@@ -93,6 +95,7 @@ cc_library(
 cc_test(
     name = "psi_cardinality_server_test",
     srcs = ["psi_cardinality_server_test.cpp"],
+    linkopts = ["-lrt"],
     deps = [
         ":psi_cardinality_client",
         ":psi_cardinality_server",
@@ -107,6 +110,7 @@ cc_test(
 cc_binary(
     name = "psi_cardinality_benchmark",
     srcs = ["psi_cardinality_benchmark.cpp"],
+    linkopts = ["-lrt"],
     deps = [
         ":psi_cardinality_client",
         ":psi_cardinality_server",
