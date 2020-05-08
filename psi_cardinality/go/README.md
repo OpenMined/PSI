@@ -25,7 +25,7 @@ bazel test //psi_cardinality/go/... --test_arg=-test.bench=. --test_output=all
 
 ## Integration
 
-* Add Bazel depends to your WORKSPACE, as indicated in the [Using the Library](../../README.md) section.
+* Add Bazel depends to your WORKSPACE, as indicated in the [Using the Library](https://github.com/OpenMined/PSI/blob/go_readme_improve/README.md#using-the-library) section.
 * Add the server or the client as to your deps in the BUILD file
 
 
@@ -42,7 +42,7 @@ go_library(
 ```
 
 
-* Import and use it
+* Import and use the library
 
 
 
