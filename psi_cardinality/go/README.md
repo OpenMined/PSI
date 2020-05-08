@@ -57,13 +57,13 @@ import (
 func main(){
     psiServer, err := server.CreateWithNewKey()
     if err == nil {
-        fmt.Println("loaded server")
+        fmt.Println("server loaded")
         psiServer.Destroy()
     }
 
     psiClient, err := client.Create()
     if err == nil  {
-        fmt.Println("loaded client")
+        fmt.Println("client loaded")
         psiClient.Destroy()
     }
 }
