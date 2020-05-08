@@ -42,7 +42,7 @@ load("@bazel_tools//tools/build_defs/repo:git.bzl", "git_repository")
 
 git_repository(
    name = "org_openmined_psi_cardinality",
-   remote = "https://github.com/OpenMined/psi-cardinality",
+   remote = "https://github.com/OpenMined/PSI",
    branch = "master",
    init_submodules = True,
 )
