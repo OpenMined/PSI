@@ -23,5 +23,49 @@ bazel test //psi_cardinality/go/... --test_output=all
 bazel test //psi_cardinality/go/... --test_arg=-test.bench=. --test_output=all
 ```
 
+## Integration
 
+* Add Bazel depends to your WORKSPACE, as indicated in the [Using the Library](../../README.md) section.
+* Add the server or the client as to your deps in the BUILD file
+
+
+```
+go_library(
+    name = "go_default_library",
+    srcs = ["main.go"],
+    importpath = "github.com/openmined/psi",
+    deps = [
+            "@org_openmined_psi_cardinality//psi_cardinality/go/server:server",
+            "@org_openmined_psi_cardinality//psi_cardinality/go/client:client",
+            ],
+)
+```
+
+
+* Import and use it
+
+
+
+```go
+package main
+import (
+    "fmt"
+    "github.com/openmined/psi-cardinality/server"
+    "github.com/openmined/psi-cardinality/client"
+)
+
+func main(){
+    psiServer, err := server.CreateWithNewKey()
+    if err == nil {
+        fmt.Println("loaded server")
+        psiServer.Destroy()
+    }
+
+    psiClient, err := client.Create()
+    if err == nil  {
+        fmt.Println("loaded client")
+        psiClient.Destroy()
+    }
+}
+```
 
