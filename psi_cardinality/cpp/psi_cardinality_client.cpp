@@ -15,12 +15,14 @@
 //
 
 #include "psi_cardinality_client.h"
+
 #include <vector>
+
 #include "absl/memory/memory.h"
 #include "absl/strings/escaping.h"
 #include "absl/strings/str_cat.h"
-#include "openssl/obj_mac.h"
 #include "bloom_filter.h"
+#include "openssl/obj_mac.h"
 #include "rapidjson/document.h"
 #include "rapidjson/error/en.h"
 #include "rapidjson/stringbuffer.h"
@@ -53,8 +55,8 @@ StatusOr<std::string> PSICardinalityClient::CreateRequest(
     ASSIGN_OR_RETURN(encrypted_inputs[i], ec_cipher_->Encrypt(inputs[i]));
   }
 
-  // Sort inputs (same effect as shuffling as they are encrypted) and store them
-  // in a JSON array.
+  // Sort inputs (same effect as shuffling as they are encrypted) and store
+  // them in a JSON array.
   rapidjson::Document request;
   request.SetArray();
   std::sort(encrypted_inputs.begin(), encrypted_inputs.end());

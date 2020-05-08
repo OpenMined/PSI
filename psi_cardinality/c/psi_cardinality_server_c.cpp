@@ -58,7 +58,6 @@ int psi_cardinality_server_create_setup_message(
 
   auto result = server->CreateSetupMessage(fpr, num_client_inputs, in);
   if (!result.ok()) {
-
     return psi_cardinality::c_bindings_internal::generate_error(result.status(),
                                                                 error_out);
   }

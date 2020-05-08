@@ -15,12 +15,14 @@
 //
 
 #include "psi_cardinality_server.h"
+
 #include <vector>
+
 #include "absl/memory/memory.h"
 #include "absl/strings/escaping.h"
 #include "absl/strings/str_cat.h"
-#include "openssl/obj_mac.h"
 #include "bloom_filter.h"
+#include "openssl/obj_mac.h"
 #include "rapidjson/document.h"
 #include "rapidjson/error/en.h"
 #include "rapidjson/stringbuffer.h"
