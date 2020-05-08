@@ -15,6 +15,7 @@
 //
 
 #include "bloom_filter.h"
+
 #include "absl/strings/str_cat.h"
 #include "gtest/gtest.h"
 #include "util/status_matchers.h"
@@ -82,7 +83,8 @@ TEST_F(BloomFilterTest, TestToJSON) {
   std::string encoded_filter = filter_->ToJSON();
   std::string expected =
       "{\"num_hash_functions\":7,\"bits\":\"VN3/"
-      "BXfUjEDvJLcxCTepUCTXGQwlTax0xHiMohCNb45uShFsznK099RH0CFVIMn91Bdc7jLkXHXr"
+      "BXfUjEDvJLcxCTepUCTXGQwlTax0xHiMohCNb45uShFsznK099RH0CFVIMn91Bdc7jLkXH"
+      "Xr"
       "Xp1NimmZSDrYSj5sd/"
       "500nroNOdXbtd53u8cejPMGxbx7kR1E1zyO19mSkYLXq4xf7au5dFN0qhxqfLnjaCE\"}";
   EXPECT_EQ(encoded_filter, expected);

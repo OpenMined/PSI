@@ -57,4 +57,4 @@ int psi_cardinality_server_get_private_key_bytes(psi_cardinality_server_ctx ctx,
 }
 #endif
 
-#endif // PSI_CARDINALITY_PSI_CARDINALITY_SERVER_C_H_
+#endif  // PSI_CARDINALITY_PSI_CARDINALITY_SERVER_C_H_

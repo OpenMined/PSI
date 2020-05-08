@@ -2,7 +2,9 @@
 #define PSI_CARDINALITY_JAVASCRIPT_BINDINGS_UTILS_H_
 
 #include <emscripten/val.h>
+
 #include <vector>
+
 #include "util/statusor.h"
 
 namespace psi_cardinality {

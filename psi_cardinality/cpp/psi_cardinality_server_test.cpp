@@ -15,6 +15,7 @@
 //
 
 #include "psi_cardinality_server.h"
+
 #include "absl/strings/str_cat.h"
 #include "crypto/ec_commutative_cipher.h"
 #include "gtest/gtest.h"
@@ -34,8 +35,8 @@ class PSICardinalityServerTest : public ::testing::Test {
 };
 
 TEST_F(PSICardinalityServerTest, TestCorrectness) {
-  // We use an actual client instance here, since we already test the client on
-  // its own in psi_cardinality_client_test.cpp.
+  // We use an actual client instance here, since we already test the client
+  // on its own in psi_cardinality_client_test.cpp.
   PSI_ASSERT_OK_AND_ASSIGN(auto client, PSICardinalityClient::Create());
   int num_client_elements = 1000, num_server_elements = 10000;
   double fpr = 0.01;

@@ -25,5 +25,5 @@ namespace c_bindings_internal {
 int generate_error(private_join_and_compute::Status status, char **error_out);
 
 }
-} // namespace psi_cardinality
-#endif // PSI_CARDINALITY_INTERNAL_UTILS_H_
+}  // namespace psi_cardinality
+#endif  // PSI_CARDINALITY_INTERNAL_UTILS_H_
