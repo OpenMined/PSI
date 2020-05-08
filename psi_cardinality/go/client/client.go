@@ -75,6 +75,7 @@ func (c *PSICardinalityClient) ProcessResponse(serverSetup, serverResponse strin
 	return int64(result), nil
 }
 
+//Destroy the C context
 func (c *PSICardinalityClient) Destroy() {
 	if c.context == nil {
 		return
