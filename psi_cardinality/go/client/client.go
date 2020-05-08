@@ -42,15 +42,15 @@ func (c *PSICardinalityClient) CreateRequest(rawInput []string) (string, error) 
 	for idx := range rawInput {
 		inputs = append(inputs, C.struct_client_buffer_t{
 			buff:     C.CString(rawInput[idx]),
-			buff_len: C.ulong(len(rawInput[idx])),
+			buff_len: C.size_t(len(rawInput[idx])),
 		})
 	}
 
 	var out *C.char
-	var outlen C.ulong
+	var outlen C.size_t
 	var err *C.char
 
-	rcode := C.psi_cardinality_client_create_request(c.context, &inputs[0], C.ulong(len(inputs)), &out, &outlen, &err)
+	rcode := C.psi_cardinality_client_create_request(c.context, &inputs[0], C.size_t(len(inputs)), &out, &outlen, &err)
 	if rcode != 0 {
 		return "", fmt.Errorf("create request failed %v(%v)", c.loadCString(&err), rcode)
 	}
@@ -64,7 +64,7 @@ func (c *PSICardinalityClient) ProcessResponse(serverSetup, serverResponse strin
 		return 0, errors.New("invalid context")
 	}
 
-	var result C.long
+	var result C.int64_t
 	var err *C.char
 
 	rcode := C.psi_cardinality_client_process_response(c.context, C.CString(serverSetup), C.CString(serverResponse), &result, &err)
@@ -75,6 +75,7 @@ func (c *PSICardinalityClient) ProcessResponse(serverSetup, serverResponse strin
 	return int64(result), nil
 }
 
+//Destroy the context
 func (c *PSICardinalityClient) Destroy() {
 	if c.context == nil {
 		return
