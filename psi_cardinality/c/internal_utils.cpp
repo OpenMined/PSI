@@ -1,6 +1,6 @@
-#include <string.h>
-
 #include "internal_utils.h"
+
+#include <string.h>
 
 namespace psi_cardinality {
 namespace c_bindings_internal {
@@ -12,5 +12,5 @@ int generate_error(private_join_and_compute::Status status, char **error_out) {
   }
   return status.error_code();
 }
-} // namespace c_bindings_internal
-} // namespace psi_cardinality
+}  // namespace c_bindings_internal
+}  // namespace psi_cardinality

@@ -191,5 +191,5 @@ void BM_ClientProcessResponse(benchmark::State &state) {
 // Range is for the number of inputs.
 BENCHMARK(BM_ClientProcessResponse)->RangeMultiplier(10)->Range(1, 10000);
 
-} // namespace
-} // namespace psi_cardinality
+}  // namespace
+}  // namespace psi_cardinality

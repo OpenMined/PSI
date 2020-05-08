@@ -41,8 +41,8 @@ void psi_cardinality_server_delete(psi_cardinality_server_ctx *ctx) {
 
 int psi_cardinality_server_create_setup_message(
     psi_cardinality_server_ctx ctx, double fpr, int64_t num_client_inputs,
-    server_buffer_t *input, size_t input_len, char **output, size_t *output_len,
-    char **error_out) {
+    server_buffer_t *input, size_t input_len, char **output,
+    size_t *output_len, char **error_out) {
   auto server = static_cast<Server *>(ctx);
   if (server == nullptr) {
     return psi_cardinality::c_bindings_internal::generate_error(
@@ -58,7 +58,6 @@ int psi_cardinality_server_create_setup_message(
 
   auto result = server->CreateSetupMessage(fpr, num_client_inputs, in);
   if (!result.ok()) {
-
     return psi_cardinality::c_bindings_internal::generate_error(result.status(),
                                                                 error_out);
   }

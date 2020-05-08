@@ -1,4 +1,5 @@
 #include <emscripten/bind.h>
+
 #include "psi_cardinality/cpp/psi_cardinality_client.h"
 #include "psi_cardinality/javascript/bindings/utils.h"
 
@@ -20,7 +21,8 @@ EMSCRIPTEN_BINDINGS(PSI_Client) {
                 optional_override([](const PSICardinalityClient &self,
                                      const emscripten::val &string_array) {
                   std::vector<std::string> string_vector;
-                  const std::uint32_t l = string_array["length"].as<std::uint32_t>();
+                  const std::uint32_t l =
+                      string_array["length"].as<std::uint32_t>();
                   string_vector.reserve(l);
 
                   for (std::uint32_t i = 0; i < l; ++i) {
