@@ -23,6 +23,34 @@ cc_library(
 )
 
 cc_binary(
+    name = "psi_cardinality_combined_js.js",
+    srcs = ["bindings/client.cpp", "bindings/server.cpp"],
+    linkopts = DEFAULT_EMSCRIPTEN_LINKOPTS + [
+        "-s WASM=0",
+        "--closure 0",
+    ],
+    deps = [
+        ":utils",
+        "//psi_cardinality/cpp:psi_cardinality_client",
+        "//psi_cardinality/cpp:psi_cardinality_server",
+    ],
+)
+
+cc_binary(
+    name = "psi_cardinality_combined_wasm.js",
+    srcs = ["bindings/client.cpp", "bindings/server.cpp"],
+    linkopts = DEFAULT_EMSCRIPTEN_LINKOPTS + [
+        "-s WASM=1",
+        "--closure 1",
+    ],
+    deps = [
+        ":utils",
+        "//psi_cardinality/cpp:psi_cardinality_client",
+        "//psi_cardinality/cpp:psi_cardinality_server",
+    ],
+)
+
+cc_binary(
     name = "psi_cardinality_client_wasm.js",
     srcs = ["bindings/client.cpp"],
     linkopts = DEFAULT_EMSCRIPTEN_LINKOPTS + [
