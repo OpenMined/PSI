@@ -21,7 +21,7 @@ const server = await PSI.server.createWithNewKey()
 const client = await PSI.client.create()
 ```
 
-By default, the package will use the `combined` build with the `wasm` variant for getting started.
+By **default**, the package will use the `combined` build with the `wasm` variant for getting started.
 This includes both `client` and `server` implementations, but often only one is used. We offer deep import
 links to only load what is needed for your specific environment.
 
@@ -56,6 +56,20 @@ const server = await PSI.server.createWithNewKey()
 // PSI.client is not implemented
 ```
 
+To **manually** load the `combined`:
+
+```javascript
+// Loads the combined server and client, supporting WebAssembly or asm.js
+// with either `umd` (Browser + NodeJS) or `es` (ES6 modules)
+import PSI from '@openmined/psi.js/combined/wasm/umd'
+import PSI from '@openmined/psi.js/combined/wasm/es'
+import PSI from '@openmined/psi.js/combined/js/umd'
+import PSI from '@openmined/psi.js/combined/js/es'
+
+const server = await PSI.server.createWithNewKey()
+const client = await PSI.client.create()
+```
+
 ## Compiling and Running
 
 ### Requirements
@@ -85,13 +99,14 @@ Now, install the rest of the dev dependencies
 yarn install
 ```
 
-To build the client, server, or both for WebAssembly and pure JS
+To build the client, server, or combined (both client and server) for WebAssembly and pure JS
 
 ```
 yarn build:client
 yarn build:server
+yarn build:combined
 
-# or both
+# or all three
 yarn build
 ```
 
@@ -129,7 +144,7 @@ Ensure we start with a clean build
 
 `yarn clean`
 
-Build both client and server
+Build the client, server, and combined (client and server)
 
 `yarn build`
 
