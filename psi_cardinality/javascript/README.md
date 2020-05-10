@@ -70,6 +70,49 @@ const server = await PSI.server.createWithNewKey()
 const client = await PSI.client.create()
 ```
 
+## Example
+
+```
+// Create new server and client instances
+const server = await PSICardinality.server!.createWithNewKey()
+const client = await PSICardinality.client!.create()
+
+// Define mutually agreed upon parameters
+const fpr = 0.001 // false positive rate (0.1%)
+const numClientElements = 10 // Size of the client set to check
+const numTotalElements = 100 // Maximum size of the server set
+
+// Example server set of data
+const serverInputs = Array.from(
+    { length: numTotalElements },
+    (_, i) => `Element ${i}`
+)
+
+// Example client set of data to check
+const clientInputs = Array.from(
+    { length: numClientElements },
+    (_, i) => `Element ${i * 2}`
+)
+
+// Create the setup message that will later
+// be used to compute the intersection. Send to client
+const serverSetup = server.createSetupMessage(
+    fpr,
+    numClientElements,
+    serverInputs
+)
+
+// Create a client request to send to the server
+const clientRequest = client.createRequest(clientInputs)
+
+// Process the client's request and return to the client
+const serverResponse = server.processRequest(clientRequest)
+
+// Client computes the intersection and the server has learned nothing!
+const intersection = client.processResponse(serverSetup, serverResponse)
+// intersection = 10
+```
+
 ## Compiling and Running
 
 ### Requirements
