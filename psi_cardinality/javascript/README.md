@@ -72,7 +72,7 @@ const client = await PSI.client.create()
 
 ## Example
 
-```
+```javascript
 // Create new server and client instances
 const server = await PSICardinality.server!.createWithNewKey()
 const client = await PSICardinality.client!.create()
