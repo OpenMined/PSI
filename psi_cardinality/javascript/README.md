@@ -74,8 +74,8 @@ const client = await PSI.client.create()
 
 ```javascript
 // Create new server and client instances
-const server = await PSICardinality.server!.createWithNewKey()
-const client = await PSICardinality.client!.create()
+const server = await PSICardinality.server.createWithNewKey()
+const client = await PSICardinality.client.create()
 
 // Define mutually agreed upon parameters
 const fpr = 0.001 // false positive rate (0.1%)
