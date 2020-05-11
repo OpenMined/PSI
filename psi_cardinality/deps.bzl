@@ -20,6 +20,8 @@ load("@rules_proto//proto:repositories.bzl", "rules_proto_dependencies", "rules_
 load("@io_bazel_rules_go//go:deps.bzl", "go_rules_dependencies", "go_register_toolchains")
 load("@rules_pkg//:deps.bzl", "rules_pkg_dependencies")
 load("@bazel_gazelle//:deps.bzl", "gazelle_dependencies")
+load("@pybind11_bazel//:python_configure.bzl", "python_configure")
+load("@rules_python//python:repositories.bzl", "py_repositories")
 
 def psi_cardinality_deps():
     # Make all files under submodules/emsdk/* visible to the toolchain. The files are
@@ -100,22 +102,9 @@ cc_library(
             ],
         )
 
-    if "psi_cardinality_bindings" not in native.existing_rules():
-        http_archive(
-            name = "pybind11_bazel",
-            strip_prefix = "pybind11_bazel-<stable-commit>",
-            urls = ["https://github.com/pybind/pybind11_bazel/archive/<stable-commit>.zip"],
-        )
+    py_repositories()
 
-        http_archive(
-            name = "pybind11",
-            build_file = "@pybind11_bazel//:pybind11.BUILD",
-            strip_prefix = "pybind11-<stable-version>",
-            urls = ["https://github.com/pybind/pybind11/archive/v<stable-version>.tar.gz"],
-        )
-
-        load("@pybind11_bazel//:python_configure.bzl", "python_configure")
-        python_configure(name = "local_config_python")
+    python_configure(name = "local_config_python")
 
     rules_proto_dependencies()
 
