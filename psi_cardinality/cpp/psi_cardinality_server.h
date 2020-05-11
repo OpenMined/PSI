@@ -43,10 +43,10 @@ class PSICardinalityServer {
   static StatusOr<std::unique_ptr<PSICardinalityServer>> CreateFromKey(
       const std::string& key_bytes);
 
-  // Creates a setup message from the server's dataset to be sent to the client.
-  // The setup message is a JSON-encoded Bloom filter containing H(x)^s for each
-  // element x in `inputs`, where s is the server's secret key. The message has
-  // the following form:
+  // Creates a setup message from the server's dataset to be sent to the
+  // client. The setup message is a JSON-encoded Bloom filter containing
+  // H(x)^s for each element x in `inputs`, where s is the server's secret
+  // key. The message has the following form:
   //
   //   {
   //     "num_hash_functions": <int>,
@@ -65,14 +65,14 @@ class PSICardinalityServer {
   // Processes a client query and returns the corresponding server response to
   // be sent to the client. For each encrytped element H(x)^c in the decoded
   // `client_request`, computes (H(x)^c)^s = H(X)^(cs) and returns these as a
-  // sorted JSON array. Sorting the output prevents the client from matching the
-  // individual response elements to the ones in the request, ensuring that they
-  // can only learn the intersection size but not individual elements in the
-  // intersection.
+  // sorted JSON array. Sorting the output prevents the client from matching
+  // the individual response elements to the ones in the request, ensuring
+  // that they can only learn the intersection size but not individual
+  // elements in the intersection.
   StatusOr<std::string> ProcessRequest(const std::string& client_request) const;
 
-  // Returns this instance's private key. This key should only be used to create
-  // other server instances. DO NOT SEND THIS KEY TO ANY OTHER PARTY!
+  // Returns this instance's private key. This key should only be used to
+  // create other server instances. DO NOT SEND THIS KEY TO ANY OTHER PARTY!
   std::string GetPrivateKeyBytes() const;
 
  private:

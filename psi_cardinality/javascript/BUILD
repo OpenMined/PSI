@@ -6,7 +6,7 @@ DEFAULT_EMSCRIPTEN_LINKOPTS = [
     "-s ALLOW_MEMORY_GROWTH=1",
     "-s USE_PTHREADS=0",
     "-s ASSERTIONS=0",
-    "-s EXPORT_ES6=0",
+    "-s EXPORT_ES6=1",
     "-s MODULARIZE=1",
     "-s USE_ES6_IMPORT_META=0",
     "-s SINGLE_FILE=1",
@@ -19,6 +19,34 @@ cc_library(
     visibility = ["//visibility:private"],
     deps = [
         "@private_join_and_compute//util:status",
+    ],
+)
+
+cc_binary(
+    name = "psi_cardinality_combined_js.js",
+    srcs = ["bindings/client.cpp", "bindings/server.cpp"],
+    linkopts = DEFAULT_EMSCRIPTEN_LINKOPTS + [
+        "-s WASM=0",
+        "--closure 0",
+    ],
+    deps = [
+        ":utils",
+        "//psi_cardinality/cpp:psi_cardinality_client",
+        "//psi_cardinality/cpp:psi_cardinality_server",
+    ],
+)
+
+cc_binary(
+    name = "psi_cardinality_combined_wasm.js",
+    srcs = ["bindings/client.cpp", "bindings/server.cpp"],
+    linkopts = DEFAULT_EMSCRIPTEN_LINKOPTS + [
+        "-s WASM=1",
+        "--closure 1",
+    ],
+    deps = [
+        ":utils",
+        "//psi_cardinality/cpp:psi_cardinality_client",
+        "//psi_cardinality/cpp:psi_cardinality_server",
     ],
 )
 

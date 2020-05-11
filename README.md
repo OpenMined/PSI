@@ -13,19 +13,6 @@ These are the common requirements across all target languages of this project.
 - A compiler such as clang, gcc, or msvc
 - [Bazel](https://bazel.build)
 
-### Target Requirements
-
-Some target languages have additional requirements
-
-#### C++
-
-- None
-
-#### JavaScript
-
-- [NodeJS](https://nodejs.org/en/)
-- [Yarn](https://yarnpkg.com/)
-
 ## Compiling and Running
 
 The repository uses a folder structure to isolate the supported targets from one another:
@@ -36,88 +23,15 @@ psi_cardinality/<target language>/<sources>
 
 ### C++
 
-Build all libraries with or without optimizations, or build a specific module
-
-```
-# Build everything using the fastbuild optimization configuration
-bazel build //psi_cardinality/cpp/...
-
-# With a specific optimization flag '-c opt'
-bazel build -c opt //psi_cardinality/cpp/...
-
-# Specific module(s)
-bazel build -c opt //psi_cardinality/cpp:psi_cardinality_client
-bazel build -c opt //psi_cardinality/cpp:psi_cardinality_server
-```
-
-Build and run tests
-
-```
-bazel test //psi_cardinality/cpp/...
-```
-
-Build and run benchmarks
-
-```
-bazel run -c opt //psi_cardinality/cpp:psi_cardinality_benchmark
-```
+See the [C++ README.md](psi_cardinality/cpp/README.md)
 
 ### JavaScript
 
-First, ensure you have updated submodules
+See the [JavaScript README.md](psi_cardinality/javascript/README.md)
 
-```
-yarn submodule:update
-```
+### Go
 
-Then, update and initialize `emsdk`
-
-```
-yarn em:update
-yarn em:init
-```
-
-Now, install the rest of the dev dependencies
-
-```
-yarn install
-```
-
-Next, build the WebAssembly, pure JS, or both variants
-
-```
-yarn build:benchmark:wasm
-yarn build:benchmark:js
-
-# or both
-yarn build:benchmark
-```
-
-Finally, run the benchmark for WebAssembly or pure JS
-
-```
-yarn benchmark:wasm
-yarn benchmark:js
-```
-
-To build the client, server, or both for WebAssembly and pure JS
-
-```
-yarn build:client
-yarn build:server
-
-# or both
-yarn build
-```
-
-Run the tests or generate coverage reports. **Note** tests are run using the WASM variant.
-
-```
-yarn test
-
-# or to see coverage
-yarn coverage
-```
+See the [Go README.md](psi_cardinality/go/README.md)
 
 ## Using the Library
 
@@ -128,7 +42,7 @@ load("@bazel_tools//tools/build_defs/repo:git.bzl", "git_repository")
 
 git_repository(
    name = "org_openmined_psi_cardinality",
-   remote = "https://github.com/OpenMined/psi-cardinality",
+   remote = "https://github.com/OpenMined/PSI",
    branch = "master",
    init_submodules = True,
 )

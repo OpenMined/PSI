@@ -15,8 +15,11 @@
 #
 
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
-load("@rules_proto//proto:repositories.bzl", "rules_proto_dependencies", "rules_proto_toolchains")
 load("//psi_cardinality/javascript/toolchain:cc_toolchain_config.bzl", "emsdk_configure")
+load("@rules_proto//proto:repositories.bzl", "rules_proto_dependencies", "rules_proto_toolchains")
+load("@io_bazel_rules_go//go:deps.bzl", "go_rules_dependencies", "go_register_toolchains")
+load("@rules_pkg//:deps.bzl", "rules_pkg_dependencies")
+load("@bazel_gazelle//:deps.bzl", "gazelle_dependencies")
 
 def psi_cardinality_deps():
     # Make all files under submodules/emsdk/* visible to the toolchain. The files are
@@ -117,3 +120,11 @@ cc_library(
     rules_proto_dependencies()
 
     rules_proto_toolchains()
+
+    go_rules_dependencies()
+
+    go_register_toolchains()
+
+    rules_pkg_dependencies()
+
+    gazelle_dependencies()

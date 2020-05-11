@@ -18,6 +18,7 @@
 #define PSI_CARDINALITY_BLOOM_FILTER_H_
 
 #include <vector>
+
 #include "absl/types/span.h"
 #include "crypto/context.h"
 #include "util/statusor.h"
@@ -43,8 +44,8 @@ class BloomFilter {
   BloomFilter() = delete;
 
   // Creates a new Bloom filter. As long as less than `max_elements` are
-  // inserted, the probability of false positives when performing checks against
-  // the returned Bloom filter is less than `fpr`.
+  // inserted, the probability of false positives when performing checks
+  // against the returned Bloom filter is less than `fpr`.
   //
   // Returns INVALID_ARGUMENT if fpr is not in (0,1) or max_elements is not
   // positive.
@@ -85,10 +86,10 @@ class BloomFilter {
   BloomFilter(int num_hash_functions, std::string bits,
               std::unique_ptr<::private_join_and_compute::Context> context);
 
-  // Hashes the input with all `num_hash_functions_` hash functions and returns
-  // the result as a vector. The i-th hash  hash function is computed as
-  // SHA256(1 || x) + i * SHA256(2 || x) (modulo num_bits), where x is the input
-  // and num_bits is the number of bits in the Bloom filter.
+  // Hashes the input with all `num_hash_functions_` hash functions and
+  // returns the result as a vector. The i-th hash  hash function is computed
+  // as SHA256(1 || x) + i * SHA256(2 || x) (modulo num_bits), where x is the
+  // input and num_bits is the number of bits in the Bloom filter.
   std::vector<int64_t> Hash(const std::string& input) const;
 
   // Number of hash functions.

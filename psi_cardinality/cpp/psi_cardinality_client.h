@@ -86,20 +86,20 @@ class PSICardinalityClient {
   // Returns INTERNAL if any OpenSSL crypto operations fail.
   static StatusOr<std::unique_ptr<PSICardinalityClient>> Create();
 
-  // Creates a request message to be sent to the server. For each input element
-  // x, computes H(x)^c, where c is the secret key of ec_cipher_. The result is
-  // sorted to hide the initial ordering of `inputs` and encoded as a JSON
-  // array.
+  // Creates a request message to be sent to the server. For each input
+  // element x, computes H(x)^c, where c is the secret key of ec_cipher_. The
+  // result is sorted to hide the initial ordering of `inputs` and encoded as
+  // a JSON array.
   //
   // Returns INTERNAL if encryption fails.
   StatusOr<std::string> CreateRequest(
       absl::Span<const std::string> inputs) const;
 
-  // Processes the server's response and returns the PSI cardinality. The first
-  // argument, `server_setup`, is a bloom filter that encodes encrypted server
-  // elements and is sent by the server in a setup phase. The second argument,
-  // `server_response`, is the response received from the server after sending
-  // the result of `CreateRequest`.
+  // Processes the server's response and returns the PSI cardinality. The
+  // first argument, `server_setup`, is a bloom filter that encodes encrypted
+  // server elements and is sent by the server in a setup phase. The second
+  // argument, `server_response`, is the response received from the server
+  // after sending the result of `CreateRequest`.
   //
   // Returns INVALID_ARGUMENT if any input messages are malformed, or INTERNAL
   // if decryption fails.
