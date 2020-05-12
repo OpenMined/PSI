@@ -108,7 +108,7 @@ def _impl(ctx):
             flag_groups = [flag_group(flags = ["-DNDEBUG"])],
             with_features = [with_feature_set(features = ["opt"])],
         ),
-        # Overriding to use -O2 instead of -O3 becuase asmjs breaks.
+        # Overriding to use -O2 instead of -O3 because asmjs breaks.
         flag_set(
             actions = all_compile_actions + all_link_actions,
             flag_groups = [flag_group(flags = ["-g0", "-O2"])], 

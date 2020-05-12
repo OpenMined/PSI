@@ -3,6 +3,7 @@ package(default_visibility = ["//visibility:public"])
 DEFAULT_EMSCRIPTEN_LINKOPTS = [
     "-flto",
     "--bind",
+    "--closure 1",
     "-s ALLOW_MEMORY_GROWTH=1",
     "-s USE_PTHREADS=0",
     "-s ASSERTIONS=0",
@@ -23,11 +24,10 @@ cc_library(
 )
 
 cc_binary(
-    name = "psi_cardinality_combined_js.js",
+    name = "psi_cardinality_combined_wasm.js",
     srcs = ["bindings/client.cpp", "bindings/server.cpp"],
     linkopts = DEFAULT_EMSCRIPTEN_LINKOPTS + [
-        "-s WASM=0",
-        "--closure 0",
+        "-s WASM=1",
     ],
     deps = [
         ":utils",
@@ -37,11 +37,10 @@ cc_binary(
 )
 
 cc_binary(
-    name = "psi_cardinality_combined_wasm.js",
+    name = "psi_cardinality_combined_js.js",
     srcs = ["bindings/client.cpp", "bindings/server.cpp"],
     linkopts = DEFAULT_EMSCRIPTEN_LINKOPTS + [
-        "-s WASM=1",
-        "--closure 1",
+        "-s WASM=0",
     ],
     deps = [
         ":utils",
@@ -55,7 +54,6 @@ cc_binary(
     srcs = ["bindings/client.cpp"],
     linkopts = DEFAULT_EMSCRIPTEN_LINKOPTS + [
         "-s WASM=1",
-        "--closure 1",
     ],
     deps = [
         ":utils",
@@ -68,7 +66,6 @@ cc_binary(
     srcs = ["bindings/client.cpp"],
     linkopts = DEFAULT_EMSCRIPTEN_LINKOPTS + [
         "-s WASM=0",
-        "--closure 0",
     ],
     deps = [
         ":utils",
@@ -81,7 +78,6 @@ cc_binary(
     srcs = ["bindings/server.cpp"],
     linkopts = DEFAULT_EMSCRIPTEN_LINKOPTS + [
         "-s WASM=1",
-        "--closure 1",
     ],
     deps = [
         ":utils",
@@ -94,7 +90,6 @@ cc_binary(
     srcs = ["bindings/server.cpp"],
     linkopts = DEFAULT_EMSCRIPTEN_LINKOPTS + [
         "-s WASM=0",
-        "--closure 0",
     ],
     deps = [
         ":utils",
@@ -107,7 +102,6 @@ cc_binary(
     srcs = ["//psi_cardinality/cpp:psi_cardinality_benchmark.cpp"],
     linkopts = DEFAULT_EMSCRIPTEN_LINKOPTS + [
         "-s WASM=1",
-        "--closure 1",
     ],
     deps = [
         "//psi_cardinality/cpp:psi_cardinality_client",
@@ -122,7 +116,6 @@ cc_binary(
     srcs = ["//psi_cardinality/cpp:psi_cardinality_benchmark.cpp"],
     linkopts = DEFAULT_EMSCRIPTEN_LINKOPTS + [
         "-s WASM=0",
-        "--closure 0",
     ],
     deps = [
         "//psi_cardinality/cpp:psi_cardinality_client",

@@ -13,9 +13,9 @@ build:wasm --host_crosstool_top=@bazel_tools//tools/cpp:toolchain
 
 # These compile flags are active no matter which build mode we are in
 # (dbg vs opt). For flags specific to build mode, see cc_toolchain_config.bzl.
+build:wasm --cxxopt="-flto"
+build:wasm --cxxopt="-fno-exceptions"
 #build:wasm --host_cxxopt="-fno-rtti"
-#build:wasm --host_cxxopt="-fno-exceptions"
-#build:wasm --host_cxxopt="-fomit-frame-pointer"
 
 # Disable sandbox environment because emsdk caches files by writing to
 # home directory.
@@ -33,9 +33,9 @@ build:js --host_crosstool_top=@bazel_tools//tools/cpp:toolchain
 
 # These compile flags are active no matter which build mode we are in
 # (dbg vs opt). For flags specific to build mode, see cc_toolchain_config.bzl.
+build:js --cxxopt="-flto"
+build:js --cxxopt="-fno-exceptions"
 #build:js --host_cxxopt="-fno-rtti"
-#build:js --host_cxxopt="-fno-exceptions"
-#build:js --host_cxxopt="-fomit-frame-pointer"
 
 # Disable sandbox environment because emsdk caches files by writing to
 # home directory.
