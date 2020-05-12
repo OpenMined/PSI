@@ -16,7 +16,8 @@
 
 package(default_visibility = ["//visibility:public"])
 
-PSI_CARDINALITY_DEFAULT_LINKOPTS = [
+COMMON_LINKOPTS = []
+LINUX_ONLY_LINKOPTS = [
     # Needed on some Linux systems. See also
     # https://github.com/google/cctz/issues/47
     # https://github.com/tensorflow/tensorflow/issues/15129
@@ -40,7 +41,11 @@ cc_library(
 cc_test(
     name = "bloom_filter_test",
     srcs = ["bloom_filter_test.cpp"],
-    linkopts = PSI_CARDINALITY_DEFAULT_LINKOPTS,
+    linkopts = 
+        select({
+            "@bazel_tools//src/conditions:linux_x86_64": COMMON_LINKOPTS + LINUX_ONLY_LINKOPTS,
+            "//conditions:default": COMMON_LINKOPTS,
+        }),
     deps = [
         ":bloom_filter",
         "//psi_cardinality/cpp/util:status_matchers",
@@ -70,7 +75,11 @@ cc_library(
 cc_test(
     name = "psi_cardinality_client_test",
     srcs = ["psi_cardinality_client_test.cpp"],
-    linkopts = PSI_CARDINALITY_DEFAULT_LINKOPTS,
+    linkopts = 
+        select({
+            "@bazel_tools//src/conditions:linux_x86_64": COMMON_LINKOPTS + LINUX_ONLY_LINKOPTS,
+            "//conditions:default": COMMON_LINKOPTS,
+        }),
     deps = [
         ":psi_cardinality_client",
         "//psi_cardinality/cpp/util:status_matchers",
@@ -102,7 +111,11 @@ cc_library(
 cc_test(
     name = "psi_cardinality_server_test",
     srcs = ["psi_cardinality_server_test.cpp"],
-    linkopts = PSI_CARDINALITY_DEFAULT_LINKOPTS,
+    linkopts = 
+        select({
+            "@bazel_tools//src/conditions:linux_x86_64": COMMON_LINKOPTS + LINUX_ONLY_LINKOPTS,
+            "//conditions:default": COMMON_LINKOPTS,
+        }),
     deps = [
         ":psi_cardinality_client",
         ":psi_cardinality_server",
@@ -117,7 +130,11 @@ cc_test(
 cc_binary(
     name = "psi_cardinality_benchmark",
     srcs = ["psi_cardinality_benchmark.cpp"],
-    linkopts = PSI_CARDINALITY_DEFAULT_LINKOPTS,
+    linkopts = 
+        select({
+            "@bazel_tools//src/conditions:linux_x86_64": COMMON_LINKOPTS + LINUX_ONLY_LINKOPTS,
+            "//conditions:default": COMMON_LINKOPTS,
+        }),
     deps = [
         ":psi_cardinality_client",
         ":psi_cardinality_server",
