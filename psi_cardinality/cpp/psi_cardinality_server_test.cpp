@@ -73,6 +73,12 @@ TEST_F(PSICardinalityServerTest, TestCorrectness) {
   // Test if size is approximately as expected (up to 10%).
   EXPECT_GE(intersection_size, num_client_elements / 2);
   EXPECT_LT(intersection_size, (num_client_elements / 2) * 1.1);
+
+  // Get the private key
+  const std::string key_bytes = server_->GetPrivateKeyBytes();
+
+  // Test if the key size is always 32 bytes.
+  EXPECT_EQ(key_bytes.length(), 32);
 }
 
 }  // namespace
