@@ -1,6 +1,7 @@
 package server
 
 import (
+	"bytes"
 	"github.com/openmined/psi-cardinality/client"
 	"testing"
 )
@@ -25,7 +26,7 @@ func TestServerSanity(t *testing.T) {
 	if err != nil {
 		t.Errorf("Failed to create a new PSI server key %v", err)
 	}
-	if key != newKey {
+	if !bytes.Equal(key, newKey) {
 		t.Errorf("new server invalid")
 	}
 	server.Destroy()

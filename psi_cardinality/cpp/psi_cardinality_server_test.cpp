@@ -83,7 +83,8 @@ TEST_F(PSICardinalityServerTest, TestCreatingFromKey) {
   EXPECT_EQ(key_bytes.length(), 32);
 
   // Create a new server instance from the original key
-  PSI_ASSERT_OK_AND_ASSIGN(auto server, PSICardinalityServer::CreateFromKey(key_bytes));
+  PSI_ASSERT_OK_AND_ASSIGN(auto server,
+                           PSICardinalityServer::CreateFromKey(key_bytes));
 
   int num_client_elements = 100, num_server_elements = 1000;
   double fpr = 0.01;
@@ -110,13 +111,16 @@ TEST_F(PSICardinalityServerTest, TestCreatingFromKey) {
   // Both setup messages should be the same
   EXPECT_EQ(server_setup, server_setup1);
 
-  // Create a 31-byte key that should be equivalent to a 32-byte null-inserted key
+  // Create a 31-byte key that should be equivalent to a 32-byte null-inserted
+  // key
   const std::string key_bytes2("bcdefghijklmnopqrstuvwxyz123456", 31);
-  PSI_ASSERT_OK_AND_ASSIGN(auto server2, PSICardinalityServer::CreateFromKey(key_bytes2));
+  PSI_ASSERT_OK_AND_ASSIGN(auto server2,
+                           PSICardinalityServer::CreateFromKey(key_bytes2));
   const std::string key_bytes3("\0bcdefghijklmnopqrstuvwxyz123456", 32);
-  PSI_ASSERT_OK_AND_ASSIGN(auto server3, PSICardinalityServer::CreateFromKey(key_bytes3));
+  PSI_ASSERT_OK_AND_ASSIGN(auto server3,
+                           PSICardinalityServer::CreateFromKey(key_bytes3));
 
-    // Run Server setup.
+  // Run Server setup.
   PSI_ASSERT_OK_AND_ASSIGN(
       auto server_setup2,
       server2->CreateSetupMessage(fpr, num_client_elements, server_elements));
