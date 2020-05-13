@@ -109,7 +109,6 @@ TEST_F(PSICardinalityServerTest, TestCreatingFromKey) {
 
   // Both setup messages should be the same
   EXPECT_EQ(server_setup1, server_setup2);
-
 }
 
 }  // namespace
