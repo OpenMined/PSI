@@ -105,7 +105,7 @@ TEST_F(PSICardinalityServerTest, TestCreatingFromKey) {
 
   PSI_ASSERT_OK_AND_ASSIGN(
       auto server_setup2,
-      server_->CreateSetupMessage(fpr, num_client_elements, server_elements));
+      server->CreateSetupMessage(fpr, num_client_elements, server_elements));
 
   // Both setup messages should be the same
   EXPECT_EQ(server_setup1, server_setup2);
