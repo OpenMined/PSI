@@ -96,7 +96,7 @@ func CreateFromKey(key []byte) (*PSICardinalityServer, error) {
 
 	var err *C.char
 	rcode := C.psi_cardinality_server_create_from_key(C.struct_server_buffer_t{
-		buff:     (*C.char)(unsafe.Pointer(&key[0])),
+		buff:     (*C.char)(C.CBytes(key)),
 		buff_len: C.size_t(len(key)),
 	},
 		&psiServer.context, &err)
@@ -206,7 +206,7 @@ func (s *PSICardinalityServer) GetPrivateKeyBytes() ([]byte, error) {
 	}
 
 	// Convert C array to a Go slice. Private Keys are guaranteed to be 32 bytes long.
-	result := (*[32]byte)(unsafe.Pointer(out))[:outlen:outlen]
+	result := C.GoBytes(unsafe.Pointer(out), 32)
 
 	return result, nil
 }
