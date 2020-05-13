@@ -31,6 +31,7 @@ jobs:
         with:
           go-version: ^1.13
         id: go
+      - run: go get -u golang.org/x/lint/golint
       - uses: actions/checkout@v2
       - name: Lint with clang-format
         run: .github/workflows/scripts/lint_cpp.sh
