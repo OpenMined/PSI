@@ -1,9 +1,9 @@
 package server
 
 import (
+	"bytes"
 	"github.com/openmined/psi-cardinality/client"
 	"testing"
-	"bytes"
 )
 
 func TestServerSanity(t *testing.T) {

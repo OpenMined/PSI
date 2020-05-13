@@ -205,7 +205,7 @@ func (s *PSICardinalityServer) GetPrivateKeyBytes() ([]byte, error) {
 		return nil, fmt.Errorf("get private keys failed: %v(%v)", s.loadCString(&err), rcode)
 	}
 
-    // Convert C array to a Go slice. Private Keys are guaranteed to be 32 bytes long.
+	// Convert C array to a Go slice. Private Keys are guaranteed to be 32 bytes long.
 	result := (*[32]byte)(unsafe.Pointer(out))[:outlen:outlen]
 
 	return result, nil
