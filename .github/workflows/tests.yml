@@ -1,4 +1,4 @@
-name: Tests
+name: CI
 
 on:
   push:
@@ -13,11 +13,8 @@ on:
 jobs:
   PSI-cpp-tests:
 
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [macos-latest, ubuntu-18.04]
-
+    runs-on: ubuntu-latest
+    
     steps:
     - uses: actions/checkout@v2
     - name: Install dependencies - Bazel
@@ -36,7 +33,7 @@ jobs:
     - name: Lint with clang-format
       run: |
         # lint files (all .cpp and .h files) inplace
-        find ./psi-cardinality/  \( -iname *.h -o -iname *.cpp \) | xargs clang-format -i -style='google'
+        find ./psi-cardinality/  \( -iname *.h -o -iname *.cpp \) -a -not -path "*go*" | xargs clang-format -i -style='file'
         # print changes
         git diff
         # already well formated if 'git diff' doesn't output
