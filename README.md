@@ -1,4 +1,4 @@
-# PSI Cardinality
+# PSI Cardinality ![Tests](https://github.com/OpenMined/PSI/workflows/Tests/badge.svg?branch=master)
 
 Private Set Intersection Cardinality protocol based on ECDH and Bloom Filters.
 
