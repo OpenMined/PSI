@@ -8,8 +8,8 @@ To install, run:
 
 ```bash
 npm install @openmined/psi.js
-# or with npm run
-npm run add @openmined/psi.js
+# or with yarn
+yarn add @openmined/psi.js
 ```
 
 Then import the package:
