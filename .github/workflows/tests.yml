@@ -20,7 +20,21 @@ jobs:
       - name: Install Bazel - MacOS
         run: .github/workflows/scripts/install_macos.sh
         if: ${{ github.matrix.os == 'macos-latest' }}
-      - name: Lint with clang-format
-        run: .github/workflows/scripts/lint_cpp.sh
       - name: Run tests
         run: .github/workflows/scripts/run_tests.sh
+
+  Linters:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install toolchains
+        uses: actions/setup-go@v2
+        with:
+          go-version: ^1.13
+        id: go
+      - name: Install dependencies
+        run: go get -u golang.org/x/lint/golint
+      - uses: actions/checkout@v2
+      - name: C++ linters
+        run: .github/workflows/scripts/lint_cpp.sh
+      - name: Go linters
+        run: .github/workflows/scripts/lint_go.sh
