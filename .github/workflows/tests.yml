@@ -24,7 +24,6 @@ jobs:
         run: .github/workflows/scripts/run_tests.sh
 
   Linters:
-    name: Build
     runs-on: ubuntu-latest
     steps:
       - name: Set up Go 1.x
