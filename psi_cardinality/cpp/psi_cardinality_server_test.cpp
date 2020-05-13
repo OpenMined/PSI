@@ -91,8 +91,11 @@ TEST_F(PSICardinalityServerTest, TestCreatingFromKey) {
   std::vector<std::string> server_elements(num_server_elements);
 
   // Create elements to sign
+  for (int i = 0; i < num_client_elements; i++) {
+    client_elements[i] = absl::StrCat("Element ", i);
+  }
   for (int i = 0; i < num_server_elements; i++) {
-    server_elements[i] = absl::StrCat("Element ", i);
+    server_elements[i] = absl::StrCat("Element ", 2 * i);
   }
 
   // Run Server setup.
