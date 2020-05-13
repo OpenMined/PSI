@@ -7,7 +7,7 @@ for file in $files
 do
     # Check format.
     gofmt -w $file
-    golint $file
+    golint -set_exit_status $file
     if [ $? -ne 0 ]
     then
         exit 1
