@@ -38,7 +38,7 @@
     "prerollup": "bash psi_cardinality/javascript/scripts/prerollup.sh",
     "rollup": "rollup -c",
     "postrollup": "bash psi_cardinality/javascript/scripts/postrollup.sh",
-    "prepublishOnly": "echo 'Please run \"npm run run publish\" instead' && exit 1",
+    "prepublishOnly": "echo 'Please run \"npm run publish\" instead' && exit 1",
     "publish:test": "npm --dry-run publish --access=public psi_cardinality/javascript/dist/openmined-psi.js-*.tgz",
     "publish": "npm publish --access=public psi_cardinality/javascript/dist/openmined-psi.js-*.tgz",
     "clean": "bazel clean --expunge && rm -rf psi_cardinality/javascript/bin/* && rm -rf psi_cardinality/javascript/tsc-out/* && rm -rf psi_cardinality/javascript/dist/*",
