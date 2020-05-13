@@ -16,11 +16,11 @@ jobs:
       - uses: actions/checkout@v2
       - name: Install Bazel - Ubuntu
         run: scripts/install_ubuntu.sh
-        if: github.matrix.os == ubuntu-18.04
+        if: github.matrix.os == "ubuntu-18.04"
 
       - name: Install Bazel - MacOS
         run: scripts/install_macos.sh
-        if: github.matrix.os == macos-latest
+        if: github.matrix.os == "macos-latest"
 
       - name: Lint with clang-format
         run: scripts/lint_cpp.sh
