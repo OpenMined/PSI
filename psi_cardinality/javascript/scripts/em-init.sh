@@ -2,7 +2,7 @@
 set -euo pipefail
 
 # Sets up llvm
-cd submodules/emsdk/
+cd third_party/emsdk/
 ./emsdk install latest
 ./emsdk activate latest
 cd ../../
