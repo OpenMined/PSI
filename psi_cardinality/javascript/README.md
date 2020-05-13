@@ -138,7 +138,7 @@ npm run em:init
 Now, install the rest of the dev dependencies
 
 ```
-npm run install
+npm install
 ```
 
 To build the client, server, or combined (both client and server) for WebAssembly and pure JS
