@@ -73,12 +73,40 @@ TEST_F(PSICardinalityServerTest, TestCorrectness) {
   // Test if size is approximately as expected (up to 10%).
   EXPECT_GE(intersection_size, num_client_elements / 2);
   EXPECT_LT(intersection_size, (num_client_elements / 2) * 1.1);
+}
 
-  // Get the private key
+TEST_F(PSICardinalityServerTest, TestCreatingFromKey) {
+  // Get the original private key
   const std::string key_bytes = server_->GetPrivateKeyBytes();
 
-  // Test if the key size is always 32 bytes.
+  // Test if the key size is 32 bytes.
   EXPECT_EQ(key_bytes.length(), 32);
+
+  // Create a new server instance from the original key
+  PSI_ASSERT_OK_AND_ASSIGN(auto server, PSICardinalityServer::CreateFromKey(key_bytes));
+
+  int num_client_elements = 1000, num_server_elements = 10000;
+  double fpr = 0.01;
+  std::vector<std::string> client_elements(num_client_elements);
+  std::vector<std::string> server_elements(num_server_elements);
+
+  // Create elements to sign
+  for (int i = 0; i < num_server_elements; i++) {
+    server_elements[i] = absl::StrCat("Element ", i);
+  }
+
+  // Run Server setup.
+  PSI_ASSERT_OK_AND_ASSIGN(
+      auto server_setup1,
+      server_->CreateSetupMessage(fpr, num_client_elements, server_elements));
+
+  PSI_ASSERT_OK_AND_ASSIGN(
+      auto server_setup2,
+      server_->CreateSetupMessage(fpr, num_client_elements, server_elements));
+
+  // Both setup messages should be the same
+  EXPECT_EQ(server_setup1, server_setup2);
+
 }
 
 }  // namespace

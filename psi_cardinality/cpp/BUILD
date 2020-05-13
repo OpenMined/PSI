@@ -16,13 +16,15 @@
 
 package(default_visibility = ["//visibility:public"])
 
-COMMON_LINKOPTS = []
-LINUX_ONLY_LINKOPTS = [
-    # Needed on some Linux systems. See also
-    # https://github.com/google/cctz/issues/47
-    # https://github.com/tensorflow/tensorflow/issues/15129
-    "-lrt",
-]
+PSI_LINKOPTS = select({
+     "@bazel_tools//src/conditions:darwin": [],
+     "//conditions:default": [
+        # Needed on some Linux systems. See also
+        # https://github.com/google/cctz/issues/47
+        # https://github.com/tensorflow/tensorflow/issues/15129
+        "-lrt"
+    ]
+})
 
 cc_library(
     name = "bloom_filter",
@@ -41,11 +43,7 @@ cc_library(
 cc_test(
     name = "bloom_filter_test",
     srcs = ["bloom_filter_test.cpp"],
-    linkopts = 
-        select({
-            "@bazel_tools//src/conditions:linux_x86_64": COMMON_LINKOPTS + LINUX_ONLY_LINKOPTS,
-            "//conditions:default": COMMON_LINKOPTS,
-        }),
+    linkopts = PSI_LINKOPTS,
     deps = [
         ":bloom_filter",
         "//psi_cardinality/cpp/util:status_matchers",
@@ -75,11 +73,7 @@ cc_library(
 cc_test(
     name = "psi_cardinality_client_test",
     srcs = ["psi_cardinality_client_test.cpp"],
-    linkopts = 
-        select({
-            "@bazel_tools//src/conditions:linux_x86_64": COMMON_LINKOPTS + LINUX_ONLY_LINKOPTS,
-            "//conditions:default": COMMON_LINKOPTS,
-        }),
+    linkopts = PSI_LINKOPTS,
     deps = [
         ":psi_cardinality_client",
         "//psi_cardinality/cpp/util:status_matchers",
@@ -111,11 +105,7 @@ cc_library(
 cc_test(
     name = "psi_cardinality_server_test",
     srcs = ["psi_cardinality_server_test.cpp"],
-    linkopts = 
-        select({
-            "@bazel_tools//src/conditions:linux_x86_64": COMMON_LINKOPTS + LINUX_ONLY_LINKOPTS,
-            "//conditions:default": COMMON_LINKOPTS,
-        }),
+    linkopts = PSI_LINKOPTS,
     deps = [
         ":psi_cardinality_client",
         ":psi_cardinality_server",
@@ -130,11 +120,7 @@ cc_test(
 cc_binary(
     name = "psi_cardinality_benchmark",
     srcs = ["psi_cardinality_benchmark.cpp"],
-    linkopts = 
-        select({
-            "@bazel_tools//src/conditions:linux_x86_64": COMMON_LINKOPTS + LINUX_ONLY_LINKOPTS,
-            "//conditions:default": COMMON_LINKOPTS,
-        }),
+    linkopts = PSI_LINKOPTS,
     deps = [
         ":psi_cardinality_client",
         ":psi_cardinality_server",
