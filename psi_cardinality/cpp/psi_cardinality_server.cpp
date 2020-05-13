@@ -132,7 +132,7 @@ StatusOr<std::string> PSICardinalityServer::ProcessRequest(
 
 std::string PSICardinalityServer::GetPrivateKeyBytes() const {
   std::string key = ec_cipher_->GetPrivateKeyBytes();
-  key.insert(key.begin(), 32 - key.length(), '0');
+  key.insert(key.begin(), 32 - key.length(), '\0');
   return key;
 }
 
