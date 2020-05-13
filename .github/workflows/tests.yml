@@ -3,51 +3,24 @@ name: Tests
 on:
   push:
     branches: [master]
-    paths:
-      - '**.cpp'
   pull_request:
-    types: [opened, synchronize, reopened]
-    paths:
-      - '**.cpp'
 
 jobs:
-  PSI-cpp-tests:
+  Tests:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-18.04]
+        os: [macos-latest, ubuntu-18.04]
 
     steps:
       - uses: actions/checkout@v2
-      - name: Install dependencies - Bazel
-        run: |
-          sudo apt update
-          sudo apt install cmake clang
-          # Step 1: Install the JDK (optional)
-          sudo apt-get install openjdk-11-jdk
-          # Step 2: Add Bazel distribution URI as a package source
-          echo "deb [arch=amd64] https://storage.googleapis.com/bazel-apt stable jdk1.8" | sudo tee /etc/apt/sources.list.d/bazel.list
-          curl https://bazel.build/bazel-release.pub.gpg | sudo apt-key add -
-          # Step 3: Install and update Bazel
-          sudo apt-get update && sudo apt-get install bazel
-          sudo apt-get install --only-upgrade bazel
+      - name: Install Bazel - Ubuntu
+        run: .github/workflows/scripts/install_ubuntu.sh
+        if: ${{ github.matrix.os == 'ubuntu-18.04' }}
+      - name: Install Bazel - MacOS
+        run: .github/workflows/scripts/install_macos.sh
+        if: ${{ github.matrix.os == 'macos-latest' }}
       - name: Lint with clang-format
-        run: |
-          # lint files (all .cpp and .h files) inplace
-          find ./psi-cardinality/  \( -iname *.h -o -iname *.cpp \) | xargs clang-format -i -style='google'
-          # print changes
-          git diff
-          # already well formated if 'git diff' doesn't output
-          ! ( git diff |  grep -q ^ ) || return 1
-      - name: Build the library
-        run: |
-          # fetch third_party libraries
-          git submodule init && git submodule update
-          # build the cpp library
-          bazel build //psi_cardinality/cpp/...
+        run: .github/workflows/scripts/lint_cpp.sh
       - name: Run tests
-        run: |
-          bazel test //psi_cardinality/cpp/...
-      - name: Run benchmark tests
-        run: |
-          bazel run -c opt //psi_cardinality/cpp:psi_cardinality_benchmark
+        run: .github/workflows/scripts/run_tests.sh
