@@ -61,6 +61,7 @@ import (
 	"errors"
 	"fmt"
 	"runtime"
+	"unsafe"
 )
 
 //PSICardinalityServer context for the server side of a Private Set Intersection-Cardinality protocol.
@@ -90,12 +91,12 @@ func CreateWithNewKey() (*PSICardinalityServer, error) {
 //CreateFromKey creates and returns a new server instance with the provided private key.
 //
 //Returns an error if any crypto operations fail.
-func CreateFromKey(key string) (*PSICardinalityServer, error) {
+func CreateFromKey(key []byte) (*PSICardinalityServer, error) {
 	psiServer := new(PSICardinalityServer)
 
 	var err *C.char
 	rcode := C.psi_cardinality_server_create_from_key(C.struct_server_buffer_t{
-		buff:     C.CString(key),
+		buff:     (*C.char)(unsafe.Pointer(&key[0])),
 		buff_len: C.size_t(len(key)),
 	},
 		&psiServer.context, &err)
@@ -189,9 +190,9 @@ func (s *PSICardinalityServer) ProcessRequest(request string) (string, error) {
 
 //GetPrivateKeyBytes returns this instance's private key. This key should only be used to
 //create other server instances. DO NOT SEND THIS KEY TO ANY OTHER PARTY!
-func (s *PSICardinalityServer) GetPrivateKeyBytes() (string, error) {
+func (s *PSICardinalityServer) GetPrivateKeyBytes() ([]byte, error) {
 	if s.context == nil {
-		return "", errors.New("invalid context")
+		return nil, errors.New("invalid context")
 	}
 
 	var out *C.char
@@ -201,10 +202,11 @@ func (s *PSICardinalityServer) GetPrivateKeyBytes() (string, error) {
 	rcode := C.psi_cardinality_server_get_private_key_bytes(s.context, &out, &outlen, &err)
 
 	if rcode != 0 {
-		return "", fmt.Errorf("get private keys failed: %v(%v)", s.loadCString(&err), rcode)
+		return nil, fmt.Errorf("get private keys failed: %v(%v)", s.loadCString(&err), rcode)
 	}
 
-	result := s.loadCString(&out)
+    // Convert C array to a Go slice. Private Keys are guaranteed to be 32 bytes long.
+	result := (*[32]byte)(unsafe.Pointer(out))[:outlen:outlen]
 
 	return result, nil
 }

@@ -41,8 +41,8 @@ void psi_cardinality_server_delete(psi_cardinality_server_ctx *ctx) {
 
 int psi_cardinality_server_create_setup_message(
     psi_cardinality_server_ctx ctx, double fpr, int64_t num_client_inputs,
-    server_buffer_t *input, size_t input_len, char **output,
-    size_t *output_len, char **error_out) {
+    server_buffer_t *input, size_t input_len, char **output, size_t *output_len,
+    char **error_out) {
   auto server = static_cast<Server *>(ctx);
   if (server == nullptr) {
     return psi_cardinality::c_bindings_internal::generate_error(
@@ -111,9 +111,11 @@ int psi_cardinality_server_get_private_key_bytes(psi_cardinality_server_ctx ctx,
         error_out);
   }
   auto value = server->GetPrivateKeyBytes();
-  size_t len = value.size() + 1;
+  size_t len = value.size();
+
+  // Private keys are raw bytes -> Use memcpy instead of strncpy.
   *output = new char[len];
-  strncpy(*output, value.c_str(), len);
+  memcpy(*output, value.data(), len);
   *output_len = len;
 
   return 0;
