@@ -1,6 +1,6 @@
-#include <emscripten/bind.h>
-
 #include "psi_cardinality/cpp/package.h"
+
+#include <emscripten/bind.h>
 
 EMSCRIPTEN_BINDINGS(Package) {
   using emscripten::optional_override;
