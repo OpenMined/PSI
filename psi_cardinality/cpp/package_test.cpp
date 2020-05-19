@@ -22,7 +22,7 @@
 namespace psi_cardinality {
 namespace {
 
-TEST(PackageTest, testVersionFormat) {
+TEST(PackageTest, TestVersionFormat) {
   // The regex represents Semantic Versioning syntax (www.semver.org),
   // i.e. three dot-separated numbers, with an optional suffix
   // that starts with a hyphen, to cover alpha/beta releases and
@@ -31,7 +31,7 @@ TEST(PackageTest, testVersionFormat) {
   //   1.2.3-beta
   //   1.2.3-RC1
   std::string version_regex = "[0-9]+[.][0-9]+[.][0-9]+(-[A-Za-z0-9]+)?";
-  EXPECT_THAT(Package::version, testing::MatchesRegex(version_regex));
+  EXPECT_THAT(Package::kVersion, testing::MatchesRegex(version_regex));
 }
 
 }  // namespace

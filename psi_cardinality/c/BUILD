@@ -13,38 +13,26 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-load("//tools:package.bzl", "VERSION_LABEL")
-load("//tools:common.bzl", "template_rule")
 
 package(default_visibility = ["//visibility:public"])
 
-template_rule(
-    name = "package_c_h",
-    src = "package_c.h.templ",
-    out = "package_c.h",
-    substitutions = {
-        "@VERSION_LABEL@": "%s" % VERSION_LABEL,
-    },
-)
-
 cc_library(
-    name = "package_c",
-    srcs = ["package_c.cpp"],
-    hdrs = [":package_c_h"],
+    name = "package",
+    srcs = ["package.cpp"],
+    hdrs = ["package.h"],
     deps = [
-    "//psi_cardinality/cpp:package",
+        "//psi_cardinality/cpp:package",
     ],
 )
 
-
-# cc_test(
-#     name = "package_test",
-#     srcs = ["package_test_c.cpp"],
-#     deps = [
-#         ":package",
-#         "@com_google_googletest//:gtest_main",
-#     ],
-# )
+cc_test(
+    name = "package_test",
+    srcs = ["package_test.cpp"],
+    deps = [
+        ":package",
+        "@com_google_googletest//:gtest_main",
+    ],
+)
 
 cc_library(
     name = "internal_utils",

@@ -14,17 +14,9 @@
 // limitations under the License.
 //
 
-#ifndef PSI_CARDINALITY_CPP_PACKAGE_H_
-#define PSI_CARDINALITY_CPP_PACKAGE_H_
+#include "psi_cardinality/c/package.h"
+#include "psi_cardinality/cpp/package.h"
 
-namespace psi_cardinality {
-
-class Package {
- public:
-  Package() = delete;
-  static constexpr char kVersion[] = "@VERSION_LABEL@";
-};
-
-}  // namespace psi_cardinality
-
-#endif  // PSI_CARDINALITY_CPP_PACKAGE_H_
+const char* psi_cardinality_version() {
+  return ::psi_cardinality::Package::kVersion;
+}

@@ -18,6 +18,6 @@
 
 namespace psi_cardinality {
 
-constexpr char Package::version[];
+constexpr char Package::kVersion[];
 
 }  // namespace psi_cardinality

@@ -14,17 +14,17 @@
 // limitations under the License.
 //
 
-#include "psi_cardinality/c/package_c.h"
-#include "psi_cardinality/cpp/package.h"
+#ifndef PSI_CARDINALITY_C_PACKAGE_H_
+#define PSI_CARDINALITY_C_PACKAGE_H_
 
-using Package = psi_cardinality::Package;
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-namespace psi_cardinality {
+const char * psi_cardinality_version();
 
-const char* package_version() {
-    return Package::version.c_str();
+#ifdef __cplusplus
 }
+#endif
 
-// constexpr char Package::version[];
-
-}  // namespace psi_cardinality
+#endif  // PSI_CARDINALITY_PACKAGE_H_
