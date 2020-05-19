@@ -54,7 +54,7 @@
 package client
 
 /*
-#include "psi_cardinality/c/psi_cardinality_client_c.h"
+#include "psi_cardinality/c/psi_cardinality_client.h"
 */
 import "C"
 import (

@@ -14,17 +14,17 @@
 // limitations under the License.
 //
 
-#ifndef PSI_CARDINALITY_CPP_PACKAGE_H_
-#define PSI_CARDINALITY_CPP_PACKAGE_H_
+#ifndef PSI_CARDINALITY_C_PACKAGE_H_
+#define PSI_CARDINALITY_C_PACKAGE_H_
 
-namespace psi_cardinality {
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-class Package {
- public:
-  Package() = delete;
-  static constexpr char kVersion[] = "@VERSION_LABEL@";
-};
+const char* psi_cardinality_version();
 
-}  // namespace psi_cardinality
+#ifdef __cplusplus
+}
+#endif
 
-#endif  // PSI_CARDINALITY_CPP_PACKAGE_H_
+#endif  // PSI_CARDINALITY_PACKAGE_H_

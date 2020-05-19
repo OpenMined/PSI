@@ -14,8 +14,8 @@
 // limitations under the License.
 //
 
-#ifndef PSI_CARDINALITY_PSI_CARDINALITY_CLIENT_C_H_
-#define PSI_CARDINALITY_PSI_CARDINALITY_CLIENT_C_H_
+#ifndef PSI_CARDINALITY_C_PSI_CARDINALITY_CLIENT_H_
+#define PSI_CARDINALITY_C_PSI_CARDINALITY_CLIENT_H_
 
 #include <stddef.h>
 #include <stdint.h>
@@ -49,4 +49,4 @@ int psi_cardinality_client_process_response(psi_cardinality_client_ctx,
 }
 #endif
 
-#endif  // PSI_CARDINALITY_PSI_CARDINALITY_CLIENT_C_H_
+#endif  // PSI_CARDINALITY_PSI_CARDINALITY_CLIENT_H_

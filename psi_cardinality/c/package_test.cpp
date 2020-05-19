@@ -14,17 +14,25 @@
 // limitations under the License.
 //
 
-#ifndef PSI_CARDINALITY_CPP_PACKAGE_H_
-#define PSI_CARDINALITY_CPP_PACKAGE_H_
+#include "psi_cardinality/c/package.h"
+
+#include "gmock/gmock.h"
+#include "gtest/gtest.h"
 
 namespace psi_cardinality {
+namespace {
 
-class Package {
- public:
-  Package() = delete;
-  static constexpr char kVersion[] = "@VERSION_LABEL@";
-};
+TEST(PackageTest, testVersionFormat) {
+  // The regex represents Semantic Versioning syntax (www.semver.org),
+  // i.e. three dot-separated numbers, with an optional suffix
+  // that starts with a hyphen, to cover alpha/beta releases and
+  // release candiates, for example:
+  //   1.2.3
+  //   1.2.3-beta
+  //   1.2.3-RC1
+  std::string version_regex = "[0-9]+[.][0-9]+[.][0-9]+(-[A-Za-z0-9]+)?";
+  EXPECT_THAT(psi_cardinality_version(), testing::MatchesRegex(version_regex));
+}
 
+}  // namespace
 }  // namespace psi_cardinality
-
-#endif  // PSI_CARDINALITY_CPP_PACKAGE_H_
