@@ -10,7 +10,7 @@ def read(fname):
 def find_version():
     version_file = read("psi-cardinality/version.py")
     version_re = r"__version__ = '(?P<version>.+)'"
-    version = re.match(version_re, version_file).group('version')
+    version = re.match(version_re, version_file).group("version")
     return version
 
 
