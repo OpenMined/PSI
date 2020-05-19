@@ -21,7 +21,7 @@
 extern "C" {
 #endif
 
-const char * psi_cardinality_version();
+const char* psi_cardinality_version();
 
 #ifdef __cplusplus
 }

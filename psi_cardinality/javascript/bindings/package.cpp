@@ -7,7 +7,8 @@ EMSCRIPTEN_BINDINGS(Package) {
       // Using class_function instead of class_property
       // because emscripten cannot understand a static constexpr char[]
       .class_function("version", emscripten::optional_override([]() {
-                        const std::string version = psi_cardinality::Package::kVersion;
+                        const std::string version =
+                            psi_cardinality::Package::kVersion;
                         return version;
                       }));
 }
