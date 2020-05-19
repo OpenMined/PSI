@@ -3,6 +3,8 @@
 #include <emscripten/bind.h>
 
 EMSCRIPTEN_BINDINGS(Package) {
+  using psi_cardinality::Package;
+
   emscripten::class_<Package>("Package")
       // Using class_function instead of class_property
       // because emscripten cannot understand a static constexpr char[]
