@@ -2,6 +2,6 @@
 set -euo pipefail
 
 # Updates emsdk to the latest version
-cd ./submodules/emsdk/
+cd ./third_party/emsdk/
 ./emsdk update-tags
 cd ../../

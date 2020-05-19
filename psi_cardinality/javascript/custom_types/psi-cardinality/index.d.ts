@@ -51,7 +51,6 @@ declare module 'psi_cardinality*' {
   }
 
   export type Library = {
-    onRuntimeInitialized: () => void
     readonly delete: () => void
     readonly CreateSetupMessage: (
       fpr: number,
@@ -74,5 +73,5 @@ declare module 'psi_cardinality*' {
     }
   }
 
-  export default function bin(): Library
+  export default function bin(): Promise<Library>
 }

@@ -84,22 +84,22 @@ const numTotalElements = 100 // Maximum size of the server set
 
 // Example server set of data
 const serverInputs = Array.from(
-    { length: numTotalElements },
-    (_, i) => `Element ${i}`
+  { length: numTotalElements },
+  (_, i) => `Element ${i}`
 )
 
 // Example client set of data to check
 const clientInputs = Array.from(
-    { length: numClientElements },
-    (_, i) => `Element ${i * 2}`
+  { length: numClientElements },
+  (_, i) => `Element ${i * 2}`
 )
 
 // Create the setup message that will later
 // be used to compute the intersection. Send to client
 const serverSetup = server.createSetupMessage(
-    fpr,
-    numClientElements,
-    serverInputs
+  fpr,
+  numClientElements,
+  serverInputs
 )
 
 // Create a client request to send to the server
@@ -121,45 +121,44 @@ Ensure your environment has the following global dependencies:
 
 - [Bazel](https://bazel.build)
 - [NodeJS](https://nodejs.org/en/)
-- [Yarn](https://yarnpkg.com/)
 
 Next, ensure you have updated submodules
 
 ```
-yarn submodule:update
+npm run submodule:update
 ```
 
 Then, update and initialize `emsdk`
 
 ```
-yarn em:update
-yarn em:init
+npm run em:update
+npm run em:init
 ```
 
 Now, install the rest of the dev dependencies
 
 ```
-yarn install
+npm install
 ```
 
 To build the client, server, or combined (both client and server) for WebAssembly and pure JS
 
 ```
-yarn build:client
-yarn build:server
-yarn build:combined
+npm run build:client
+npm run build:server
+npm run build:combined
 
 # or all three
-yarn build
+npm run build
 ```
 
 Run the tests or generate coverage reports. **Note** tests are run using the WASM variant.
 
 ```
-yarn test
+npm run test
 
 # or to see coverage
-yarn coverage
+npm run coverage
 ```
 
 ## Benchmarks
@@ -167,60 +166,60 @@ yarn coverage
 Build the benchmark for WebAssembly, pure JS, or both variants
 
 ```
-yarn build:benchmark:wasm
-yarn build:benchmark:js
+npm run build:benchmark:wasm
+npm run build:benchmark:js
 
 # or both
-yarn build:benchmark
+npm run build:benchmark
 ```
 
 Finally, run the benchmark for WebAssembly or pure JS
 
 ```
-yarn benchmark:wasm
-yarn benchmark:js
+npm run benchmark:wasm
+npm run benchmark:js
 ```
 
 ## Publishing
 
 Ensure we start with a clean build
 
-`yarn clean`
+`npm run clean`
 
 Build the client, server, and combined (client and server)
 
-`yarn build`
+`npm run build`
 
 Compile typescript
 
-`yarn compile`
+`npm run compile`
 
 Test your changes and check code coverage
 
 ```bash
 # Test TS
-yarn test
+npm run test
 
 # Test compiled JS
-yarn test:js
+npm run test:js
 
 # Generate coverage report
-yarn coverage
+npm run coverage
 ```
 
 Then, bundle all the files
 
-`yarn rollup`
+`npm run rollup`
 
 Now, we can test publish
 
-`yarn publish:test`
+`npm run publish:test`
 
 Finally, publish the bundle
 
-`yarn run publish`
+`npm run publish`
 
-**Note**: The default `npm publish`/`yarn publish` has been disabled to prevent publishing of the entire project files.
+**Note**: The default `npm publish` has been disabled to prevent publishing of the entire project files.
 Instead, we have a custom override which will publish the npm package from a specific directory.
 This allows us to publish a single package with shortened deep import links that specify the
 different targets listed above.

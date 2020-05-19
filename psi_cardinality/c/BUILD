@@ -31,16 +31,8 @@ cc_library(
     srcs = ["psi_cardinality_client_c.cpp"],
     hdrs = ["psi_cardinality_client_c.h"],
     deps = [
-        "//psi_cardinality/cpp:bloom_filter",
         "//psi_cardinality/cpp:psi_cardinality_client",
         "//psi_cardinality/c:internal_utils",
-        "@boringssl//:crypto",
-        "@com_google_absl//absl/memory",
-        "@com_google_absl//absl/strings",
-        "@com_google_absl//absl/types:span",
-        "@com_tencent_rapidjson//:json",
-        "@private_join_and_compute//crypto:ec_commutative_cipher",
-        "@private_join_and_compute//util:status",
     ],
 )
 
@@ -53,7 +45,7 @@ cc_test(
         "@com_google_absl//absl/strings",
         "@com_google_googletest//:gtest",
         "@com_google_googletest//:gtest_main",
-        "@com_tencent_rapidjson//:json",
+        "@com_tencent_rapidjson//:rapidjson",
         "@private_join_and_compute//crypto:ec_commutative_cipher",
     ],
 )
@@ -63,16 +55,8 @@ cc_library(
     srcs = ["psi_cardinality_server_c.cpp"],
     hdrs = ["psi_cardinality_server_c.h"],
     deps = [
-        "//psi_cardinality/cpp:bloom_filter",
         "//psi_cardinality/cpp:psi_cardinality_server",
         "//psi_cardinality/c:internal_utils",
-        "@boringssl//:crypto",
-        "@com_google_absl//absl/memory",
-        "@com_google_absl//absl/strings",
-        "@com_google_absl//absl/types:span",
-        "@com_tencent_rapidjson//:json",
-        "@private_join_and_compute//crypto:ec_commutative_cipher",
-        "@private_join_and_compute//util:status",
     ],
 )
 
@@ -86,7 +70,7 @@ cc_test(
         "@com_google_absl//absl/strings",
         "@com_google_googletest//:gtest",
         "@com_google_googletest//:gtest_main",
-        "@com_tencent_rapidjson//:json",
+        "@com_tencent_rapidjson//:rapidjson",
     ],
 )
 
