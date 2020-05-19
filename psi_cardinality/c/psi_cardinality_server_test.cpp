@@ -15,6 +15,7 @@
 //
 
 #include "psi_cardinality_server.h"
+
 #include "absl/strings/str_cat.h"
 #include "crypto/ec_commutative_cipher.h"
 #include "gtest/gtest.h"

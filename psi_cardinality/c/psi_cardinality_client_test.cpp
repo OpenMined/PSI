@@ -15,6 +15,7 @@
 //
 
 #include "psi_cardinality_client.h"
+
 #include "absl/strings/escaping.h"
 #include "absl/strings/str_cat.h"
 #include "crypto/ec_commutative_cipher.h"

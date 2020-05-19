@@ -15,6 +15,7 @@
 //
 
 #include "psi_cardinality/c/package.h"
+
 #include "psi_cardinality/cpp/package.h"
 
 const char* psi_cardinality_version() {
