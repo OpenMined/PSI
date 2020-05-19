@@ -14,12 +14,12 @@
 // limitations under the License.
 //
 
+#include "psi_cardinality_client.h"
 #include "absl/strings/escaping.h"
 #include "absl/strings/str_cat.h"
 #include "crypto/ec_commutative_cipher.h"
 #include "gtest/gtest.h"
 #include "psi_cardinality/cpp/bloom_filter.h"
-#include "psi_cardinality_client_c.h"
 #include "rapidjson/document.h"
 #include "rapidjson/stringbuffer.h"
 #include "rapidjson/writer.h"

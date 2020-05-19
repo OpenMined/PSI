@@ -14,11 +14,11 @@
 // limitations under the License.
 //
 
+#include "psi_cardinality_server.h"
 #include "absl/strings/str_cat.h"
 #include "crypto/ec_commutative_cipher.h"
 #include "gtest/gtest.h"
-#include "psi_cardinality_client_c.h"
-#include "psi_cardinality_server_c.h"
+#include "psi_cardinality_client.h"
 #include "util/status_matchers.h"
 
 namespace psi_cardinality {

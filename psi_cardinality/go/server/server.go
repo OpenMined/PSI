@@ -54,7 +54,7 @@
 package server
 
 /*
-#include "psi_cardinality/c/psi_cardinality_server_c.h"
+#include "psi_cardinality/c/psi_cardinality_server.h"
 */
 import "C"
 import (

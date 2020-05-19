@@ -20,25 +20,25 @@ cc_library(
     name = "internal_utils",
     srcs = ["internal_utils.cpp"],
     hdrs = ["internal_utils.h"],
+    visibility = ["//visibility:private"],
     deps = [
         "@private_join_and_compute//util:status",
     ],
-    visibility = ["//visibility:private"],
 )
 
 cc_library(
     name = "psi_cardinality_client",
-    srcs = ["psi_cardinality_client_c.cpp"],
-    hdrs = ["psi_cardinality_client_c.h"],
+    srcs = ["psi_cardinality_client.cpp"],
+    hdrs = ["psi_cardinality_client.h"],
     deps = [
-        "//psi_cardinality/cpp:psi_cardinality_client",
         "//psi_cardinality/c:internal_utils",
+        "//psi_cardinality/cpp:psi_cardinality_client",
     ],
 )
 
 cc_test(
     name = "psi_cardinality_client_test",
-    srcs = ["psi_cardinality_client_test_c.cpp"],
+    srcs = ["psi_cardinality_client_test.cpp"],
     deps = [
         ":psi_cardinality_client",
         "//psi_cardinality/cpp/util:status_matchers",
@@ -52,17 +52,17 @@ cc_test(
 
 cc_library(
     name = "psi_cardinality_server",
-    srcs = ["psi_cardinality_server_c.cpp"],
-    hdrs = ["psi_cardinality_server_c.h"],
+    srcs = ["psi_cardinality_server.cpp"],
+    hdrs = ["psi_cardinality_server.h"],
     deps = [
-        "//psi_cardinality/cpp:psi_cardinality_server",
         "//psi_cardinality/c:internal_utils",
+        "//psi_cardinality/cpp:psi_cardinality_server",
     ],
 )
 
 cc_test(
     name = "psi_cardinality_server_test",
-    srcs = ["psi_cardinality_server_test_c.cpp"],
+    srcs = ["psi_cardinality_server_test.cpp"],
     deps = [
         ":psi_cardinality_client",
         ":psi_cardinality_server",
@@ -76,7 +76,7 @@ cc_test(
 
 cc_binary(
     name = "psi_cardinality_benchmark",
-    srcs = ["psi_cardinality_benchmark_c.cpp"],
+    srcs = ["psi_cardinality_benchmark.cpp"],
     deps = [
         ":psi_cardinality_client",
         ":psi_cardinality_server",
