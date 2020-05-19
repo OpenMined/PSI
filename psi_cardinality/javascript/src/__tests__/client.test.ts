@@ -1,4 +1,4 @@
-import PSICardinality from '../index_client_wasm'
+import PSICardinality from '../index_combined_wasm'
 import { ERROR_INSTANCE_DELETED } from '../implementation/constants'
 
 describe('PSI Client', () => {
