@@ -15,7 +15,6 @@ using namespace psi_cardinality;
 namespace psi = psi_cardinality;
 namespace py = pybind11;
 
-
 template <class T>
 T throwOrReturn(const StatusOr<T>& in) {
   if (!in.ok()) throw std::runtime_error(in.status().message());
