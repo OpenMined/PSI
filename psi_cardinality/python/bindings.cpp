@@ -10,11 +10,11 @@
 #include "util/canonical_errors.h"
 #include "util/status_macros.h"
 
-namespace psi_cardinality {
-
 using namespace std;
+using namespace psi_cardinality;
 namespace psi = psi_cardinality;
 namespace py = pybind11;
+
 
 template <class T>
 T throwOrReturn(const StatusOr<T>& in) {
@@ -22,7 +22,7 @@ T throwOrReturn(const StatusOr<T>& in) {
   return in.ValueOrDie();
 }
 
-PYBIND11_MODULE(_psi_cardinality_cpp, m) {
+PYBIND11_MODULE(_cpp_bindings, m) {
   m.doc() =
       "Private Set Intersection Cardinality protocol based on ECDH and Bloom "
       "Filters";
@@ -78,4 +78,3 @@ PYBIND11_MODULE(_psi_cardinality_cpp, m) {
       .def("GetPrivateKeyBytes",
            &psi::PSICardinalityServer::GetPrivateKeyBytes);
 }
-}  // namespace psi_cardinality
