@@ -9,6 +9,7 @@ pybind_extension(
     "//psi_cardinality/cpp:psi_cardinality_client",
     "//psi_cardinality/cpp:psi_cardinality_server",
   ],
+  linkstatic = True,
 )
 
 py_library(
@@ -29,5 +30,4 @@ py_test(
     ],
     legacy_create_init = False,
     python_version = "PY3",
-    srcs_version = "PY3",
 )
