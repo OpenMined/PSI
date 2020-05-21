@@ -74,6 +74,7 @@ PYBIND11_MODULE(_bindings, m) {
               const std::string& client_request) {
              return throwOrReturn(obj.ProcessRequest(client_request));
            })
-      .def("GetPrivateKeyBytes",
-           &psi::PSICardinalityServer::GetPrivateKeyBytes);
+      .def("GetPrivateKeyBytes", [](const psi::PSICardinalityServer& obj) {
+        return py::bytes(obj.GetPrivateKeyBytes());
+      });
 }
