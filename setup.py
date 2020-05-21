@@ -1,20 +1,3 @@
-# Copyright 2020 Google LLC.
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     https://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-# ============================================================================
-"""Install script for setuptools."""
-
-import fnmatch
 import os
 import posixpath
 import re
@@ -25,32 +8,36 @@ from distutils import sysconfig
 import setuptools
 from setuptools.command import build_ext
 
-__version__ = "0.0.1"
+here = os.path.dirname(os.path.abspath(__file__))
 
 IS_WINDOWS = sys.platform.startswith("win")
 
-WORKSPACE_PYTHON_HEADERS_PATTERN = re.compile(
-    r'(?<=path = ").*(?=",  # May be overwritten by setup\.py\.)'
-)
 
-environment_variable_name = "PYTHON_BIN_PATH"
-environment_variable_value = os.environ.get(environment_variable_name, None)
+def _get_version():
+    """Parse the version string from __init__.py."""
+    with open(os.path.join(here, "psi_cardinality", "python", "__init__.py")) as f:
+        try:
+            version_line = next(line for line in f if line.startswith("__version__"))
+        except StopIteration:
+            raise ValueError("__version__ not defined in __init__.py")
+        else:
+            ns = {}
+            exec(version_line, ns)  # pylint: disable=exec-used
+            return ns["__version__"]
 
-if environment_variable_value is None:
-    sys.stderr.write(
-        "Using '%s=%s' environment variable!\n"
-        % (environment_variable_name, environment_variable_value)
-    )
+
+def _parse_requirements(path):
+    with open(os.path.join(here, path)) as f:
+        return [line.rstrip() for line in f if not (line.isspace() or line.startswith("#"))]
 
 
 class BazelExtension(setuptools.Extension):
     """A C/C++ extension that is defined as a Bazel BUILD target."""
 
-    def __init__(self, bazel_target):
+    def __init__(self, name, bazel_target):
         self.bazel_target = bazel_target
         self.relpath, self.target_name = posixpath.relpath(bazel_target, "//").split(":")
-        ext_name = os.path.join(self.relpath.replace(posixpath.sep, os.path.sep), self.target_name)
-        setuptools.Extension.__init__(self, ext_name, sources=[])
+        setuptools.Extension.__init__(self, name, sources=[])
 
 
 class BuildBazelExtension(build_ext.build_ext):
@@ -67,56 +54,63 @@ class BuildBazelExtension(build_ext.build_ext):
 
         with open("WORKSPACE", "w") as f:
             f.write(
-                WORKSPACE_PYTHON_HEADERS_PATTERN.sub(
+                re.sub(
+                    r'(?<=path = ").*(?=",  # May be overwritten by setup\.py\.)',
                     sysconfig.get_python_inc().replace(os.path.sep, posixpath.sep),
                     workspace_contents,
                 )
             )
+
         if not os.path.exists(self.build_temp):
             os.makedirs(self.build_temp)
 
         bazel_argv = [
             "bazel",
             "build",
-            ext.bazel_target + ".so",
+            ext.bazel_target,
             "--symlink_prefix=" + os.path.join(self.build_temp, "bazel-"),
             "--compilation_mode=" + ("dbg" if self.debug else "opt"),
         ]
 
         if IS_WINDOWS:
+            # Link with python*.lib.
             for library_dir in self.library_dirs:
                 bazel_argv.append("--linkopt=/LIBPATH:" + library_dir)
 
         self.spawn(bazel_argv)
 
         shared_lib_suffix = ".dll" if IS_WINDOWS else ".so"
-
+        print(shared_lib_suffix)
         ext_bazel_bin_path = os.path.join(
-            self.build_temp, "bazel-bin", ext.relpath, ext.target_name + shared_lib_suffix
+            self.build_temp, "bazel-bin", ext.relpath, "_" + ext.target_name + shared_lib_suffix
         )
+        print(ext_bazel_bin_path)
         ext_dest_path = self.get_ext_fullpath(ext.name)
         ext_dest_dir = os.path.dirname(ext_dest_path)
         if not os.path.exists(ext_dest_dir):
             os.makedirs(ext_dest_dir)
+        print(ext_dest_path)
+        print(panda)
         shutil.copyfile(ext_bazel_bin_path, ext_dest_path)
 
 
 setuptools.setup(
     name="psi_cardinality",
-    version=__version__,
+    version=_get_version(),
     description="Private Set Intersection Cardinality protocol based on ECDH and Bloom Filters.",
-    license="Apache-2.0",
     keywords="privacy cryptography",
     url="https://github.com/OpenMined/psi-cardinality",
-    ext_modules=[BazelExtension("//psi_cardinality/python:bindings"),],
-    cmdclass=dict(build_ext=BuildBazelExtension),
-    packages=setuptools.find_packages(
-        include=["psi_cardinality", "psi_cardinality.*", "psi_cardinality.*.*"]
-    ),
     python_requires=">=3.6",
+    package_dir={"": "psi_cardinality/python"},
+    packages=setuptools.find_packages("psi_cardinality/python"),
+    install_requires=_parse_requirements("psi_cardinality/python/requirements.txt"),
+    cmdclass=dict(build_ext=BuildBazelExtension),
+    ext_modules=[BazelExtension("psi_cardinality", "//psi_cardinality/python:psi_cardinality")],
+    zip_safe=False,
     classifiers=[
         "Programming Language :: Python :: 3",
         "Operating System :: OS Independent",
         "Topic :: Security :: Cryptography",
     ],
+    license="Apache 2.0",
 )

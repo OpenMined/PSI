@@ -1,9 +1,11 @@
 """Private Set Intersection Cardinality protocol based on ECDH and Bloom
 Filters.
 """
-import psi_cardinality.python._bindings
+from psi_cardinality.python import _psi_cardinality
 
-client = _bindings.PSICardinalityClient
-server = _bindings.PSICardinalityServer
+client = _psi_cardinality.PSICardinalityClient
+server = _psi_cardinality.PSICardinalityServer
 
-__all__ = ["client", "server"]
+__version__ = "0.0.1"
+
+__all__ = ["client", "server", "__version__"]

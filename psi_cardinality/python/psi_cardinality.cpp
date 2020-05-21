@@ -21,7 +21,7 @@ T throwOrReturn(const StatusOr<T>& in) {
   return in.ValueOrDie();
 }
 
-PYBIND11_MODULE(_bindings, m) {
+PYBIND11_MODULE(_psi_cardinality, m) {
   m.doc() =
       "Private Set Intersection Cardinality protocol based on ECDH and Bloom "
       "Filters";
