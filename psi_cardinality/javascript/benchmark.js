@@ -10,5 +10,5 @@ import { createLoader } from './tsc-out/loader'
 const runJs = process.env.RUN_DEMO === 'js'
 
 ;(async () => {
-  await createLoader(runJs ? benchmarkJsLibrary : benchmarkWasmLibrary)()
+  await createLoader(runJs ? benchmarkJsLibrary : benchmarkWasmLibrary)
 })()

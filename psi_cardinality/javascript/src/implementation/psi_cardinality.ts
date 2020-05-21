@@ -1,12 +1,15 @@
+import { PackageWrapper } from './package'
 import { ClientWrapper } from './client'
 import { ServerWrapper } from './server'
 
-type PSICardinalityLibrary = {
+export type PSICardinalityLibrary = {
+  readonly package: PackageWrapper
   readonly server?: ServerWrapper
   readonly client?: ClientWrapper
 }
 
 type PSICardinalityConstructorOptions = {
+  readonly packageWrapper: PackageWrapper
   readonly serverWrapper?: ServerWrapper
   readonly clientWrapper?: ClientWrapper
 }
@@ -15,6 +18,7 @@ type PSICardinalityConstructorOptions = {
  * @implements PSICardinality
  */
 export const PSICardinalityConstructor = ({
+  packageWrapper,
   serverWrapper,
   clientWrapper
 }: PSICardinalityConstructorOptions): PSICardinalityLibrary => {
@@ -22,6 +26,20 @@ export const PSICardinalityConstructor = ({
    * @interface PSICardinality
    */
   return {
+    /**
+     * @description
+     * Information about the package
+     *
+     * @readonly
+     * @name PSI.package
+     * @type {Object}
+     * @example
+     * import PSI from '@openmined/psi.js'
+     * const psi = await PSI()
+     * const { version } = psi.package
+     */
+    ...{ package: packageWrapper },
+
     /**
      * @description
      * The server side of a Private Set Intersection Cardinality protocol.
@@ -33,8 +51,9 @@ export const PSICardinalityConstructor = ({
      * @type {Object}
      * @returns {Server}
      * @example
-     * import PSICardinality from 'psi.js'
-     * const server = await PSICardinality.Server.CreateWithNewKey()
+     * import PSI from '@openmined/psi.js'
+     * const psi = await PSI()
+     * const server = psi.server.createWithNewKey()
      */
     ...(serverWrapper && { server: serverWrapper }),
 
@@ -54,8 +73,9 @@ export const PSICardinalityConstructor = ({
      * @type {Object}
      * @returns {Client}
      * @example
-     * import PSICardinality from 'psi.js'
-     * const client = await PSICardinality.Client.Create()
+     * import PSI from '@openmined/psi.js'
+     * const psi = await PSI()
+     * const client = psi.client.create()
      */
     ...(clientWrapper && { client: clientWrapper })
   }

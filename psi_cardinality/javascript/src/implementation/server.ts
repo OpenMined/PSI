@@ -14,8 +14,8 @@ export type Server = {
 }
 
 export type ServerWrapper = {
-  readonly createWithNewKey: () => Promise<Server>
-  readonly createFromKey: (key: Uint8Array) => Promise<Server>
+  readonly createWithNewKey: () => Server
+  readonly createFromKey: (key: Uint8Array) => Server
 }
 
 type ServerWrapperOptions = {
@@ -138,26 +138,17 @@ const ServerConstructor = (instance: psiCardinality.Server): Server => {
 export const ServerWrapperConstructor = ({
   loader
 }: ServerWrapperOptions): ServerWrapper => {
-  let library: psiCardinality.Library
-
-  const initialize = async (): Promise<void> => {
-    if (!library) {
-      const module = await loader()
-      library = module.library
-    }
-  }
+  const library: psiCardinality.Library = loader.library
 
   return {
     /**
      * Create a new PSI Cardinality server
      *
-     * @async
      * @function
      * @name Server.createWithNewKey
      * @returns {Server} A Server instance
      */
-    async createWithNewKey(): Promise<Server> {
-      await initialize()
+    createWithNewKey(): Server {
       const { Value, Status } = library.PSICardinalityServer.CreateWithNewKey()
       if (Status) {
         throw new Error(Status.Message)
@@ -168,14 +159,12 @@ export const ServerWrapperConstructor = ({
     /**
      * Create a new PSI Cardinality server from a key
      *
-     * @async
      * @function
      * @name Server.createFromKey
      * @param {Uint8Array} key Private key as a binary Uint8Array
      * @returns {Server} A Server instance
      */
-    async createFromKey(key: Uint8Array): Promise<Server> {
-      await initialize()
+    createFromKey(key: Uint8Array): Server {
       const { Value, Status } = library.PSICardinalityServer.CreateFromKey(key)
       if (Status) {
         throw new Error(Status.Message)

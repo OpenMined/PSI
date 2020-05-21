@@ -54,12 +54,13 @@
 package server
 
 /*
-#include "psi_cardinality/c/psi_cardinality_server_c.h"
+#include "psi_cardinality/c/psi_cardinality_server.h"
 */
 import "C"
 import (
 	"errors"
 	"fmt"
+	"github.com/openmined/psi-cardinality/version"
 	"runtime"
 	"unsafe"
 )
@@ -157,7 +158,7 @@ func (s *PSICardinalityServer) CreateSetupMessage(fpr float64, inputCount int64,
 //ProcessRequest processes a client query and returns the corresponding server response to
 //be sent to the client.
 //
-//For each encrytped element H(x)^c in the decoded `client_request`, computes
+//For each encrypted element H(x)^c in the decoded `client_request`, computes
 //(H(x)^c)^s = H(X)^(cs) and returns these as a
 //sorted JSON array. Sorting the output prevents the client from matching
 //the individual response elements to the ones in the request, ensuring
@@ -218,6 +219,11 @@ func (s *PSICardinalityServer) Destroy() {
 	}
 	C.psi_cardinality_server_delete(&s.context)
 	s.context = nil
+}
+
+//Version of the library.
+func (s *PSICardinalityServer) Version() string {
+	return version.Version()
 }
 
 func (s *PSICardinalityServer) loadCString(buff **C.char) string {

@@ -1,4 +1,4 @@
-#include "psi_cardinality_client_c.h"
+#include "psi_cardinality_client.h"
 
 #include "internal_utils.h"
 #include "psi_cardinality/cpp/psi_cardinality_client.h"

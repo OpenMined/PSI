@@ -13,6 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+load("//tools:package.bzl", "VERSION_LABEL")
+load("//tools:common.bzl", "template_rule")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -25,6 +27,31 @@ PSI_LINKOPTS = select({
         "-lrt"
     ]
 })
+
+template_rule(
+    name = "package_h",
+    src = "package.h.templ",
+    out = "package.h",
+    substitutions = {
+        "@VERSION_LABEL@": "%s" % VERSION_LABEL,
+    },
+)
+
+cc_library(
+    name = "package",
+    srcs = ["package.cpp"],
+    hdrs = [":package_h"],
+)
+
+
+cc_test(
+    name = "package_test",
+    srcs = ["package_test.cpp"],
+    deps = [
+        ":package",
+        "@com_google_googletest//:gtest_main",
+    ],
+)
 
 cc_library(
     name = "bloom_filter",

@@ -54,12 +54,13 @@
 package client
 
 /*
-#include "psi_cardinality/c/psi_cardinality_client_c.h"
+#include "psi_cardinality/c/psi_cardinality_client.h"
 */
 import "C"
 import (
 	"errors"
 	"fmt"
+	"github.com/openmined/psi-cardinality/version"
 	"runtime"
 )
 
@@ -146,6 +147,11 @@ func (c *PSICardinalityClient) Destroy() {
 	}
 	C.psi_cardinality_client_delete(&c.context)
 	c.context = nil
+}
+
+//Version of the library.
+func (c *PSICardinalityClient) Version() string {
+	return version.Version()
 }
 
 func (c *PSICardinalityClient) loadCString(buff **C.char) string {
