@@ -24,9 +24,10 @@ jobs:
         run: .github/workflows/scripts/run_tests.sh
 
   TestsPython:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
     strategy:
       matrix:
+        os: [macos-latest, ubuntu-18.04]
         python-version: [3.6, 3.7, 3.8]
     steps:
       - uses: actions/checkout@v2
@@ -59,10 +60,6 @@ jobs:
           python-version: 3.8
       - name: Install Go dependencies
         run: go get -u golang.org/x/lint/golint
-      - name: Install Python dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r psi_cardinality/python/requirements.txt
       - uses: actions/checkout@v2
       - name: C++ linters
         run: .github/workflows/scripts/lint_cpp.sh
