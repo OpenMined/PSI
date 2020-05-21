@@ -1,20 +1,28 @@
 import combinedWasmLibrary from 'psi_cardinality_combined_wasm'
 
-import { createLoader } from './loader'
-import { PSICardinalityConstructor } from './implementation/psi_cardinality'
-import { ServerWrapperConstructor } from './implementation/server'
+import { NestedLibrary, createLoader } from './loader'
+import {
+  PSICardinalityLibrary,
+  PSICardinalityConstructor
+} from './implementation/psi_cardinality'
+import { PackageWrapperConstructor } from './implementation/package'
 import { ClientWrapperConstructor } from './implementation/client'
+import { ServerWrapperConstructor } from './implementation/server'
 
-const Loader = createLoader(combinedWasmLibrary)
+const Loader = (): Promise<NestedLibrary> => createLoader(combinedWasmLibrary)
 
 /**
  * Main export for the library
  */
-export default PSICardinalityConstructor({
-  serverWrapper: ServerWrapperConstructor({
-    loader: Loader
-  }),
-  clientWrapper: ClientWrapperConstructor({
-    loader: Loader
+export default async (): Promise<PSICardinalityLibrary> =>
+  PSICardinalityConstructor({
+    packageWrapper: PackageWrapperConstructor({
+      loader: await Loader()
+    }),
+    serverWrapper: ServerWrapperConstructor({
+      loader: await Loader()
+    }),
+    clientWrapper: ClientWrapperConstructor({
+      loader: await Loader()
+    })
   })
-})

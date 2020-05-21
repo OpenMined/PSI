@@ -14,15 +14,25 @@
 // limitations under the License.
 //
 
-#ifndef PSI_CARDINALITY_C_INTERNAL_UTILS_H_
-#define PSI_CARDINALITY_C_INTERNAL_UTILS_H_
+#include "psi_cardinality/cpp/package.h"
 
-#include "util/statusor.h"
+#include "gmock/gmock.h"
+#include "gtest/gtest.h"
 
 namespace psi_cardinality {
+namespace {
 
-namespace c_bindings_internal {
-int generate_error(private_join_and_compute::Status status, char **error_out);
+TEST(PackageTest, TestVersionFormat) {
+  // The regex represents Semantic Versioning syntax (www.semver.org),
+  // i.e. three dot-separated numbers, with an optional suffix
+  // that starts with a hyphen, to cover alpha/beta releases and
+  // release candiates, for example:
+  //   1.2.3
+  //   1.2.3-beta
+  //   1.2.3-RC1
+  std::string version_regex = "[0-9]+[.][0-9]+[.][0-9]+(-[A-Za-z0-9]+)?";
+  EXPECT_THAT(Package::kVersion, testing::MatchesRegex(version_regex));
 }
+
+}  // namespace
 }  // namespace psi_cardinality
-#endif  // PSI_CARDINALITY_INTERNAL_UTILS_H_

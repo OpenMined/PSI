@@ -14,15 +14,17 @@
 // limitations under the License.
 //
 
-#ifndef PSI_CARDINALITY_C_INTERNAL_UTILS_H_
-#define PSI_CARDINALITY_C_INTERNAL_UTILS_H_
+#ifndef PSI_CARDINALITY_C_PACKAGE_H_
+#define PSI_CARDINALITY_C_PACKAGE_H_
 
-#include "util/statusor.h"
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-namespace psi_cardinality {
+const char* psi_cardinality_version();
 
-namespace c_bindings_internal {
-int generate_error(private_join_and_compute::Status status, char **error_out);
+#ifdef __cplusplus
 }
-}  // namespace psi_cardinality
-#endif  // PSI_CARDINALITY_INTERNAL_UTILS_H_
+#endif
+
+#endif  // PSI_CARDINALITY_PACKAGE_H_

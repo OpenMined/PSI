@@ -2,6 +2,7 @@ package client
 
 import (
 	"github.com/openmined/psi-cardinality/server"
+	"regexp"
 	"testing"
 )
 
@@ -16,6 +17,11 @@ func TestClientSanity(t *testing.T) {
 	c.Destroy()
 	for i := 0; i < 5; i++ {
 		c.Destroy()
+	}
+
+	matched, _ := regexp.MatchString(`[0-9]+[.][0-9]+[.][0-9]+(-[A-Za-z0-9]+)?`, c.Version())
+	if !matched {
+		t.Errorf("Got invalid version %v", c.Version())
 	}
 }
 

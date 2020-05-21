@@ -12,7 +12,7 @@ export type Client = {
 }
 
 export type ClientWrapper = {
-  readonly create: () => Promise<Client>
+  readonly create: () => Client
 }
 
 type ClientWrapperOptions = {
@@ -56,7 +56,7 @@ const ClientConstructor = (instance: psiCardinality.Client): Client => {
      * @param {Array<String>} inputs
      * @returns {String} The serialized request
      */
-    createRequest(inputs): string {
+    createRequest(inputs: readonly string[]): string {
       if (!_instance) {
         throw new Error(ERROR_INSTANCE_DELETED)
       }
@@ -80,7 +80,7 @@ const ClientConstructor = (instance: psiCardinality.Client): Client => {
      * @param {String} response The serialized server response
      * @returns {Number} The PSI cardinality
      */
-    processResponse(setup, response): number {
+    processResponse(setup: string, response: string): number {
       if (!_instance) {
         throw new Error(ERROR_INSTANCE_DELETED)
       }
@@ -96,26 +96,17 @@ const ClientConstructor = (instance: psiCardinality.Client): Client => {
 export const ClientWrapperConstructor = ({
   loader
 }: ClientWrapperOptions): ClientWrapper => {
-  let library: psiCardinality.Library
-
-  const initialize = async (): Promise<void> => {
-    if (!library) {
-      const module = await loader()
-      library = module.library
-    }
-  }
+  const library: psiCardinality.Library = loader.library
 
   return {
     /**
      * Create a new PSI Cardinality client
      *
-     * @async
      * @function
      * @name Client.create
      * @returns {Client} A Client instance
      */
-    async create(): Promise<Client> {
-      await initialize()
+    create(): Client {
       const { Value, Status } = library.PSICardinalityClient.Create()
       if (Status) {
         throw new Error(Status.Message)

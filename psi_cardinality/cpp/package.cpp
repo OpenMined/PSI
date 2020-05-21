@@ -14,15 +14,10 @@
 // limitations under the License.
 //
 
-#ifndef PSI_CARDINALITY_C_INTERNAL_UTILS_H_
-#define PSI_CARDINALITY_C_INTERNAL_UTILS_H_
-
-#include "util/statusor.h"
+#include "psi_cardinality/cpp/package.h"
 
 namespace psi_cardinality {
 
-namespace c_bindings_internal {
-int generate_error(private_join_and_compute::Status status, char **error_out);
-}
+constexpr char Package::kVersion[];
+
 }  // namespace psi_cardinality
-#endif  // PSI_CARDINALITY_INTERNAL_UTILS_H_

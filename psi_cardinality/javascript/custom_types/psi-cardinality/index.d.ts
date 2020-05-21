@@ -50,8 +50,13 @@ declare module 'psi_cardinality*' {
     ) => ProcessResponseResult
   }
 
+  export type Package = {
+    readonly version: () => string
+  }
+
   export type Library = {
     readonly delete: () => void
+    readonly Package: Package
     readonly CreateSetupMessage: (
       fpr: number,
       numClientInputs: number,

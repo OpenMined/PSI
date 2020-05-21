@@ -7,6 +7,7 @@ go_library(
     cgo = True,
     importpath = "github.com/openmined/psi-cardinality/server",
     visibility = ["//visibility:public"],
+    deps = ["//psi_cardinality/go/version"],
 )
 
 go_test(

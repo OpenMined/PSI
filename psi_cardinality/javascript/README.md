@@ -17,8 +17,11 @@ Then import the package:
 ```javascript
 import PSI from '@openmined/psi.js'
 
-const server = await PSI.server.createWithNewKey()
-const client = await PSI.client.create()
+// Wait for the library to initialize
+const psi = await PSI()
+
+const server = psi.server.createWithNewKey()
+const client = psi.client.create()
 ```
 
 By **default**, the package will use the `combined` build with the `wasm` variant for getting started.
@@ -38,7 +41,9 @@ import PSI from '@openmined/psi.js/client/wasm/es'
 import PSI from '@openmined/psi.js/client/js/umd'
 import PSI from '@openmined/psi.js/client/js/es'
 
-const client = await PSI.client.create()
+const psi = await PSI()
+
+const client = psi.client.create()
 // PSI.server is not implemented
 ```
 
@@ -52,7 +57,9 @@ import PSI from '@openmined/psi.js/server/wasm/es'
 import PSI from '@openmined/psi.js/server/js/umd'
 import PSI from '@openmined/psi.js/server/js/es'
 
-const server = await PSI.server.createWithNewKey()
+const psi = await PSI()
+
+const server = psi.server.createWithNewKey()
 // PSI.client is not implemented
 ```
 
@@ -66,16 +73,21 @@ import PSI from '@openmined/psi.js/combined/wasm/es'
 import PSI from '@openmined/psi.js/combined/js/umd'
 import PSI from '@openmined/psi.js/combined/js/es'
 
-const server = await PSI.server.createWithNewKey()
-const client = await PSI.client.create()
+const psi = await PSI()
+
+const server = psi.server.createWithNewKey()
+const client = psi.client.create()
 ```
 
 ## Example
 
 ```javascript
+import PSI from '@openmined/psi.js'
+const psi = await PSI()
+
 // Create new server and client instances
-const server = await PSICardinality.server.createWithNewKey()
-const client = await PSICardinality.client.create()
+const server = psi.server.createWithNewKey()
+const client = psi.client.create()
 
 // Define mutually agreed upon parameters
 const fpr = 0.001 // false positive rate (0.1%)

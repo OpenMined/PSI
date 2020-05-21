@@ -14,8 +14,8 @@
 // limitations under the License.
 //
 
-#ifndef PSI_CARDINALITY_BLOOM_FILTER_H_
-#define PSI_CARDINALITY_BLOOM_FILTER_H_
+#ifndef PSI_CARDINALITY_CPP_BLOOM_FILTER_H_
+#define PSI_CARDINALITY_CPP_BLOOM_FILTER_H_
 
 #include <vector>
 
