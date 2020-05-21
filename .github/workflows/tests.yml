@@ -6,7 +6,7 @@ on:
   pull_request:
 
 jobs:
-  Tests:
+  Core:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -14,6 +14,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
+      - name: Linters
+        run: .github/workflows/scripts/lint_cpp.sh
       - name: Install Bazel - Ubuntu
         run: .github/workflows/scripts/install_ubuntu.sh
         if: ${{ github.matrix.os == 'ubuntu-18.04' }}
@@ -23,7 +25,7 @@ jobs:
       - name: Run tests
         run: .github/workflows/scripts/run_tests.sh
 
-  TestsPython:
+  Python:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -43,26 +45,36 @@ jobs:
         run: .github/workflows/scripts/lint_python.sh
       - name: Install Bazel - Ubuntu
         run: .github/workflows/scripts/install_ubuntu.sh
+        if: ${{ github.matrix.os == 'ubuntu-18.04' }}
+      - name: Install Bazel - MacOS
+        run: .github/workflows/scripts/install_macos.sh
+        if: ${{ github.matrix.os == 'macos-latest' }}
       - name: Run tests
-        run: .github/workflows/scripts/run_python_tests.sh
+        run: .github/workflows/scripts/run_tests_python.sh
 
-  Linters:
-    runs-on: ubuntu-latest
+
+  Go:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [macos-latest, ubuntu-18.04]
+ 
     steps:
       - name: Install toolchains
         uses: actions/setup-go@v2
         with:
           go-version: ^1.13
         id: go
-      - name: Set up Python 3.8
-        uses: actions/setup-python@v1
-        with:
-          python-version: 3.8
       - name: Install Go dependencies
         run: go get -u golang.org/x/lint/golint
       - uses: actions/checkout@v2
-      - name: C++ linters
-        run: .github/workflows/scripts/lint_cpp.sh
       - name: Go linters
         run: .github/workflows/scripts/lint_go.sh
-
+      - name: Install Bazel - Ubuntu
+        run: .github/workflows/scripts/install_ubuntu.sh
+        if: ${{ github.matrix.os == 'ubuntu-18.04' }}
+      - name: Install Bazel - MacOS
+        run: .github/workflows/scripts/install_macos.sh
+        if: ${{ github.matrix.os == 'macos-latest' }}
+      - name: Run tests
+        run: .github/workflows/scripts/run_tests_go.sh
