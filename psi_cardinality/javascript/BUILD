@@ -4,6 +4,7 @@ DEFAULT_EMSCRIPTEN_LINKOPTS = [
     "-flto",
     "--bind",
     "--closure 1",
+    "-s MALLOC=emmalloc",
     "-s ALLOW_MEMORY_GROWTH=1",
     "-s USE_PTHREADS=0",
     "-s ASSERTIONS=0",
