@@ -5,3 +5,5 @@
 [Will Clark](https://github.com/willclarktech)
 
 [Phillipp Schoppmann](https://github.com/schoppmp)
+
+[Rutuja Surve](https://github.com/rutujasurve94)
