@@ -1,7 +1,6 @@
 import pytest
 import sys
-import psi_cardinality as psi
-from psi_cardinality.python import psi_cardinality
+import psi_cardinality.python as psi
 
 
 def test_sanity():
