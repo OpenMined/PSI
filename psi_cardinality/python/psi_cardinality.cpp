@@ -4,9 +4,9 @@
 #include <memory>
 #include <vector>
 
-#include "package.h"
-#include "psi_cardinality_client.h"
-#include "psi_cardinality_server.h"
+#include "psi_cardinality/cpp/package.h"
+#include "psi_cardinality/cpp/psi_cardinality_client.h"
+#include "psi_cardinality/cpp/psi_cardinality_server.h"
 #include "util/canonical_errors.h"
 #include "util/status_macros.h"
 
