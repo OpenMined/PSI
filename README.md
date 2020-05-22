@@ -33,6 +33,11 @@ See the [JavaScript README.md](psi_cardinality/javascript/README.md)
 
 See the [Go README.md](psi_cardinality/go/README.md)
 
+### Python
+
+See the [Python README.md](psi_cardinality/python/README.md)
+
+
 ## Using the Library
 
 To use this library in another Bazel project, add the following in your WORKSPACE file:
