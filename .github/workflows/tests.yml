@@ -13,14 +13,14 @@ jobs:
         os: [macos-latest, ubuntu-18.04]
     steps:
       - uses: actions/checkout@v2
-      - name: Run tests
-        run: .github/workflows/scripts/run_tests_core.sh
       - name: Print matrix
         env:
           MATRIX_CONTEXT: ${{ toJson(matrix) }}
         run: echo "$MATRIX_CONTEXT"
-      - name: Linters
-        run: .github/workflows/scripts/lint_cpp.sh
+      # - name: Run tests
+      #   run: .github/workflows/scripts/run_tests_core.sh
+      # - name: Linters
+      #   run: .github/workflows/scripts/lint_cpp.sh
 
   # JS:
   #   runs-on: ${{ matrix.os }}
