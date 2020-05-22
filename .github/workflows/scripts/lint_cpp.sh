@@ -1,11 +1,6 @@
 #!/bin/sh
 set -e
 
-if [ "$RUNNER_OS" != "Linux" ]
-then
-    exit 0
-fi
-
 # Lint files (all .cpp and .h files) inplace.
 find ./psi_cardinality/  \( -iname *.h -o -iname *.cpp \) | xargs clang-format -i -style='google'
 if [ $? -ne 0 ]
