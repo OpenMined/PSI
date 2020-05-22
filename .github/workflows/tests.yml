@@ -13,64 +13,61 @@ jobs:
         os: [macos-latest, ubuntu-18.04]
     steps:
       - uses: actions/checkout@v2
-      - name: Print matrix
-        env:
-          MATRIX_CONTEXT: ${{ toJson(matrix) }}
-        run: echo "$MATRIX_CONTEXT"
-      # - name: Run tests
-      #   run: .github/workflows/scripts/run_tests_core.sh
-      # - name: Linters
-      #   run: .github/workflows/scripts/lint_cpp.sh
+      - name: Run tests
+        run: .github/workflows/scripts/run_tests_core.sh
+      - name: Linters
+        if: matrix.os == 'ubuntu-18.04'
+        run: .github/workflows/scripts/lint_cpp.sh
 
-  # JS:
-  #   runs-on: ${{ matrix.os }}
-  #   strategy:
-  #     matrix:
-  #       os: [macos-latest, ubuntu-18.04]
-  #   steps:
-  #     - uses: actions/checkout@v2
-  #     - name: Run tests
-  #       run: .github/workflows/scripts/run_tests_js.sh
+  JS:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [macos-latest, ubuntu-18.04]
+    steps:
+      - uses: actions/checkout@v2
+      - name: Run tests
+        run: .github/workflows/scripts/run_tests_js.sh
 
 
-  # Python:
-  #   runs-on: ${{ matrix.os }}
-  #   strategy:
-  #     matrix:
-  #       os: [macos-latest, ubuntu-18.04]
-  #       python-version: [3.6, 3.7, 3.8]
-  #   steps:
-  #     - uses: actions/checkout@v2
-  #     - name: Set up Python ${{ matrix.python-version }}
-  #       uses: actions/setup-python@v1
-  #       with:
-  #         python-version: ${{ matrix.python-version }}
-  #     - name: Install dependencies
-  #       run: |
-  #         python -m pip install --upgrade pip
-  #         pip install -r psi_cardinality/python/requirements_dev.txt
-  #     - name: Python linters
-  #       run: .github/workflows/scripts/lint_python.sh
-  #     - name: Run tests
-  #       run: .github/workflows/scripts/run_tests_python.sh
+  Python:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [macos-latest, ubuntu-18.04]
+        python-version: [3.6, 3.7, 3.8]
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v1
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r psi_cardinality/python/requirements_dev.txt
+      - name: Python linters
+        run: .github/workflows/scripts/lint_python.sh
+      - name: Run tests
+        run: .github/workflows/scripts/run_tests_python.sh
 
 
-  # Go:
-  #   runs-on: ${{ matrix.os }}
-  #   strategy:
-  #     matrix:
-  #       os: [macos-latest, ubuntu-18.04]
+  Go:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [macos-latest, ubuntu-18.04]
  
-  #   steps:
-  #     - name: Install toolchains
-  #       uses: actions/setup-go@v2
-  #       with:
-  #         go-version: ^1.13
-  #       id: go
-  #     - name: Install Go dependencies
-  #       run: go get -u golang.org/x/lint/golint
-  #     - uses: actions/checkout@v2
-  #     - name: Go linters
-  #       run: .github/workflows/scripts/lint_go.sh
-  #     - name: Run tests
-  #       run: .github/workflows/scripts/run_tests_go.sh
+    steps:
+      - name: Install toolchains
+        uses: actions/setup-go@v2
+        with:
+          go-version: ^1.13
+        id: go
+      - name: Install Go dependencies
+        run: go get -u golang.org/x/lint/golint
+      - uses: actions/checkout@v2
+      - name: Go linters
+        run: .github/workflows/scripts/lint_go.sh
+      - name: Run tests
+        run: .github/workflows/scripts/run_tests_go.sh
