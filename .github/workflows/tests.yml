@@ -14,5 +14,5 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Linters
-        if: github.matrix.os == 'ubuntu-18.04'
+        if: matrix.os == 'ubuntu-18.04'
         run: .github/workflows/scripts/lint_cpp.sh
