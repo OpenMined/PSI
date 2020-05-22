@@ -35,18 +35,22 @@ PYBIND11_MODULE(_psi_cardinality, m) {
                     if (!client.ok())
                       throw std::runtime_error(client.status().message());
                     return std::move(client.ValueOrDie());
-                  })
+                  },
+                  py::call_guard<py::gil_scoped_release>())
       .def("CreateRequest",
            [](const psi::PSICardinalityClient& obj,
               const std::vector<std::string>& inputs) {
              return throwOrReturn(obj.CreateRequest(inputs));
-           })
-      .def("ProcessResponse", [](const psi::PSICardinalityClient& obj,
-                                 const std::string& server_setup,
-                                 const std::string& server_response) {
-        return throwOrReturn(
-            obj.ProcessResponse(server_setup, server_response));
-      });
+           },
+           py::call_guard<py::gil_scoped_release>())
+      .def("ProcessResponse",
+           [](const psi::PSICardinalityClient& obj,
+              const std::string& server_setup,
+              const std::string& server_response) {
+             return throwOrReturn(
+                 obj.ProcessResponse(server_setup, server_response));
+           },
+           py::call_guard<py::gil_scoped_release>());
 
   py::class_<psi::PSICardinalityServer>(m, "PSICardinalityServer")
       .def_static("CreateWithNewKey",
@@ -55,7 +59,8 @@ PYBIND11_MODULE(_psi_cardinality, m) {
                     if (!server.ok())
                       throw std::runtime_error(server.status().message());
                     return std::move(server.ValueOrDie());
-                  })
+                  },
+                  py::call_guard<py::gil_scoped_release>())
       .def_static("CreateFromKey",
                   [](const std::string& key_bytes) {
                     auto server =
@@ -63,20 +68,25 @@ PYBIND11_MODULE(_psi_cardinality, m) {
                     if (!server.ok())
                       throw std::runtime_error(server.status().message());
                     return std::move(server.ValueOrDie());
-                  })
+                  },
+                  py::call_guard<py::gil_scoped_release>())
       .def("CreateSetupMessage",
            [](const psi::PSICardinalityServer& obj, double fpr,
               int64_t num_client_inputs,
               const std::vector<std::string>& inputs) {
              return throwOrReturn(
                  obj.CreateSetupMessage(fpr, num_client_inputs, inputs));
-           })
+           },
+           py::call_guard<py::gil_scoped_release>())
       .def("ProcessRequest",
            [](const psi::PSICardinalityServer& obj,
               const std::string& client_request) {
              return throwOrReturn(obj.ProcessRequest(client_request));
-           })
-      .def("GetPrivateKeyBytes", [](const psi::PSICardinalityServer& obj) {
-        return py::bytes(obj.GetPrivateKeyBytes());
-      });
+           },
+           py::call_guard<py::gil_scoped_release>())
+      .def("GetPrivateKeyBytes",
+           [](const psi::PSICardinalityServer& obj) {
+             return py::bytes(obj.GetPrivateKeyBytes());
+           },
+           py::call_guard<py::gil_scoped_release>());
 }
