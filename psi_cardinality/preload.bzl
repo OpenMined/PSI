@@ -67,6 +67,7 @@ def psi_cardinality_preload():
             name = "pybind11_bazel",
             strip_prefix = "pybind11_bazel-py3",
             urls = ["https://github.com/kerrick-lyft/pybind11_bazel/archive/py3.zip"],
+            sha256 = "7b45a217ad57a50698ff83ca36fce37ebbd17502d429bd1e78bfacb66bab17dc",
         )
 
     if "pybind11" not in native.existing_rules():
