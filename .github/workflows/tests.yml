@@ -23,6 +23,7 @@ jobs:
         run: .github/workflows/scripts/run_tests_core.sh
       - name: Linters
         run: .github/workflows/scripts/lint_cpp.sh
+        if: ${{ github.matrix.os == 'ubuntu-18.04' }}
 
   JS:
     runs-on: ${{ matrix.os }}
