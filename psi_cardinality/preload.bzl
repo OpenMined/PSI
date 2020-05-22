@@ -86,3 +86,10 @@ def psi_cardinality_preload():
             strip_prefix = "rules_python-a0fbf98d4e3a232144df4d0d80b577c7a693b570",
             sha256 = "98c9b903f6e8fe20b7e56d19c4822c8c49a11b475bd4ec0ca6a564e8bc5d5fa2",
         )
+
+    RULES_PYTHON_EXTERNAL_VERSION = "3aacabb928a710b10bff13d0bde49ceaade58f15"
+    http_archive(
+        name = "rules_python_external",
+        strip_prefix = "rules_python_external-{version}".format(version = RULES_PYTHON_EXTERNAL_VERSION),
+        url = "https://github.com/dillon-giacoppo/rules_python_external/archive/{version}.zip".format(version = RULES_PYTHON_EXTERNAL_VERSION),
+    )

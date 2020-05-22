@@ -22,12 +22,11 @@ load("@rules_pkg//:deps.bzl", "rules_pkg_dependencies")
 load("@bazel_gazelle//:deps.bzl", "gazelle_dependencies")
 load("@pybind11_bazel//:python_configure.bzl", "python_configure")
 load("@rules_python//python:repositories.bzl", "py_repositories")
+load("@rules_python_external//:repositories.bzl", "rules_python_external_dependencies")
+load("@rules_python_external//:defs.bzl", "pip_install")
 
 def psi_cardinality_deps():
-    # Make all files under submodules/emsdk/* visible to the toolchain. The files are
-    # available as external/emsdk/emsdk/*
-    emsdk_configure(name = "emsdk")
-
+    # General dependencies.
     if "com_tencent_rapidjson" not in native.existing_rules():
         http_archive(
             name = "com_tencent_rapidjson",
@@ -96,14 +95,32 @@ def psi_cardinality_deps():
             ],
         )
 
+    # Language-specific dependencies.
+
+    # Javascript
+    # Make all files under submodules/emsdk/* visible to the toolchain. The files are
+    # available as external/emsdk/emsdk/*
+    emsdk_configure(name = "emsdk")
+    
+    # Python.
     py_repositories()
 
-    python_configure(name = "local_config_python")
+    # Configure python3 for pybind11.
+    python_configure(name = "local_config_python", python3 = True)
 
+    # Install pip requirements for Python tests.
+    rules_python_external_dependencies()
+    pip_install(
+        name = "org_openmined_psi_python_deps",
+        requirements = "//psi_cardinality/python:requirements_dev.txt",
+    )
+
+    # Protobuf.
     rules_proto_dependencies()
 
     rules_proto_toolchains()
 
+    # Golang.
     go_rules_dependencies()
 
     go_register_toolchains()
@@ -111,3 +128,4 @@ def psi_cardinality_deps():
     rules_pkg_dependencies()
 
     gazelle_dependencies()
+
