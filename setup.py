@@ -99,7 +99,7 @@ setuptools.setup(
     version=_get_version(),
     description="Private Set Intersection Cardinality protocol based on ECDH and Bloom Filters.",
     keywords="privacy cryptography",
-    url="https://github.com/OpenMined/psi-cardinality",
+    url="https://github.com/OpenMined/PSI",
     python_requires=">=3.6",
     package_dir={"": "psi_cardinality/python"},
     packages=setuptools.find_packages("psi_cardinality/python"),
