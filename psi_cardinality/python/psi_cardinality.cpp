@@ -4,9 +4,9 @@
 #include <memory>
 #include <vector>
 
-#include "package.h"
-#include "psi_cardinality_client.h"
-#include "psi_cardinality_server.h"
+#include "psi_cardinality/cpp/package.h"
+#include "psi_cardinality/cpp/psi_cardinality_client.h"
+#include "psi_cardinality/cpp/psi_cardinality_server.h"
 #include "util/canonical_errors.h"
 #include "util/status_macros.h"
 
@@ -30,7 +30,8 @@ PYBIND11_MODULE(_psi_cardinality, m) {
   py::class_<psi::PSICardinalityClient>(m, "PSICardinalityClient")
       .def_static(
           "Create",
-          []() { auto client = psi::PSICardinalityClient::Create();
+          []() {
+            auto client = psi::PSICardinalityClient::Create();
             if (!client.ok())
               throw std::runtime_error(client.status().message());
             return std::move(client.ValueOrDie());
