@@ -91,6 +91,7 @@ def psi_cardinality_preload():
     if "rules_python_external" not in native.existing_rules():
         http_archive(
             name = "rules_python_external",
+            sha256 = "5a1d7e6e4bab49dcdd787694f0f5d52ac5debdfc1852981a89cc414e338d60dc",
             strip_prefix = "rules_python_external-{version}".format(version = RULES_PYTHON_EXTERNAL_VERSION),
             url = "https://github.com/dillon-giacoppo/rules_python_external/archive/{version}.zip".format(version = RULES_PYTHON_EXTERNAL_VERSION),
         )

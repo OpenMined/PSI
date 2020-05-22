@@ -18,6 +18,7 @@ jobs:
       - name: Linters
         if: matrix.os == 'ubuntu-18.04'
         run: .github/workflows/scripts/lint_cpp.sh
+        if: ${{ matrix.os == 'ubuntu-18.04' }}
 
   JS:
     runs-on: ${{ matrix.os }}
