@@ -13,9 +13,6 @@ jobs:
         os: [macos-latest, ubuntu-18.04]
     steps:
       - uses: actions/checkout@v2
-      - name: Install Bazel - Ubuntu
-        run:
-        echo "run linters"
-        if($env:RUNNER_OS -eq "Linux") {
-            .github/workflows/scripts/lint_cpp.sh
-        }
+      - name: Linters
+        if: runner.os == 'Linux'
+        run: .github/workflows/scripts/lint_cpp.sh
