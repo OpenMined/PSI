@@ -13,13 +13,12 @@ jobs:
         os: [macos-latest, ubuntu-18.04]
     steps:
       - uses: actions/checkout@v2
-        if: ${{ github.matrix.os == ubuntu-18.04 }}
       - name: Install Bazel - Ubuntu
         run: .github/workflows/scripts/install_ubuntu.sh
-        if: ${{ github.matrix.os == ubuntu-18.04 }}
+        if: ${{ github.matrix.os == "ubuntu-18.04" }}
       - name: Install Bazel - MacOS
         run: .github/workflows/scripts/install_macos.sh
-        if: ${{ github.matrix.os == macos-latest }}
+        if: ${{ github.matrix.os == "macos-latest" }}
       - name: Run tests
         run: .github/workflows/scripts/run_tests_core.sh
       - name: Linters
