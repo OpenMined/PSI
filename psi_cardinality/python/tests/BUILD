@@ -5,8 +5,8 @@ py_test(
     deps = [
         "//psi_cardinality/python:psi_cardinality"
     ],
-    legacy_create_init = False,
     python_version = "PY3",
+    srcs_version = "PY3",
 )
 py_test(
     name = "benchmarks",
@@ -15,6 +15,6 @@ py_test(
     deps = [
         "//psi_cardinality/python:psi_cardinality"
     ],
-    legacy_create_init = False,
     python_version = "PY3",
+    srcs_version = "PY3",
 )
