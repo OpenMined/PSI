@@ -8,27 +8,22 @@ from distutils import sysconfig
 import setuptools
 from setuptools.command import build_ext
 
-here = os.path.dirname(os.path.abspath(__file__))
 
-IS_WINDOWS = sys.platform.startswith("win")
+here = os.path.dirname(os.path.abspath(__file__))
 
 
 def _get_version():
     """Parse the version string from __init__.py."""
-    with open(os.path.join(here, "psi_cardinality", "python", "__init__.py")) as f:
+    with open(os.path.join(here, "tools", "package.bzl")) as f:
+        key = "VERSION_LABEL"
         try:
-            version_line = next(line for line in f if line.startswith("__version__"))
+            version_line = next(line for line in f if line.startswith(key))
         except StopIteration:
-            raise ValueError("__version__ not defined in __init__.py")
+            raise ValueError("VERSION not defined")
         else:
             ns = {}
             exec(version_line, ns)  # pylint: disable=exec-used
-            return ns["__version__"]
-
-
-def _parse_requirements(path):
-    with open(os.path.join(here, path)) as f:
-        return [line.rstrip() for line in f if not (line.isspace() or line.startswith("#"))]
+            return ns[key]
 
 
 class BazelExtension(setuptools.Extension):
@@ -72,14 +67,9 @@ class BuildBazelExtension(build_ext.build_ext):
             "--compilation_mode=" + ("dbg" if self.debug else "opt"),
         ]
 
-        if IS_WINDOWS:
-            # Link with python*.lib.
-            for library_dir in self.library_dirs:
-                bazel_argv.append("--linkopt=/LIBPATH:" + library_dir)
-
         self.spawn(bazel_argv)
 
-        shared_lib_suffix = ".dll" if IS_WINDOWS else ".so"
+        shared_lib_suffix = ".so"
         ext_bazel_bin_path = os.path.join(
             self.build_temp, "bazel-bin", ext.relpath, "_" + ext.target_name + shared_lib_suffix
         )
@@ -91,7 +81,7 @@ class BuildBazelExtension(build_ext.build_ext):
 
 
 setuptools.setup(
-    name="psi_cardinality",
+    name="psi-cardinality",
     version=_get_version(),
     description="Private Set Intersection Cardinality protocol based on ECDH and Bloom Filters.",
     keywords="privacy cryptography",
@@ -99,9 +89,8 @@ setuptools.setup(
     python_requires=">=3.6",
     package_dir={"": "psi_cardinality/python"},
     packages=setuptools.find_packages("psi_cardinality/python"),
-    install_requires=_parse_requirements("psi_cardinality/python/requirements.txt"),
     cmdclass=dict(build_ext=BuildBazelExtension),
-    ext_modules=[BazelExtension("psi_cardinality", "//psi_cardinality/python:psi_cardinality")],
+    ext_modules=[BazelExtension("_psi_cardinality", "//psi_cardinality/python:psi_cardinality")],
     zip_safe=False,
     classifiers=[
         "Programming Language :: Python :: 3",
