@@ -30,7 +30,8 @@ PYBIND11_MODULE(_psi_cardinality, m) {
   py::class_<psi::PSICardinalityClient>(m, "PSICardinalityClient")
       .def_static(
           "Create",
-          []() { auto client = psi::PSICardinalityClient::Create();
+          []() {
+            auto client = psi::PSICardinalityClient::Create();
             if (!client.ok())
               throw std::runtime_error(client.status().message());
             return std::move(client.ValueOrDie());
