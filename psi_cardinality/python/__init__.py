@@ -5,7 +5,6 @@ from psi_cardinality.python import _psi_cardinality
 
 client = _psi_cardinality.PSICardinalityClient
 server = _psi_cardinality.PSICardinalityServer
-
-__version__ = "0.0.1"
+__version__ = _psi_cardinality.__version__
 
 __all__ = ["client", "server", "__version__"]

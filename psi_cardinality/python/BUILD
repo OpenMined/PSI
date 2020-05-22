@@ -8,6 +8,7 @@ pybind_extension(
   deps = [
     "//psi_cardinality/cpp:psi_cardinality_client",
     "//psi_cardinality/cpp:psi_cardinality_server",
+    "//psi_cardinality/cpp:package",
   ],
   linkstatic = True,
 )

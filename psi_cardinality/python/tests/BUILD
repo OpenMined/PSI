@@ -1,7 +1,7 @@
 py_test(
-    name = "test_client",
-    srcs = ["test_client.py"],
-    main = "test_client.py",
+    name = "tests",
+    srcs = ["tests.py"],
+    main = "tests.py",
     deps = [
         "//psi_cardinality/python:psi_cardinality"
     ],
@@ -9,9 +9,9 @@ py_test(
     python_version = "PY3",
 )
 py_test(
-    name = "test_server",
-    srcs = ["test_server.py"],
-    main = "test_server.py",
+    name = "benchmarks",
+    srcs = ["benchmarks.py"],
+    main = "benchmarks.py",
     deps = [
         "//psi_cardinality/python:psi_cardinality"
     ],

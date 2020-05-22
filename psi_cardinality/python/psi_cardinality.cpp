@@ -5,6 +5,7 @@
 #include <vector>
 
 #include "bloom_filter.h"
+#include "package.h"
 #include "psi_cardinality_client.h"
 #include "psi_cardinality_server.h"
 #include "util/canonical_errors.h"
@@ -26,6 +27,7 @@ PYBIND11_MODULE(_psi_cardinality, m) {
       "Private Set Intersection Cardinality protocol based on ECDH and Bloom "
       "Filters";
 
+  m.attr("__version__") = ::psi_cardinality::Package::kVersion;
   py::class_<psi::PSICardinalityClient>(m, "PSICardinalityClient")
       .def_static("Create",
                   []() {
