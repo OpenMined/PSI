@@ -1,12 +1,6 @@
 #!/bin/sh
 set -e
 
-# C++
-bazel test --test_output=all //psi_cardinality/cpp/...
-
-# C
-bazel test --test_output=all //psi_cardinality/c/...
-
 # JavaScript
 npm run submodule:update
 npm run em:update

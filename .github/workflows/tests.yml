@@ -11,7 +11,6 @@ jobs:
     strategy:
       matrix:
         os: [macos-latest, ubuntu-18.04]
-
     steps:
       - uses: actions/checkout@v2
       - name: Linters
@@ -24,7 +23,24 @@ jobs:
         run: .github/workflows/scripts/install_macos.sh
         if: ${{ github.matrix.os == 'macos-latest' }}
       - name: Run tests
-        run: .github/workflows/scripts/run_tests.sh
+        run: .github/workflows/scripts/run_tests_core.sh
+
+  JS:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [macos-latest, ubuntu-18.04]
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install Bazel - Ubuntu
+        run: .github/workflows/scripts/install_ubuntu.sh
+        if: ${{ github.matrix.os == 'ubuntu-18.04' }}
+      - name: Install Bazel - MacOS
+        run: .github/workflows/scripts/install_macos.sh
+        if: ${{ github.matrix.os == 'macos-latest' }}
+      - name: Run tests
+        run: .github/workflows/scripts/run_tests_js.sh
+
 
   Python:
     runs-on: ${{ matrix.os }}
