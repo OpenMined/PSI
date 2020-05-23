@@ -25,24 +25,24 @@ These are the common requirements across all target languages of this project.
 The repository uses a folder structure to isolate the supported targets from one another:
 
 ```
-psi_cardinality/<target language>/<sources>
+private_set_intersection/<target language>/<sources>
 ```
 
 ### C++
 
-See the [C++ README.md](psi_cardinality/cpp/README.md)
+See the [C++ README.md](private_set_intersection/cpp/README.md)
 
 ### JavaScript
 
-See the [JavaScript README.md](psi_cardinality/javascript/README.md)
+See the [JavaScript README.md](private_set_intersection/javascript/README.md)
 
 ### Go
 
-See the [Go README.md](psi_cardinality/go/README.md)
+See the [Go README.md](private_set_intersection/go/README.md)
 
 ### Python
 
-See the [Python README.md](psi_cardinality/python/README.md)
+See the [Python README.md](private_set_intersection/python/README.md)
 
 
 ## Usage
@@ -59,19 +59,19 @@ git_repository(
    init_submodules = True,
 )
 
-load("@org_openmined_psi_cardinality//psi_cardinality:preload.bzl", "psi_cardinality_preload")
+load("@org_openmined_psi_cardinality//private_set_intersection:preload.bzl", "psi_cardinality_preload")
 
 psi_cardinality_preload()
 
-load("@org_openmined_psi_cardinality//psi_cardinality:deps.bzl", "psi_cardinality_deps")
+load("@org_openmined_psi_cardinality//private_set_intersection:deps.bzl", "psi_cardinality_deps")
 
 psi_cardinality_deps()
 
 ```
 
-A full description of the protocol can be found in the documentation of the [PSICardinalityClient](psi_cardinality/cpp/psi_cardinality_client.h) class.
-The corresponding server class is [PSICardinalityServer](psi_cardinality/cpp/psi_cardinality_server.h).
-An example of how to interleave the different phases of the protocol can be found in [psi_cardinality_server_test.cpp](psi_cardinality/cpp/psi_cardinality_server_test.cpp).
+A full description of the protocol can be found in the documentation of the [PsiClient](private_set_intersection/cpp/psi_cardinality_client.h) class.
+The corresponding server class is [PsiServer](private_set_intersection/cpp/psi_cardinality_server.h).
+An example of how to interleave the different phases of the protocol can be found in [psi_cardinality_server_test.cpp](private_set_intersection/cpp/psi_cardinality_server_test.cpp).
 
 
 ## Contributing

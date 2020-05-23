@@ -2,4 +2,4 @@
 set -e
 
 # Python
-bazel test --test_output=all //psi_cardinality/python:tests
+bazel test --test_output=all //private_set_intersection/python:tests

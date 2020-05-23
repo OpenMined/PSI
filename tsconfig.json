@@ -1,8 +1,8 @@
 {
   "compilerOptions": {
-    "baseUrl": "./psi_cardinality/javascript",
+    "baseUrl": "./private_set_intersection/javascript",
     "declaration": true,
-    "declarationDir": "./psi_cardinality/javascript/tsc-out/types",
+    "declarationDir": "./private_set_intersection/javascript/tsc-out/types",
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "module": "ESNext",
@@ -13,21 +13,23 @@
     "noImplicitReturns": true,
     "noUnusedLocals": false,
     "noUnusedParameters": false,
-    "outDir": "./psi_cardinality/javascript/tsc-out",
+    "outDir": "./private_set_intersection/javascript/tsc-out",
     "paths": {
-      "psi_cardinality*": ["./psi_cardinality/javascript/bin/psi_cardinality*"]
+      "psi_*": ["./private_set_intersection/javascript/bin/psi_*"]
     },
     "pretty": true,
     "removeComments": true,
     "resolveJsonModule": true,
-    "rootDir": "./psi_cardinality/javascript/src",
+    "rootDir": "./private_set_intersection/javascript/src",
     "sourceMap": true,
     "strict": true,
     "target": "ESNext",
     "typeRoots": [
-      "./psi_cardinality/javascript/custom_types",
+      "./private_set_intersection/javascript/custom_types",
       "./node_modules/@types"
     ]
   },
-  "include": ["./psi_cardinality/javascript/src/**/*"]
+  "include": [
+    "./private_set_intersection/javascript/src/**/*"
+  ]
 }

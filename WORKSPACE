@@ -1,9 +1,9 @@
 workspace(name = "org_openmined_psi_cardinality")
 
-load("//psi_cardinality:preload.bzl", "psi_cardinality_preload")
+load("//private_set_intersection:preload.bzl", "private_set_intersection_preload")
 
-psi_cardinality_preload()
+private_set_intersection_preload()
 
-load("//psi_cardinality:deps.bzl", "psi_cardinality_deps")
+load("//private_set_intersection:deps.bzl", "private_set_intersection_deps")
 
-psi_cardinality_deps()
+private_set_intersection_deps()

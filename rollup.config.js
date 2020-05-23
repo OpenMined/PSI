@@ -12,12 +12,12 @@ const outputs = targets.reduce(
       (acc, variant) => [
         ...acc,
         {
-          input: `psi_cardinality/javascript/tsc-out/index_${target}_${variant}.js`,
+          input: `private_set_intersection/javascript/tsc-out/index_${target}_${variant}.js`,
           output: formats.reduce(
             (acc, format) => [
               ...acc,
               {
-                file: `psi_cardinality/javascript/dist/${target}/${variant}/${format}/index.js`,
+                file: `private_set_intersection/javascript/dist/${target}/${variant}/${format}/index.js`,
                 sourcemap: true,
                 format,
                 name: 'PSICardinality',
@@ -30,9 +30,9 @@ const outputs = targets.reduce(
             alias({
               entries: [
                 {
-                  find: /^psi_cardinality(.*)$/,
+                  find: /^private_set_intersection(.*)$/,
                   replacement:
-                    './psi_cardinality/javascript/bin/psi_cardinality$1.js'
+                    './private_set_intersection/javascript/bin/private_set_intersection$1.js'
                 }
               ]
             })
