@@ -25,7 +25,6 @@ py_library(
 py_test(
     name = "tests",
     srcs = ["tests.py"],
-    legacy_create_init = False,
     main = "tests.py",
     python_version = "PY3",
     srcs_version = "PY3",
@@ -38,7 +37,6 @@ py_test(
 py_binary(
     name = "benchmarks",
     srcs = ["benchmarks.py"],
-    legacy_create_init = False,
     main = "benchmarks.py",
     python_version = "PY3",
     srcs_version = "PY3",
