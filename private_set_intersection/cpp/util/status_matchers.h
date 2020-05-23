@@ -30,8 +30,8 @@
       PRIVACY_BLINDERS_STATUS_MACROS_IMPL_CONCAT_(_psi_statusor, __LINE__), \
       lhs, rexpr)
 
-#define PSI_ASSERT_OK_AND_ASSIGN_IMPL(statusor, lhs, rexpr)  \
-  auto statusor = (rexpr);                                   \
+#define PSI_ASSERT_OK_AND_ASSIGN_IMPL(statusor, lhs, rexpr)           \
+  auto statusor = (rexpr);                                            \
   ASSERT_THAT(statusor.status(), ::private_set_intersection::IsOk()); \
   lhs = std::move(statusor).ValueOrDie();
 

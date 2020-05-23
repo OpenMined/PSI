@@ -1,8 +1,9 @@
 #ifndef PSI_CARDINALITY_JAVASCRIPT_BINDINGS_UTILS_H_
 #define PSI_CARDINALITY_JAVASCRIPT_BINDINGS_UTILS_H_
 
-#include "emscripten/val.h"
 #include <vector>
+
+#include "emscripten/val.h"
 #include "util/statusor.h"
 
 namespace private_set_intersection {

@@ -9,7 +9,7 @@ namespace {
 void BM_ServerSetup(benchmark::State &state, double fpr) {
   psi_server_ctx server_;
   char *err;
-    psi_server_create_with_new_key(&server_, &err);
+  psi_server_create_with_new_key(&server_, &err);
 
   int num_inputs = state.range(0);
   int num_client_inputs = 10000;
@@ -25,14 +25,14 @@ void BM_ServerSetup(benchmark::State &state, double fpr) {
   for (auto _ : state) {
     char *server_setup = nullptr;
     size_t server_setup_buff_len = 0;
-      psi_server_create_setup_message(
-              server_, fpr, num_client_inputs, inputs.data(), inputs.size(),
-              &server_setup, &server_setup_buff_len, &err);
+    psi_server_create_setup_message(server_, fpr, num_client_inputs,
+                                    inputs.data(), inputs.size(), &server_setup,
+                                    &server_setup_buff_len, &err);
 
     ::benchmark::DoNotOptimize(server_setup);
     ::benchmark::ClobberMemory();
     elements_processed += num_inputs;
-      psi_server_delete_buffer(server_, &server_setup);
+    psi_server_delete_buffer(server_, &server_setup);
   }
   state.counters["SetupSize"] = benchmark::Counter(
       static_cast<double>(setup.size()), benchmark::Counter::kDefaults,
@@ -69,14 +69,14 @@ void BM_ClientCreateRequest(benchmark::State &state) {
     char *client_request = {0};
     size_t req_len = 0;
     char *err;
-      psi_client_create_request(client_, inputs.data(), inputs.size(),
-                                &client_request, &req_len, &err);
+    psi_client_create_request(client_, inputs.data(), inputs.size(),
+                              &client_request, &req_len, &err);
 
     ::benchmark::DoNotOptimize(client_request);
     ::benchmark::ClobberMemory();
     elements_processed += num_inputs;
 
-      psi_client_delete_buffer(client_, &client_request);
+    psi_client_delete_buffer(client_, &client_request);
   }
   state.counters["RequestSize"] = benchmark::Counter(
       static_cast<double>(request.size()), benchmark::Counter::kDefaults,
@@ -93,7 +93,7 @@ void BM_ServerProcessRequest(benchmark::State &state) {
   char *err;
 
   psi_client_create(&client_, &err);
-    psi_server_create_with_new_key(&server_, &err);
+  psi_server_create_with_new_key(&server_, &err);
 
   int num_inputs = state.range(0);
   std::vector<std::string> inputs_orig(num_inputs);
@@ -105,8 +105,8 @@ void BM_ServerProcessRequest(benchmark::State &state) {
 
   char *client_request = nullptr;
   size_t req_len = 0;
-    psi_client_create_request(client_, inputs.data(), inputs.size(),
-                              &client_request, &req_len, &err);
+  psi_client_create_request(client_, inputs.data(), inputs.size(),
+                            &client_request, &req_len, &err);
 
   std::string response;
 
@@ -114,15 +114,14 @@ void BM_ServerProcessRequest(benchmark::State &state) {
   for (auto _ : state) {
     char *server_response = nullptr;
     size_t response_len = 0;
-      psi_server_process_request(server_, {client_request, req_len},
-                                 &server_response, &response_len,
-                                 &err);
+    psi_server_process_request(server_, {client_request, req_len},
+                               &server_response, &response_len, &err);
     ::benchmark::DoNotOptimize(server_response);
     ::benchmark::ClobberMemory();
 
     elements_processed += num_inputs;
 
-      psi_server_delete_buffer(server_, &server_response);
+    psi_server_delete_buffer(server_, &server_response);
   }
   state.counters["ResponseSize"] = benchmark::Counter(
       static_cast<double>(response.size()), benchmark::Counter::kDefaults,
@@ -130,7 +129,7 @@ void BM_ServerProcessRequest(benchmark::State &state) {
   state.counters["ElementsProcessed"] = benchmark::Counter(
       static_cast<double>(elements_processed), benchmark::Counter::kIsRate);
 
-    psi_client_delete_buffer(client_, &client_request);
+  psi_client_delete_buffer(client_, &client_request);
 }
 
 // Range is for the number of inputs.
@@ -141,7 +140,7 @@ void BM_ClientProcessResponse(benchmark::State &state) {
   psi_server_ctx server_;
   char *err;
   psi_client_create(&client_, &err);
-    psi_server_create_with_new_key(&server_, &err);
+  psi_server_create_with_new_key(&server_, &err);
 
   int num_inputs = state.range(0);
   double fpr = 1. / (1000000);
@@ -156,34 +155,33 @@ void BM_ClientProcessResponse(benchmark::State &state) {
 
   char *server_setup = nullptr;
   size_t server_setup_buff_len = 0;
-    psi_server_create_setup_message(
-            server_, fpr, num_inputs, srv_inputs.data(), srv_inputs.size(),
-            &server_setup, &server_setup_buff_len, &err);
+  psi_server_create_setup_message(server_, fpr, num_inputs, srv_inputs.data(),
+                                  srv_inputs.size(), &server_setup,
+                                  &server_setup_buff_len, &err);
 
   char *client_request = nullptr;
   size_t req_len = 0;
-    psi_client_create_request(client_, cl_inputs.data(),
-                              cl_inputs.size(), &client_request,
-                              &req_len, &err);
+  psi_client_create_request(client_, cl_inputs.data(), cl_inputs.size(),
+                            &client_request, &req_len, &err);
 
   char *server_response = nullptr;
   size_t response_len = 0;
-    psi_server_process_request(server_, {client_request, req_len},
-                               &server_response, &response_len, &err);
+  psi_server_process_request(server_, {client_request, req_len},
+                             &server_response, &response_len, &err);
 
   int64_t elements_processed = 0;
   for (auto _ : state) {
     int64_t count = 0;
-      psi_client_process_response(client_, server_setup,
-                                  server_response, &count, &err);
+    psi_client_process_response(client_, server_setup, server_response, &count,
+                                &err);
 
     ::benchmark::DoNotOptimize(count);
     elements_processed += num_inputs;
   }
 
-    psi_server_delete_buffer(server_, &server_setup);
-    psi_server_delete_buffer(server_, &server_response);
-    psi_client_delete_buffer(client_, &client_request);
+  psi_server_delete_buffer(server_, &server_setup);
+  psi_server_delete_buffer(server_, &server_response);
+  psi_client_delete_buffer(client_, &client_request);
 
   state.counters["ElementsProcessed"] = benchmark::Counter(
       static_cast<double>(elements_processed), benchmark::Counter::kIsRate);

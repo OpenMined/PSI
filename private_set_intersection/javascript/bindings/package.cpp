@@ -1,4 +1,5 @@
 #include "private_set_intersection/cpp/package.h"
+
 #include "emscripten/bind.h"
 
 EMSCRIPTEN_BINDINGS(Package) {
@@ -8,8 +9,7 @@ EMSCRIPTEN_BINDINGS(Package) {
       // Using class_function instead of class_property
       // because emscripten cannot understand a static constexpr char[]
       .class_function("version", emscripten::optional_override([]() {
-                        const std::string version =
-                            Package::kVersion;
+                        const std::string version = Package::kVersion;
                         return version;
                       }));
 }

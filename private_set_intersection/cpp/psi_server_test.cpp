@@ -83,8 +83,7 @@ TEST_F(PsiServerTest, TestCreatingFromKey) {
   EXPECT_EQ(key_bytes.length(), 32);
 
   // Create a new server instance from the original key
-  PSI_ASSERT_OK_AND_ASSIGN(auto server,
-                           PsiServer::CreateFromKey(key_bytes));
+  PSI_ASSERT_OK_AND_ASSIGN(auto server, PsiServer::CreateFromKey(key_bytes));
 
   int num_client_elements = 100, num_server_elements = 1000;
   double fpr = 0.01;
@@ -114,11 +113,9 @@ TEST_F(PsiServerTest, TestCreatingFromKey) {
   // Create a 31-byte key that should be equivalent to a 32-byte null-inserted
   // key
   const std::string key_bytes2("bcdefghijklmnopqrstuvwxyz123456", 31);
-  PSI_ASSERT_OK_AND_ASSIGN(auto server2,
-                           PsiServer::CreateFromKey(key_bytes2));
+  PSI_ASSERT_OK_AND_ASSIGN(auto server2, PsiServer::CreateFromKey(key_bytes2));
   const std::string key_bytes3("\0bcdefghijklmnopqrstuvwxyz123456", 32);
-  PSI_ASSERT_OK_AND_ASSIGN(auto server3,
-                           PsiServer::CreateFromKey(key_bytes3));
+  PSI_ASSERT_OK_AND_ASSIGN(auto server3, PsiServer::CreateFromKey(key_bytes3));
 
   // Run Server setup.
   PSI_ASSERT_OK_AND_ASSIGN(

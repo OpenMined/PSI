@@ -9,12 +9,11 @@ EMSCRIPTEN_BINDINGS(PSI_Server) {
   using private_set_intersection::ToShared;
 
   emscripten::class_<PsiServer>("PsiServer")
-      .smart_ptr<std::shared_ptr<PsiServer>>(
-          "std::shared_ptr<PsiServer>")
-      .class_function("CreateWithNewKey", optional_override([]() {
-                        return ToJSObject(
-                            ToShared(PsiServer::CreateWithNewKey()));
-                      }))
+      .smart_ptr<std::shared_ptr<PsiServer>>("std::shared_ptr<PsiServer>")
+      .class_function(
+          "CreateWithNewKey", optional_override([]() {
+            return ToJSObject(ToShared(PsiServer::CreateWithNewKey()));
+          }))
       .class_function(
           "CreateFromKey",
           optional_override([](const emscripten::val &byte_array) {
@@ -25,12 +24,10 @@ EMSCRIPTEN_BINDINGS(PSI_Server) {
               byte_string[i] = byte_array[i].as<std::uint8_t>();
             }
 
-            return ToJSObject(
-                ToShared(PsiServer::CreateFromKey(byte_string)));
+            return ToJSObject(ToShared(PsiServer::CreateFromKey(byte_string)));
           }))
       .function("CreateSetupMessage",
-                optional_override([](const PsiServer &self,
-                                     const double fpr,
+                optional_override([](const PsiServer &self, const double fpr,
                                      const int32_t num_client_inputs,
                                      const emscripten::val &string_array) {
                   std::vector<std::string> string_vector;
@@ -50,13 +47,13 @@ EMSCRIPTEN_BINDINGS(PSI_Server) {
                                      const std::string &client_request) {
                   return ToJSObject(self.ProcessRequest(client_request));
                 }))
-      .function("GetPrivateKeyBytes",
-                optional_override([](const PsiServer &self) {
-                  const std::string byte_string = self.GetPrivateKeyBytes();
-                  const std::vector<std::uint8_t> byte_vector(
-                      byte_string.begin(), byte_string.end());
-                  emscripten::val byte_array = emscripten::val::array(
-                      byte_vector.begin(), byte_vector.end());
-                  return byte_array;
-                }));
+      .function(
+          "GetPrivateKeyBytes", optional_override([](const PsiServer &self) {
+            const std::string byte_string = self.GetPrivateKeyBytes();
+            const std::vector<std::uint8_t> byte_vector(byte_string.begin(),
+                                                        byte_string.end());
+            emscripten::val byte_array =
+                emscripten::val::array(byte_vector.begin(), byte_vector.end());
+            return byte_array;
+          }));
 }

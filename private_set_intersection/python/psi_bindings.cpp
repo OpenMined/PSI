@@ -46,8 +46,7 @@ PYBIND11_MODULE(_psi_bindings, m) {
           py::call_guard<py::gil_scoped_release>())
       .def(
           "ProcessResponse",
-          [](const psi::PsiClient& obj,
-             const std::string& server_setup,
+          [](const psi::PsiClient& obj, const std::string& server_setup,
              const std::string& server_response) {
             return throwOrReturn(
                 obj.ProcessResponse(server_setup, server_response));
@@ -75,8 +74,7 @@ PYBIND11_MODULE(_psi_bindings, m) {
           py::call_guard<py::gil_scoped_release>())
       .def(
           "CreateSetupMessage",
-          [](const psi::PsiServer& obj, double fpr,
-             int64_t num_client_inputs,
+          [](const psi::PsiServer& obj, double fpr, int64_t num_client_inputs,
              const std::vector<std::string>& inputs) {
             return throwOrReturn(
                 obj.CreateSetupMessage(fpr, num_client_inputs, inputs));
@@ -84,8 +82,7 @@ PYBIND11_MODULE(_psi_bindings, m) {
           py::call_guard<py::gil_scoped_release>())
       .def(
           "ProcessRequest",
-          [](const psi::PsiServer& obj,
-             const std::string& client_request) {
+          [](const psi::PsiServer& obj, const std::string& client_request) {
             return throwOrReturn(obj.ProcessRequest(client_request));
           },
           py::call_guard<py::gil_scoped_release>())

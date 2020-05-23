@@ -38,7 +38,7 @@ class PsiClientTest : public ::testing::Test {
     ASSERT_TRUE(ret == 0);
   }
   void TearDown() {
-      psi_client_delete(&client_);
+    psi_client_delete(&client_);
     ASSERT_TRUE(client_ == nullptr);
   }
 
@@ -86,9 +86,9 @@ TEST_F(PsiClientTest, TestCorrectness) {
   char *client_request = {0};
   size_t req_len = 0;
   char *err;
-  int ret = psi_client_create_request(
-          client_, client_elements.data(), client_elements.size(), &client_request,
-          &req_len, &err);
+  int ret = psi_client_create_request(client_, client_elements.data(),
+                                      client_elements.size(), &client_request,
+                                      &req_len, &err);
 
   ASSERT_TRUE(ret == 0);
   ASSERT_TRUE(req_len > 0);
@@ -126,8 +126,8 @@ TEST_F(PsiClientTest, TestCorrectness) {
   // Compute intersection size.
   int64_t intersection_size = 0;
   ret = psi_client_process_response(client_, server_setup.c_str(),
-                                    server_response.c_str(),
-                                    &intersection_size, &err);
+                                    server_response.c_str(), &intersection_size,
+                                    &err);
   ASSERT_TRUE(ret == 0);
   ASSERT_TRUE(intersection_size > 0);
 
@@ -136,7 +136,7 @@ TEST_F(PsiClientTest, TestCorrectness) {
   EXPECT_GE(intersection_size, num_client_elements / 2);
   EXPECT_LT(intersection_size, (num_client_elements / 2) * 1.1);
 
-        psi_client_delete_buffer(client_, &client_request);
+  psi_client_delete_buffer(client_, &client_request);
 }
 
 }  // namespace

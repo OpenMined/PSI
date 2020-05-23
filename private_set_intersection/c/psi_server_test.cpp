@@ -34,7 +34,7 @@ class PsiServerTest : public ::testing::Test {
     ASSERT_TRUE(ret == 0);
   }
   void TearDown() {
-      psi_server_delete(&server_);
+    psi_server_delete(&server_);
     ASSERT_TRUE(server_ == nullptr);
   }
 
@@ -46,7 +46,7 @@ TEST_F(PsiServerTest, TestCorrectness) {
   // on its own in psi_cardinality_client_test.cpp.
   psi_client_ctx client_;
   char *err;
-      psi_client_create(&client_, &err);
+  psi_client_create(&client_, &err);
 
   ASSERT_TRUE(client_ != nullptr);
 
@@ -73,9 +73,9 @@ TEST_F(PsiServerTest, TestCorrectness) {
   // Run Server setup.
   char *server_setup = nullptr;
   size_t server_setup_buff_len = 0;
-        psi_server_create_setup_message(
-                server_, fpr, num_client_elements, server_elements.data(),
-                server_elements.size(), &server_setup, &server_setup_buff_len, &err);
+  psi_server_create_setup_message(
+      server_, fpr, num_client_elements, server_elements.data(),
+      server_elements.size(), &server_setup, &server_setup_buff_len, &err);
 
   ASSERT_TRUE(server_setup != nullptr);
   ASSERT_TRUE(server_setup_buff_len != 0);
@@ -83,9 +83,9 @@ TEST_F(PsiServerTest, TestCorrectness) {
   // Create Client request.
   char *client_request = {0};
   size_t req_len = 0;
-  int ret = psi_client_create_request(
-          client_, client_elements.data(), client_elements.size(), &client_request,
-          &req_len, &err);
+  int ret = psi_client_create_request(client_, client_elements.data(),
+                                      client_elements.size(), &client_request,
+                                      &req_len, &err);
 
   ASSERT_TRUE(ret == 0);
   ASSERT_TRUE(req_len > 0);
@@ -94,25 +94,24 @@ TEST_F(PsiServerTest, TestCorrectness) {
   // Create Server response.
   char *server_response = nullptr;
   size_t response_len = 0;
-  ret = psi_server_process_request(
-          server_, {client_request, req_len}, &server_response, &response_len,
-          &err);
+  ret = psi_server_process_request(server_, {client_request, req_len},
+                                   &server_response, &response_len, &err);
   ASSERT_TRUE(server_response != nullptr);
   ASSERT_TRUE(response_len >= 0);
   ASSERT_TRUE(ret == 0);
 
   // Compute intersection size.
   int64_t intersection_size = 0;
-        psi_client_process_response(
-                client_, server_setup, server_response, &intersection_size, &err);
+  psi_client_process_response(client_, server_setup, server_response,
+                              &intersection_size, &err);
 
   // Test if size is approximately as expected (up to 10%).
   EXPECT_GE(intersection_size, num_client_elements / 2);
   EXPECT_LT(intersection_size, (num_client_elements / 2) * 1.1);
 
-        psi_server_delete_buffer(server_, &server_setup);
-        psi_server_delete_buffer(server_, &server_response);
-        psi_client_delete_buffer(client_, &client_request);
+  psi_server_delete_buffer(server_, &server_setup);
+  psi_server_delete_buffer(server_, &server_response);
+  psi_client_delete_buffer(client_, &client_request);
 }
 
 }  // namespace

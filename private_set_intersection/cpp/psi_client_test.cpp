@@ -18,9 +18,9 @@
 
 #include "absl/strings/escaping.h"
 #include "absl/strings/str_cat.h"
-#include "private_set_intersection/cpp/bloom_filter.h"
 #include "crypto/ec_commutative_cipher.h"
 #include "gtest/gtest.h"
+#include "private_set_intersection/cpp/bloom_filter.h"
 #include "rapidjson/document.h"
 #include "rapidjson/stringbuffer.h"
 #include "rapidjson/writer.h"
@@ -31,9 +31,7 @@ namespace {
 
 class PsiClientTest : public ::testing::Test {
  protected:
-  void SetUp() {
-    PSI_ASSERT_OK_AND_ASSIGN(client_, PsiClient::Create());
-  }
+  void SetUp() { PSI_ASSERT_OK_AND_ASSIGN(client_, PsiClient::Create()); }
 
   std::unique_ptr<PsiClient> client_;
 };

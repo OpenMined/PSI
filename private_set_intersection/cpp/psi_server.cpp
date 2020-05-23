@@ -21,8 +21,8 @@
 #include "absl/memory/memory.h"
 #include "absl/strings/escaping.h"
 #include "absl/strings/str_cat.h"
-#include "private_set_intersection/cpp/bloom_filter.h"
 #include "openssl/obj_mac.h"
+#include "private_set_intersection/cpp/bloom_filter.h"
 #include "rapidjson/document.h"
 #include "rapidjson/error/en.h"
 #include "rapidjson/stringbuffer.h"
@@ -36,8 +36,7 @@ PsiServer::PsiServer(
     std::unique_ptr<::private_join_and_compute::ECCommutativeCipher> ec_cipher)
     : ec_cipher_(std::move(ec_cipher)) {}
 
-StatusOr<std::unique_ptr<PsiServer>>
-PsiServer::CreateWithNewKey() {
+StatusOr<std::unique_ptr<PsiServer>> PsiServer::CreateWithNewKey() {
   // Create an EC cipher with curve P-256. This gives 128 bits of security.
   ASSIGN_OR_RETURN(
       auto ec_cipher,
@@ -47,8 +46,8 @@ PsiServer::CreateWithNewKey() {
   return absl::WrapUnique(new PsiServer(std::move(ec_cipher)));
 }
 
-StatusOr<std::unique_ptr<PsiServer>>
-PsiServer::CreateFromKey(const std::string& key_bytes) {
+StatusOr<std::unique_ptr<PsiServer>> PsiServer::CreateFromKey(
+    const std::string& key_bytes) {
   // Create an EC cipher with curve P-256. This gives 128 bits of security.
   ASSIGN_OR_RETURN(
       auto ec_cipher,

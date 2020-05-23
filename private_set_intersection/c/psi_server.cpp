@@ -5,29 +5,27 @@
 
 using Server = private_set_intersection::PsiServer;
 
-int psi_server_create_with_new_key(psi_server_ctx *ctx,
-                                   char **error_out) {
+int psi_server_create_with_new_key(psi_server_ctx *ctx, char **error_out) {
   auto result = Server::CreateWithNewKey();
   if (result.ok()) {
     *ctx = std::move(result).ValueOrDie().release();
     return 0;
   }
 
-  return private_set_intersection::c_bindings_internal::generate_error(result.status(),
-                                                                       error_out);
+  return private_set_intersection::c_bindings_internal::generate_error(
+      result.status(), error_out);
 }
 
 int psi_server_create_from_key(psi_server_buffer_t key_bytes,
-                               psi_server_ctx *ctx,
-                               char **error_out) {
+                               psi_server_ctx *ctx, char **error_out) {
   auto result =
       Server::CreateFromKey(std::string(key_bytes.buff, key_bytes.buff_len));
   if (result.ok()) {
     *ctx = std::move(result).ValueOrDie().release();
     return 0;
   }
-  return private_set_intersection::c_bindings_internal::generate_error(result.status(),
-                                                                       error_out);
+  return private_set_intersection::c_bindings_internal::generate_error(
+      result.status(), error_out);
 }
 
 void psi_server_delete(psi_server_ctx *ctx) {
@@ -39,10 +37,11 @@ void psi_server_delete(psi_server_ctx *ctx) {
   *ctx = nullptr;
 }
 
-int psi_server_create_setup_message(
-        psi_server_ctx ctx, double fpr, int64_t num_client_inputs,
-        psi_server_buffer_t *input, size_t input_len, char **output, size_t *output_len,
-        char **error_out) {
+int psi_server_create_setup_message(psi_server_ctx ctx, double fpr,
+                                    int64_t num_client_inputs,
+                                    psi_server_buffer_t *input,
+                                    size_t input_len, char **output,
+                                    size_t *output_len, char **error_out) {
   auto server = static_cast<Server *>(ctx);
   if (server == nullptr) {
     return private_set_intersection::c_bindings_internal::generate_error(
@@ -58,8 +57,8 @@ int psi_server_create_setup_message(
 
   auto result = server->CreateSetupMessage(fpr, num_client_inputs, in);
   if (!result.ok()) {
-    return private_set_intersection::c_bindings_internal::generate_error(result.status(),
-                                                                         error_out);
+    return private_set_intersection::c_bindings_internal::generate_error(
+        result.status(), error_out);
   }
 
   auto value = result.ValueOrDie();
@@ -86,8 +85,8 @@ int psi_server_process_request(psi_server_ctx ctx,
   auto result = server->ProcessRequest(
       std::string(client_request.buff, client_request.buff_len));
   if (!result.ok()) {
-    return private_set_intersection::c_bindings_internal::generate_error(result.status(),
-                                                                         error_out);
+    return private_set_intersection::c_bindings_internal::generate_error(
+        result.status(), error_out);
   }
 
   auto value = result.ValueOrDie();
@@ -99,10 +98,8 @@ int psi_server_process_request(psi_server_ctx ctx,
   return 0;
 }
 
-int psi_server_get_private_key_bytes(psi_server_ctx ctx,
-                                     char **output,
-                                     size_t *output_len,
-                                     char **error_out) {
+int psi_server_get_private_key_bytes(psi_server_ctx ctx, char **output,
+                                     size_t *output_len, char **error_out) {
   auto server = static_cast<Server *>(ctx);
   if (server == nullptr) {
     return private_set_intersection::c_bindings_internal::generate_error(
@@ -121,8 +118,7 @@ int psi_server_get_private_key_bytes(psi_server_ctx ctx,
   return 0;
 }
 
-void psi_server_delete_buffer(psi_server_ctx ctx,
-                              char **input) {
+void psi_server_delete_buffer(psi_server_ctx ctx, char **input) {
   delete[] * input;
   *input = nullptr;
 }
