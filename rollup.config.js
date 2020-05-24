@@ -30,9 +30,9 @@ const outputs = targets.reduce(
             alias({
               entries: [
                 {
-                  find: /^private_set_intersection(.*)$/,
+                  find: /^psi_(.*)$/,
                   replacement:
-                    './private_set_intersection/javascript/bin/private_set_intersection$1.js'
+                    './private_set_intersection/javascript/bin/psi_$1.js'
                 }
               ]
             })
