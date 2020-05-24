@@ -1,9 +1,14 @@
 import PSICardinality from '../index_combined_wasm'
 import { ERROR_INSTANCE_DELETED } from '../implementation/constants'
+import { PSICardinalityLibrary } from 'src/implementation/psi_cardinality'
+
+let PSI: PSICardinalityLibrary
+beforeAll(async () => {
+  PSI = await PSICardinality()
+})
 
 describe('PSI Client', () => {
   test('It should throw if deleted twice', async () => {
-    const PSI = await PSICardinality()
     const client = PSI.client!.create()
 
     client.delete()
@@ -12,7 +17,6 @@ describe('PSI Client', () => {
   })
 
   test('It should create a request', async () => {
-    const PSI = await PSICardinality()
     const client = PSI.client!.create()
     const numClientElements = 100
     const clientInputs = Array.from(
@@ -27,7 +31,6 @@ describe('PSI Client', () => {
   })
 
   test('It should throw if attempting to create a request after deletion', async () => {
-    const PSI = await PSICardinality()
     const client = PSI.client!.create()
     const numClientElements = 100
     const clientInputs = Array.from(
@@ -43,7 +46,6 @@ describe('PSI Client', () => {
   })
 
   test('It should process a response', async () => {
-    const PSI = await PSICardinality()
     const client = PSI.client!.create()
     const serverSetup =
       '{"num_hash_functions":14,"bits":"1PnolAVduzqn+tXnoeyZ0ztdnwvAidt0U7gc2rWCtP5i6BDtSUydixXwGHP2mVAZ8PCNqGuTWUQO5VB0OEHTH8Cr1JhLxBDHRM4fAPEUvjjkBPNpsPRRtqzN2fW8y7rcANEwaRyInPsw1t4KYB0Q5vdy38VlPB1/Bz/adfGoGnXQ4fPNI/PN5s+zLcPev9odjAWyUQms8bvPHHsL2uyS7Uu5LRtOfdfYX5zWilxzNXECrabnnUnMqD5NH8c7oreTCWxwRQfYMxhf5K/EZTiTHphCi9O5Ey4ahwvNvykbvXdHQ7CDnLTKmomN6su5BrUt"}'
@@ -56,7 +58,6 @@ describe('PSI Client', () => {
   })
 
   test('It should throw if attempting to process a response after deletion', async () => {
-    const PSI = await PSICardinality()
     const client = PSI.client!.create()
     const serverSetup =
       '{"num_hash_functions":14,"bits":"1PnolAVduzqn+tXnoeyZ0ztdnwvAidt0U7gc2rWCtP5i6BDtSUydixXwGHP2mVAZ8PCNqGuTWUQO5VB0OEHTH8Cr1JhLxBDHRM4fAPEUvjjkBPNpsPRRtqzN2fW8y7rcANEwaRyInPsw1t4KYB0Q5vdy38VlPB1/Bz/adfGoGnXQ4fPNI/PN5s+zLcPev9odjAWyUQms8bvPHHsL2uyS7Uu5LRtOfdfYX5zWilxzNXECrabnnUnMqD5NH8c7oreTCWxwRQfYMxhf5K/EZTiTHphCi9O5Ey4ahwvNvykbvXdHQ7CDnLTKmomN6su5BrUt"}'
@@ -71,7 +72,6 @@ describe('PSI Client', () => {
   })
 
   test('It should fail to process a response', async () => {
-    const PSI = await PSICardinality()
     const client = PSI.client!.create()
     const serverSetup = 'invalid'
     const serverResponse = 'invalid'
