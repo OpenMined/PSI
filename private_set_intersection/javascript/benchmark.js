@@ -1,6 +1,6 @@
 /* eslint-env node */
-import benchmarkWasmLibrary from './bin/psi_cardinality_benchmark_wasm.js'
-import benchmarkJsLibrary from './bin/psi_cardinality_benchmark_js.js'
+import benchmarkWasmLibrary from './bin/psi_benchmark_wasm.js'
+import benchmarkJsLibrary from './bin/psi_benchmark_js.js'
 
 import { createLoader } from './tsc-out/loader'
 
