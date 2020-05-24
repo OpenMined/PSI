@@ -1,5 +1,5 @@
 import PSICardinality from '../index_combined_wasm'
-import { PSICardinalityLibrary } from 'src/implementation/psi_cardinality'
+import { PSICardinalityLibrary } from 'src/implementation/psi'
 
 let PSI: PSICardinalityLibrary
 beforeAll(async () => {

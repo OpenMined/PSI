@@ -4,7 +4,7 @@ import { NestedLibrary, createLoader } from './loader'
 import {
   PSICardinalityLibrary,
   PSICardinalityConstructor
-} from './implementation/psi_cardinality'
+} from './implementation/psi'
 import { PackageWrapperConstructor } from './implementation/package'
 import { ServerWrapperConstructor } from './implementation/server'
 

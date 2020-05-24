@@ -1,6 +1,6 @@
 import PSICardinality from '../index_combined_wasm'
 import { ERROR_INSTANCE_DELETED } from '../implementation/constants'
-import { PSICardinalityLibrary } from 'src/implementation/psi_cardinality'
+import { PSICardinalityLibrary } from 'src/implementation/psi'
 
 let PSI: PSICardinalityLibrary
 beforeAll(async () => {

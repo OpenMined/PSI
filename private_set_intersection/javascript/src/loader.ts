@@ -1,4 +1,4 @@
-import * as psiCardinality from 'psi_cardinality'
+import * as psiCardinality from 'psi_'
 
 export type NestedLibrary = { readonly library: psiCardinality.Library }
 export type Loader = NestedLibrary

@@ -1,4 +1,4 @@
-import * as psiCardinality from 'psi_cardinality'
+import * as psiCardinality from 'psi_'
 import { Loader } from '../loader'
 
 export type Package = {
