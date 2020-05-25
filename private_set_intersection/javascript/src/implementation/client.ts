@@ -1,4 +1,4 @@
-import * as psiCardinality from 'psi_'
+import * as psi from 'psi_'
 import { Loader } from '../loader'
 import { ERROR_INSTANCE_DELETED } from './constants'
 
@@ -22,8 +22,8 @@ type ClientWrapperOptions = {
 /**
  * @implements Client
  */
-const ClientConstructor = (instance: psiCardinality.Client): Client => {
-  let _instance: psiCardinality.Client | null = instance
+const ClientConstructor = (instance: psi.Client): Client => {
+  let _instance: psi.Client | null = instance
 
   /**
    * @interface Client
@@ -96,11 +96,11 @@ const ClientConstructor = (instance: psiCardinality.Client): Client => {
 export const ClientWrapperConstructor = ({
   loader
 }: ClientWrapperOptions): ClientWrapper => {
-  const library: psiCardinality.Library = loader.library
+  const library: psi.Library = loader.library
 
   return {
     /**
-     * Create a new PSI Cardinality client
+     * Create a new PSI client
      *
      * @function
      * @name Client.create

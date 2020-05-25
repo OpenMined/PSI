@@ -1,4 +1,4 @@
-import * as psiCardinality from 'psi_'
+import * as psi from 'psi_'
 import { Loader } from '../loader'
 
 export type Package = {
@@ -14,8 +14,8 @@ type PackageWrapperOptions = {
 /**
  * @implements Package
  */
-const PackageConstructor = (library: psiCardinality.Library): Package => {
-  const Package: psiCardinality.Package = library.Package
+const PackageConstructor = (library: psi.Library): Package => {
+  const Package: psi.Package = library.Package
 
   /**
    * @interface Package
@@ -36,6 +36,6 @@ const PackageConstructor = (library: psiCardinality.Library): Package => {
 export const PackageWrapperConstructor = ({
   loader
 }: PackageWrapperOptions): PackageWrapper => {
-  const library: psiCardinality.Library = loader.library
+  const library: psi.Library = loader.library
   return PackageConstructor(library)
 }

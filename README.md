@@ -53,25 +53,25 @@ To use this library in another Bazel project, add the following in your WORKSPAC
 load("@bazel_tools//tools/build_defs/repo:git.bzl", "git_repository")
 
 git_repository(
-   name = "org_openmined_psi_cardinality",
+   name = "org_openmined_psi",
    remote = "https://github.com/OpenMined/PSI",
    branch = "master",
    init_submodules = True,
 )
 
-load("@org_openmined_psi_cardinality//private_set_intersection:preload.bzl", "psi_cardinality_preload")
+load("@org_openmined_psi//private_set_intersection:preload.bzl", "psi_preload")
 
-psi_cardinality_preload()
+psi_preload()
 
-load("@org_openmined_psi_cardinality//private_set_intersection:deps.bzl", "psi_cardinality_deps")
+load("@org_openmined_psi//private_set_intersection:deps.bzl", "psi_deps")
 
-psi_cardinality_deps()
+psi_deps()
 
 ```
 
-A full description of the protocol can be found in the documentation of the [PsiClient](private_set_intersection/cpp/psi_cardinality_client.h) class.
-The corresponding server class is [PsiServer](private_set_intersection/cpp/psi_cardinality_server.h).
-An example of how to interleave the different phases of the protocol can be found in [psi_cardinality_server_test.cpp](private_set_intersection/cpp/psi_cardinality_server_test.cpp).
+A full description of the protocol can be found in the documentation of the [PsiClient](private_set_intersection/cpp/psi_client.h) class.
+The corresponding server class is [PsiServer](private_set_intersection/cpp/psi_server.h).
+An example of how to interleave the different phases of the protocol can be found in [psi_server_test.cpp](private_set_intersection/cpp/psi_server_test.cpp).
 
 
 ## Contributing

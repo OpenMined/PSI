@@ -1,4 +1,4 @@
-workspace(name = "org_openmined_psi_cardinality")
+workspace(name = "org_openmined_psi")
 
 load("//private_set_intersection:preload.bzl", "private_set_intersection_preload")
 

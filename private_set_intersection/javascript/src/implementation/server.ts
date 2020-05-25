@@ -1,4 +1,4 @@
-import * as psiCardinality from 'psi_'
+import * as psi from 'psi_'
 import { Loader } from '../loader'
 import { ERROR_INSTANCE_DELETED } from './constants'
 
@@ -25,8 +25,8 @@ type ServerWrapperOptions = {
 /**
  * @implements Server
  */
-const ServerConstructor = (instance: psiCardinality.Server): Server => {
-  let _instance: psiCardinality.Server | null = instance
+const ServerConstructor = (instance: psi.Server): Server => {
+  let _instance: psi.Server | null = instance
 
   /**
    * @interface Server
@@ -138,7 +138,7 @@ const ServerConstructor = (instance: psiCardinality.Server): Server => {
 export const ServerWrapperConstructor = ({
   loader
 }: ServerWrapperOptions): ServerWrapper => {
-  const library: psiCardinality.Library = loader.library
+  const library: psi.Library = loader.library
 
   return {
     /**

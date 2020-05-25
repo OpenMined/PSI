@@ -43,7 +43,7 @@ class PsiServerTest : public ::testing::Test {
 
 TEST_F(PsiServerTest, TestCorrectness) {
   // We use an actual client instance here, since we already test the client
-  // on its own in psi_cardinality_client_test.cpp.
+  // on its own in psi_client_test.cpp.
   psi_client_ctx client_;
   char *err;
   psi_client_create(&client_, &err);

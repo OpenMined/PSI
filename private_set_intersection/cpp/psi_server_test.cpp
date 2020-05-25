@@ -36,7 +36,7 @@ class PsiServerTest : public ::testing::Test {
 
 TEST_F(PsiServerTest, TestCorrectness) {
   // We use an actual client instance here, since we already test the client
-  // on its own in psi_cardinality_client_test.cpp.
+  // on its own in psi_client_test.cpp.
   PSI_ASSERT_OK_AND_ASSIGN(auto client, PsiClient::Create());
   int num_client_elements = 1000, num_server_elements = 10000;
   double fpr = 0.01;

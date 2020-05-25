@@ -1,6 +1,6 @@
-import * as psiCardinality from 'psi_'
+import * as psi from 'psi_'
 
-export type NestedLibrary = { readonly library: psiCardinality.Library }
+export type NestedLibrary = { readonly library: psi.Library }
 export type Loader = NestedLibrary
 
 /**
@@ -8,7 +8,7 @@ export type Loader = NestedLibrary
  * @param {Object} bin Emscripten library to initialize
  */
 export const createLoader = async (
-  bin: () => Promise<psiCardinality.Library>
+  bin: () => Promise<psi.Library>
 ): Promise<NestedLibrary> => ({
   library: await bin()
 })
