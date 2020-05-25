@@ -16,7 +16,7 @@
 
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 
-def private_set_intersection_preload():
+def psi_preload():
     if "rules_proto" not in native.existing_rules():
         http_archive(
             name = "rules_proto",

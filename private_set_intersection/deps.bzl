@@ -25,7 +25,7 @@ load("@rules_python//python:repositories.bzl", "py_repositories")
 load("@rules_python_external//:repositories.bzl", "rules_python_external_dependencies")
 load("@rules_python_external//:defs.bzl", "pip_install")
 
-def private_set_intersection_deps():
+def psi_deps():
     # General dependencies.
     if "com_tencent_rapidjson" not in native.existing_rules():
         http_archive(
