@@ -14,8 +14,8 @@
 // limitations under the License.
 //
 
-#ifndef PSI_CARDINALITY_CPP_BLOOM_FILTER_H_
-#define PSI_CARDINALITY_CPP_BLOOM_FILTER_H_
+#ifndef PRIVATE_SET_INTERSECTION_CPP_BLOOM_FILTER_H_
+#define PRIVATE_SET_INTERSECTION_CPP_BLOOM_FILTER_H_
 
 #include <vector>
 
@@ -105,4 +105,4 @@ class BloomFilter {
 
 }  // namespace private_set_intersection
 
-#endif  // PSI_CARDINALITY_BLOOM_FILTER_H_
+#endif  // PRIVATE_SET_INTERSECTION_CPP_BLOOM_FILTER_H_

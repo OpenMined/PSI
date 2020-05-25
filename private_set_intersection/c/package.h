@@ -14,8 +14,8 @@
 // limitations under the License.
 //
 
-#ifndef PSI_CARDINALITY_C_PACKAGE_H_
-#define PSI_CARDINALITY_C_PACKAGE_H_
+#ifndef PRIVATE_SET_INTERSECTION_C_PACKAGE_H_
+#define PRIVATE_SET_INTERSECTION_C_PACKAGE_H_
 
 #ifdef __cplusplus
 extern "C" {
@@ -27,4 +27,4 @@ const char* psi_version();
 }
 #endif
 
-#endif  // PSI_CARDINALITY_PACKAGE_H_
+#endif  // PRIVATE_SET_INTERSECTION_C_PACKAGE_H_
