@@ -55,10 +55,13 @@ using ::private_join_and_compute::StatusOr;
 //
 // The client encrypts all their elements x using the commutative encryption
 // scheme, computing H(x)^c, where c is the client's secret key. The encoded
-// elements are sent to the server as a JSON array of Base64 strings in sorted
-// order:
+// elements are sent to the server as a JSON array of Base64 strings, together with a boolean reveal_intersection that indicates whether the client wants to learn the elements in the intersection or only its size.
 //
-//   sort([ Base64(H(x_1)^c), Base64(H(x_2)^c), ... ])
+//
+//   {
+//     "reveal_intersection": <bool>,
+//     "encrypted_elements": [ Base64(H(x_1)^c), Base64(H(x_2)^c), ... ]
+//   }
 //
 //
 // 3. Server response
@@ -66,10 +69,14 @@ using ::private_join_and_compute::StatusOr;
 // For each encrypted element H(x)^c received from the client, the server
 // encrypts it again under the commutative encryption scheme with its secret
 // key s, computing (H(x)^c)^s = H(x)^(cs). The result is sent back to the
-// client as a JSON array of strings in sorted order:
+// client as a JSON array of strings:
 //
-//   sort([ Base64(H(x_1)^(cs)), Base64(H(x_2)^(cs)), ... ])
+//   {
+//     "encrypted_elements": [ Base64(H(x_1)^c), Base64(H(x_2)^c), ... ]
+//   }
 //
+// If reveal_intersection is false, the array is sorted to hide the order of
+// entries from the client.
 //
 // 4. Client computes intersection
 //
@@ -82,9 +89,13 @@ class PsiClient {
   PsiClient() = delete;
 
   // Creates and returns a new client instance.
+  // If `reveal_intersection` is true, the client learns the elements in the
+  // intersection of the two datasets. Otherwise, only the intersection size is
+  // learned.
   //
   // Returns INTERNAL if any OpenSSL crypto operations fail.
-  static StatusOr<std::unique_ptr<PsiClient>> Create();
+  static StatusOr<std::unique_ptr<PsiClient>> Create(
+      bool reveal_intersection);
 
   // Creates a request message to be sent to the server. For each input
   // element x, computes H(x)^c, where c is the secret key of ec_cipher_. The
@@ -95,23 +106,45 @@ class PsiClient {
   StatusOr<std::string> CreateRequest(
       absl::Span<const std::string> inputs) const;
 
-  // Processes the server's response and returns the PSI cardinality. The
-  // first argument, `server_setup`, is a bloom filter that encodes encrypted
-  // server elements and is sent by the server in a setup phase. The second
-  // argument, `server_response`, is the response received from the server
-  // after sending the result of `CreateRequest`.
+  // Processes the server's response and returns the intersection of the client
+  // and server inputs. Use this function if this instance was created with
+  // `reveal_intersectino = true`. The first argument, `server_setup`, is a
+  // bloom filter that encodes encrypted server elements and is sent by the
+  // server in a setup phase. The second argument, `server_response`, is the
+  // response received from the server after sending the result of
+  // `CreateRequest`.
   //
   // Returns INVALID_ARGUMENT if any input messages are malformed, or INTERNAL
   // if decryption fails.
-  StatusOr<int64_t> ProcessResponse(const std::string& server_setup,
-                                    const std::string& server_response) const;
+  StatusOr<std::vector<int64_t>> GetIntersection(
+      const std::string& server_setup,
+      const std::string& server_response) const;
+
+  // As `GetIntersection`, but only reveals the size of the intersection. Use
+  // this function if this instance was created with `reveal_intersection =
+  // false`.
+  //
+  // Returns INVALID_ARGUMENT if any input messages are malformed, or INTERNAL
+  // if decryption fails.
+  StatusOr<int64_t> GetIntersectionSize(
+      const std::string& server_setup,
+      const std::string& server_response) const;
 
  private:
   explicit PsiClient(
       std::unique_ptr<::private_join_and_compute::ECCommutativeCipher>
-          ec_cipher);
+          ec_cipher,
+      bool reveal_intersection);
+
+  // Processes the `server_response` and returns the indices that are present in
+  // the bloom filter encoded by `server_setup`. This method is called by
+  // GetIntersection and GetIntersectionSize internally.
+  StatusOr<std::vector<int64_t>> ProcessResponse(
+      const std::string& server_setup,
+      const std::string& server_response) const;
 
   std::unique_ptr<::private_join_and_compute::ECCommutativeCipher> ec_cipher_;
+  bool reveal_intersection_;
 };
 
 }  // namespace private_set_intersection

@@ -33,28 +33,28 @@
 namespace private_set_intersection {
 
 PsiServer::PsiServer(
-    std::unique_ptr<::private_join_and_compute::ECCommutativeCipher> ec_cipher)
-    : ec_cipher_(std::move(ec_cipher)) {}
+    std::unique_ptr<::private_join_and_compute::ECCommutativeCipher> ec_cipher, bool reveal_intersection)
+    : ec_cipher_(std::move(ec_cipher)), reveal_intersection_(reveal_intersection) {}
 
-StatusOr<std::unique_ptr<PsiServer>> PsiServer::CreateWithNewKey() {
+StatusOr<std::unique_ptr<PsiServer>> PsiServer::CreateWithNewKey(bool reveal_intersection) {
   // Create an EC cipher with curve P-256. This gives 128 bits of security.
   ASSIGN_OR_RETURN(
       auto ec_cipher,
       ::private_join_and_compute::ECCommutativeCipher::CreateWithNewKey(
           NID_X9_62_prime256v1,
           ::private_join_and_compute::ECCommutativeCipher::HashType::SHA256));
-  return absl::WrapUnique(new PsiServer(std::move(ec_cipher)));
+  return absl::WrapUnique(new PsiServer(std::move(ec_cipher), reveal_intersection));
 }
 
 StatusOr<std::unique_ptr<PsiServer>> PsiServer::CreateFromKey(
-    const std::string& key_bytes) {
+    const std::string& key_bytes, bool reveal_intersection) {
   // Create an EC cipher with curve P-256. This gives 128 bits of security.
   ASSIGN_OR_RETURN(
       auto ec_cipher,
       ::private_join_and_compute::ECCommutativeCipher::CreateFromKey(
           NID_X9_62_prime256v1, key_bytes,
           ::private_join_and_compute::ECCommutativeCipher::HashType::SHA256));
-  return absl::WrapUnique(new PsiServer(std::move(ec_cipher)));
+  return absl::WrapUnique(new PsiServer(std::move(ec_cipher), reveal_intersection));
 }
 
 StatusOr<std::string> PsiServer::CreateSetupMessage(
@@ -88,21 +88,31 @@ StatusOr<std::string> PsiServer::ProcessRequest(
                      rapidjson::GetParseError_En(request.GetParseError()), "(",
                      request.GetErrorOffset(), ")"));
   }
-  if (!request.IsArray()) {
+  if (!request.IsObject()) {
     return ::private_join_and_compute::InvalidArgumentError(
-        "`client_request` must be a JSON array");
+        "`client_request` must be a JSON object");
+  }
+  bool client_wants_intersection = (request.HasMember("reveal_intersection") && request["reveal_intersection"].GetBool() == true);
+  if (client_wants_intersection != reveal_intersection_) {
+    return ::private_join_and_compute::InvalidArgumentError(
+        absl::StrCat("Client expects `reveal_intersection` = ", client_wants_intersection, ", but it's actually ", reveal_intersection_, "."));
+  }
+  if (!request.HasMember("encrypted_elements")) {
+    return ::private_join_and_compute::InvalidArgumentError(
+        "`client_request` must contain member `encrytped_elements`");
   }
 
-  // Re-encrypt elements and sort the resulting ciphertexts.
-  int64_t num_client_elements = static_cast<int64_t>(request.GetArray().Size());
+  // Re-encrypt elements.
+  const auto encrypted_elements = request.GetArray();
+  int64_t num_client_elements = static_cast<int64_t>(encrypted_elements.Size());
   std::vector<std::string> reencrypted_elements(num_client_elements);
   for (int i = 0; i < num_client_elements; i++) {
-    if (!request[i].IsString()) {
+    if (!encrypted_elements[i].IsString()) {
       return ::private_join_and_compute::InvalidArgumentError(
           "`client_request` elements must be strings");
     }
-    std::string base64_encrypted_element(request[i].GetString(),
-                                         request[i].GetStringLength());
+    std::string base64_encrypted_element(encrypted_elements[i].GetString(),
+                                         encrypted_elements[i].GetStringLength());
     std::string encrypted_element;
     if (!absl::Base64Unescape(base64_encrypted_element, &encrypted_element)) {
       return ::private_join_and_compute::InvalidArgumentError(
@@ -111,18 +121,25 @@ StatusOr<std::string> PsiServer::ProcessRequest(
     ASSIGN_OR_RETURN(reencrypted_elements[i],
                      ec_cipher_->ReEncrypt(encrypted_element));
   }
-  std::sort(reencrypted_elements.begin(), reencrypted_elements.end());
+
+  // sort the resulting ciphertexts if we want to hide the intersection from the client.
+  if (!reveal_intersection_) {
+    std::sort(reencrypted_elements.begin(), reencrypted_elements.end());
+  }
 
   // Encode re-encrypted elements as JSON.
   rapidjson::Document response;
-  response.SetArray();
+  response.SetObject();
+  rapidjson::Value response_elements;
+  response_elements.SetArray();
   for (int i = 0; i < num_client_elements; i++) {
     std::string base64_element = absl::Base64Escape(reencrypted_elements[i]);
-    response.PushBack(rapidjson::Value().SetString(base64_element.data(),
+    response_elements.PushBack(rapidjson::Value().SetString(base64_element.data(),
                                                    base64_element.size(),
                                                    response.GetAllocator()),
                       response.GetAllocator());
   }
+  response.AddMember("encrypted_elements", response_elements.Move(), response.GetAllocator());
   rapidjson::StringBuffer buffer;
   rapidjson::Writer<rapidjson::StringBuffer> writer(buffer);
   response.Accept(writer);

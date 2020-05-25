@@ -31,12 +31,12 @@ namespace {
 
 class PsiClientTest : public ::testing::Test {
  protected:
-  void SetUp() { PSI_ASSERT_OK_AND_ASSIGN(client_, PsiClient::Create()); }
+  void SetUp() { PSI_ASSERT_OK_AND_ASSIGN(client_, PsiClient::Create(false)); }
 
   std::unique_ptr<PsiClient> client_;
 };
 
-TEST_F(PsiClientTest, TestCorrectness) {
+TEST_F(PsiClientTest, TestCorrectnessIntersectionSize) {
   int num_client_elements = 1000, num_server_elements = 10000;
   double fpr = 0.01;
   std::vector<std::string> client_elements(num_client_elements);
@@ -75,24 +75,29 @@ TEST_F(PsiClientTest, TestCorrectness) {
   rapidjson::Document request, response;
   request.Parse(client_request.data(), client_request.size());
   ASSERT_FALSE(request.HasParseError());
-  ASSERT_TRUE(request.IsArray());
-  response.SetArray();
-  std::vector<std::string> reencrypted_elements(num_client_elements);
+  ASSERT_TRUE(request.IsObject());
+  ASSERT_TRUE(request.HasMember("encrypted_elements"));
+  ASSERT_TRUE(request["encrypted_elements"].IsArray());
+  const auto request_elements = request["encrypted_elements"].GetArray();
+  response.SetObject();
+  rapidjson::Value response_elements;
+  response_elements.SetArray();
   for (int i = 0; i < num_client_elements; i++) {
-    ASSERT_TRUE(request[i].IsString());
-    std::string base64_element(request[i].GetString(),
-                               request[i].GetStringLength());
+    ASSERT_TRUE(request_elements[i].IsString());
+    std::string base64_element(request_elements[i].GetString(),
+                               request_elements[i].GetStringLength());
     std::string encrypted_element;
     ASSERT_TRUE(absl::Base64Unescape(base64_element, &encrypted_element));
-    PSI_ASSERT_OK_AND_ASSIGN(reencrypted_elements[i],
+    PSI_ASSERT_OK_AND_ASSIGN(std::string reencrypted_element,
                              server_ec_cipher->ReEncrypt(encrypted_element));
 
-    base64_element = absl::Base64Escape(reencrypted_elements[i]);
-    response.PushBack(rapidjson::Value().SetString(base64_element.data(),
+    base64_element = absl::Base64Escape(reencrypted_element);
+    response_elements.PushBack(rapidjson::Value().SetString(base64_element.data(),
                                                    base64_element.size(),
                                                    response.GetAllocator()),
                       response.GetAllocator());
   }
+  response.AddMember("encrypted_elements", response_elements.Move(), response.GetAllocator());
 
   // Encode re-encrypted messages as JSON.
   rapidjson::StringBuffer buffer;
@@ -103,7 +108,7 @@ TEST_F(PsiClientTest, TestCorrectness) {
   // Compute intersection size.
   PSI_ASSERT_OK_AND_ASSIGN(
       int64_t intersection_size,
-      client_->ProcessResponse(server_setup, server_response));
+      client_->GetIntersectionSize(server_setup, server_response));
 
   // Test if size is approximately as expected (up to 10%).
   EXPECT_GE(intersection_size, num_client_elements / 2);

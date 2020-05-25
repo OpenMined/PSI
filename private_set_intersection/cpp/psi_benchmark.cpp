@@ -7,7 +7,7 @@ namespace private_set_intersection {
 namespace {
 
 void BM_ServerSetup(benchmark::State& state, double fpr) {
-  auto server = PsiServer::CreateWithNewKey().ValueOrDie();
+  auto server = PsiServer::CreateWithNewKey(false).ValueOrDie();
   int num_inputs = state.range(0);
   int num_client_inputs = 10000;
   std::vector<std::string> inputs(num_inputs);
@@ -38,7 +38,7 @@ BENCHMARK_CAPTURE(BM_ServerSetup, fpr = 0.000001, 0.000001)
     ->Range(1, 1000000);
 
 void BM_ClientCreateRequest(benchmark::State& state) {
-  auto client = PsiClient::Create().ValueOrDie();
+  auto client = PsiClient::Create(false).ValueOrDie();
   int num_inputs = state.range(0);
   std::vector<std::string> inputs(num_inputs);
   for (int i = 0; i < num_inputs; i++) {
@@ -61,8 +61,8 @@ void BM_ClientCreateRequest(benchmark::State& state) {
 BENCHMARK(BM_ClientCreateRequest)->RangeMultiplier(10)->Range(1, 10000);
 
 void BM_ServerProcessRequest(benchmark::State& state) {
-  auto client = PsiClient::Create().ValueOrDie();
-  auto server = PsiServer::CreateWithNewKey().ValueOrDie();
+  auto client = PsiClient::Create(false).ValueOrDie();
+  auto server = PsiServer::CreateWithNewKey(false).ValueOrDie();
   int num_inputs = state.range(0);
   std::vector<std::string> inputs(num_inputs);
   for (int i = 0; i < num_inputs; i++) {
@@ -86,8 +86,8 @@ void BM_ServerProcessRequest(benchmark::State& state) {
 BENCHMARK(BM_ServerProcessRequest)->RangeMultiplier(10)->Range(1, 10000);
 
 void BM_ClientProcessResponse(benchmark::State& state) {
-  auto client = PsiClient::Create().ValueOrDie();
-  auto server = PsiServer::CreateWithNewKey().ValueOrDie();
+  auto client = PsiClient::Create(false).ValueOrDie();
+  auto server = PsiServer::CreateWithNewKey(false).ValueOrDie();
   int num_inputs = state.range(0);
   double fpr = 1. / (1000000);
   std::vector<std::string> inputs(num_inputs);
@@ -100,7 +100,7 @@ void BM_ClientProcessResponse(benchmark::State& state) {
   std::string response = server->ProcessRequest(request).ValueOrDie();
   int64_t elements_processed = 0;
   for (auto _ : state) {
-    int64_t count = client->ProcessResponse(setup, response).ValueOrDie();
+    int64_t count = client->GetIntersectionSize(setup, response).ValueOrDie();
     ::benchmark::DoNotOptimize(count);
     elements_processed += num_inputs;
   }

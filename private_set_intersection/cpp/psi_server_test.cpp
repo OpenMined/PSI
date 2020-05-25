@@ -28,7 +28,7 @@ namespace {
 class PsiServerTest : public ::testing::Test {
  protected:
   void SetUp() {
-    PSI_ASSERT_OK_AND_ASSIGN(server_, PsiServer::CreateWithNewKey());
+    PSI_ASSERT_OK_AND_ASSIGN(server_, PsiServer::CreateWithNewKey(false));
   }
 
   std::unique_ptr<PsiServer> server_;
@@ -37,7 +37,7 @@ class PsiServerTest : public ::testing::Test {
 TEST_F(PsiServerTest, TestCorrectness) {
   // We use an actual client instance here, since we already test the client
   // on its own in psi_client_test.cpp.
-  PSI_ASSERT_OK_AND_ASSIGN(auto client, PsiClient::Create());
+  PSI_ASSERT_OK_AND_ASSIGN(auto client, PsiClient::Create(false));
   int num_client_elements = 1000, num_server_elements = 10000;
   double fpr = 0.01;
   std::vector<std::string> client_elements(num_client_elements);
@@ -68,7 +68,7 @@ TEST_F(PsiServerTest, TestCorrectness) {
   // Compute intersection size.
   PSI_ASSERT_OK_AND_ASSIGN(
       int intersection_size,
-      client->ProcessResponse(server_setup, server_response));
+      client->GetIntersectionSize(server_setup, server_response));
 
   // Test if size is approximately as expected (up to 10%).
   EXPECT_GE(intersection_size, num_client_elements / 2);
@@ -83,7 +83,7 @@ TEST_F(PsiServerTest, TestCreatingFromKey) {
   EXPECT_EQ(key_bytes.length(), 32);
 
   // Create a new server instance from the original key
-  PSI_ASSERT_OK_AND_ASSIGN(auto server, PsiServer::CreateFromKey(key_bytes));
+  PSI_ASSERT_OK_AND_ASSIGN(auto server, PsiServer::CreateFromKey(key_bytes, false));
 
   int num_client_elements = 100, num_server_elements = 1000;
   double fpr = 0.01;
@@ -113,9 +113,9 @@ TEST_F(PsiServerTest, TestCreatingFromKey) {
   // Create a 31-byte key that should be equivalent to a 32-byte null-inserted
   // key
   const std::string key_bytes2("bcdefghijklmnopqrstuvwxyz123456", 31);
-  PSI_ASSERT_OK_AND_ASSIGN(auto server2, PsiServer::CreateFromKey(key_bytes2));
+  PSI_ASSERT_OK_AND_ASSIGN(auto server2, PsiServer::CreateFromKey(key_bytes2, false));
   const std::string key_bytes3("\0bcdefghijklmnopqrstuvwxyz123456", 32);
-  PSI_ASSERT_OK_AND_ASSIGN(auto server3, PsiServer::CreateFromKey(key_bytes3));
+  PSI_ASSERT_OK_AND_ASSIGN(auto server3, PsiServer::CreateFromKey(key_bytes3, false));
 
   // Run Server setup.
   PSI_ASSERT_OK_AND_ASSIGN(
