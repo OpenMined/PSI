@@ -67,12 +67,13 @@ StatusOr<std::string> PsiClient::CreateRequest(
   request_elements.SetArray();
   for (int64_t i = 0; i < input_size; i++) {
     std::string base64_element = absl::Base64Escape(encrypted_inputs[i]);
-    request_elements.PushBack(rapidjson::Value().SetString(base64_element.data(),
-                                                  base64_element.size(),
-                                                  request.GetAllocator()),
-                     request.GetAllocator());
+    request_elements.PushBack(rapidjson::Value().SetString(
+                                  base64_element.data(), base64_element.size(),
+                                  request.GetAllocator()),
+                              request.GetAllocator());
   }
-  request.AddMember("encrypted_elements", request_elements.Move(), request.GetAllocator());
+  request.AddMember("encrypted_elements", request_elements.Move(),
+                    request.GetAllocator());
 
   // Return encrytped inputs as JSON array.
   rapidjson::StringBuffer buffer;
@@ -84,7 +85,9 @@ StatusOr<std::string> PsiClient::CreateRequest(
 StatusOr<std::vector<int64_t>> PsiClient::GetIntersection(
     const std::string& server_setup, const std::string& server_response) const {
   if (!reveal_intersection_) {
-    return ::private_join_and_compute::InvalidArgumentError("GetIntersection called on PsiClient with reveal_intersection == false");
+    return ::private_join_and_compute::InvalidArgumentError(
+        "GetIntersection called on PsiClient with reveal_intersection == "
+        "false");
   }
   ASSIGN_OR_RETURN(std::vector<int64_t> intersection,
                    ProcessResponse(server_setup, server_response));

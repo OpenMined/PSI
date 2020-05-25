@@ -92,12 +92,13 @@ TEST_F(PsiClientTest, TestCorrectnessIntersectionSize) {
                              server_ec_cipher->ReEncrypt(encrypted_element));
 
     base64_element = absl::Base64Escape(reencrypted_element);
-    response_elements.PushBack(rapidjson::Value().SetString(base64_element.data(),
-                                                   base64_element.size(),
-                                                   response.GetAllocator()),
-                      response.GetAllocator());
+    response_elements.PushBack(rapidjson::Value().SetString(
+                                   base64_element.data(), base64_element.size(),
+                                   response.GetAllocator()),
+                               response.GetAllocator());
   }
-  response.AddMember("encrypted_elements", response_elements.Move(), response.GetAllocator());
+  response.AddMember("encrypted_elements", response_elements.Move(),
+                     response.GetAllocator());
 
   // Encode re-encrypted messages as JSON.
   rapidjson::StringBuffer buffer;

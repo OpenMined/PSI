@@ -55,7 +55,9 @@ using ::private_join_and_compute::StatusOr;
 //
 // The client encrypts all their elements x using the commutative encryption
 // scheme, computing H(x)^c, where c is the client's secret key. The encoded
-// elements are sent to the server as a JSON array of Base64 strings, together with a boolean reveal_intersection that indicates whether the client wants to learn the elements in the intersection or only its size.
+// elements are sent to the server as a JSON array of Base64 strings, together
+// with a boolean reveal_intersection that indicates whether the client wants to
+// learn the elements in the intersection or only its size.
 //
 //
 //   {
@@ -94,8 +96,7 @@ class PsiClient {
   // learned.
   //
   // Returns INTERNAL if any OpenSSL crypto operations fail.
-  static StatusOr<std::unique_ptr<PsiClient>> Create(
-      bool reveal_intersection);
+  static StatusOr<std::unique_ptr<PsiClient>> Create(bool reveal_intersection);
 
   // Creates a request message to be sent to the server. For each input
   // element x, computes H(x)^c, where c is the secret key of ec_cipher_. The
