@@ -2,7 +2,7 @@
 set -e
 
 # Lint files (all .cpp and .h files) inplace.
-find ./psi_cardinality/  \( -iname *.h -o -iname *.cpp \) | xargs clang-format -i -style='google'
+find ./private_set_intersection/  \( -iname *.h -o -iname *.cpp \) | xargs clang-format -i -style='google'
 if [ $? -ne 0 ]
 then
     exit 1

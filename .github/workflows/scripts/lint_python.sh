@@ -4,7 +4,7 @@ set -e
 flake8 --config=.flake8 .
 flake8 . --count --exit-zero --max-complexity=10 --max-line-length=100 --statistics
 
-black --check psi_cardinality/python
+black --check private_set_intersection/python
 
 # Print changes.
 git diff

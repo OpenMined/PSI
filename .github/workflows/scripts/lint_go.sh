@@ -1,7 +1,7 @@
 #!/bin/sh
 set -e
 
-files=`find ./psi_cardinality/go  -name *.go`
+files=`find ./private_set_intersection/go  -name *.go`
 
 for file in $files
 do
