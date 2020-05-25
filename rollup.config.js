@@ -20,7 +20,7 @@ const outputs = targets.reduce(
                 file: `private_set_intersection/javascript/dist/${target}/${variant}/${format}/index.js`,
                 sourcemap: true,
                 format,
-                name: 'PSICardinality',
+                name: 'PSI',
                 plugins: [terser()]
               }
             ],

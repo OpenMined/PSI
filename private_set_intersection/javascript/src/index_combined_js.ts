@@ -1,10 +1,7 @@
 import combinedJsLibrary from 'psi_combined_js'
 
 import { NestedLibrary, createLoader } from './loader'
-import {
-  PSICardinalityLibrary,
-  PSICardinalityConstructor
-} from './implementation/psi'
+import { PSILibrary, PSIConstructor } from './implementation/psi'
 import { PackageWrapperConstructor } from './implementation/package'
 import { ClientWrapperConstructor } from './implementation/client'
 import { ServerWrapperConstructor } from './implementation/server'
@@ -14,8 +11,8 @@ const Loader = (): Promise<NestedLibrary> => createLoader(combinedJsLibrary)
 /**
  * Main export for the library
  */
-export default async (): Promise<PSICardinalityLibrary> =>
-  PSICardinalityConstructor({
+export default async (): Promise<PSILibrary> =>
+  PSIConstructor({
     packageWrapper: PackageWrapperConstructor({
       loader: await Loader()
     }),

@@ -1,42 +1,42 @@
-import PSICardinality from '../index_combined_wasm'
+import PSI from '../index_combined_wasm'
 import { ERROR_INSTANCE_DELETED } from '../implementation/constants'
-import { PSICardinalityLibrary } from 'src/implementation/psi'
+import { PSILibrary } from 'src/implementation/psi'
 
-let PSI: PSICardinalityLibrary
+let psi: PSILibrary
 beforeAll(async () => {
-  PSI = await PSICardinality()
+  psi = await PSI()
 })
 
 describe('PSI Server', () => {
   test('It should create from an existing key', async () => {
-    const server1 = PSI.server!.createWithNewKey()
+    const server1 = psi.server!.createWithNewKey()
     const key = server1.getPrivateKeyBytes()
 
-    const server2 = PSI.server!.createFromKey(key)
+    const server2 = psi.server!.createFromKey(key)
 
     expect(server2.getPrivateKeyBytes()).toEqual(key)
   })
 
   test('It should fail to create from an invalid key', async () => {
     const key = Uint8Array.from({ length: 32 })
-    expect(() => PSI.server!.createFromKey(key)).toThrow()
+    expect(() => psi.server!.createFromKey(key)).toThrow()
   })
 
   test('It should throw if deleted twice', async () => {
-    const server = PSI.server!.createWithNewKey()
+    const server = psi.server!.createWithNewKey()
     server.delete()
     expect(server.delete).toThrowError(ERROR_INSTANCE_DELETED)
   })
 
   test('It should return the private key as a binary array', async () => {
-    const server = PSI.server!.createWithNewKey()
+    const server = psi.server!.createWithNewKey()
     const keyLength = 32
     const key = server.getPrivateKeyBytes()
     expect(key.length).toBe(keyLength)
   })
 
   test('It should create a setup message', async () => {
-    const server = PSI.server!.createWithNewKey()
+    const server = psi.server!.createWithNewKey()
     const fpr = 0.001
     const numClientElements = 10
     const serverInputs = Array.from({ length: 100 }, (_, i) => `Element ${i}`)
@@ -53,7 +53,7 @@ describe('PSI Server', () => {
   })
 
   test('It should throw if attempting to create a setup message after deletion', async () => {
-    const server = PSI.server!.createWithNewKey()
+    const server = psi.server!.createWithNewKey()
     const fpr = 0.001
     const numClientElements = 10
     const serverInputs = Array.from({ length: 100 }, (_, i) => `Element ${i}`)
@@ -71,7 +71,7 @@ describe('PSI Server', () => {
   })
 
   test('It should fail to create a setup message', async () => {
-    const server = PSI.server!.createWithNewKey()
+    const server = psi.server!.createWithNewKey()
     const fpr = 0.001
     const numClientElements = -10
     const serverInputs = Array.from({ length: 100 }, (_, i) => `Element ${i}`)
@@ -87,7 +87,7 @@ describe('PSI Server', () => {
   })
 
   test('It should create a response to a client request', async () => {
-    const server = PSI.server!.createWithNewKey()
+    const server = psi.server!.createWithNewKey()
     const clientRequest = '["AiHdmxkmF/iOM0fFhny9917QYGcb9jq0GM9mP4L74ecM"]'
 
     const response = server.processRequest(clientRequest)
@@ -96,7 +96,7 @@ describe('PSI Server', () => {
   })
 
   test('It should throw if attempting to create a response to a client request after deletion', async () => {
-    const server = PSI.server!.createWithNewKey()
+    const server = psi.server!.createWithNewKey()
     const clientRequest = '["AiHdmxkmF/iOM0fFhny9917QYGcb9jq0GM9mP4L74ecM"]'
 
     server.delete()
@@ -107,7 +107,7 @@ describe('PSI Server', () => {
   })
 
   test('It should fail to create a response from an invalid client request', async () => {
-    const server = PSI.server!.createWithNewKey()
+    const server = psi.server!.createWithNewKey()
     const clientRequest = 'invalid request'
 
     expect(server.processRequest.bind(server, clientRequest)).toThrow()

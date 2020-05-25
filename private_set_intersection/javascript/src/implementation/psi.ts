@@ -2,28 +2,28 @@ import { PackageWrapper } from './package'
 import { ClientWrapper } from './client'
 import { ServerWrapper } from './server'
 
-export type PSICardinalityLibrary = {
+export type PSILibrary = {
   readonly package: PackageWrapper
   readonly server?: ServerWrapper
   readonly client?: ClientWrapper
 }
 
-type PSICardinalityConstructorOptions = {
+type PSIConstructorOptions = {
   readonly packageWrapper: PackageWrapper
   readonly serverWrapper?: ServerWrapper
   readonly clientWrapper?: ClientWrapper
 }
 
 /**
- * @implements PSICardinality
+ * @implements PSI
  */
-export const PSICardinalityConstructor = ({
+export const PSIConstructor = ({
   packageWrapper,
   serverWrapper,
   clientWrapper
-}: PSICardinalityConstructorOptions): PSICardinalityLibrary => {
+}: PSIConstructorOptions): PSILibrary => {
   /**
-   * @interface PSICardinality
+   * @interface PSI
    */
   return {
     /**
@@ -43,11 +43,11 @@ export const PSICardinalityConstructor = ({
     /**
      * @description
      * The server side of a Private Set Intersection Cardinality protocol.
-     * See the documentation in PSICardinality.Client for a full description of the
+     * See the documentation in PSI.Client for a full description of the
      * protocol.
      *
      * @readonly
-     * @name PSICardinality.server
+     * @name PSI.server
      * @type {Object}
      * @returns {Server}
      * @example
@@ -69,7 +69,7 @@ export const PSICardinalityConstructor = ({
      * The false positive rate can be tuned by the server.
      *
      * @readonly
-     * @name PSICardinality.client
+     * @name PSI.client
      * @type {Object}
      * @returns {Client}
      * @example
