@@ -14,8 +14,8 @@
 // limitations under the License.
 //
 
-#ifndef PSI_CARDINALITY_C_PSI_CARDINALITY_SERVER_H_
-#define PSI_CARDINALITY_C_PSI_CARDINALITY_SERVER_H_
+#ifndef PRIVATE_SET_INTERSECTION_C_PSI_SERVER_H_
+#define PRIVATE_SET_INTERSECTION_C_PSI_SERVER_H_
 
 #include <stddef.h>
 #include <stdint.h>
@@ -54,4 +54,4 @@ int psi_server_get_private_key_bytes(psi_server_ctx ctx, char **output,
 }
 #endif
 
-#endif  // PSI_CARDINALITY_PSI_CARDINALITY_SERVER_H_
+#endif  // PRIVATE_SET_INTERSECTION_C_PSI_SERVER_H_

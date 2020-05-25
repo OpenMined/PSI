@@ -56,6 +56,7 @@ cc_library(
     name = "bloom_filter",
     srcs = ["bloom_filter.cpp"],
     hdrs = ["bloom_filter.h"],
+    visibility = ["//visibility:private"],
     deps = [
         "@com_google_absl//absl/memory",
         "@com_google_absl//absl/strings",

@@ -14,8 +14,8 @@
 // limitations under the License.
 //
 
-#ifndef PSI_CARDINALITY_CPP_PSI_CARDINALITY_CLIENT_H_
-#define PSI_CARDINALITY_CPP_PSI_CARDINALITY_CLIENT_H_
+#ifndef PRIVATE_SET_INTERSECTION_CPP_PSI_CLIENT_H_
+#define PRIVATE_SET_INTERSECTION_CPP_PSI_CLIENT_H_
 
 #include "absl/types/span.h"
 #include "crypto/ec_commutative_cipher.h"
@@ -116,4 +116,4 @@ class PsiClient {
 
 }  // namespace private_set_intersection
 
-#endif  // PSI_CARDINALITY_PSI_CARDINALITY_CLIENT_H_
+#endif  // PRIVATE_SET_INTERSECTION_CPP_PSI_CLIENT_H_
