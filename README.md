@@ -81,7 +81,7 @@ Please make sure to update tests as appropriate.
 
 ## Contributors
 
-Please make sure to fill this section in with **all former and current** contributors to the project. [Documentation on how to do this is located here.](https://github.com/all-contributors/all-contributors)
+See [CONTRIBUTORS.md](CONTRIBUTORS.md).
 
 ## License
 [Apache License 2.0](https://choosealicense.com/licenses/apache-2.0/)
