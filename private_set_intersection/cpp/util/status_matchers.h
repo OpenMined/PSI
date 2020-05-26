@@ -17,7 +17,6 @@
 
 #include <type_traits>
 
-#include "absl/status/status.h"
 #include "absl/strings/string_view.h"
 #include "absl/types/optional.h"
 #include "gmock/gmock.h"
@@ -60,7 +59,7 @@ class StatusIsMatcher {
   StatusIsMatcher(const StatusIsMatcher&) = default;
   StatusIsMatcher& operator=(const StatusIsMatcher&) = default;
 
-  StatusIsMatcher(absl::StatusCode code,
+  StatusIsMatcher(private_join_and_compute::StatusCode code,
                   absl::optional<absl::string_view> message)
       : code_(code), message_(message) {}
 
@@ -69,26 +68,25 @@ class StatusIsMatcher {
                        ::testing::MatchResultListener* listener) const {
     auto status = GetStatus(value);
     if (code_ != status.code()) {
-      *listener << "whose error code is "
-                << absl::StatusCodeToString(status.code());
+      *listener << "whose error code is " << status.code();
       return false;
     }
     if (message_.has_value() && status.message() != message_.value()) {
-      *listener << "whose error message is '" << message_.value() << "'";
+      *listener << "whose error message is '" << status.message() << "'";
       return false;
     }
     return true;
   }
 
   void DescribeTo(std::ostream* os) const {
-    *os << "has a status code that is " << absl::StatusCodeToString(code_);
+    *os << "has a status code that is " << code_;
     if (message_.has_value()) {
       *os << ", and has an error message that is '" << message_.value() << "'";
     }
   }
 
   void DescribeNegationTo(std::ostream* os) const {
-    *os << "has a status code that is not " << absl::StatusCodeToString(code_);
+    *os << "has a status code that is not " << code_;
     if (message_.has_value()) {
       *os << ", and has an error message that is not '" << message_.value()
           << "'";
@@ -110,7 +108,7 @@ class StatusIsMatcher {
     return status_or.status();
   }
 
-  const absl::StatusCode code_;
+  const private_join_and_compute::StatusCode code_;
   const absl::optional<std::string> message_;
 };
 
@@ -121,7 +119,7 @@ inline ::testing::PolymorphicMatcher<internal::IsOkMatcher> IsOk() {
 }
 
 inline ::testing::PolymorphicMatcher<internal::StatusIsMatcher> StatusIs(
-    absl::StatusCode code,
+    private_join_and_compute::StatusCode code,
     absl::optional<absl::string_view> message = absl::nullopt) {
   return ::testing::MakePolymorphicMatcher(
       internal::StatusIsMatcher(code, message));

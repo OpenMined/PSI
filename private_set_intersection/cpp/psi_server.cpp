@@ -98,11 +98,12 @@ StatusOr<std::string> PsiServer::ProcessRequest(
         "`client_request` must be a JSON object");
   }
   bool client_wants_intersection = (request.HasMember("reveal_intersection") &&
+                                    request["reveal_intersection"].IsBool() &&
                                     request["reveal_intersection"].GetBool());
   if (client_wants_intersection != reveal_intersection_) {
     return ::private_join_and_compute::InvalidArgumentError(absl::StrCat(
         "Client expects `reveal_intersection` = ", client_wants_intersection,
-        ", but it's actually ", reveal_intersection_, "."));
+        ", but it is actually ", reveal_intersection_));
   }
   if (!request.HasMember("encrypted_elements")) {
     return ::private_join_and_compute::InvalidArgumentError(

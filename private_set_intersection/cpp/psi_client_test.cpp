@@ -178,5 +178,15 @@ TEST_F(PsiClientTest, TestCorrectnessIntersectionSize) {
   EXPECT_LT(intersection_size, (num_client_elements / 2) * 1.1);
 }
 
+TEST_F(PsiClientTest, FailIfRevealIntersectionDoesntMatch) {
+  SetUp(false);
+  EXPECT_THAT(
+      client_->GetIntersection("", ""),
+      StatusIs(
+          private_join_and_compute::kInvalidArgument,
+          "GetIntersection called on PsiClient with reveal_intersection == "
+          "false"));
+}
+
 }  // namespace
 }  // namespace private_set_intersection

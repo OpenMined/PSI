@@ -74,6 +74,9 @@ StatusOr<std::string> PsiClient::CreateRequest(
   }
   request.AddMember("encrypted_elements", request_elements.Move(),
                     request.GetAllocator());
+  request.AddMember("reveal_intersection",
+                    rapidjson::Value(reveal_intersection_).Move(),
+                    request.GetAllocator());
 
   // Return encrytped inputs as JSON array.
   rapidjson::StringBuffer buffer;
