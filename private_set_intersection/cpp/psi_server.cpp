@@ -111,7 +111,7 @@ StatusOr<std::string> PsiServer::ProcessRequest(
   }
 
   // Re-encrypt elements.
-  const auto encrypted_elements = request.GetArray();
+  const auto encrypted_elements = request["encrypted_elements"].GetArray();
   int64_t num_client_elements = static_cast<int64_t>(encrypted_elements.Size());
   std::vector<std::string> reencrypted_elements(num_client_elements);
   for (int i = 0; i < num_client_elements; i++) {
