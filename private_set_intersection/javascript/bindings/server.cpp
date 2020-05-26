@@ -11,12 +11,12 @@ EMSCRIPTEN_BINDINGS(PSI_Server) {
   emscripten::class_<PsiServer>("PsiServer")
       .smart_ptr<std::shared_ptr<PsiServer>>("std::shared_ptr<PsiServer>")
       .class_function(
-          "CreateWithNewKey", optional_override([]() {
-            return ToJSObject(ToShared(PsiServer::CreateWithNewKey()));
+          "CreateWithNewKey", optional_override([](bool reveal_intersection) {
+            return ToJSObject(ToShared(PsiServer::CreateWithNewKey(reveal_intersection)));
           }))
       .class_function(
           "CreateFromKey",
-          optional_override([](const emscripten::val &byte_array) {
+          optional_override([](const emscripten::val &byte_array, bool reveal_intersection) {
             const std::uint32_t l = byte_array["length"].as<std::uint32_t>();
             std::string byte_string(l, '\0');
 
@@ -24,7 +24,7 @@ EMSCRIPTEN_BINDINGS(PSI_Server) {
               byte_string[i] = byte_array[i].as<std::uint8_t>();
             }
 
-            return ToJSObject(ToShared(PsiServer::CreateFromKey(byte_string)));
+            return ToJSObject(ToShared(PsiServer::CreateFromKey(byte_string, reveal_intersection)));
           }))
       .function("CreateSetupMessage",
                 optional_override([](const PsiServer &self, const double fpr,

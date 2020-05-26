@@ -14,8 +14,11 @@ export type Server = {
 }
 
 export type ServerWrapper = {
-  readonly createWithNewKey: () => Server
-  readonly createFromKey: (key: Uint8Array) => Server
+  readonly createWithNewKey: (revealIntersection?: boolean) => Server
+  readonly createFromKey: (
+    key: Uint8Array,
+    revealIntersection?: boolean
+  ) => Server
 }
 
 type ServerWrapperOptions = {
@@ -146,10 +149,13 @@ export const ServerWrapperConstructor = ({
      *
      * @function
      * @name Server.createWithNewKey
+     * @param {boolean} [revealIntersection=false] - If true, reveals the actual intersection instead of the cardinality.
      * @returns {Server} A Server instance
      */
-    createWithNewKey(): Server {
-      const { Value, Status } = library.PsiServer.CreateWithNewKey()
+    createWithNewKey(revealIntersection = false): Server {
+      const { Value, Status } = library.PsiServer.CreateWithNewKey(
+        revealIntersection
+      )
       if (Status) {
         throw new Error(Status.Message)
       }
@@ -162,10 +168,14 @@ export const ServerWrapperConstructor = ({
      * @function
      * @name Server.createFromKey
      * @param {Uint8Array} key Private key as a binary Uint8Array
+     * @param {boolean} [revealIntersection=false] - If true, reveals the actual intersection instead of the cardinality.
      * @returns {Server} A Server instance
      */
-    createFromKey(key: Uint8Array): Server {
-      const { Value, Status } = library.PsiServer.CreateFromKey(key)
+    createFromKey(key: Uint8Array, revealIntersection = false): Server {
+      const { Value, Status } = library.PsiServer.CreateFromKey(
+        key,
+        revealIntersection
+      )
       if (Status) {
         throw new Error(Status.Message)
       }

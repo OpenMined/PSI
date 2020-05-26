@@ -5,14 +5,18 @@ import { ERROR_INSTANCE_DELETED } from './constants'
 export type Client = {
   readonly delete: () => void
   readonly createRequest: (clientInputs: readonly string[]) => string
-  readonly processResponse: (
+  readonly getIntersection: (
+    serverSetup: string,
+    serverResponse: string
+  ) => number[]
+  readonly getIntersectionSize: (
     serverSetup: string,
     serverResponse: string
   ) => number
 }
 
 export type ClientWrapper = {
-  readonly create: () => Client
+  readonly create: (revealIntersection?: boolean) => Client
 }
 
 type ClientWrapperOptions = {
@@ -68,6 +72,30 @@ const ClientConstructor = (instance: psi.Client): Client => {
     },
 
     /**
+     * Processes the server's response and returns the PSI intersection. The first
+     * argument, `setup`, is a bloom filter that encodes encrypted server
+     * elements and is sent by the server in a setup phase. The second argument,
+     * `response`, is the response received from the server after sending
+     * the result of `CreateRequest`.
+     *
+     * @function
+     * @name Client#getIntersection
+     * @param {String} setup The serialized server setup
+     * @param {String} response The serialized server response
+     * @returns {Number[]} The PSI intersection
+     */
+    getIntersection(setup: string, response: string): number[] {
+      if (!_instance) {
+        throw new Error(ERROR_INSTANCE_DELETED)
+      }
+      const { Value, Status } = _instance.GetIntersection(setup, response)
+      if (Status) {
+        throw new Error(Status.Message)
+      }
+      return Value
+    },
+
+    /**
      * Processes the server's response and returns the PSI cardinality. The first
      * argument, `setup`, is a bloom filter that encodes encrypted server
      * elements and is sent by the server in a setup phase. The second argument,
@@ -75,16 +103,16 @@ const ClientConstructor = (instance: psi.Client): Client => {
      * the result of `CreateRequest`.
      *
      * @function
-     * @name Client#processResponse
+     * @name Client#getIntersectionSize
      * @param {String} setup The serialized server setup
      * @param {String} response The serialized server response
      * @returns {Number} The PSI cardinality
      */
-    processResponse(setup: string, response: string): number {
+    getIntersectionSize(setup: string, response: string): number {
       if (!_instance) {
         throw new Error(ERROR_INSTANCE_DELETED)
       }
-      const { Value, Status } = _instance.ProcessResponse(setup, response)
+      const { Value, Status } = _instance.GetIntersectionSize(setup, response)
       if (Status) {
         throw new Error(Status.Message)
       }
@@ -104,10 +132,11 @@ export const ClientWrapperConstructor = ({
      *
      * @function
      * @name Client.create
+     * @param {boolean} [revealIntersection=false] - If true, reveals the actual intersection instead of the cardinality.
      * @returns {Client} A Client instance
      */
-    create(): Client {
-      const { Value, Status } = library.PsiClient.Create()
+    create(revealIntersection = false): Client {
+      const { Value, Status } = library.PsiClient.Create(revealIntersection)
       if (Status) {
         throw new Error(Status.Message)
       }
