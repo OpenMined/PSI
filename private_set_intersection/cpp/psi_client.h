@@ -99,9 +99,7 @@ class PsiClient {
   static StatusOr<std::unique_ptr<PsiClient>> Create(bool reveal_intersection);
 
   // Creates a request message to be sent to the server. For each input
-  // element x, computes H(x)^c, where c is the secret key of ec_cipher_. The
-  // result is sorted to hide the initial ordering of `inputs` and encoded as
-  // a JSON array.
+  // element x, computes H(x)^c, where c is the secret key of ec_cipher_.
   //
   // Returns INTERNAL if encryption fails.
   StatusOr<std::string> CreateRequest(
@@ -109,7 +107,7 @@ class PsiClient {
 
   // Processes the server's response and returns the intersection of the client
   // and server inputs. Use this function if this instance was created with
-  // `reveal_intersectino = true`. The first argument, `server_setup`, is a
+  // `reveal_intersection = true`. The first argument, `server_setup`, is a
   // bloom filter that encodes encrypted server elements and is sent by the
   // server in a setup phase. The second argument, `server_response`, is the
   // response received from the server after sending the result of

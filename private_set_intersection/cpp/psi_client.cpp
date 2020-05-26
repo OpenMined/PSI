@@ -59,8 +59,7 @@ StatusOr<std::string> PsiClient::CreateRequest(
     ASSIGN_OR_RETURN(encrypted_inputs[i], ec_cipher_->Encrypt(inputs[i]));
   }
 
-  // Sort inputs (same effect as shuffling as they are encrypted) and store
-  // them in a JSON array.
+  // Store encrypted inputs in a JSON array.
   rapidjson::Document request;
   request.SetObject();
   rapidjson::Value request_elements;
