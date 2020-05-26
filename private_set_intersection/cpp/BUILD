@@ -104,6 +104,7 @@ cc_test(
     deps = [
         ":psi_client",
         "//private_set_intersection/cpp/util:status_matchers",
+        "@com_google_absl//absl/container:flat_hash_set",
         "@com_google_absl//absl/strings",
         "@com_google_googletest//:gtest",
         "@com_google_googletest//:gtest_main",

@@ -65,7 +65,7 @@ StatusOr<std::unique_ptr<PsiServer>> PsiServer::CreateFromKey(
 StatusOr<std::string> PsiServer::CreateSetupMessage(
     double fpr, int64_t num_client_inputs,
     absl::Span<const std::string> inputs) const {
-  int64_t num_inputs = static_cast<int64_t>(inputs.size());
+  auto num_inputs = static_cast<int64_t>(inputs.size());
   // Correct fpr to account for multiple client queries.
   double corrected_fpr = fpr / num_client_inputs;
 
@@ -97,9 +97,8 @@ StatusOr<std::string> PsiServer::ProcessRequest(
     return ::private_join_and_compute::InvalidArgumentError(
         "`client_request` must be a JSON object");
   }
-  bool client_wants_intersection =
-      (request.HasMember("reveal_intersection") &&
-       request["reveal_intersection"].GetBool() == true);
+  bool client_wants_intersection = (request.HasMember("reveal_intersection") &&
+                                    request["reveal_intersection"].GetBool());
   if (client_wants_intersection != reveal_intersection_) {
     return ::private_join_and_compute::InvalidArgumentError(absl::StrCat(
         "Client expects `reveal_intersection` = ", client_wants_intersection,
@@ -112,7 +111,7 @@ StatusOr<std::string> PsiServer::ProcessRequest(
 
   // Re-encrypt elements.
   const auto encrypted_elements = request["encrypted_elements"].GetArray();
-  int64_t num_client_elements = static_cast<int64_t>(encrypted_elements.Size());
+  auto num_client_elements = static_cast<int64_t>(encrypted_elements.Size());
   std::vector<std::string> reencrypted_elements(num_client_elements);
   for (int i = 0; i < num_client_elements; i++) {
     if (!encrypted_elements[i].IsString()) {
@@ -129,6 +128,7 @@ StatusOr<std::string> PsiServer::ProcessRequest(
     }
     ASSIGN_OR_RETURN(reencrypted_elements[i],
                      ec_cipher_->ReEncrypt(encrypted_element));
+    reencrypted_elements[i] = absl::Base64Escape(reencrypted_elements[i]);
   }
 
   // sort the resulting ciphertexts if we want to hide the intersection from the
@@ -143,11 +143,11 @@ StatusOr<std::string> PsiServer::ProcessRequest(
   rapidjson::Value response_elements;
   response_elements.SetArray();
   for (int i = 0; i < num_client_elements; i++) {
-    std::string base64_element = absl::Base64Escape(reencrypted_elements[i]);
-    response_elements.PushBack(rapidjson::Value().SetString(
-                                   base64_element.data(), base64_element.size(),
-                                   response.GetAllocator()),
-                               response.GetAllocator());
+    response_elements.PushBack(
+        rapidjson::Value().SetString(reencrypted_elements[i].data(),
+                                     reencrypted_elements[i].size(),
+                                     response.GetAllocator()),
+        response.GetAllocator());
   }
   response.AddMember("encrypted_elements", response_elements.Move(),
                      response.GetAllocator());

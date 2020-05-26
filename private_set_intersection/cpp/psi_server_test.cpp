@@ -20,6 +20,7 @@
 #include "crypto/ec_commutative_cipher.h"
 #include "gtest/gtest.h"
 #include "private_set_intersection/cpp/psi_client.h"
+#include "rapidjson/document.h"
 #include "util/status_matchers.h"
 
 namespace private_set_intersection {
@@ -34,7 +35,7 @@ class PsiServerTest : public ::testing::Test {
   std::unique_ptr<PsiServer> server_;
 };
 
-TEST_F(PsiServerTest, TestCorrectness) {
+TEST_F(PsiServerTest, TestCorrectnessIntersectionSize) {
   // We use an actual client instance here, since we already test the client
   // on its own in psi_client_test.cpp.
   PSI_ASSERT_OK_AND_ASSIGN(auto client, PsiClient::Create(false));
@@ -75,6 +76,32 @@ TEST_F(PsiServerTest, TestCorrectness) {
   EXPECT_LT(intersection_size, (num_client_elements / 2) * 1.1);
 }
 
+TEST_F(PsiServerTest, TestArrayIsSortedWhenNotRevealingIntersection) {
+  PSI_ASSERT_OK_AND_ASSIGN(auto client, PsiClient::Create(false));
+  int num_client_elements = 1000;
+  std::vector<std::string> client_elements(num_client_elements);
+  for (int i = 0; i < num_client_elements; i++) {
+    client_elements[i] = absl::StrCat("Element ", i);
+  }
+  // Create Client request.
+  PSI_ASSERT_OK_AND_ASSIGN(auto client_request,
+                           client->CreateRequest(client_elements));
+  // Create Server response.
+  PSI_ASSERT_OK_AND_ASSIGN(auto server_response,
+                           server_->ProcessRequest(client_request));
+  rapidjson::Document response;
+  ASSERT_FALSE(response.Parse(server_response.data(), server_response.size())
+                   .HasParseError());
+  ASSERT_TRUE(response.IsObject() && response.HasMember("encrypted_elements"));
+  const auto response_array = response["encrypted_elements"].GetArray();
+  std::vector<std::string> response_vector(response_array.Size());
+  for (int i = 0; i < num_client_elements; i++) {
+    response_vector[i] = std::string(response_array[i].GetString(),
+                                     response_array[i].GetStringLength());
+  }
+  EXPECT_TRUE(std::is_sorted(response_vector.begin(), response_vector.end()));
+}
+
 TEST_F(PsiServerTest, TestCreatingFromKey) {
   // Get the original private key
   const std::string key_bytes = server_->GetPrivateKeyBytes();
@@ -112,7 +139,7 @@ TEST_F(PsiServerTest, TestCreatingFromKey) {
   EXPECT_EQ(server_setup, server_setup1);
 
   // Create a 31-byte key that should be equivalent to a 32-byte null-inserted
-  // key
+  // key.
   const std::string key_bytes2("bcdefghijklmnopqrstuvwxyz123456", 31);
   PSI_ASSERT_OK_AND_ASSIGN(auto server2,
                            PsiServer::CreateFromKey(key_bytes2, false));
