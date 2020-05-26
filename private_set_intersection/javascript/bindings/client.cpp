@@ -9,6 +9,8 @@ EMSCRIPTEN_BINDINGS(PSI_Client) {
   using private_set_intersection::ToJSObject;
   using private_set_intersection::ToShared;
 
+  emscripten::register_vector<int32_t>("std::vector<int32_t>");
+
   emscripten::class_<PsiClient>("PsiClient")
       .smart_ptr<std::shared_ptr<PsiClient>>("std::shared_ptr<PsiClient>")
       .class_function("Create", optional_override([](bool reveal_intersection) {
@@ -32,12 +34,17 @@ EMSCRIPTEN_BINDINGS(PSI_Client) {
           "GetIntersection",
           optional_override([](const PsiClient &self, const std::string& server_setup,
                                const std::string& server_response) {
-            // We need to convert to an int32 explicitly because JS
-            // doesn't have 64-bit integers.
-            StatusOr<std::vector<int64_t>> result;
+            // We need to convert to a JS array explicitly because JS
+            // doesn't know about vector<int64_t>.
+            StatusOr<emscripten::val> result;
             auto status = self.GetIntersection(server_setup, server_response);
             if (status.ok()) {
-              result = status.ValueOrDie();
+              // Convert int64_t to int32_t for JS
+              const std::vector<std::int64_t> unsupported_result = status.ValueOrDie();
+              const std::vector<std::int32_t> supported_result(unsupported_result.begin(), unsupported_result.end());
+              // Convert vector to JS array
+              emscripten::val array = emscripten::val::array(supported_result.begin(), supported_result.end());
+              result = std::move(StatusOr<emscripten::val>(array));
             } else {
               result = status.status();
             }
