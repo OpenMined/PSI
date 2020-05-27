@@ -16,6 +16,7 @@
 
 #include "private_set_intersection/c/psi_server.h"
 
+#include "absl/container/flat_hash_set.h"
 #include "absl/strings/str_cat.h"
 #include "crypto/ec_commutative_cipher.h"
 #include "gtest/gtest.h"
@@ -27,27 +28,18 @@ namespace {
 
 class PsiServerTest : public ::testing::Test {
  protected:
-  void SetUp() {
-    char *err;
-    reveal_intersection_ = false;
-    int ret =
-        psi_server_create_with_new_key(&server_, reveal_intersection_, &err);
-    ASSERT_TRUE(server_ != nullptr);
-    ASSERT_TRUE(ret == 0);
-  }
-  void TearDown() {
-    psi_server_delete(&server_);
-    ASSERT_TRUE(server_ == nullptr);
-  }
-  bool reveal_intersection_;
-  psi_server_ctx server_;
+  void SetUp() {}
+  void TearDown() {}
 };
 
-TEST_F(PsiServerTest, TestCorrectness) {
-  // We use an actual client instance here, since we already test the client
-  // on its own in psi_client_test.cpp.
-  psi_client_ctx client_;
+void test_correctness(bool reveal_intersection_) {
+  psi_server_ctx server_;
   char *err;
+  int ret =
+      psi_server_create_with_new_key(&server_, reveal_intersection_, &err);
+  ASSERT_TRUE(server_ != nullptr);
+  ASSERT_TRUE(ret == 0);
+  psi_client_ctx client_;
   psi_client_create(&client_, reveal_intersection_, &err);
 
   ASSERT_TRUE(client_ != nullptr);
@@ -85,9 +77,9 @@ TEST_F(PsiServerTest, TestCorrectness) {
   // Create Client request.
   char *client_request = {0};
   size_t req_len = 0;
-  int ret = psi_client_create_request(client_, client_elements.data(),
-                                      client_elements.size(), &client_request,
-                                      &req_len, &err);
+  ret = psi_client_create_request(client_, client_elements.data(),
+                                  client_elements.size(), &client_request,
+                                  &req_len, &err);
 
   ASSERT_TRUE(ret == 0);
   ASSERT_TRUE(req_len > 0);
@@ -102,19 +94,45 @@ TEST_F(PsiServerTest, TestCorrectness) {
   ASSERT_TRUE(response_len >= 0);
   ASSERT_TRUE(ret == 0);
 
-  // Compute intersection size.
-  int64_t intersection_size = 0;
-  psi_client_get_intersection_size(client_, server_setup, server_response,
-                                   &intersection_size, &err);
+  if (reveal_intersection_) {
+    // Compute intersection.
+    int64_t *intersection;
+    size_t intersectlen;
+    psi_client_get_intersection(client_, server_setup, server_response,
+                                &intersection, &intersectlen, &err);
 
-  // Test if size is approximately as expected (up to 10%).
-  EXPECT_GE(intersection_size, num_client_elements / 2);
-  EXPECT_LT(intersection_size, (num_client_elements / 2) * 1.1);
+    absl::flat_hash_set<int64_t> intersection_set(intersection,
+                                                  intersection + intersectlen);
 
-  psi_server_delete_buffer(server_, &server_setup);
-  psi_server_delete_buffer(server_, &server_response);
-  psi_client_delete_buffer(client_, &client_request);
+    // Test if all even elements are present.
+    for (int i = 0; i < num_client_elements; i++) {
+      if (i % 2) {
+        EXPECT_FALSE(intersection_set.contains(i));
+      } else {
+        EXPECT_TRUE(intersection_set.contains(i));
+      }
+    }
+
+  } else {
+    // Compute intersection size.
+    int64_t intersection_size = 0;
+    psi_client_get_intersection_size(client_, server_setup, server_response,
+                                     &intersection_size, &err);
+
+    // Test if size is approximately as expected (up to 10%).
+    EXPECT_GE(intersection_size, num_client_elements / 2);
+    EXPECT_LT(intersection_size, (num_client_elements / 2) * 1.1);
+  }
+  free(server_setup);
+  free(server_response);
+  free(client_request);
+
+  psi_server_delete(&server_);
+  ASSERT_TRUE(server_ == nullptr);
 }
 
+TEST_F(PsiServerTest, TestCorrectnessSize) { test_correctness(false); }
+
+TEST_F(PsiServerTest, TestCorrectnessIntersection) { test_correctness(true); }
 }  // namespace
 }  // namespace private_set_intersection

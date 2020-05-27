@@ -16,6 +16,7 @@
 
 #include "private_set_intersection/c/psi_client.h"
 
+#include "absl/container/flat_hash_set.h"
 #include "absl/strings/escaping.h"
 #include "absl/strings/str_cat.h"
 #include "crypto/ec_commutative_cipher.h"
@@ -31,22 +32,18 @@ namespace {
 
 class PsiClientTest : public ::testing::Test {
  protected:
-  void SetUp() {
-    char *err;
-    reveal_intersection_ = false;
-    int ret = psi_client_create(&client_, reveal_intersection_, &err);
-    ASSERT_TRUE(client_ != nullptr);
-    ASSERT_TRUE(ret == 0);
-  }
-  void TearDown() {
-    psi_client_delete(&client_);
-    ASSERT_TRUE(client_ == nullptr);
-  }
-  bool reveal_intersection_;
-  psi_client_ctx client_;
+  void SetUp() {}
+  void TearDown() {}
 };
 
-TEST_F(PsiClientTest, TestCorrectness) {
+void test_corectness(bool reveal_intersection_) {
+  psi_client_ctx client_;
+
+  char *err;
+  reveal_intersection_ = false;
+  int ret = psi_client_create(&client_, reveal_intersection_, &err);
+  ASSERT_TRUE(client_ != nullptr);
+  ASSERT_TRUE(ret == 0);
   constexpr int num_client_elements = 1000, num_server_elements = 10000;
   double fpr = 0.01;
   std::vector<psi_client_buffer_t> client_elements(num_client_elements);
@@ -86,10 +83,9 @@ TEST_F(PsiClientTest, TestCorrectness) {
   // Compute client request.
   char *client_request = {0};
   size_t req_len = 0;
-  char *err;
-  int ret = psi_client_create_request(client_, client_elements.data(),
-                                      client_elements.size(), &client_request,
-                                      &req_len, &err);
+  ret = psi_client_create_request(client_, client_elements.data(),
+                                  client_elements.size(), &client_request,
+                                  &req_len, &err);
 
   ASSERT_TRUE(ret == 0);
   ASSERT_TRUE(req_len > 0);
@@ -133,21 +129,46 @@ TEST_F(PsiClientTest, TestCorrectness) {
   response.Accept(writer);
   std::string server_response(buffer.GetString());
 
-  // Compute intersection size.
-  int64_t intersection_size = 0;
-  ret = psi_client_get_intersection_size(client_, server_setup.c_str(),
-                                         server_response.c_str(),
-                                         &intersection_size, &err);
-  ASSERT_TRUE(ret == 0);
-  ASSERT_TRUE(intersection_size > 0);
+  // Compute intersection.
+  if (reveal_intersection_) {
+    int64_t *intersection;
+    size_t intersectlen;
+    psi_client_get_intersection(client_, server_setup.c_str(),
+                                server_response.c_str(), &intersection,
+                                &intersectlen, &err);
 
-  // Test if size is approximately as expected (up to 10%).
+    absl::flat_hash_set<int64_t> intersection_set(intersection,
+                                                  intersection + intersectlen);
 
-  EXPECT_GE(intersection_size, num_client_elements / 2);
-  EXPECT_LT(intersection_size, (num_client_elements / 2) * 1.1);
+    // Test if all even elements are present.
+    for (int i = 0; i < num_client_elements; i++) {
+      if (i % 2) {
+        EXPECT_FALSE(intersection_set.contains(i));
+      } else {
+        EXPECT_TRUE(intersection_set.contains(i));
+      }
+    }
+  } else {
+    int64_t intersection_size = 0;
+    ret = psi_client_get_intersection_size(client_, server_setup.c_str(),
+                                           server_response.c_str(),
+                                           &intersection_size, &err);
+    ASSERT_TRUE(ret == 0);
+    ASSERT_TRUE(intersection_size > 0);
+    // Test if size is approximately as expected (up to 10%).
 
-  psi_client_delete_buffer(client_, &client_request);
+    EXPECT_GE(intersection_size, num_client_elements / 2);
+    EXPECT_LT(intersection_size, (num_client_elements / 2) * 1.1);
+  }
+  free(client_request);
+
+  psi_client_delete(&client_);
+
+  ASSERT_TRUE(client_ == nullptr);
 }
+TEST_F(PsiClientTest, TestCorrectnessSize) { test_corectness(false); }
+
+TEST_F(PsiClientTest, TestCorrectness) { test_corectness(true); }
 
 }  // namespace
 }  // namespace private_set_intersection
