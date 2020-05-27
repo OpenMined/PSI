@@ -1,56 +1,65 @@
-//Package server for the server-side of the Private Set Intersection-Cardinality protocol.
+//Package server for the server-side of the Private Set Intersection protocol.
 //
-//In PSI-Cardinality, two parties (client and server) each hold a dataset, and at
-//the end of the protocol the client learns the size of the intersection of
-//both datasets, while no party learns anything beyond that.
+// In PSI, two parties (client and server) each hold a dataset, and at
+// the end of the protocol the client learns the size of the intersection of
+// both datasets, while no party learns anything beyond that.
 //
-//This variant of PSI-Cardinality introduces a small false-positive rate (i.e.,
-//the reported cardinality will be slightly larger than the actual cardinality.
-//The false positive rate can be tuned by the server.
+// This variant of PSI introduces a small false-positive rate (i.e.,
+// the reported cardinality will be slightly larger than the actual cardinality.
+// The false positive rate can be tuned by the server.
 //
-//The protocol works as follows:
+// The protocol works as follows.
 //
 //
-//Setup phase
+// 1. Setup phase
 //
-//The server encrypts all its elements x under a commutative encryption scheme,
-//computing H(x)^s where s is its secret key. The encrypted elements are then
-//inserted in a Bloom filter, which is sent to the client encoded as JSON. The
-//message has the following form:
+// The server encrypts all its elements x under a commutative encryption scheme,
+// computing H(x)^s where s is its secret key. The encrypted elements are then
+// inserted in a Bloom filter, which is sent to the client encoded as JSON. The
+// message has the following form:
 //
 //   {
 //     "num_hash_functions": <int>,
 //     "bits": <string>
 //   }
 //
-//Here, `bits` is a Base64-encoded string.
+// Here, `bits` is a Base64-encoded string.
 //
-//Client request
+// 2. Client request
 //
-//The client encrypts all their elements x using the commutative encryption
-//scheme, computing H(x)^c, where c is the client's secret key. The encoded
-//elements are sent to the server as a JSON array of Base64 strings in sorted
-//order:
-//
-//   sort([ Base64(H(x_1)^c), Base64(H(x_2)^c), ... ])
-//
-//
-//Server response
-//
-//For each encrypted element H(x)^c received from the client, the server
-//encrypts it again under the commutative encryption scheme with its secret
-//key s, computing (H(x)^c)^s = H(x)^(cs). The result is sent back to the
-//client as a JSON array of strings in sorted order:
-//
-//   sort([ Base64(H(x_1)^(cs)), Base64(H(x_2)^(cs)), ... ])
+// The client encrypts all their elements x using the commutative encryption
+// scheme, computing H(x)^c, where c is the client's secret key. The encoded
+// elements are sent to the server as a JSON array of Base64 strings, together
+// with a boolean reveal_intersection that indicates whether the client wants to
+// learn the elements in the intersection or only its size.
 //
 //
-//Client computes intersection
+//   {
+//     "reveal_intersection": <bool>,
+//     "encrypted_elements": [ Base64(H(x_1)^c), Base64(H(x_2)^c), ... ]
+//   }
 //
-//The client decrypts each element received from the server's response using
-//its secret key c, computing (H(x)^(cs))^(1/c) = H(x)^s. It then checks if
-//each element is present in the Bloom filter, and reports the number of
-//matches as the intersection size.
+//
+// 3. Server response
+//
+// For each encrypted element H(x)^c received from the client, the server
+// encrypts it again under the commutative encryption scheme with its secret
+// key s, computing (H(x)^c)^s = H(x)^(cs). The result is sent back to the
+// client as a JSON array of strings:
+//
+//   {
+//     "encrypted_elements": [ Base64(H(x_1)^c), Base64(H(x_2)^c), ... ]
+//   }
+//
+// If reveal_intersection is false, the array is sorted to hide the order of
+// entries from the client.
+//
+// 4. Client computes intersection
+//
+// The client decrypts each element received from the server's response using
+// its secret key c, computing (H(x)^(cs))^(1/c) = H(x)^s. It then checks if
+// each element is present in the Bloom filter, and reports the number of
+// matches as the intersection size.
 package server
 
 /*
@@ -66,7 +75,7 @@ import (
 	"unsafe"
 )
 
-//PsiServer context for the server side of a Private Set Intersection-Cardinality protocol.
+//PsiServer context for the server side of a Private Set Intersection protocol.
 type PsiServer struct {
 	context C.psi_server_ctx
 }
@@ -78,7 +87,7 @@ func CreateWithNewKey(revealIntersection bool) (*PsiServer, error) {
 	psiServer := new(PsiServer)
 
 	var err *C.char
-	rcode := C.psi_server_create_with_new_key(&psiServer.context, C.bool(revealIntersection), &err)
+	rcode := C.psi_server_create_with_new_key(C.bool(revealIntersection), &psiServer.context, &err)
 	if rcode != 0 {
 		return nil, fmt.Errorf("failed to create server context: %v(%v)", psiServer.loadCString(&err), rcode)
 	}

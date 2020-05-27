@@ -4,8 +4,8 @@
 #include "private_set_intersection/cpp/psi_server.h"
 
 using Server = private_set_intersection::PsiServer;
-int psi_server_create_with_new_key(psi_server_ctx *ctx,
-                                   bool reveal_intersection, char **error_out) {
+int psi_server_create_with_new_key(bool reveal_intersection,
+                                   psi_server_ctx *ctx, char **error_out) {
   auto result = Server::CreateWithNewKey(reveal_intersection);
   if (result.ok()) {
     *ctx = std::move(result).ValueOrDie().release();

@@ -10,7 +10,7 @@ void BM_ServerSetup(benchmark::State &state, double fpr,
                     bool reveal_intersection) {
   psi_server_ctx server_;
   char *err;
-  psi_server_create_with_new_key(&server_, reveal_intersection, &err);
+  psi_server_create_with_new_key(reveal_intersection, &server_, &err);
 
   int num_inputs = state.range(0);
   int num_client_inputs = 10000;
@@ -62,7 +62,7 @@ BENCHMARK_CAPTURE(BM_ServerSetup, 0.000001 intersection, 0.000001, true)
 void BM_ClientCreateRequest(benchmark::State &state, bool reveal_intersection) {
   psi_client_ctx client_;
   char *err;
-  psi_client_create(&client_, reveal_intersection, &err);
+  psi_client_create(reveal_intersection, &client_, &err);
 
   int num_inputs = state.range(0);
   std::vector<std::string> inputs_orig(num_inputs);
@@ -107,8 +107,8 @@ void BM_ServerProcessRequest(benchmark::State &state,
   psi_server_ctx server_;
   char *err;
 
-  psi_client_create(&client_, reveal_intersection, &err);
-  psi_server_create_with_new_key(&server_, reveal_intersection, &err);
+  psi_client_create(reveal_intersection, &client_, &err);
+  psi_server_create_with_new_key(reveal_intersection, &server_, &err);
 
   int num_inputs = state.range(0);
   std::vector<std::string> inputs_orig(num_inputs);
@@ -160,8 +160,8 @@ void BM_ClientProcessResponse(benchmark::State &state,
   psi_client_ctx client_;
   psi_server_ctx server_;
   char *err;
-  psi_client_create(&client_, reveal_intersection, &err);
-  psi_server_create_with_new_key(&server_, reveal_intersection, &err);
+  psi_client_create(reveal_intersection, &client_, &err);
+  psi_server_create_with_new_key(reveal_intersection, &server_, &err);
 
   int num_inputs = state.range(0);
   double fpr = 1. / (1000000);

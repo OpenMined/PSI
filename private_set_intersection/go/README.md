@@ -1,6 +1,6 @@
-# PSI Cardinality - Go [![Go Report Card](https://goreportcard.com/badge/github.com/OpenMined/PSI)](https://goreportcard.com/report/github.com/OpenMined/PSI)
+# Private Set Intersection - Go [![Go Report Card](https://goreportcard.com/badge/github.com/OpenMined/PSI)](https://goreportcard.com/report/github.com/OpenMined/PSI)
 
-Private Set Intersection Cardinality protocol based on ECDH and Bloom Filters.
+Private Set Intersection protocol based on ECDH and Bloom Filters.
 
 
 ## PSI client [![Documentation](https://img.shields.io/badge/godoc-reference-blue.svg)](https://pkg.go.dev/github.com/OpenMined/PSI/private_set_intersection/go/client)

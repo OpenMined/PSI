@@ -36,11 +36,11 @@ void test_correctness(bool reveal_intersection_) {
   psi_server_ctx server_;
   char *err;
   int ret =
-      psi_server_create_with_new_key(&server_, reveal_intersection_, &err);
+      psi_server_create_with_new_key(reveal_intersection_, &server_, &err);
   ASSERT_TRUE(server_ != nullptr);
   ASSERT_TRUE(ret == 0);
   psi_client_ctx client_;
-  psi_client_create(&client_, reveal_intersection_, &err);
+  psi_client_create(reveal_intersection_, &client_, &err);
 
   ASSERT_TRUE(client_ != nullptr);
 

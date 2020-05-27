@@ -5,7 +5,7 @@
 
 using Client = private_set_intersection::PsiClient;
 
-int psi_client_create(psi_client_ctx *ctx, bool reveal_intersection,
+int psi_client_create(bool reveal_intersection, psi_client_ctx *ctx,
                       char **error_out) {
   auto result = Client::Create(reveal_intersection);
   if (result.ok()) {

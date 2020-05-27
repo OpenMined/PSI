@@ -32,7 +32,7 @@ struct psi_client_buffer_t {
   size_t buff_len;
 };
 
-int psi_client_create(psi_client_ctx *ctx, bool reveal_intersection,
+int psi_client_create(bool reveal_intersection, psi_client_ctx *ctx,
                       char **error_out);
 void psi_client_delete(psi_client_ctx *ctx);
 int psi_client_create_request(psi_client_ctx ctx,
