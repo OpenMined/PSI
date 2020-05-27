@@ -143,7 +143,7 @@ class PsiClient {
       const std::string& server_response) const;
 
   std::unique_ptr<::private_join_and_compute::ECCommutativeCipher> ec_cipher_;
-  bool reveal_intersection_;
+  bool reveal_intersection;
 };
 
 }  // namespace private_set_intersection

@@ -19,10 +19,10 @@ declare module 'psi_*' {
     readonly Value: string
   }
   type GetIntersectionResult = Result & {
-    readonly Value: string
+    readonly Value: number[]
   }
   type GetIntersectionSizeResult = Result & {
-    readonly Value: string
+    readonly Value: number
   }
   type CreateClientResult = Result & {
     readonly Value: Client

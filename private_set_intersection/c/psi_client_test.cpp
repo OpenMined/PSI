@@ -36,12 +36,11 @@ class PsiClientTest : public ::testing::Test {
   void TearDown() {}
 };
 
-void test_corectness(bool reveal_intersection_) {
+void test_corectness(bool reveal_intersection) {
   psi_client_ctx client_;
 
   char *err;
-  reveal_intersection_ = false;
-  int ret = psi_client_create(reveal_intersection_, &client_, &err);
+  int ret = psi_client_create(reveal_intersection, &client_, &err);
   ASSERT_TRUE(client_ != nullptr);
   ASSERT_TRUE(ret == 0);
   constexpr int num_client_elements = 1000, num_server_elements = 10000;
@@ -120,7 +119,7 @@ void test_corectness(bool reveal_intersection_) {
   response.AddMember("encrypted_elements", response_elements.Move(),
                      response.GetAllocator());
   response.AddMember("reveal_intersection",
-                     rapidjson::Value(reveal_intersection_).Move(),
+                     rapidjson::Value(reveal_intersection).Move(),
                      response.GetAllocator());
 
   // Encode re-encrypted messages as JSON.
@@ -130,7 +129,7 @@ void test_corectness(bool reveal_intersection_) {
   std::string server_response(buffer.GetString());
 
   // Compute intersection.
-  if (reveal_intersection_) {
+  if (reveal_intersection) {
     int64_t *intersection;
     size_t intersectlen;
     psi_client_get_intersection(client_, server_setup.c_str(),

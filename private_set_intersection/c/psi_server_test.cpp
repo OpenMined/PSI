@@ -32,15 +32,15 @@ class PsiServerTest : public ::testing::Test {
   void TearDown() {}
 };
 
-void test_correctness(bool reveal_intersection_) {
+void test_correctness(bool reveal_intersection) {
   psi_server_ctx server_;
   char *err;
   int ret =
-      psi_server_create_with_new_key(reveal_intersection_, &server_, &err);
+      psi_server_create_with_new_key(reveal_intersection, &server_, &err);
   ASSERT_TRUE(server_ != nullptr);
   ASSERT_TRUE(ret == 0);
   psi_client_ctx client_;
-  psi_client_create(reveal_intersection_, &client_, &err);
+  psi_client_create(reveal_intersection, &client_, &err);
 
   ASSERT_TRUE(client_ != nullptr);
 
@@ -94,7 +94,7 @@ void test_correctness(bool reveal_intersection_) {
   ASSERT_TRUE(response_len >= 0);
   ASSERT_TRUE(ret == 0);
 
-  if (reveal_intersection_) {
+  if (reveal_intersection) {
     // Compute intersection.
     int64_t *intersection;
     size_t intersectlen;

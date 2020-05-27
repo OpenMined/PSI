@@ -121,7 +121,7 @@ const clientRequest = client.createRequest(clientInputs)
 const serverResponse = server.processRequest(clientRequest)
 
 // Client computes the intersection and the server has learned nothing!
-const intersection = client.processResponse(serverSetup, serverResponse)
+const intersection = client.getIntersection(serverSetup, serverResponse)
 // intersection = 10
 ```
 

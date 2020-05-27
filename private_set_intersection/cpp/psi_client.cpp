@@ -36,7 +36,7 @@ PsiClient::PsiClient(
     std::unique_ptr<::private_join_and_compute::ECCommutativeCipher> ec_cipher,
     bool reveal_intersection)
     : ec_cipher_(std::move(ec_cipher)),
-      reveal_intersection_(reveal_intersection) {}
+      reveal_intersection(reveal_intersection) {}
 
 StatusOr<std::unique_ptr<PsiClient>> PsiClient::Create(
     bool reveal_intersection) {
@@ -74,7 +74,7 @@ StatusOr<std::string> PsiClient::CreateRequest(
   request.AddMember("encrypted_elements", request_elements.Move(),
                     request.GetAllocator());
   request.AddMember("reveal_intersection",
-                    rapidjson::Value(reveal_intersection_).Move(),
+                    rapidjson::Value(reveal_intersection).Move(),
                     request.GetAllocator());
 
   // Return encrytped inputs as JSON array.
@@ -86,7 +86,7 @@ StatusOr<std::string> PsiClient::CreateRequest(
 
 StatusOr<std::vector<int64_t>> PsiClient::GetIntersection(
     const std::string& server_setup, const std::string& server_response) const {
-  if (!reveal_intersection_) {
+  if (!reveal_intersection) {
     return ::private_join_and_compute::InvalidArgumentError(
         "GetIntersection called on PsiClient with reveal_intersection == "
         "false");
