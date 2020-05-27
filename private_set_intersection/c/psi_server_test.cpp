@@ -35,8 +35,8 @@ class PsiServerTest : public ::testing::Test {
 void test_correctness(bool reveal_intersection) {
   psi_server_ctx server_;
   char *err;
-  int ret =
-      psi_server_create_with_new_key(&server_, reveal_intersection, &err);
+  int ret = psi_server_create_with_new_key(&server_, reveal_intersection, &err);
+
   ASSERT_TRUE(server_ != nullptr);
   ASSERT_TRUE(ret == 0);
   psi_client_ctx client_;
