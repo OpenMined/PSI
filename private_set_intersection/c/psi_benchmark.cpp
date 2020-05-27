@@ -177,8 +177,8 @@ void BM_ClientProcessResponse(benchmark::State &state) {
   int64_t elements_processed = 0;
   for (auto _ : state) {
     int64_t count = 0;
-    psi_client_get_intersection_size(client_, server_setup, server_response, &count,
-                                &err);
+    psi_client_get_intersection_size(client_, server_setup, server_response,
+                                     &count, &err);
 
     ::benchmark::DoNotOptimize(count);
     elements_processed += num_inputs;

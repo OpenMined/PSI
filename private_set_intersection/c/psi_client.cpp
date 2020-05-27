@@ -5,7 +5,8 @@
 
 using Client = private_set_intersection::PsiClient;
 
-int psi_client_create(psi_client_ctx *ctx, bool reveal_intersection, char **error_out) {
+int psi_client_create(psi_client_ctx *ctx, bool reveal_intersection,
+                      char **error_out) {
   auto result = Client::Create(reveal_intersection);
   if (result.ok()) {
     *ctx = std::move(result).ValueOrDie().release();
@@ -60,9 +61,10 @@ void psi_client_delete_buffer(psi_client_ctx ctx, char **request) {
   *request = nullptr;
 }
 
-int psi_client_get_intersection_size(psi_client_ctx ctx, const char *server_setup,
-                                const char *server_response, int64_t *out,
-                                char **error_out) {
+int psi_client_get_intersection_size(psi_client_ctx ctx,
+                                     const char *server_setup,
+                                     const char *server_response, int64_t *out,
+                                     char **error_out) {
   auto client = static_cast<Client *>(ctx);
   if (client == nullptr) {
     return private_set_intersection::c_bindings_internal::generate_error(

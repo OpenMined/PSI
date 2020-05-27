@@ -31,9 +31,11 @@ struct psi_server_buffer_t {
   size_t buff_len;
 };
 
-int psi_server_create_with_new_key(psi_server_ctx *ctx, bool reveal_intersection, char **error_out);
-int psi_server_create_from_key(struct psi_server_buffer_t key_bytes, bool reveal_intersection,
-                               psi_server_ctx *ctx, char **error_out);
+int psi_server_create_with_new_key(psi_server_ctx *ctx,
+                                   bool reveal_intersection, char **error_out);
+int psi_server_create_from_key(struct psi_server_buffer_t key_bytes,
+                               bool reveal_intersection, psi_server_ctx *ctx,
+                               char **error_out);
 void psi_server_delete(psi_server_ctx *ctx);
 
 int psi_server_create_setup_message(psi_server_ctx ctx, double fpr,

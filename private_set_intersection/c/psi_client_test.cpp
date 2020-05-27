@@ -100,7 +100,7 @@ TEST_F(PsiClientTest, TestCorrectness) {
   request.Parse(client_request, strlen(client_request));
   ASSERT_FALSE(request.HasParseError());
   ASSERT_TRUE(request.IsObject());
-  const rapidjson::Value& encrypted_elements = request["encrypted_elements"];
+  const rapidjson::Value &encrypted_elements = request["encrypted_elements"];
   ASSERT_TRUE(encrypted_elements.IsArray());
   response.SetObject();
   rapidjson::Value response_elements;
@@ -116,16 +116,16 @@ TEST_F(PsiClientTest, TestCorrectness) {
                              server_ec_cipher->ReEncrypt(encrypted_element));
 
     base64_element = absl::Base64Escape(reencrypted_elements[i]);
-    response_elements.PushBack(rapidjson::Value().SetString(base64_element.data(),
-                                                   base64_element.size(),
-                                                   response.GetAllocator()),
-                      response.GetAllocator());
+    response_elements.PushBack(rapidjson::Value().SetString(
+                                   base64_element.data(), base64_element.size(),
+                                   response.GetAllocator()),
+                               response.GetAllocator());
   }
   response.AddMember("encrypted_elements", response_elements.Move(),
-                    response.GetAllocator());
+                     response.GetAllocator());
   response.AddMember("reveal_intersection",
-                    rapidjson::Value(reveal_intersection_).Move(),
-                    response.GetAllocator());
+                     rapidjson::Value(reveal_intersection_).Move(),
+                     response.GetAllocator());
   
 
   // Encode re-encrypted messages as JSON.
@@ -137,8 +137,8 @@ TEST_F(PsiClientTest, TestCorrectness) {
   // Compute intersection size.
   int64_t intersection_size = 0;
   ret = psi_client_get_intersection_size(client_, server_setup.c_str(),
-                                    server_response.c_str(), &intersection_size,
-                                    &err);
+                                         server_response.c_str(),
+                                         &intersection_size, &err);
   ASSERT_TRUE(ret == 0);
   ASSERT_TRUE(intersection_size > 0);
 
