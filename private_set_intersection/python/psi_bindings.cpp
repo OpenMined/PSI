@@ -30,8 +30,8 @@ PYBIND11_MODULE(_psi_bindings, m) {
   py::class_<psi::PsiClient>(m, "PsiClient")
       .def_static(
           "Create",
-          []() {
-            auto client = psi::PsiClient::Create();
+          [](bool reveal_intersection) {
+            auto client = psi::PsiClient::Create(reveal_intersection);
             if (!client.ok())
               throw std::runtime_error(client.status().message());
             return std::move(client.ValueOrDie());
@@ -45,19 +45,27 @@ PYBIND11_MODULE(_psi_bindings, m) {
           },
           py::call_guard<py::gil_scoped_release>())
       .def(
-          "ProcessResponse",
+          "GetIntersection",
           [](const psi::PsiClient& obj, const std::string& server_setup,
              const std::string& server_response) {
             return throwOrReturn(
-                obj.ProcessResponse(server_setup, server_response));
+                obj.GetIntersection(server_setup, server_response));
+          },
+          py::call_guard<py::gil_scoped_release>())
+      .def(
+          "GetIntersectionSize",
+          [](const psi::PsiClient& obj, const std::string& server_setup,
+             const std::string& server_response) {
+            return throwOrReturn(
+                obj.GetIntersectionSize(server_setup, server_response));
           },
           py::call_guard<py::gil_scoped_release>());
 
   py::class_<psi::PsiServer>(m, "PsiServer")
       .def_static(
           "CreateWithNewKey",
-          []() {
-            auto server = psi::PsiServer::CreateWithNewKey();
+          [](bool reveal_intersection) {
+            auto server = psi::PsiServer::CreateWithNewKey(reveal_intersection);
             if (!server.ok())
               throw std::runtime_error(server.status().message());
             return std::move(server.ValueOrDie());
@@ -65,8 +73,9 @@ PYBIND11_MODULE(_psi_bindings, m) {
           py::call_guard<py::gil_scoped_release>())
       .def_static(
           "CreateFromKey",
-          [](const std::string& key_bytes) {
-            auto server = psi::PsiServer::CreateFromKey(key_bytes);
+          [](const std::string& key_bytes, bool reveal_intersection) {
+            auto server =
+                psi::PsiServer::CreateFromKey(key_bytes, reveal_intersection);
             if (!server.ok())
               throw std::runtime_error(server.status().message());
             return std::move(server.ValueOrDie());
