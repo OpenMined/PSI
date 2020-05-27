@@ -5,7 +5,7 @@ import private_set_intersection.python as psi
 
 
 @pytest.mark.parametrize("reveal_intersection", [False, True])
-def test_sanity():
+def test_sanity(reveal_intersection):
     c = psi.client.Create(reveal_intersection)
     assert c != None
 
