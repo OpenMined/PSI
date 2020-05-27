@@ -62,7 +62,7 @@ jobs:
       - name: Install toolchains
         uses: actions/setup-go@v2
         with:
-          go-version: ^1.13
+          go-version: 1.13.3
         id: go
       - name: Install Go dependencies
         run: go get -u golang.org/x/lint/golint
