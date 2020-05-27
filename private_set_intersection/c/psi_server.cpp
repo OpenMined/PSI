@@ -5,8 +5,8 @@
 
 using Server = private_set_intersection::PsiServer;
 
-int psi_server_create_with_new_key(psi_server_ctx *ctx, char **error_out) {
-  auto result = Server::CreateWithNewKey();
+int psi_server_create_with_new_key(psi_server_ctx *ctx, bool reveal_intersection, char **error_out) {
+  auto result = Server::CreateWithNewKey(reveal_intersection);
   if (result.ok()) {
     *ctx = std::move(result).ValueOrDie().release();
     return 0;
@@ -16,10 +16,10 @@ int psi_server_create_with_new_key(psi_server_ctx *ctx, char **error_out) {
       result.status(), error_out);
 }
 
-int psi_server_create_from_key(psi_server_buffer_t key_bytes,
+int psi_server_create_from_key(psi_server_buffer_t key_bytes, bool reveal_intersection, 
                                psi_server_ctx *ctx, char **error_out) {
   auto result =
-      Server::CreateFromKey(std::string(key_bytes.buff, key_bytes.buff_len));
+      Server::CreateFromKey(std::string(key_bytes.buff, key_bytes.buff_len), reveal_intersection);
   if (result.ok()) {
     *ctx = std::move(result).ValueOrDie().release();
     return 0;

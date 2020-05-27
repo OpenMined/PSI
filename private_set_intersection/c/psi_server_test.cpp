@@ -29,7 +29,8 @@ class PsiServerTest : public ::testing::Test {
  protected:
   void SetUp() {
     char *err;
-    int ret = psi_server_create_with_new_key(&server_, &err);
+    reveal_intersection_ = false;
+    int ret = psi_server_create_with_new_key(&server_, reveal_intersection_, &err);
     ASSERT_TRUE(server_ != nullptr);
     ASSERT_TRUE(ret == 0);
   }
@@ -37,7 +38,7 @@ class PsiServerTest : public ::testing::Test {
     psi_server_delete(&server_);
     ASSERT_TRUE(server_ == nullptr);
   }
-
+  bool reveal_intersection_;
   psi_server_ctx server_;
 };
 
@@ -46,7 +47,7 @@ TEST_F(PsiServerTest, TestCorrectness) {
   // on its own in psi_client_test.cpp.
   psi_client_ctx client_;
   char *err;
-  psi_client_create(&client_, &err);
+  psi_client_create(&client_, reveal_intersection_, &err);
 
   ASSERT_TRUE(client_ != nullptr);
 
@@ -102,7 +103,7 @@ TEST_F(PsiServerTest, TestCorrectness) {
 
   // Compute intersection size.
   int64_t intersection_size = 0;
-  psi_client_process_response(client_, server_setup, server_response,
+  psi_client_get_intersection_size(client_, server_setup, server_response,
                               &intersection_size, &err);
 
   // Test if size is approximately as expected (up to 10%).

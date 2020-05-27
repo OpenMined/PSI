@@ -31,14 +31,17 @@ struct psi_client_buffer_t {
   size_t buff_len;
 };
 
-int psi_client_create(psi_client_ctx *ctx, char **error_out);
+int psi_client_create(psi_client_ctx *ctx, bool reveal_intersection, char **error_out);
 void psi_client_delete(psi_client_ctx *ctx);
 int psi_client_create_request(psi_client_ctx ctx,
                               struct psi_client_buffer_t *inputs,
                               size_t input_len, char **output, size_t *out_len,
                               char **error_out);
 void psi_client_delete_buffer(psi_client_ctx ctx, char **request);
-int psi_client_process_response(psi_client_ctx ctx, const char *server_setup,
+int psi_client_get_intersection_size(psi_client_ctx ctx, const char *server_setup,
+                                const char *server_response, int64_t *out,
+                                char **error_out);
+int psi_client_get_intersection(psi_client_ctx ctx, const char *server_setup,
                                 const char *server_response, int64_t *out,
                                 char **error_out);
 

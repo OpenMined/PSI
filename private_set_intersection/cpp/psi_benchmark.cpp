@@ -32,10 +32,10 @@ void BM_ServerSetup(benchmark::State& state, double fpr) {
 // positive rate for 10k client queries.
 BENCHMARK_CAPTURE(BM_ServerSetup, fpr = 0.001, 0.001)
     ->RangeMultiplier(100)
-    ->Range(1, 1000000);
+    ->Range(1, 10000);
 BENCHMARK_CAPTURE(BM_ServerSetup, fpr = 0.000001, 0.000001)
     ->RangeMultiplier(100)
-    ->Range(1, 1000000);
+    ->Range(1, 10000);
 
 void BM_ClientCreateRequest(benchmark::State& state) {
   auto client = PsiClient::Create(false).ValueOrDie();

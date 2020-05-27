@@ -5,8 +5,8 @@
 
 using Client = private_set_intersection::PsiClient;
 
-int psi_client_create(psi_client_ctx *ctx, char **error_out) {
-  auto result = Client::Create();
+int psi_client_create(psi_client_ctx *ctx, bool reveal_intersection, char **error_out) {
+  auto result = Client::Create(reveal_intersection);
   if (result.ok()) {
     *ctx = std::move(result).ValueOrDie().release();
     return 0;
@@ -60,7 +60,7 @@ void psi_client_delete_buffer(psi_client_ctx ctx, char **request) {
   *request = nullptr;
 }
 
-int psi_client_process_response(psi_client_ctx ctx, const char *server_setup,
+int psi_client_get_intersection_size(psi_client_ctx ctx, const char *server_setup,
                                 const char *server_response, int64_t *out,
                                 char **error_out) {
   auto client = static_cast<Client *>(ctx);
@@ -70,13 +70,34 @@ int psi_client_process_response(psi_client_ctx ctx, const char *server_setup,
             "invalid client context"),
         error_out);
   }
-  auto result = client->ProcessResponse(server_setup, server_response);
+  auto result = client->GetIntersectionSize(server_setup, server_response);
   if (!result.ok()) {
     return private_set_intersection::c_bindings_internal::generate_error(
         result.status(), error_out);
   }
   if (out != nullptr) {
     *out = result.ValueOrDie();
+  }
+  return 0;
+}
+
+int psi_client_get_intersection(psi_client_ctx ctx, const char *server_setup,
+                                const char *server_response, int64_t *out,
+                                char **error_out) {
+  auto client = static_cast<Client *>(ctx);
+  if (client == nullptr) {
+    return private_set_intersection::c_bindings_internal::generate_error(
+        ::private_join_and_compute::InvalidArgumentError(
+            "invalid client context"),
+        error_out);
+  }
+  auto result = client->GetIntersection(server_setup, server_response);
+  if (!result.ok()) {
+    return private_set_intersection::c_bindings_internal::generate_error(
+        result.status(), error_out);
+  }
+  if (out != nullptr) {
+    *out = result.ValueOrDie()[0];
   }
   return 0;
 }

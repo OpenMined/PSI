@@ -8,8 +8,9 @@ namespace {
 
 void BM_ServerSetup(benchmark::State &state, double fpr) {
   psi_server_ctx server_;
+  bool reveal_intersection_ = false;
   char *err;
-  psi_server_create_with_new_key(&server_, &err);
+  psi_server_create_with_new_key(&server_, reveal_intersection_, &err);
 
   int num_inputs = state.range(0);
   int num_client_inputs = 10000;
@@ -32,6 +33,7 @@ void BM_ServerSetup(benchmark::State &state, double fpr) {
     ::benchmark::DoNotOptimize(server_setup);
     ::benchmark::ClobberMemory();
     elements_processed += num_inputs;
+    setup = server_setup;
     psi_server_delete_buffer(server_, &server_setup);
   }
   state.counters["SetupSize"] = benchmark::Counter(
@@ -45,15 +47,16 @@ void BM_ServerSetup(benchmark::State &state, double fpr) {
 // positive rate for 10k client queries.
 BENCHMARK_CAPTURE(BM_ServerSetup, fpr = 0.001, 0.001)
     ->RangeMultiplier(100)
-    ->Range(1, 1000000);
+    ->Range(1, 10000);
 BENCHMARK_CAPTURE(BM_ServerSetup, fpr = 0.000001, 0.000001)
     ->RangeMultiplier(100)
-    ->Range(1, 1000000);
+    ->Range(1, 10000);
 
 void BM_ClientCreateRequest(benchmark::State &state) {
   psi_client_ctx client_;
+  bool reveal_intersection_ = false;
   char *err;
-  psi_client_create(&client_, &err);
+  psi_client_create(&client_, reveal_intersection_, &err);
 
   int num_inputs = state.range(0);
   std::vector<std::string> inputs_orig(num_inputs);
@@ -75,7 +78,7 @@ void BM_ClientCreateRequest(benchmark::State &state) {
     ::benchmark::DoNotOptimize(client_request);
     ::benchmark::ClobberMemory();
     elements_processed += num_inputs;
-
+    request = client_request;
     psi_client_delete_buffer(client_, &client_request);
   }
   state.counters["RequestSize"] = benchmark::Counter(
@@ -90,10 +93,11 @@ BENCHMARK(BM_ClientCreateRequest)->RangeMultiplier(10)->Range(1, 10000);
 void BM_ServerProcessRequest(benchmark::State &state) {
   psi_client_ctx client_;
   psi_server_ctx server_;
+  bool reveal_intersection_ = false;
   char *err;
 
-  psi_client_create(&client_, &err);
-  psi_server_create_with_new_key(&server_, &err);
+  psi_client_create(&client_, reveal_intersection_, &err);
+  psi_server_create_with_new_key(&server_, reveal_intersection_, &err);
 
   int num_inputs = state.range(0);
   std::vector<std::string> inputs_orig(num_inputs);
@@ -120,7 +124,7 @@ void BM_ServerProcessRequest(benchmark::State &state) {
     ::benchmark::ClobberMemory();
 
     elements_processed += num_inputs;
-
+    response = server_response;
     psi_server_delete_buffer(server_, &server_response);
   }
   state.counters["ResponseSize"] = benchmark::Counter(
@@ -138,9 +142,10 @@ BENCHMARK(BM_ServerProcessRequest)->RangeMultiplier(10)->Range(1, 10000);
 void BM_ClientProcessResponse(benchmark::State &state) {
   psi_client_ctx client_;
   psi_server_ctx server_;
+  bool reveal_intersection_ = false;
   char *err;
-  psi_client_create(&client_, &err);
-  psi_server_create_with_new_key(&server_, &err);
+  psi_client_create(&client_, reveal_intersection_, &err);
+  psi_server_create_with_new_key(&server_, reveal_intersection_, &err);
 
   int num_inputs = state.range(0);
   double fpr = 1. / (1000000);
@@ -172,7 +177,7 @@ void BM_ClientProcessResponse(benchmark::State &state) {
   int64_t elements_processed = 0;
   for (auto _ : state) {
     int64_t count = 0;
-    psi_client_process_response(client_, server_setup, server_response, &count,
+    psi_client_get_intersection_size(client_, server_setup, server_response, &count,
                                 &err);
 
     ::benchmark::DoNotOptimize(count);
