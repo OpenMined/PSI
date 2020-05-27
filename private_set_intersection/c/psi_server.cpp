@@ -64,7 +64,7 @@ int psi_server_create_setup_message(psi_server_ctx ctx, double fpr,
 
   auto value = result.ValueOrDie();
   size_t len = value.size() + 1;
-  *output = new char[len];
+  *output = (char *)malloc(len * sizeof(char));
   strncpy(*output, value.c_str(), len);
   *output_len = len;
 
@@ -92,7 +92,7 @@ int psi_server_process_request(psi_server_ctx ctx,
 
   auto value = result.ValueOrDie();
   size_t len = value.size() + 1;
-  *output = new char[len];
+  *output = (char *)malloc(len * sizeof(char));
   strncpy(*output, value.c_str(), len);
   *output_len = len;
 
@@ -112,14 +112,9 @@ int psi_server_get_private_key_bytes(psi_server_ctx ctx, char **output,
   size_t len = value.size();
 
   // Private keys are raw bytes -> Use memcpy instead of strncpy.
-  *output = new char[len];
+  *output = (char *)malloc(len * sizeof(char));
   memcpy(*output, value.data(), len);
   *output_len = len;
 
   return 0;
-}
-
-void psi_server_delete_buffer(psi_server_ctx ctx, char **input) {
-  delete[] * input;
-  *input = nullptr;
 }

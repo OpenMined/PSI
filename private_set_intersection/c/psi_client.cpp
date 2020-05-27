@@ -49,16 +49,11 @@ int psi_client_create_request(psi_client_ctx ctx, psi_client_buffer_t *inputs,
   auto value = std::move(result).ValueOrDie();
 
   size_t len = value.size() + 1;
-  *output = new char[len];
+  *output = (char *)malloc(len * sizeof(char));
   strncpy(*output, value.c_str(), len);
   *out_len = len;
 
   return 0;
-}
-
-void psi_client_delete_buffer(psi_client_ctx ctx, char **request) {
-  delete[] * request;
-  *request = nullptr;
 }
 
 int psi_client_get_intersection_size(psi_client_ctx ctx,
@@ -84,8 +79,8 @@ int psi_client_get_intersection_size(psi_client_ctx ctx,
 }
 
 int psi_client_get_intersection(psi_client_ctx ctx, const char *server_setup,
-                                const char *server_response, int64_t *out,
-                                char **error_out) {
+                                const char *server_response, int64_t **out,
+                                size_t *outlen, char **error_out) {
   auto client = static_cast<Client *>(ctx);
   if (client == nullptr) {
     return private_set_intersection::c_bindings_internal::generate_error(
@@ -93,13 +88,16 @@ int psi_client_get_intersection(psi_client_ctx ctx, const char *server_setup,
             "invalid client context"),
         error_out);
   }
-  auto result = client->GetIntersection(server_setup, server_response);
-  if (!result.ok()) {
+  auto result_or = client->GetIntersection(server_setup, server_response);
+  if (!result_or.ok()) {
     return private_set_intersection::c_bindings_internal::generate_error(
-        result.status(), error_out);
+        result_or.status(), error_out);
   }
   if (out != nullptr) {
-    *out = result.ValueOrDie()[0];
+    auto result = result_or.ValueOrDie();
+    *outlen = result.size();
+    *out = (int64_t *)malloc(result.size() * sizeof(int64_t));
+    memmove(*out, result.data(), result.size() * sizeof(int64_t));
   }
   return 0;
 }

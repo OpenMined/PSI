@@ -55,6 +55,7 @@ package client
 
 /*
 #include "private_set_intersection/c/psi_client.h"
+#include <stdlib.h>
 */
 import "C"
 import (
@@ -62,6 +63,7 @@ import (
 	"fmt"
 	"github.com/openmined/psi/version"
 	"runtime"
+	"unsafe"
 )
 
 //PsiClient context for the client side of a Private Set Intersection-Cardinality protocol.
@@ -70,11 +72,11 @@ type PsiClient struct {
 }
 
 //Create returns a new PSI client
-func Create() (*PsiClient, error) {
+func Create(revealIntersection bool) (*PsiClient, error) {
 	psiClient := new(PsiClient)
 
 	var err *C.char
-	rcode := C.psi_client_create(&psiClient.context, &err)
+	rcode := C.psi_client_create(&psiClient.context, C.bool(revealIntersection), &err)
 	if rcode != 0 {
 		return nil, fmt.Errorf("failed to create client context: %v(%v)", psiClient.loadCString(&err), rcode)
 	}
@@ -110,6 +112,11 @@ func (c *PsiClient) CreateRequest(rawInput []string) (string, error) {
 	var err *C.char
 
 	rcode := C.psi_client_create_request(c.context, &inputs[0], C.size_t(len(inputs)), &out, &outlen, &err)
+
+	for idx := range inputs {
+		C.free(unsafe.Pointer(inputs[idx].buff))
+	}
+
 	if rcode != 0 {
 		return "", fmt.Errorf("create request failed %v(%v)", c.loadCString(&err), rcode)
 	}
@@ -117,14 +124,58 @@ func (c *PsiClient) CreateRequest(rawInput []string) (string, error) {
 	return c.loadCString(&out), nil
 }
 
-//ProcessResponse processes the server's response and returns the PSI cardinality. The
-//first argument, `server_setup`, is a bloom filter that encodes encrypted
-//server elements and is sent by the server in a setup phase. The second
-//argument, `server_response`, is the response received from the server
-//after sending the result of `CreateRequest`.
+//GetIntersection processes the server's response and returns the intersection of the client
+//and server inputs. Use this function if this instance was created with
+//`reveal_intersection = true`. The first argument, `server_setup`, is a
+//bloom filter that encodes encrypted server elements and is sent by the
+//server in a setup phase. The second argument, `server_response`, is the
+//response received from the server after sending the result of
+//`CreateRequest`.
 //
-//Returns an error if the context is invalid,  if any input messages are malformed or if decryption fails.
-func (c *PsiClient) ProcessResponse(serverSetup, serverResponse string) (int64, error) {
+//Returns INVALID_ARGUMENT if any input messages are malformed, or INTERNAL
+//if decryption fails.
+func (c *PsiClient) GetIntersection(serverSetup, serverResponse string) ([]int64, error) {
+	if c.context == nil {
+		return nil, errors.New("invalid context")
+	}
+
+	var out *C.int64_t
+	var outlen C.size_t
+	var err *C.char
+
+	csetup := C.CString(serverSetup)
+	defer C.free(unsafe.Pointer(csetup))
+
+	cresponse := C.CString(serverResponse)
+	defer C.free(unsafe.Pointer(cresponse))
+
+	rcode := C.psi_client_get_intersection(c.context, csetup, cresponse, &out, &outlen, &err)
+
+	if rcode != 0 {
+		return nil, fmt.Errorf("process response failed: %v(%v)", c.loadCString(&err), rcode)
+	}
+
+	resultPtr := unsafe.Pointer(out)
+	resultLen := int64(outlen)
+
+	var result []int64
+	var idx int64
+	var ref C.int64_t
+
+	for idx = 0; idx < resultLen; idx++ {
+		val := (*int64)(unsafe.Pointer(uintptr(resultPtr) + uintptr(idx)*unsafe.Sizeof(&ref)))
+		result = append(result, *val)
+	}
+	return result, nil
+}
+
+// GetIntersectionSize reveals the size of the intersection. Use
+// this function if this instance was created with `reveal_intersection =
+// false`.
+//
+// Returns INVALID_ARGUMENT if any input messages are malformed, or INTERNAL
+// if decryption fails.
+func (c *PsiClient) GetIntersectionSize(serverSetup, serverResponse string) (int64, error) {
 	if c.context == nil {
 		return 0, errors.New("invalid context")
 	}
@@ -132,7 +183,13 @@ func (c *PsiClient) ProcessResponse(serverSetup, serverResponse string) (int64, 
 	var result C.int64_t
 	var err *C.char
 
-	rcode := C.psi_client_process_response(c.context, C.CString(serverSetup), C.CString(serverResponse), &result, &err)
+	csetup := C.CString(serverSetup)
+	defer C.free(unsafe.Pointer(csetup))
+
+	cresponse := C.CString(serverResponse)
+	defer C.free(unsafe.Pointer(cresponse))
+
+	rcode := C.psi_client_get_intersection_size(c.context, csetup, cresponse, &result, &err)
 
 	if rcode != 0 {
 		return 0, fmt.Errorf("process response failed: %v(%v)", c.loadCString(&err), rcode)
@@ -156,6 +213,6 @@ func (c *PsiClient) Version() string {
 
 func (c *PsiClient) loadCString(buff **C.char) string {
 	str := C.GoString(*buff)
-	C.psi_client_delete_buffer(c.context, buff)
+	C.free(unsafe.Pointer(*buff))
 	return str
 }

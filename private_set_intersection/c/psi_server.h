@@ -17,6 +17,7 @@
 #ifndef PRIVATE_SET_INTERSECTION_C_PSI_SERVER_H_
 #define PRIVATE_SET_INTERSECTION_C_PSI_SERVER_H_
 
+#include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
 
@@ -43,7 +44,6 @@ int psi_server_create_setup_message(psi_server_ctx ctx, double fpr,
                                     struct psi_server_buffer_t *input,
                                     size_t input_len, char **output,
                                     size_t *output_len, char **error_out);
-void psi_server_delete_buffer(psi_server_ctx ctx, char **input);
 
 int psi_server_process_request(psi_server_ctx ctx,
                                struct psi_server_buffer_t client_request,

@@ -55,6 +55,7 @@ package server
 
 /*
 #include "private_set_intersection/c/psi_server.h"
+#include <stdlib.h>
 */
 import "C"
 import (
@@ -73,11 +74,11 @@ type PsiServer struct {
 //CreateWithNewKey creates and returns a new server instance with a fresh private key.
 //
 //Returns an error if any crypto operations fail.
-func CreateWithNewKey() (*PsiServer, error) {
+func CreateWithNewKey(revealIntersection bool) (*PsiServer, error) {
 	psiServer := new(PsiServer)
 
 	var err *C.char
-	rcode := C.psi_server_create_with_new_key(&psiServer.context, &err)
+	rcode := C.psi_server_create_with_new_key(&psiServer.context, C.bool(revealIntersection), &err)
 	if rcode != 0 {
 		return nil, fmt.Errorf("failed to create server context: %v(%v)", psiServer.loadCString(&err), rcode)
 	}
@@ -92,7 +93,7 @@ func CreateWithNewKey() (*PsiServer, error) {
 //CreateFromKey creates and returns a new server instance with the provided private key.
 //
 //Returns an error if any crypto operations fail.
-func CreateFromKey(key []byte) (*PsiServer, error) {
+func CreateFromKey(key []byte, revealIntersection bool) (*PsiServer, error) {
 	psiServer := new(PsiServer)
 
 	var err *C.char
@@ -100,6 +101,7 @@ func CreateFromKey(key []byte) (*PsiServer, error) {
 		buff:     (*C.char)(C.CBytes(key)),
 		buff_len: C.size_t(len(key)),
 	},
+		C.bool(revealIntersection),
 		&psiServer.context, &err)
 
 	if rcode != 0 {
@@ -147,6 +149,9 @@ func (s *PsiServer) CreateSetupMessage(fpr float64, inputCount int64, rawInput [
 
 	rcode := C.psi_server_create_setup_message(s.context, C.double(fpr), C.int64_t(inputCount), &input[0], C.size_t(len(input)), &out, &outlen, &err)
 
+	for idx := range input {
+		C.free(unsafe.Pointer(input[idx].buff))
+	}
 	if rcode != 0 {
 		return "", fmt.Errorf("setup_message failed: %v(%v)", s.loadCString(&err), rcode)
 	}
@@ -175,8 +180,11 @@ func (s *PsiServer) ProcessRequest(request string) (string, error) {
 	var err *C.char
 	var outlen C.size_t
 
+	crequest := C.CString(request)
+	defer C.free(unsafe.Pointer(crequest))
+
 	rcode := C.psi_server_process_request(s.context, C.struct_psi_server_buffer_t{
-		buff:     C.CString(request),
+		buff:     crequest,
 		buff_len: C.size_t(len(request)),
 	}, &out, &outlen, &err)
 
@@ -228,6 +236,6 @@ func (s *PsiServer) Version() string {
 
 func (s *PsiServer) loadCString(buff **C.char) string {
 	str := C.GoString(*buff)
-	C.psi_server_delete_buffer(s.context, buff)
+	C.free(unsafe.Pointer(*buff))
 	return str
 }
