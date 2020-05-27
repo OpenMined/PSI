@@ -36,7 +36,7 @@ PsiServer::PsiServer(
     std::unique_ptr<::private_join_and_compute::ECCommutativeCipher> ec_cipher,
     bool reveal_intersection)
     : ec_cipher_(std::move(ec_cipher)),
-      reveal_intersection_(reveal_intersection) {}
+      reveal_intersection(reveal_intersection) {}
 
 StatusOr<std::unique_ptr<PsiServer>> PsiServer::CreateWithNewKey(
     bool reveal_intersection) {
@@ -100,10 +100,10 @@ StatusOr<std::string> PsiServer::ProcessRequest(
   bool client_wants_intersection = (request.HasMember("reveal_intersection") &&
                                     request["reveal_intersection"].IsBool() &&
                                     request["reveal_intersection"].GetBool());
-  if (client_wants_intersection != reveal_intersection_) {
+  if (client_wants_intersection != reveal_intersection) {
     return ::private_join_and_compute::InvalidArgumentError(absl::StrCat(
         "Client expects `reveal_intersection` = ", client_wants_intersection,
-        ", but it is actually ", reveal_intersection_));
+        ", but it is actually ", reveal_intersection));
   }
   if (!request.HasMember("encrypted_elements")) {
     return ::private_join_and_compute::InvalidArgumentError(
@@ -134,7 +134,7 @@ StatusOr<std::string> PsiServer::ProcessRequest(
 
   // sort the resulting ciphertexts if we want to hide the intersection from the
   // client.
-  if (!reveal_intersection_) {
+  if (!reveal_intersection) {
     std::sort(reencrypted_elements.begin(), reencrypted_elements.end());
   }
 
