@@ -126,7 +126,6 @@ TEST_F(PsiClientTest, TestCorrectness) {
   response.AddMember("reveal_intersection",
                      rapidjson::Value(reveal_intersection_).Move(),
                      response.GetAllocator());
-  
 
   // Encode re-encrypted messages as JSON.
   rapidjson::StringBuffer buffer;
