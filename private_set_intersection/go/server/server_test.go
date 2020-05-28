@@ -118,7 +118,8 @@ func testServerClient(t *testing.T, revealIntersection bool) {
 	cntClientItems, clientItems := generateItems(1000, 1)
 	_, serverItems := generateItems(10000, 2)
 
-	setup, err := server.CreateSetupMessage(0.01, int64(cntClientItems), serverItems)
+	fpr := 1. / (1000000000)
+	setup, err := server.CreateSetupMessage(fpr, int64(cntClientItems), serverItems)
 	if err != nil {
 		t.Errorf("failed to create setup msg %v", err)
 	}

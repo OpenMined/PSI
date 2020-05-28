@@ -18,7 +18,8 @@ def test_client_server(reveal_intersection):
     client_items = ["Element " + str(i) for i in range(1000)]
     server_items = ["Element " + str(2 * i) for i in range(10000)]
 
-    setup = s.CreateSetupMessage(0.01, len(client_items), server_items)
+    fpr = 1.0 / (1000000000)
+    setup = s.CreateSetupMessage(fpr, len(client_items), server_items)
     request = c.CreateRequest(client_items)
     resp = s.ProcessRequest(request)
 
@@ -63,7 +64,8 @@ def test_server_client(reveal_intersection):
     client_items = ["Element " + str(i) for i in range(1000)]
     server_items = ["Element " + str(2 * i) for i in range(10000)]
 
-    setup = s.CreateSetupMessage(0.01, len(client_items), server_items)
+    fpr = 1.0 / (1000000000)
+    setup = s.CreateSetupMessage(fpr, len(client_items), server_items)
     request = c.CreateRequest(client_items)
     resp = s.ProcessRequest(request)
 
@@ -89,7 +91,8 @@ def test_empty_intersection(reveal_intersection):
     client_items = ["Element " + str(i) for i in range(1000)]
     server_items = ["Other " + str(2 * i) for i in range(10000)]
 
-    setup = s.CreateSetupMessage(0.01, len(client_items), server_items)
+    fpr = 1.0 / (1000000000)
+    setup = s.CreateSetupMessage(fpr, len(client_items), server_items)
     request = c.CreateRequest(client_items)
     resp = s.ProcessRequest(request)
 
