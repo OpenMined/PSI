@@ -175,6 +175,7 @@ func (c *PsiClient) GetIntersection(serverSetup, serverResponse string) ([]int64
 		val := (*int64)(unsafe.Pointer(uintptr(resultPtr) + uintptr(idx)*unsafe.Sizeof(&ref)))
 		result = append(result, *val)
 	}
+	C.free(unsafe.Pointer(out))
 	return result, nil
 }
 
