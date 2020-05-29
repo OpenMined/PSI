@@ -38,13 +38,25 @@ PsiClient::PsiClient(
     : ec_cipher_(std::move(ec_cipher)),
       reveal_intersection(reveal_intersection) {}
 
-StatusOr<std::unique_ptr<PsiClient>> PsiClient::Create(
+StatusOr<std::unique_ptr<PsiClient>> PsiClient::CreateWithNewKey(
     bool reveal_intersection) {
   // Create an EC cipher with curve P-256. This gives 128 bits of security.
   ASSIGN_OR_RETURN(
       auto ec_cipher,
       ::private_join_and_compute::ECCommutativeCipher::CreateWithNewKey(
           NID_X9_62_prime256v1,
+          ::private_join_and_compute::ECCommutativeCipher::HashType::SHA256));
+  return absl::WrapUnique(
+      new PsiClient(std::move(ec_cipher), reveal_intersection));
+}
+
+StatusOr<std::unique_ptr<PsiClient>> PsiClient::CreateFromKey(
+    const std::string& key_bytes, bool reveal_intersection) {
+  // Create an EC cipher with curve P-256. This gives 128 bits of security.
+  ASSIGN_OR_RETURN(
+      auto ec_cipher,
+      ::private_join_and_compute::ECCommutativeCipher::CreateFromKey(
+          NID_X9_62_prime256v1, key_bytes,
           ::private_join_and_compute::ECCommutativeCipher::HashType::SHA256));
   return absl::WrapUnique(
       new PsiClient(std::move(ec_cipher), reveal_intersection));
@@ -154,6 +166,12 @@ StatusOr<std::vector<int64_t>> PsiClient::ProcessResponse(
     }
   }
   return result;
+}
+
+std::string PsiClient::GetPrivateKeyBytes() const {
+  std::string key = ec_cipher_->GetPrivateKeyBytes();
+  key.insert(key.begin(), 32 - key.length(), '\0');
+  return key;
 }
 
 }  // namespace private_set_intersection

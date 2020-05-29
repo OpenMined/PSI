@@ -90,13 +90,22 @@ class PsiClient {
  public:
   PsiClient() = delete;
 
-  // Creates and returns a new client instance.
+  // Creates and returns a new client instance with a fresh private key.
   // If `reveal_intersection` is true, the client learns the elements in the
   // intersection of the two datasets. Otherwise, only the intersection size is
   // learned.
   //
   // Returns INTERNAL if any OpenSSL crypto operations fail.
-  static StatusOr<std::unique_ptr<PsiClient>> Create(bool reveal_intersection);
+  static StatusOr<std::unique_ptr<PsiClient>> CreateWithNewKey(bool reveal_intersection);
+
+  // Creates and returns a new client instance with the provided private key.
+  // If `reveal_intersection` is true, the client learns the elements in the
+  // intersection of the two datasets. Otherwise, only the intersection size is
+  // learned.
+  //
+  // Returns INTERNAL if any OpenSSL crypto operations fail.
+  static StatusOr<std::unique_ptr<PsiClient>> CreateFromKey(
+      const std::string& key_bytes, bool reveal_intersection);
 
   // Creates a request message to be sent to the server. For each input
   // element x, computes H(x)^c, where c is the secret key of ec_cipher_.
@@ -128,6 +137,10 @@ class PsiClient {
   StatusOr<int64_t> GetIntersectionSize(
       const std::string& server_setup,
       const std::string& server_response) const;
+
+  // Returns this instance's private key. This key should only be used to
+  // create other client instances. DO NOT SEND THIS KEY TO ANY OTHER PARTY!
+  std::string GetPrivateKeyBytes() const;
 
  private:
   explicit PsiClient(

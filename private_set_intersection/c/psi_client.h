@@ -32,8 +32,11 @@ struct psi_client_buffer_t {
   size_t buff_len;
 };
 
-int psi_client_create(bool reveal_intersection, psi_client_ctx *ctx,
-                      char **error_out);
+int psi_client_create_with_new_key(bool reveal_intersection,
+                                   psi_client_ctx *ctx, char **error_out);
+int psi_client_create_from_key(struct psi_client_buffer_t key_bytes,
+                               bool reveal_intersection, psi_client_ctx *ctx,
+                               char **error_out);
 void psi_client_delete(psi_client_ctx *ctx);
 int psi_client_create_request(psi_client_ctx ctx,
                               struct psi_client_buffer_t *inputs,
@@ -46,7 +49,8 @@ int psi_client_get_intersection_size(psi_client_ctx ctx,
 int psi_client_get_intersection(psi_client_ctx ctx, const char *server_setup,
                                 const char *server_response, int64_t **out,
                                 size_t *out_len, char **error_out);
-
+int psi_client_get_private_key_bytes(psi_client_ctx ctx, char **output,
+                                     size_t *output_len, char **error_out);
 #ifdef __cplusplus
 }
 #endif

@@ -4,10 +4,23 @@
 #include "private_set_intersection/cpp/psi_client.h"
 
 using Client = private_set_intersection::PsiClient;
+int psi_client_create_with_new_key(bool reveal_intersection,
+                                   psi_client_ctx *ctx, char **error_out) {
+  auto result = Client::CreateWithNewKey(reveal_intersection);
+  if (result.ok()) {
+    *ctx = std::move(result).ValueOrDie().release();
+    return 0;
+  }
 
-int psi_client_create(bool reveal_intersection, psi_client_ctx *ctx,
-                      char **error_out) {
-  auto result = Client::Create(reveal_intersection);
+  return private_set_intersection::c_bindings_internal::generate_error(
+      result.status(), error_out);
+}
+
+int psi_client_create_from_key(psi_client_buffer_t key_bytes,
+                               bool reveal_intersection, psi_client_ctx *ctx,
+                               char **error_out) {
+  auto result = Client::CreateFromKey(
+      std::string(key_bytes.buff, key_bytes.buff_len), reveal_intersection);
   if (result.ok()) {
     *ctx = std::move(result).ValueOrDie().release();
     return 0;
@@ -99,5 +112,25 @@ int psi_client_get_intersection(psi_client_ctx ctx, const char *server_setup,
     *out = (int64_t *)malloc(result.size() * sizeof(int64_t));
     memmove(*out, result.data(), result.size() * sizeof(int64_t));
   }
+  return 0;
+}
+
+int psi_client_get_private_key_bytes(psi_client_ctx ctx, char **output,
+                                     size_t *output_len, char **error_out) {
+  auto client = static_cast<Client *>(ctx);
+  if (client == nullptr) {
+    return private_set_intersection::c_bindings_internal::generate_error(
+        ::private_join_and_compute::InvalidArgumentError(
+            "invalid client context"),
+        error_out);
+  }
+  auto value = client->GetPrivateKeyBytes();
+  size_t len = value.size();
+
+  // Private keys are raw bytes -> Use memcpy instead of strncpy.
+  *output = (char *)malloc(len * sizeof(char));
+  memcpy(*output, value.data(), len);
+  *output_len = len;
+
   return 0;
 }

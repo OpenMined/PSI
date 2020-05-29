@@ -13,10 +13,15 @@ export type Client = {
     serverSetup: string,
     serverResponse: string
   ) => number
+  readonly getPrivateKeyBytes: () => Uint8Array
 }
 
 export type ClientWrapper = {
-  readonly create: (revealIntersection?: boolean) => Client
+  readonly createWithNewKey: (revealIntersection?: boolean) => Client
+  readonly createFromKey: (
+    key: Uint8Array,
+    revealIntersection?: boolean
+  ) => Client
 }
 
 type ClientWrapperOptions = {
@@ -117,6 +122,21 @@ const ClientConstructor = (instance: psi.Client): Client => {
         throw new Error(Status.Message)
       }
       return Value
+    },
+
+    /**
+     * Returns this instance's private key. This key should only be used to create
+     * other server instances. DO NOT SEND THIS KEY TO ANY OTHER PARTY!
+     *
+     * @function
+     * @name Client#getPrivateKeyBytes
+     * @returns {Uint8Array} A binary Uint8Array representing the private key
+     */
+    getPrivateKeyBytes(): Uint8Array {
+      if (!_instance) {
+        throw new Error(ERROR_INSTANCE_DELETED)
+      }
+      return Uint8Array.from(_instance.GetPrivateKeyBytes())
     }
   }
 }
@@ -131,15 +151,38 @@ export const ClientWrapperConstructor = ({
      * Create a new PSI client
      *
      * @function
-     * @name Client.create
+     * @name Client.createWithNewKey
      * @param {boolean} [revealIntersection=false] - If true, reveals the actual intersection instead of the cardinality.
      * @returns {Client} A Client instance
      */
-    create(revealIntersection = false): Client {
-      const { Value, Status } = library.PsiClient.Create(revealIntersection)
+    createWithNewKey(revealIntersection = false): Client {
+      const { Value, Status } = library.PsiClient.CreateWithNewKey(
+        revealIntersection
+      )
       if (Status) {
         throw new Error(Status.Message)
       }
+      return ClientConstructor(Value)
+    },
+
+    /**
+     * Create a new PSI client from a key
+     *
+     * @function
+     * @name Client.createFromKey
+     * @param {Uint8Array} key Private key as a binary Uint8Array
+     * @param {boolean} [revealIntersection=false] - If true, reveals the actual intersection instead of the cardinality.
+     * @returns {Client} A Client instance
+     */
+    createFromKey(key: Uint8Array, revealIntersection = false): Client {
+      const { Value, Status } = library.PsiClient.CreateFromKey(
+        key,
+        revealIntersection
+      )
+      if (Status) {
+        throw new Error(Status.Message)
+      }
+
       return ClientConstructor(Value)
     }
   }

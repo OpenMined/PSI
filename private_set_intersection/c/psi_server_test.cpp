@@ -39,7 +39,7 @@ void test_correctness(bool reveal_intersection) {
   ASSERT_TRUE(server_ != nullptr);
   ASSERT_TRUE(ret == 0);
   psi_client_ctx client_;
-  psi_client_create(reveal_intersection, &client_, &err);
+  psi_client_create_with_new_key(reveal_intersection, &client_, &err);
 
   ASSERT_TRUE(client_ != nullptr);
 

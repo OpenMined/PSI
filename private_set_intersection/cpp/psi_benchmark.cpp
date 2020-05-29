@@ -45,7 +45,7 @@ BENCHMARK_CAPTURE(BM_ServerSetup, 0.000001 intersection, 0.000001, true)
     ->Range(1, 1000000);
 
 void BM_ClientCreateRequest(benchmark::State& state, bool reveal_intersection) {
-  auto client = PsiClient::Create(reveal_intersection).ValueOrDie();
+  auto client = PsiClient::CreateWithNewKey(reveal_intersection).ValueOrDie();
   int num_inputs = state.range(0);
   std::vector<std::string> inputs(num_inputs);
   for (int i = 0; i < num_inputs; i++) {
@@ -74,7 +74,7 @@ BENCHMARK_CAPTURE(BM_ClientCreateRequest, intersection, true)
 
 void BM_ServerProcessRequest(benchmark::State& state,
                              bool reveal_intersection) {
-  auto client = PsiClient::Create(reveal_intersection).ValueOrDie();
+  auto client = PsiClient::CreateWithNewKey(reveal_intersection).ValueOrDie();
   auto server = PsiServer::CreateWithNewKey(reveal_intersection).ValueOrDie();
   int num_inputs = state.range(0);
   std::vector<std::string> inputs(num_inputs);
@@ -105,7 +105,7 @@ BENCHMARK_CAPTURE(BM_ServerProcessRequest, intersection, true)
 
 void BM_ClientProcessResponse(benchmark::State& state,
                               bool reveal_intersection) {
-  auto client = PsiClient::Create(reveal_intersection).ValueOrDie();
+  auto client = PsiClient::CreateWithNewKey(reveal_intersection).ValueOrDie();
   auto server = PsiServer::CreateWithNewKey(reveal_intersection).ValueOrDie();
   int num_inputs = state.range(0);
   double fpr = 1. / (1000000);

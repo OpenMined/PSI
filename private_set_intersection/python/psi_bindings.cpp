@@ -29,9 +29,19 @@ PYBIND11_MODULE(_psi_bindings, m) {
   m.attr("__version__") = ::private_set_intersection::Package::kVersion;
   py::class_<psi::PsiClient>(m, "PsiClient")
       .def_static(
-          "Create",
+          "CreateWithNewKey",
           [](bool reveal_intersection) {
-            auto client = psi::PsiClient::Create(reveal_intersection);
+            auto client = psi::PsiClient::CreateWithNewKey(reveal_intersection);
+            if (!client.ok())
+              throw std::runtime_error(client.status().message());
+            return std::move(client.ValueOrDie());
+          },
+          py::call_guard<py::gil_scoped_release>())
+      .def_static(
+          "CreateFromKey",
+          [](const std::string& key_bytes, bool reveal_intersection) {
+            auto client =
+                psi::PsiClient::CreateFromKey(key_bytes, reveal_intersection);
             if (!client.ok())
               throw std::runtime_error(client.status().message());
             return std::move(client.ValueOrDie());
@@ -58,6 +68,12 @@ PYBIND11_MODULE(_psi_bindings, m) {
              const std::string& server_response) {
             return throwOrReturn(
                 obj.GetIntersectionSize(server_setup, server_response));
+          },
+          py::call_guard<py::gil_scoped_release>())
+      .def(
+          "GetPrivateKeyBytes",
+          [](const psi::PsiClient& obj) {
+            return py::bytes(obj.GetPrivateKeyBytes());
           },
           py::call_guard<py::gil_scoped_release>());
 

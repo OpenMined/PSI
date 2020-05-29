@@ -1,6 +1,7 @@
 package client
 
 import (
+	"bytes"
 	"github.com/openmined/psi/server"
 	"regexp"
 	"testing"
@@ -15,23 +16,39 @@ func generateSet(in []int64) map[int]struct{} {
 	return out
 }
 func testClientSanity(t *testing.T, revealIntersection bool) {
-	c, err := Create(revealIntersection)
-	if err != nil {
+	client, err := CreateWithNewKey(revealIntersection)
+	if err != nil || client == nil {
 		t.Errorf("Failed to create a PSI client %v", err)
 	}
-	if c == nil {
-		t.Errorf("Failed to create a PSI client: nil")
-	}
-	c.Destroy()
-	for i := 0; i < 5; i++ {
-		c.Destroy()
+
+	key, err := client.GetPrivateKeyBytes()
+	if err != nil {
+		t.Errorf("Failed to create a PSI client key %v", err)
 	}
 
-	matched, _ := regexp.MatchString(`[0-9]+[.][0-9]+[.][0-9]+(-[A-Za-z0-9]+)?`, c.Version())
+	newClient, err := CreateFromKey(key, revealIntersection)
+	if err != nil || newClient == nil {
+		t.Errorf("Failed to create a PSI client from key %v", err)
+	}
+
+	newKey, err := newClient.GetPrivateKeyBytes()
+	if err != nil {
+		t.Errorf("Failed to create a new PSI client key %v", err)
+	}
+	if !bytes.Equal(key, newKey) {
+		t.Errorf("new client invalid")
+	}
+	client.Destroy()
+	for i := 0; i < 5; i++ {
+		client.Destroy()
+	}
+
+	matched, _ := regexp.MatchString(`[0-9]+[.][0-9]+[.][0-9]+(-[A-Za-z0-9]+)?`, client.Version())
 	if !matched {
-		t.Errorf("Got invalid version %v", c.Version())
+		t.Errorf("Got invalid version %v", client.Version())
 	}
 }
+
 func TestClientSanity(t *testing.T) {
 	testClientSanity(t, true)
 	testClientSanity(t, false)
@@ -54,7 +71,7 @@ func testClientFailure(t *testing.T, revealIntersection bool) {
 			t.Errorf("GetIntersectionSize with an invalid context should fail")
 		}
 	}
-	c, _ = Create(revealIntersection)
+	c, _ = CreateWithNewKey(revealIntersection)
 	if revealIntersection {
 		_, err = c.GetIntersection("dummy1", "dummy2")
 		if err == nil {
@@ -74,7 +91,7 @@ func TestClientFailure(t *testing.T) {
 }
 
 func testClientServer(t *testing.T, revealIntersection bool) {
-	client, err := Create(revealIntersection)
+	client, err := CreateWithNewKey(revealIntersection)
 	if err != nil || client == nil {
 		t.Errorf("Failed to create a PSI client %v", err)
 	}
@@ -148,7 +165,7 @@ func benchmarkClientCreateRequest(cnt int, revealIntersection bool, b *testing.B
 	b.ReportAllocs()
 	total := 0
 	for n := 0; n < b.N; n++ {
-		client, err := Create(revealIntersection)
+		client, err := CreateWithNewKey(revealIntersection)
 		if err != nil || client == nil {
 			b.Errorf("failed to get client")
 		}
@@ -197,7 +214,7 @@ func benchmarkClientProcessResponse(cnt int, revealIntersection bool, b *testing
 	b.ReportAllocs()
 	total := 0
 	for n := 0; n < b.N; n++ {
-		client, err := Create(revealIntersection)
+		client, err := CreateWithNewKey(revealIntersection)
 		if err != nil || client == nil {
 			b.Errorf("failed to get client")
 		}

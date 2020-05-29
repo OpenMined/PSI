@@ -33,7 +33,7 @@ namespace {
 class PsiClientTest : public ::testing::Test {
  protected:
   void SetUp(bool reveal_intersection) {
-    PSI_ASSERT_OK_AND_ASSIGN(client_, PsiClient::Create(reveal_intersection));
+    PSI_ASSERT_OK_AND_ASSIGN(client_, PsiClient::CreateWithNewKey(reveal_intersection));
     PSI_ASSERT_OK_AND_ASSIGN(
         server_ec_cipher_,
         ::private_join_and_compute::ECCommutativeCipher::CreateWithNewKey(
@@ -98,6 +98,57 @@ class PsiClientTest : public ::testing::Test {
   std::unique_ptr<private_join_and_compute::ECCommutativeCipher>
       server_ec_cipher_;
 };
+
+TEST_F(PsiClientTest, TestCreatingFromKey) {
+  SetUp(false);
+  // Get the original private key
+  const std::string key_bytes = client_->GetPrivateKeyBytes();
+
+  // Test if the key size is 32 bytes.
+  EXPECT_EQ(key_bytes.length(), 32);
+
+  // Create a new client instance from the original key
+  PSI_ASSERT_OK_AND_ASSIGN(auto client1,
+                           PsiClient::CreateFromKey(key_bytes, false));
+
+  int num_client_elements = 100, num_server_elements = 1000;
+  double fpr = 0.01;
+  std::vector<std::string> client_elements(num_client_elements);
+
+  // Create elements to sign
+  for (int i = 0; i < num_client_elements; i++) {
+    client_elements[i] = absl::StrCat("Element ", i);
+  }
+
+  // Run client request.
+  PSI_ASSERT_OK_AND_ASSIGN(
+      auto client_request0,
+      client_->CreateRequest(client_elements));
+  PSI_ASSERT_OK_AND_ASSIGN(
+      auto client_request1,
+      client1->CreateRequest(client_elements));
+
+  // Both requests should be the same
+  EXPECT_EQ(client_request0, client_request1);
+
+  // Create a 31-byte key that should be equivalent to a 32-byte null-inserted
+  // key.
+  const std::string key_bytes2("bcdefghijklmnopqrstuvwxyz123456", 31);
+  PSI_ASSERT_OK_AND_ASSIGN(auto client2,
+                           PsiClient::CreateFromKey(key_bytes2, false));
+  const std::string key_bytes3("\0bcdefghijklmnopqrstuvwxyz123456", 32);
+  PSI_ASSERT_OK_AND_ASSIGN(auto client3,
+                           PsiClient::CreateFromKey(key_bytes3, false));
+
+  // Run client request.
+  PSI_ASSERT_OK_AND_ASSIGN(
+      auto client_request2,
+      client2->CreateRequest(client_elements));
+  PSI_ASSERT_OK_AND_ASSIGN(
+      auto client_request3,
+      client3->CreateRequest(client_elements));
+  EXPECT_EQ(client_request2, client_request3);
+}
 
 TEST_F(PsiClientTest, TestCorrectnessIntersection) {
   SetUp(true);
