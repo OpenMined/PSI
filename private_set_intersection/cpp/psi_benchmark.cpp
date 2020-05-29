@@ -6,8 +6,9 @@
 namespace private_set_intersection {
 namespace {
 
-void BM_ServerSetup(benchmark::State& state, double fpr) {
-  auto server = PsiServer::CreateWithNewKey(false).ValueOrDie();
+void BM_ServerSetup(benchmark::State& state, double fpr,
+                    bool reveal_intersection) {
+  auto server = PsiServer::CreateWithNewKey(reveal_intersection).ValueOrDie();
   int num_inputs = state.range(0);
   int num_client_inputs = 10000;
   std::vector<std::string> inputs(num_inputs);
@@ -30,15 +31,21 @@ void BM_ServerSetup(benchmark::State& state, double fpr) {
 }
 // Range is for the number of inputs, and the captured argument is the false
 // positive rate for 10k client queries.
-BENCHMARK_CAPTURE(BM_ServerSetup, fpr = 0.001, 0.001)
+BENCHMARK_CAPTURE(BM_ServerSetup, 0.001 size, 0.001, false)
     ->RangeMultiplier(100)
     ->Range(1, 1000000);
-BENCHMARK_CAPTURE(BM_ServerSetup, fpr = 0.000001, 0.000001)
+BENCHMARK_CAPTURE(BM_ServerSetup, 0.000001 size, 0.000001, false)
+    ->RangeMultiplier(100)
+    ->Range(1, 1000000);
+BENCHMARK_CAPTURE(BM_ServerSetup, 0.001 intersection, 0.001, true)
+    ->RangeMultiplier(100)
+    ->Range(1, 1000000);
+BENCHMARK_CAPTURE(BM_ServerSetup, 0.000001 intersection, 0.000001, true)
     ->RangeMultiplier(100)
     ->Range(1, 1000000);
 
-void BM_ClientCreateRequest(benchmark::State& state) {
-  auto client = PsiClient::Create(false).ValueOrDie();
+void BM_ClientCreateRequest(benchmark::State& state, bool reveal_intersection) {
+  auto client = PsiClient::Create(reveal_intersection).ValueOrDie();
   int num_inputs = state.range(0);
   std::vector<std::string> inputs(num_inputs);
   for (int i = 0; i < num_inputs; i++) {
@@ -58,11 +65,17 @@ void BM_ClientCreateRequest(benchmark::State& state) {
       static_cast<double>(elements_processed), benchmark::Counter::kIsRate);
 }
 // Range is for the number of inputs.
-BENCHMARK(BM_ClientCreateRequest)->RangeMultiplier(10)->Range(1, 10000);
+BENCHMARK_CAPTURE(BM_ClientCreateRequest, size, false)
+    ->RangeMultiplier(10)
+    ->Range(1, 10000);
+BENCHMARK_CAPTURE(BM_ClientCreateRequest, intersection, true)
+    ->RangeMultiplier(10)
+    ->Range(1, 10000);
 
-void BM_ServerProcessRequest(benchmark::State& state) {
-  auto client = PsiClient::Create(false).ValueOrDie();
-  auto server = PsiServer::CreateWithNewKey(false).ValueOrDie();
+void BM_ServerProcessRequest(benchmark::State& state,
+                             bool reveal_intersection) {
+  auto client = PsiClient::Create(reveal_intersection).ValueOrDie();
+  auto server = PsiServer::CreateWithNewKey(reveal_intersection).ValueOrDie();
   int num_inputs = state.range(0);
   std::vector<std::string> inputs(num_inputs);
   for (int i = 0; i < num_inputs; i++) {
@@ -83,11 +96,17 @@ void BM_ServerProcessRequest(benchmark::State& state) {
       static_cast<double>(elements_processed), benchmark::Counter::kIsRate);
 }
 // Range is for the number of inputs.
-BENCHMARK(BM_ServerProcessRequest)->RangeMultiplier(10)->Range(1, 10000);
+BENCHMARK_CAPTURE(BM_ServerProcessRequest, size, false)
+    ->RangeMultiplier(10)
+    ->Range(1, 10000);
+BENCHMARK_CAPTURE(BM_ServerProcessRequest, intersection, true)
+    ->RangeMultiplier(10)
+    ->Range(1, 10000);
 
-void BM_ClientProcessResponse(benchmark::State& state) {
-  auto client = PsiClient::Create(false).ValueOrDie();
-  auto server = PsiServer::CreateWithNewKey(false).ValueOrDie();
+void BM_ClientProcessResponse(benchmark::State& state,
+                              bool reveal_intersection) {
+  auto client = PsiClient::Create(reveal_intersection).ValueOrDie();
+  auto server = PsiServer::CreateWithNewKey(reveal_intersection).ValueOrDie();
   int num_inputs = state.range(0);
   double fpr = 1. / (1000000);
   std::vector<std::string> inputs(num_inputs);
@@ -100,15 +119,25 @@ void BM_ClientProcessResponse(benchmark::State& state) {
   std::string response = server->ProcessRequest(request).ValueOrDie();
   int64_t elements_processed = 0;
   for (auto _ : state) {
-    int64_t count = client->GetIntersectionSize(setup, response).ValueOrDie();
-    ::benchmark::DoNotOptimize(count);
+    if (reveal_intersection) {
+      auto intersection = client->GetIntersection(setup, response).ValueOrDie();
+      ::benchmark::DoNotOptimize(intersection);
+    } else {
+      int64_t count = client->GetIntersectionSize(setup, response).ValueOrDie();
+      ::benchmark::DoNotOptimize(count);
+    }
     elements_processed += num_inputs;
   }
   state.counters["ElementsProcessed"] = benchmark::Counter(
       static_cast<double>(elements_processed), benchmark::Counter::kIsRate);
 }
 // Range is for the number of inputs.
-BENCHMARK(BM_ClientProcessResponse)->RangeMultiplier(10)->Range(1, 10000);
+BENCHMARK_CAPTURE(BM_ClientProcessResponse, size, false)
+    ->RangeMultiplier(10)
+    ->Range(1, 10000);
+BENCHMARK_CAPTURE(BM_ClientProcessResponse, intersection, true)
+    ->RangeMultiplier(10)
+    ->Range(1, 10000);
 
 }  // namespace
 }  // namespace private_set_intersection
