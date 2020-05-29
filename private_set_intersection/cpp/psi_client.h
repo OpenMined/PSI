@@ -96,7 +96,8 @@ class PsiClient {
   // learned.
   //
   // Returns INTERNAL if any OpenSSL crypto operations fail.
-  static StatusOr<std::unique_ptr<PsiClient>> CreateWithNewKey(bool reveal_intersection);
+  static StatusOr<std::unique_ptr<PsiClient>> CreateWithNewKey(
+      bool reveal_intersection);
 
   // Creates and returns a new client instance with the provided private key.
   // If `reveal_intersection` is true, the client learns the elements in the

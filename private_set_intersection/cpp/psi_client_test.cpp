@@ -33,7 +33,8 @@ namespace {
 class PsiClientTest : public ::testing::Test {
  protected:
   void SetUp(bool reveal_intersection) {
-    PSI_ASSERT_OK_AND_ASSIGN(client_, PsiClient::CreateWithNewKey(reveal_intersection));
+    PSI_ASSERT_OK_AND_ASSIGN(client_,
+                             PsiClient::CreateWithNewKey(reveal_intersection));
     PSI_ASSERT_OK_AND_ASSIGN(
         server_ec_cipher_,
         ::private_join_and_compute::ECCommutativeCipher::CreateWithNewKey(
@@ -121,12 +122,10 @@ TEST_F(PsiClientTest, TestCreatingFromKey) {
   }
 
   // Run client request.
-  PSI_ASSERT_OK_AND_ASSIGN(
-      auto client_request0,
-      client_->CreateRequest(client_elements));
-  PSI_ASSERT_OK_AND_ASSIGN(
-      auto client_request1,
-      client1->CreateRequest(client_elements));
+  PSI_ASSERT_OK_AND_ASSIGN(auto client_request0,
+                           client_->CreateRequest(client_elements));
+  PSI_ASSERT_OK_AND_ASSIGN(auto client_request1,
+                           client1->CreateRequest(client_elements));
 
   // Both requests should be the same
   EXPECT_EQ(client_request0, client_request1);
@@ -141,12 +140,10 @@ TEST_F(PsiClientTest, TestCreatingFromKey) {
                            PsiClient::CreateFromKey(key_bytes3, false));
 
   // Run client request.
-  PSI_ASSERT_OK_AND_ASSIGN(
-      auto client_request2,
-      client2->CreateRequest(client_elements));
-  PSI_ASSERT_OK_AND_ASSIGN(
-      auto client_request3,
-      client3->CreateRequest(client_elements));
+  PSI_ASSERT_OK_AND_ASSIGN(auto client_request2,
+                           client2->CreateRequest(client_elements));
+  PSI_ASSERT_OK_AND_ASSIGN(auto client_request3,
+                           client3->CreateRequest(client_elements));
   EXPECT_EQ(client_request2, client_request3);
 }
 
