@@ -55,7 +55,6 @@ jobs:
     strategy:
       matrix:
         os: [macos-latest, ubuntu-18.04]
-
     steps:
       - name: Install toolchains
         uses: actions/setup-go@v2
