@@ -53,13 +53,14 @@ import (
 )
 
 func main(){
-    psiServer, err := server.CreateWithNewKey()
+    revealIntersection := false
+    psiServer, err := server.CreateWithNewKey(revealIntersection)
     if err == nil {
         fmt.Println("server loaded")
         psiServer.Destroy()
     }
 
-    psiClient, err := client.Create()
+    psiClient, err := client.Create(revealIntersection)
     if err == nil  {
         fmt.Println("client loaded")
         psiClient.Destroy()
