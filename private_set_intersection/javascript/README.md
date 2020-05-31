@@ -21,7 +21,7 @@ import PSI from '@openmined/psi.js'
 const psi = await PSI()
 
 const server = psi.server.createWithNewKey()
-const client = psi.client.create()
+const client = psi.client.createWithNewKey()
 ```
 
 By **default**, the package will use the `combined` build with the `wasm` variant for getting started.
@@ -43,7 +43,7 @@ import PSI from '@openmined/psi.js/client/js/es'
 
 const psi = await PSI()
 
-const client = psi.client.create()
+const client = psi.client.createWithNewKey()
 // PSI.server is not implemented
 ```
 
@@ -76,7 +76,7 @@ import PSI from '@openmined/psi.js/combined/js/es'
 const psi = await PSI()
 
 const server = psi.server.createWithNewKey()
-const client = psi.client.create()
+const client = psi.client.createWithNewKey()
 ```
 
 ## Example
@@ -87,7 +87,7 @@ const psi = await PSI()
 
 // Create new server and client instances
 const server = psi.server.createWithNewKey()
-const client = psi.client.create()
+const client = psi.client.createWithNewKey()
 
 // Define mutually agreed upon parameters
 const fpr = 0.001 // false positive rate (0.1%)
@@ -97,13 +97,13 @@ const numTotalElements = 100 // Maximum size of the server set
 // Example server set of data
 const serverInputs = Array.from(
   { length: numTotalElements },
-  (_, i) => `Element ${i}`
+  (_, i) => `Element ${i * 2}`
 )
 
 // Example client set of data to check
 const clientInputs = Array.from(
   { length: numClientElements },
-  (_, i) => `Element ${i * 2}`
+  (_, i) => `Element ${i}`
 )
 
 // Create the setup message that will later

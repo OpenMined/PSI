@@ -40,7 +40,7 @@ void test_corectness(bool reveal_intersection) {
   psi_client_ctx client_;
 
   char *err;
-  int ret = psi_client_create(reveal_intersection, &client_, &err);
+  int ret = psi_client_create_with_new_key(reveal_intersection, &client_, &err);
   ASSERT_TRUE(client_ != nullptr);
   ASSERT_TRUE(ret == 0);
   constexpr int num_client_elements = 1000, num_server_elements = 10000;

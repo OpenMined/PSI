@@ -41,7 +41,7 @@ TEST_F(PsiServerTest, TestCorrectnessIntersection) {
   SetUp(true);
   // We use an actual client instance here, since we already test the client
   // on its own in psi_client_test.cpp.
-  PSI_ASSERT_OK_AND_ASSIGN(auto client, PsiClient::Create(true));
+  PSI_ASSERT_OK_AND_ASSIGN(auto client, PsiClient::CreateWithNewKey(true));
   int num_client_elements = 1000, num_server_elements = 10000;
   double fpr = 0.01;
   std::vector<std::string> client_elements(num_client_elements);
@@ -90,7 +90,7 @@ TEST_F(PsiServerTest, TestCorrectnessIntersectionSize) {
   SetUp(false);
   // We use an actual client instance here, since we already test the client
   // on its own in psi_client_test.cpp.
-  PSI_ASSERT_OK_AND_ASSIGN(auto client, PsiClient::Create(false));
+  PSI_ASSERT_OK_AND_ASSIGN(auto client, PsiClient::CreateWithNewKey(false));
   int num_client_elements = 1000, num_server_elements = 10000;
   double fpr = 0.01;
   std::vector<std::string> client_elements(num_client_elements);
@@ -130,7 +130,7 @@ TEST_F(PsiServerTest, TestCorrectnessIntersectionSize) {
 
 TEST_F(PsiServerTest, TestArrayIsSortedWhenNotRevealingIntersection) {
   SetUp(false);
-  PSI_ASSERT_OK_AND_ASSIGN(auto client, PsiClient::Create(false));
+  PSI_ASSERT_OK_AND_ASSIGN(auto client, PsiClient::CreateWithNewKey(false));
   int num_client_elements = 1000;
   std::vector<std::string> client_elements(num_client_elements);
   for (int i = 0; i < num_client_elements; i++) {

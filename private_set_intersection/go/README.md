@@ -60,7 +60,7 @@ func main(){
         psiServer.Destroy()
     }
 
-    psiClient, err := client.Create(revealIntersection)
+    psiClient, err := client.CreateWithNewKey(revealIntersection)
     if err == nil  {
         fmt.Println("client loaded")
         psiClient.Destroy()

@@ -75,7 +75,7 @@ export const PSIConstructor = ({
      * @example
      * import PSI from '@openmined/psi.js'
      * const psi = await PSI()
-     * const client = psi.client.create()
+     * const client = psi.client.createWithNewKey()
      */
     ...(clientWrapper && { client: clientWrapper })
   }

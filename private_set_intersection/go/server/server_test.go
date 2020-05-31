@@ -83,7 +83,7 @@ func testServerFailure(t *testing.T, revealIntersection bool) {
 		t.Errorf("ProcessRequest should fail with an invalid input %v", err)
 	}
 
-	client, err := client.Create(!revealIntersection)
+	client, err := client.CreateWithNewKey(!revealIntersection)
 	if err != nil || client == nil {
 		t.Errorf("Failed to create a PSI client %v", err)
 	}
@@ -105,7 +105,7 @@ func TestServerFailure(t *testing.T) {
 }
 
 func testServerClient(t *testing.T, revealIntersection bool) {
-	client, err := client.Create(revealIntersection)
+	client, err := client.CreateWithNewKey(revealIntersection)
 	if err != nil || client == nil {
 		t.Errorf("Failed to create a PSI client %v", err)
 	}
@@ -226,7 +226,7 @@ func benchmarkServerProcessRequest(cnt int, revealIntersection bool, b *testing.
 	b.ReportAllocs()
 	total := 0
 	for n := 0; n < b.N; n++ {
-		client, err := client.Create(revealIntersection)
+		client, err := client.CreateWithNewKey(revealIntersection)
 		if err != nil || client == nil {
 			b.Errorf("failed to get client")
 		}

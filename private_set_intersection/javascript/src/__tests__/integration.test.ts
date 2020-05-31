@@ -8,7 +8,7 @@ beforeAll(async () => {
 
 describe('PSI Integration', () => {
   test('It should return the intersection', async () => {
-    const client = psi.client!.create(true)
+    const client = psi.client!.createWithNewKey(true)
     const key = Uint8Array.from(
       // eslint-disable-next-line no-undef
       Buffer.from('djY2Bgt4JwfbjvJn6dDzpwrTvKWVE1Ks458mlrd1/tY=', 'base64')
@@ -40,7 +40,7 @@ describe('PSI Integration', () => {
     expect(intersection.length).toBeLessThan((numClientElements / 2) * 1.1)
   })
   test('It should return the intersection size', async () => {
-    const client = psi.client!.create()
+    const client = psi.client!.createWithNewKey()
     const key = Uint8Array.from(
       // eslint-disable-next-line no-undef
       Buffer.from('djY2Bgt4JwfbjvJn6dDzpwrTvKWVE1Ks458mlrd1/tY=', 'base64')

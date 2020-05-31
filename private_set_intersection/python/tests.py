@@ -6,13 +6,13 @@ import private_set_intersection.python as psi
 
 @pytest.mark.parametrize("reveal_intersection", [False, True])
 def test_sanity(reveal_intersection):
-    c = psi.client.Create(reveal_intersection)
+    c = psi.client.CreateWithNewKey(reveal_intersection)
     assert c != None
 
 
 @pytest.mark.parametrize("reveal_intersection", [False, True])
 def test_client_server(reveal_intersection):
-    c = psi.client.Create(reveal_intersection)
+    c = psi.client.CreateWithNewKey(reveal_intersection)
     s = psi.server.CreateWithNewKey(reveal_intersection)
 
     client_items = ["Element " + str(i) for i in range(1000)]
@@ -43,7 +43,7 @@ def test_version():
 
 
 @pytest.mark.parametrize("reveal_intersection", [False, True])
-def test_sanity(reveal_intersection):
+def test_server_sanity(reveal_intersection):
     s = psi.server.CreateWithNewKey(reveal_intersection)
     assert s != None
 
@@ -57,8 +57,22 @@ def test_sanity(reveal_intersection):
 
 
 @pytest.mark.parametrize("reveal_intersection", [False, True])
+def test_client_sanity(reveal_intersection):
+    c = psi.client.CreateWithNewKey(reveal_intersection)
+    assert c != None
+
+    key = c.GetPrivateKeyBytes()
+    assert key != None
+
+    other = psi.client.CreateFromKey(key, reveal_intersection)
+    newkey = other.GetPrivateKeyBytes()
+
+    assert key == newkey
+
+
+@pytest.mark.parametrize("reveal_intersection", [False, True])
 def test_server_client(reveal_intersection):
-    c = psi.client.Create(reveal_intersection)
+    c = psi.client.CreateWithNewKey(reveal_intersection)
     s = psi.server.CreateWithNewKey(reveal_intersection)
 
     client_items = ["Element " + str(i) for i in range(1000)]
@@ -85,7 +99,7 @@ def test_server_client(reveal_intersection):
 
 @pytest.mark.parametrize("reveal_intersection", [False, True])
 def test_empty_intersection(reveal_intersection):
-    c = psi.client.Create(reveal_intersection)
+    c = psi.client.CreateWithNewKey(reveal_intersection)
     s = psi.server.CreateWithNewKey(reveal_intersection)
 
     client_items = ["Element " + str(i) for i in range(1000)]

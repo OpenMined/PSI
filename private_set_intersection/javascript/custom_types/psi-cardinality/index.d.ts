@@ -55,6 +55,7 @@ declare module 'psi_*' {
       serverSetup: string,
       serverResponse: string
     ) => GetIntersectionSizeResult
+    readonly GetPrivateKeyBytes: () => Uint8Array
   }
 
   export type Package = {
@@ -81,7 +82,13 @@ declare module 'psi_*' {
     ) => GetIntersectionSizeResult
     readonly GetPrivateKeyBytes: () => Uint8Array
     readonly PsiClient: {
-      readonly Create: (revealIntersection: boolean) => CreateClientResult
+      readonly CreateWithNewKey: (
+        revealIntersection: boolean
+      ) => CreateClientResult
+      readonly CreateFromKey: (
+        key: Uint8Array,
+        revealIntersection: boolean
+      ) => CreateClientResult
     }
     readonly PsiServer: {
       readonly CreateWithNewKey: (

@@ -80,12 +80,14 @@ type PsiClient struct {
 	context C.psi_client_ctx
 }
 
-//Create returns a new PSI client
-func Create(revealIntersection bool) (*PsiClient, error) {
+//CreateWithNewKey creates and returns a new client instance with a fresh private key.
+//
+//Returns an error if any crypto operations fail.
+func CreateWithNewKey(revealIntersection bool) (*PsiClient, error) {
 	psiClient := new(PsiClient)
 
 	var err *C.char
-	rcode := C.psi_client_create(C.bool(revealIntersection), &psiClient.context, &err)
+	rcode := C.psi_client_create_with_new_key(C.bool(revealIntersection), &psiClient.context, &err)
 	if rcode != 0 {
 		return nil, fmt.Errorf("failed to create client context: %v(%v)", psiClient.loadCString(&err), rcode)
 	}
@@ -94,6 +96,31 @@ func Create(revealIntersection bool) (*PsiClient, error) {
 	}
 
 	runtime.SetFinalizer(psiClient, func(c *PsiClient) { c.Destroy() })
+	return psiClient, nil
+}
+
+//CreateFromKey creates and returns a new client instance with the provided private key.
+//
+//Returns an error if any crypto operations fail.
+func CreateFromKey(key []byte, revealIntersection bool) (*PsiClient, error) {
+	psiClient := new(PsiClient)
+
+	var err *C.char
+	rcode := C.psi_client_create_from_key(C.struct_psi_client_buffer_t{
+		buff:     (*C.char)(C.CBytes(key)),
+		buff_len: C.size_t(len(key)),
+	},
+		C.bool(revealIntersection),
+		&psiClient.context, &err)
+
+	if rcode != 0 {
+		return nil, fmt.Errorf("failed to create client context: %v(%v)", psiClient.loadCString(&err), rcode)
+	}
+	if psiClient.context == nil {
+		return nil, errors.New("failed to create client context: Context is NULL. This should never happen")
+	}
+
+	runtime.SetFinalizer(psiClient, func(s *PsiClient) { s.Destroy() })
 	return psiClient, nil
 }
 
@@ -205,6 +232,29 @@ func (c *PsiClient) GetIntersectionSize(serverSetup, serverResponse string) (int
 		return 0, fmt.Errorf("process response failed: %v(%v)", c.loadCString(&err), rcode)
 	}
 	return int64(result), nil
+}
+
+//GetPrivateKeyBytes returns this instance's private key. This key should only be used to
+//create other client instances. DO NOT SEND THIS KEY TO ANY OTHER PARTY!
+func (c *PsiClient) GetPrivateKeyBytes() ([]byte, error) {
+	if c.context == nil {
+		return nil, errors.New("invalid context")
+	}
+
+	var out *C.char
+	var outlen C.size_t
+	var err *C.char
+
+	rcode := C.psi_client_get_private_key_bytes(c.context, &out, &outlen, &err)
+
+	if rcode != 0 {
+		return nil, fmt.Errorf("get private keys failed: %v(%v)", c.loadCString(&err), rcode)
+	}
+
+	// Convert C array to a Go slice. Private Keys are guaranteed to be 32 bytes long.
+	result := C.GoBytes(unsafe.Pointer(out), 32)
+
+	return result, nil
 }
 
 //Destroy frees the C context.
