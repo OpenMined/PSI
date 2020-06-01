@@ -81,7 +81,7 @@ module.exports = {
   //   compilerOptions.paths /*, { prefix: '<rootDir>/' } */
   // ),
   moduleNameMapper: {
-    '^psi_cardinality(.*)$': '<rootDir>/bin/psi_cardinality$1'
+    'psi_(.*)$': '<rootDir>/bin/psi_$1'
   },
 
   // An array of regexp pattern strings, matched against all module paths before considered 'visible' to the module loader
@@ -115,7 +115,7 @@ module.exports = {
   // restoreMocks: false,
 
   // The root directory that Jest should scan for tests and modules within
-  rootDir: './psi_cardinality/javascript',
+  rootDir: './private_set_intersection/javascript',
 
   // A list of paths to directories that Jest should use to search for files in
   // roots: [
