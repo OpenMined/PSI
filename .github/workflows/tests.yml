@@ -14,6 +14,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Run tests
+        timeout-minutes: 15
         run: .github/workflows/scripts/run_tests_core.sh
       - name: Linters
         run: .github/workflows/scripts/lint_cpp.sh
@@ -27,6 +28,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Run tests
+        timeout-minutes: 15
         run: .github/workflows/scripts/run_tests_js.sh
 
 
@@ -49,6 +51,7 @@ jobs:
       - name: Python linters
         run: .github/workflows/scripts/lint_python.sh
       - name: Run tests
+        timeout-minutes: 15
         run: .github/workflows/scripts/run_tests_python.sh
 
 
@@ -70,4 +73,5 @@ jobs:
       - name: Go linters
         run: .github/workflows/scripts/lint_go.sh
       - name: Run tests
+        timeout-minutes: 15
         run: .github/workflows/scripts/run_tests_go.sh
