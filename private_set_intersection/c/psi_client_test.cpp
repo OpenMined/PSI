@@ -37,11 +37,11 @@ class PsiClientTest : public ::testing::Test {
 };
 
 void test_corectness(bool reveal_intersection) {
-  psi_client_ctx client_;
+  psi_client_ctx client;
 
   char *err;
-  int ret = psi_client_create_with_new_key(reveal_intersection, &client_, &err);
-  ASSERT_TRUE(client_ != nullptr);
+  int ret = psi_client_create_with_new_key(reveal_intersection, &client, &err);
+  ASSERT_TRUE(client != nullptr);
   ASSERT_TRUE(ret == 0);
   constexpr int num_client_elements = 1000, num_server_elements = 10000;
   double fpr = 0.01;
@@ -82,7 +82,7 @@ void test_corectness(bool reveal_intersection) {
   // Compute client request.
   char *client_request = {0};
   size_t req_len = 0;
-  ret = psi_client_create_request(client_, client_elements.data(),
+  ret = psi_client_create_request(client, client_elements.data(),
                                   client_elements.size(), &client_request,
                                   &req_len, &err);
 
@@ -132,7 +132,7 @@ void test_corectness(bool reveal_intersection) {
   if (reveal_intersection) {
     int64_t *intersection;
     size_t intersectlen;
-    psi_client_get_intersection(client_, server_setup.c_str(),
+    psi_client_get_intersection(client, server_setup.c_str(),
                                 server_response.c_str(), &intersection,
                                 &intersectlen, &err);
 
@@ -149,7 +149,7 @@ void test_corectness(bool reveal_intersection) {
     }
   } else {
     int64_t intersection_size = 0;
-    ret = psi_client_get_intersection_size(client_, server_setup.c_str(),
+    ret = psi_client_get_intersection_size(client, server_setup.c_str(),
                                            server_response.c_str(),
                                            &intersection_size, &err);
     ASSERT_TRUE(ret == 0);
@@ -161,9 +161,9 @@ void test_corectness(bool reveal_intersection) {
   }
   free(client_request);
 
-  psi_client_delete(&client_);
+  psi_client_delete(&client);
 
-  ASSERT_TRUE(client_ == nullptr);
+  ASSERT_TRUE(client == nullptr);
 }
 TEST_F(PsiClientTest, TestCorrectnessSize) { test_corectness(false); }
 

@@ -33,15 +33,15 @@ class PsiServerTest : public ::testing::Test {
 };
 
 void test_correctness(bool reveal_intersection) {
-  psi_server_ctx server_;
+  psi_server_ctx server;
   char *err;
-  int ret = psi_server_create_with_new_key(reveal_intersection, &server_, &err);
-  ASSERT_TRUE(server_ != nullptr);
+  int ret = psi_server_create_with_new_key(reveal_intersection, &server, &err);
+  ASSERT_TRUE(server != nullptr);
   ASSERT_TRUE(ret == 0);
-  psi_client_ctx client_;
-  psi_client_create_with_new_key(reveal_intersection, &client_, &err);
+  psi_client_ctx client;
+  psi_client_create_with_new_key(reveal_intersection, &client, &err);
 
-  ASSERT_TRUE(client_ != nullptr);
+  ASSERT_TRUE(client != nullptr);
 
   int num_client_elements = 1000, num_server_elements = 10000;
   double fpr = 0.01;
@@ -67,7 +67,7 @@ void test_correctness(bool reveal_intersection) {
   char *server_setup = nullptr;
   size_t server_setup_buff_len = 0;
   psi_server_create_setup_message(
-      server_, fpr, num_client_elements, server_elements.data(),
+      server, fpr, num_client_elements, server_elements.data(),
       server_elements.size(), &server_setup, &server_setup_buff_len, &err);
 
   ASSERT_TRUE(server_setup != nullptr);
@@ -76,7 +76,7 @@ void test_correctness(bool reveal_intersection) {
   // Create Client request.
   char *client_request = {0};
   size_t req_len = 0;
-  ret = psi_client_create_request(client_, client_elements.data(),
+  ret = psi_client_create_request(client, client_elements.data(),
                                   client_elements.size(), &client_request,
                                   &req_len, &err);
 
@@ -87,7 +87,7 @@ void test_correctness(bool reveal_intersection) {
   // Create Server response.
   char *server_response = nullptr;
   size_t response_len = 0;
-  ret = psi_server_process_request(server_, {client_request, req_len},
+  ret = psi_server_process_request(server, {client_request, req_len},
                                    &server_response, &response_len, &err);
   ASSERT_TRUE(server_response != nullptr);
   ASSERT_TRUE(response_len >= 0);
@@ -97,7 +97,7 @@ void test_correctness(bool reveal_intersection) {
     // Compute intersection.
     int64_t *intersection;
     size_t intersectlen;
-    psi_client_get_intersection(client_, server_setup, server_response,
+    psi_client_get_intersection(client, server_setup, server_response,
                                 &intersection, &intersectlen, &err);
 
     absl::flat_hash_set<int64_t> intersection_set(intersection,
@@ -115,7 +115,7 @@ void test_correctness(bool reveal_intersection) {
   } else {
     // Compute intersection size.
     int64_t intersection_size = 0;
-    psi_client_get_intersection_size(client_, server_setup, server_response,
+    psi_client_get_intersection_size(client, server_setup, server_response,
                                      &intersection_size, &err);
 
     // Test if size is approximately as expected (up to 10%).
@@ -126,8 +126,8 @@ void test_correctness(bool reveal_intersection) {
   free(server_response);
   free(client_request);
 
-  psi_server_delete(&server_);
-  ASSERT_TRUE(server_ == nullptr);
+  psi_server_delete(&server);
+  ASSERT_TRUE(server == nullptr);
 }
 
 TEST_F(PsiServerTest, TestCorrectnessSize) { test_correctness(false); }
