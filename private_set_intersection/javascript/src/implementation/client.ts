@@ -56,7 +56,7 @@ const ClientConstructor = (instance: psi.Client): Client => {
 
     /**
      * Creates a request message to be sent to the server. For each input element
-     * x, computes H(x)^c, where c is the secret key of ec_cipher_. The result is
+     * x, computes H(x)^c, where c is the client's secret key. The result is
      * sorted to hide the initial ordering of `inputs` and encoded as a JSON
      * array.
      *
@@ -81,7 +81,7 @@ const ClientConstructor = (instance: psi.Client): Client => {
      * argument, `setup`, is a bloom filter that encodes encrypted server
      * elements and is sent by the server in a setup phase. The second argument,
      * `response`, is the response received from the server after sending
-     * the result of `CreateRequest`.
+     * the result of `createRequest`.
      *
      * @function
      * @name Client#getIntersection
@@ -105,7 +105,7 @@ const ClientConstructor = (instance: psi.Client): Client => {
      * argument, `setup`, is a bloom filter that encodes encrypted server
      * elements and is sent by the server in a setup phase. The second argument,
      * `response`, is the response received from the server after sending
-     * the result of `CreateRequest`.
+     * the result of `createRequest`.
      *
      * @function
      * @name Client#getIntersectionSize
@@ -169,7 +169,7 @@ export const ClientWrapperConstructor = ({
      * Create a new PSI client from a key
      *
      * WARNING: This function should be used with caution, since reusing the client key for multiple requests can reveal
-     * information about the input sets. If in doubt, use `CreateWithNewKey`.
+     * information about the input sets. If in doubt, use `createWithNewKey`.
      *
      * @function
      * @name Client.createFromKey
