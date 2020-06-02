@@ -104,6 +104,10 @@ class PsiClient {
   // intersection of the two datasets. Otherwise, only the intersection size is
   // learned.
   //
+  // WARNING: This function should be used with caution, since reusing the
+  // client key for multiple requests can reveal information about the input
+  // sets. If in doubt, use `CreateWithNewKey`.
+  //
   // Returns INTERNAL if any OpenSSL crypto operations fail.
   static StatusOr<std::unique_ptr<PsiClient>> CreateFromKey(
       const std::string& key_bytes, bool reveal_intersection);

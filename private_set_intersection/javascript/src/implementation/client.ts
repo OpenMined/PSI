@@ -168,6 +168,9 @@ export const ClientWrapperConstructor = ({
     /**
      * Create a new PSI client from a key
      *
+     * WARNING: This function should be used with caution, since reusing the client key for multiple requests can reveal
+     * information about the input sets. If in doubt, use `CreateWithNewKey`.
+     *
      * @function
      * @name Client.createFromKey
      * @param {Uint8Array} key Private key as a binary Uint8Array

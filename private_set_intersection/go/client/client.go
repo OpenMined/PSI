@@ -1,4 +1,4 @@
-//Package client for the client-side of the Private Set Intersection protocol.
+// Package client for the client-side of the Private Set Intersection protocol.
 //
 // In PSI, two parties (client and server) each hold a dataset, and at
 // the end of the protocol the client learns the size of the intersection of
@@ -75,12 +75,15 @@ import (
 	"unsafe"
 )
 
-//PsiClient context for the client side of a Private Set Intersection protocol.
+// PsiClient context for the client side of a Private Set Intersection protocol.
 type PsiClient struct {
 	context C.psi_client_ctx
 }
 
-//CreateWithNewKey creates and returns a new client instance with a fresh private key.
+// CreateWithNewKey creates and returns a new client instance with a fresh private key.
+// WARNING: This function should be used with caution, since reusing the
+// client key for multiple requests can reveal information about the input
+// sets. If in doubt, use `CreateWithNewKey`.
 //
 //Returns an error if any crypto operations fail.
 func CreateWithNewKey(revealIntersection bool) (*PsiClient, error) {
@@ -99,9 +102,9 @@ func CreateWithNewKey(revealIntersection bool) (*PsiClient, error) {
 	return psiClient, nil
 }
 
-//CreateFromKey creates and returns a new client instance with the provided private key.
+// CreateFromKey creates and returns a new client instance with the provided private key.
 //
-//Returns an error if any crypto operations fail.
+// Returns an error if any crypto operations fail.
 func CreateFromKey(key []byte, revealIntersection bool) (*PsiClient, error) {
 	psiClient := new(PsiClient)
 
@@ -124,12 +127,12 @@ func CreateFromKey(key []byte, revealIntersection bool) (*PsiClient, error) {
 	return psiClient, nil
 }
 
-//CreateRequest generates a request message to be sent to the server. For each input
-//element x, computes H(x)^c, where c is the secret key of ec_cipher. The
-//result is sorted to hide the initial ordering of `rawInput` and encoded as
-//a JSON array.
+// CreateRequest generates a request message to be sent to the server. For each input
+// element x, computes H(x)^c, where c is the secret key of ec_cipher. The
+// result is sorted to hide the initial ordering of `rawInput` and encoded as
+// a JSON array.
 //
-//Returns an error if the context is invalid or if the encryption fails.
+// Returns an error if the context is invalid or if the encryption fails.
 func (c *PsiClient) CreateRequest(rawInput []string) (string, error) {
 	if c.context == nil {
 		return "", errors.New("invalid context")
@@ -160,16 +163,16 @@ func (c *PsiClient) CreateRequest(rawInput []string) (string, error) {
 	return c.loadCString(&out), nil
 }
 
-//GetIntersection processes the server's response and returns the intersection of the client
-//and server inputs. Use this function if this instance was created with
-//`reveal_intersection = true`. The first argument, `server_setup`, is a
-//bloom filter that encodes encrypted server elements and is sent by the
-//server in a setup phase. The second argument, `server_response`, is the
-//response received from the server after sending the result of
-//`CreateRequest`.
+// GetIntersection processes the server's response and returns the intersection of the client
+// and server inputs. Use this function if this instance was created with
+// `reveal_intersection = true`. The first argument, `server_setup`, is a
+// bloom filter that encodes encrypted server elements and is sent by the
+// server in a setup phase. The second argument, `server_response`, is the
+// response received from the server after sending the result of
+// `CreateRequest`.
 //
-//Returns INVALID_ARGUMENT if any input messages are malformed, or INTERNAL
-//if decryption fails.
+// Returns INVALID_ARGUMENT if any input messages are malformed, or INTERNAL
+// if decryption fails.
 func (c *PsiClient) GetIntersection(serverSetup, serverResponse string) ([]int64, error) {
 	if c.context == nil {
 		return nil, errors.New("invalid context")
@@ -234,8 +237,8 @@ func (c *PsiClient) GetIntersectionSize(serverSetup, serverResponse string) (int
 	return int64(result), nil
 }
 
-//GetPrivateKeyBytes returns this instance's private key. This key should only be used to
-//create other client instances. DO NOT SEND THIS KEY TO ANY OTHER PARTY!
+// GetPrivateKeyBytes returns this instance's private key. This key should only be used to
+// create other client instances. DO NOT SEND THIS KEY TO ANY OTHER PARTY!
 func (c *PsiClient) GetPrivateKeyBytes() ([]byte, error) {
 	if c.context == nil {
 		return nil, errors.New("invalid context")
@@ -257,7 +260,7 @@ func (c *PsiClient) GetPrivateKeyBytes() ([]byte, error) {
 	return result, nil
 }
 
-//Destroy frees the C context.
+// Destroy frees the C context.
 func (c *PsiClient) Destroy() {
 	if c.context == nil {
 		return
@@ -266,7 +269,7 @@ func (c *PsiClient) Destroy() {
 	c.context = nil
 }
 
-//Version of the library.
+// Version of the library.
 func (c *PsiClient) Version() string {
 	return version.Version()
 }

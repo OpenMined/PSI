@@ -6,7 +6,7 @@ package version
 import "C"
 import ()
 
-//Version of the library
+// Version of the library.
 func Version() string {
 	return C.GoString(C.psi_version())
 }

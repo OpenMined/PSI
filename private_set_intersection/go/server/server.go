@@ -1,4 +1,4 @@
-//Package server for the server-side of the Private Set Intersection protocol.
+// Package server for the server-side of the Private Set Intersection protocol.
 //
 // In PSI, two parties (client and server) each hold a dataset, and at
 // the end of the protocol the client learns the size of the intersection of
@@ -75,14 +75,14 @@ import (
 	"unsafe"
 )
 
-//PsiServer context for the server side of a Private Set Intersection protocol.
+// PsiServer context for the server side of a Private Set Intersection protocol.
 type PsiServer struct {
 	context C.psi_server_ctx
 }
 
-//CreateWithNewKey creates and returns a new server instance with a fresh private key.
+// CreateWithNewKey creates and returns a new server instance with a fresh private key.
 //
-//Returns an error if any crypto operations fail.
+// Returns an error if any crypto operations fail.
 func CreateWithNewKey(revealIntersection bool) (*PsiServer, error) {
 	psiServer := new(PsiServer)
 
@@ -99,9 +99,9 @@ func CreateWithNewKey(revealIntersection bool) (*PsiServer, error) {
 	return psiServer, nil
 }
 
-//CreateFromKey creates and returns a new server instance with the provided private key.
+// CreateFromKey creates and returns a new server instance with the provided private key.
 //
-//Returns an error if any crypto operations fail.
+// Returns an error if any crypto operations fail.
 func CreateFromKey(key []byte, revealIntersection bool) (*PsiServer, error) {
 	psiServer := new(PsiServer)
 
@@ -124,21 +124,21 @@ func CreateFromKey(key []byte, revealIntersection bool) (*PsiServer, error) {
 	return psiServer, nil
 }
 
-//CreateSetupMessage creates a setup message from the server's dataset to be sent to the
-//client. The setup message is a JSON-encoded Bloom filter containing
-//H(x)^s for each element x in `rawInput`, where s is the server's secret
-//key. The message has the following form:
+// CreateSetupMessage creates a setup message from the server's dataset to be sent to the
+// client. The setup message is a JSON-encoded Bloom filter containing
+// H(x)^s for each element x in `rawInput`, where s is the server's secret
+// key. The message has the following form:
 //
 //   {
 //     "num_hash_functions": <int>,
 //     "bits": <string>
 //   }
 //
-//`bits` is encoded as Base64.
-//The false-positive rate `fpr` is the probability that any query of size
-//`num_client_inputs` will result in a false positive.
+// `bits` is encoded as Base64.
+// The false-positive rate `fpr` is the probability that any query of size
+// `num_client_inputs` will result in a false positive.
 //
-//Returns an error if the context is invalid or if the encryption fails.
+// Returns an error if the context is invalid or if the encryption fails.
 func (s *PsiServer) CreateSetupMessage(fpr float64, inputCount int64, rawInput []string) (string, error) {
 	if s.context == nil {
 		return "", errors.New("invalid context")
@@ -169,17 +169,17 @@ func (s *PsiServer) CreateSetupMessage(fpr float64, inputCount int64, rawInput [
 	return result, nil
 }
 
-//ProcessRequest processes a client query and returns the corresponding server response to
-//be sent to the client.
+// ProcessRequest processes a client query and returns the corresponding server response to
+// be sent to the client.
 //
-//For each encrypted element H(x)^c in the decoded `client_request`, computes
-//(H(x)^c)^s = H(X)^(cs) and returns these as a
-//sorted JSON array. Sorting the output prevents the client from matching
-//the individual response elements to the ones in the request, ensuring
-//that they can only learn the intersection size but not individual
-//elements in the intersection.
+// For each encrypted element H(x)^c in the decoded `client_request`, computes
+// (H(x)^c)^s = H(X)^(cs) and returns these as a
+// sorted JSON array. Sorting the output prevents the client from matching
+// the individual response elements to the ones in the request, ensuring
+// that they can only learn the intersection size but not individual
+// elements in the intersection.
 //
-//Returns an error if the context is invalid.
+// Returns an error if the context is invalid.
 func (s *PsiServer) ProcessRequest(request string) (string, error) {
 	if s.context == nil {
 		return "", errors.New("invalid context")
@@ -206,8 +206,8 @@ func (s *PsiServer) ProcessRequest(request string) (string, error) {
 
 }
 
-//GetPrivateKeyBytes returns this instance's private key. This key should only be used to
-//create other server instances. DO NOT SEND THIS KEY TO ANY OTHER PARTY!
+// GetPrivateKeyBytes returns this instance's private key. This key should only be used to
+// create other server instances. DO NOT SEND THIS KEY TO ANY OTHER PARTY!
 func (s *PsiServer) GetPrivateKeyBytes() ([]byte, error) {
 	if s.context == nil {
 		return nil, errors.New("invalid context")
@@ -229,7 +229,7 @@ func (s *PsiServer) GetPrivateKeyBytes() ([]byte, error) {
 	return result, nil
 }
 
-//Destroy frees the C context.
+// Destroy frees the C context.
 func (s *PsiServer) Destroy() {
 	if s.context == nil {
 		return
@@ -238,7 +238,7 @@ func (s *PsiServer) Destroy() {
 	s.context = nil
 }
 
-//Version of the library.
+// Version of the library.
 func (s *PsiServer) Version() string {
 	return version.Version()
 }
