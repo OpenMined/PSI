@@ -18,7 +18,10 @@ declare module 'psi_*' {
   type ProcessRequestResult = Result & {
     readonly Value: string
   }
-  type ProcessResponseResult = Result & {
+  type GetIntersectionResult = Result & {
+    readonly Value: number[]
+  }
+  type GetIntersectionSizeResult = Result & {
     readonly Value: number
   }
   type CreateClientResult = Result & {
@@ -44,10 +47,15 @@ declare module 'psi_*' {
     readonly CreateRequest: (
       clientInputs: readonly string[]
     ) => CreateRequestResult
-    readonly ProcessResponse: (
+    readonly GetIntersection: (
       serverSetup: string,
       serverResponse: string
-    ) => ProcessResponseResult
+    ) => GetIntersectionResult
+    readonly GetIntersectionSize: (
+      serverSetup: string,
+      serverResponse: string
+    ) => GetIntersectionSizeResult
+    readonly GetPrivateKeyBytes: () => Uint8Array
   }
 
   export type Package = {
@@ -64,17 +72,32 @@ declare module 'psi_*' {
     ) => CreateSetupMessageResult
     readonly CreateRequest: (inputs: readonly string[]) => CreateRequestResult
     readonly ProcessRequest: (clientRequest: string) => ProcessRequestResult
-    readonly ProcessResponse: (
+    readonly GetIntersection: (
       setup: string,
       response: string
-    ) => ProcessResponseResult
+    ) => GetIntersectionResult
+    readonly GetIntersectionSize: (
+      setup: string,
+      response: string
+    ) => GetIntersectionSizeResult
     readonly GetPrivateKeyBytes: () => Uint8Array
     readonly PsiClient: {
-      readonly Create: () => CreateClientResult
+      readonly CreateWithNewKey: (
+        revealIntersection: boolean
+      ) => CreateClientResult
+      readonly CreateFromKey: (
+        key: Uint8Array,
+        revealIntersection: boolean
+      ) => CreateClientResult
     }
     readonly PsiServer: {
-      readonly CreateWithNewKey: () => CreateServerResult
-      readonly CreateFromKey: (key: Uint8Array) => CreateServerResult
+      readonly CreateWithNewKey: (
+        revealIntersection: boolean
+      ) => CreateServerResult
+      readonly CreateFromKey: (
+        key: Uint8Array,
+        revealIntersection: boolean
+      ) => CreateServerResult
     }
   }
 

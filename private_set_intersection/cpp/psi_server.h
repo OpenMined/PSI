@@ -33,15 +33,20 @@ class PsiServer {
   PsiServer() = delete;
 
   // Creates and returns a new server instance with a fresh private key.
+  // If `reveal_intersection` indicates whether the client should learn the
+  // intersection or only its size.
   //
   // Returns INTERNAL if any OpenSSL crypto operations fail.
-  static StatusOr<std::unique_ptr<PsiServer>> CreateWithNewKey();
+  static StatusOr<std::unique_ptr<PsiServer>> CreateWithNewKey(
+      bool reveal_intersection);
 
   // Creates and returns a new server instance with the provided private key.
+  // If `reveal_intersection` indicates whether the client should learn the
+  // intersection or only its size.
   //
   // Returns INTERNAL if any OpenSSL crypto operations fail.
   static StatusOr<std::unique_ptr<PsiServer>> CreateFromKey(
-      const std::string& key_bytes);
+      const std::string& key_bytes, bool reveal_intersection);
 
   // Creates a setup message from the server's dataset to be sent to the
   // client. The setup message is a JSON-encoded Bloom filter containing
@@ -65,10 +70,14 @@ class PsiServer {
   // Processes a client query and returns the corresponding server response to
   // be sent to the client. For each encrytped element H(x)^c in the decoded
   // `client_request`, computes (H(x)^c)^s = H(X)^(cs) and returns these as a
-  // sorted JSON array. Sorting the output prevents the client from matching
-  // the individual response elements to the ones in the request, ensuring
-  // that they can only learn the intersection size but not individual
-  // elements in the intersection.
+  // JSON array.
+  // If reveal_intersection == false, the resulting array is sorted, which
+  // prevents the client from matching the individual response elements to the
+  // ones in the request, ensuring that they can only learn the intersection
+  // size but not individual elements in the intersection.
+  //
+  // Returns INVALID_ARGUMENT if the request is malformed or if
+  // reveal_intersection != client_request["reveal_intersection"].
   StatusOr<std::string> ProcessRequest(const std::string& client_request) const;
 
   // Returns this instance's private key. This key should only be used to
@@ -78,9 +87,11 @@ class PsiServer {
  private:
   explicit PsiServer(
       std::unique_ptr<::private_join_and_compute::ECCommutativeCipher>
-          ec_cipher);
+          ec_cipher,
+      bool reveal_intersection);
 
   std::unique_ptr<::private_join_and_compute::ECCommutativeCipher> ec_cipher_;
+  bool reveal_intersection;
 };
 
 }  // namespace private_set_intersection

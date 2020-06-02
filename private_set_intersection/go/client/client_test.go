@@ -1,54 +1,102 @@
 package client
 
 import (
+	"bytes"
 	"github.com/openmined/psi/server"
 	"regexp"
 	"testing"
 )
 
-func TestClientSanity(t *testing.T) {
-	c, err := Create()
-	if err != nil {
-		t.Errorf("Failed to create a PSI client %v", err)
-	}
-	if c == nil {
-		t.Errorf("Failed to create a PSI client: nil")
-	}
-	c.Destroy()
-	for i := 0; i < 5; i++ {
-		c.Destroy()
+func generateSet(in []int64) map[int]struct{} {
+	out := map[int]struct{}{}
+	for _, item := range in {
+		out[int(item)] = struct{}{}
 	}
 
-	matched, _ := regexp.MatchString(`[0-9]+[.][0-9]+[.][0-9]+(-[A-Za-z0-9]+)?`, c.Version())
+	return out
+}
+func testClientSanity(t *testing.T, revealIntersection bool) {
+	client, err := CreateWithNewKey(revealIntersection)
+	if err != nil || client == nil {
+		t.Errorf("Failed to create a PSI client %v", err)
+	}
+
+	key, err := client.GetPrivateKeyBytes()
+	if err != nil {
+		t.Errorf("Failed to create a PSI client key %v", err)
+	}
+
+	newClient, err := CreateFromKey(key, revealIntersection)
+	if err != nil || newClient == nil {
+		t.Errorf("Failed to create a PSI client from key %v", err)
+	}
+
+	newKey, err := newClient.GetPrivateKeyBytes()
+	if err != nil {
+		t.Errorf("Failed to create a new PSI client key %v", err)
+	}
+	if !bytes.Equal(key, newKey) {
+		t.Errorf("new client invalid")
+	}
+	client.Destroy()
+	for i := 0; i < 5; i++ {
+		client.Destroy()
+	}
+
+	matched, _ := regexp.MatchString(`[0-9]+[.][0-9]+[.][0-9]+(-[A-Za-z0-9]+)?`, client.Version())
 	if !matched {
-		t.Errorf("Got invalid version %v", c.Version())
+		t.Errorf("Got invalid version %v", client.Version())
 	}
 }
 
-func TestClientFailure(t *testing.T) {
+func TestClientSanity(t *testing.T) {
+	testClientSanity(t, true)
+	testClientSanity(t, false)
+}
+
+func testClientFailure(t *testing.T, revealIntersection bool) {
 	c := &PsiClient{}
 	_, err := c.CreateRequest([]string{"dummy"})
 	if err == nil {
 		t.Errorf("CreateRequest with an invalid context should fail")
 	}
-	_, err = c.ProcessResponse("dummy1", "dummy2")
-	if err == nil {
-		t.Errorf("ProcessResponse with an invalid context should fail")
+	if revealIntersection {
+		_, err = c.GetIntersection("dummy1", "dummy2")
+		if err == nil {
+			t.Errorf("GetIntersection with an invalid context should fail")
+		}
+	} else {
+		_, err = c.GetIntersectionSize("dummy1", "dummy2")
+		if err == nil {
+			t.Errorf("GetIntersectionSize with an invalid context should fail")
+		}
 	}
-	c, _ = Create()
-	_, err = c.ProcessResponse("dummy1", "dummy2")
-	if err == nil {
-		t.Errorf("ProcessResponse with invalid input should fail")
+	c, _ = CreateWithNewKey(revealIntersection)
+	if revealIntersection {
+		_, err = c.GetIntersection("dummy1", "dummy2")
+		if err == nil {
+			t.Errorf("GetIntersection with an invalid input should fail")
+		}
+	} else {
+		_, err = c.GetIntersectionSize("dummy1", "dummy2")
+		if err == nil {
+			t.Errorf("GetIntersectionSize with an invalid input should fail")
+		}
 	}
 }
 
-func TestClientServer(t *testing.T) {
-	client, err := Create()
+func TestClientFailure(t *testing.T) {
+	testClientFailure(t, false)
+	testClientFailure(t, true)
+}
+
+func testClientServer(t *testing.T, revealIntersection bool) {
+	client, err := CreateWithNewKey(revealIntersection)
 	if err != nil || client == nil {
 		t.Errorf("Failed to create a PSI client %v", err)
 	}
 
-	server, err := server.CreateWithNewKey()
+	server, err := server.CreateWithNewKey(revealIntersection)
 	if err != nil || server == nil {
 		t.Errorf("Failed to create a PSI server %v", err)
 	}
@@ -63,7 +111,8 @@ func TestClientServer(t *testing.T) {
 	cntClientItems, clientItems := generateItems(1000, 1)
 	_, serverItems := generateItems(10000, 2)
 
-	setup, err := server.CreateSetupMessage(0.01, int64(cntClientItems), serverItems)
+	fpr := 1. / (1000000000)
+	setup, err := server.CreateSetupMessage(fpr, int64(cntClientItems), serverItems)
 	if err != nil {
 		t.Errorf("failed to create setup msg %v", err)
 	}
@@ -75,27 +124,48 @@ func TestClientServer(t *testing.T) {
 	if err != nil {
 		t.Errorf("failed to process request %v", err)
 	}
-	intersectionCnt, err := client.ProcessResponse(setup, serverResp)
-	if err != nil {
-		t.Errorf("failed to compute intersection %v", err)
-	}
+	if revealIntersection {
+		intersection, err := client.GetIntersection(setup, serverResp)
+		if err != nil {
+			t.Errorf("failed to compute intersection %v", err)
+		}
+		intersectionSet := generateSet(intersection)
+		for idx := 0; idx < cntClientItems; idx++ {
+			_, ok := intersectionSet[idx]
+			if ok != (idx%2 == 0) {
+				t.Errorf("Invalid intersection for item %v %v", idx, ok)
+			}
+		}
+	} else {
+		intersectionCnt, err := client.GetIntersectionSize(setup, serverResp)
+		if err != nil {
+			t.Errorf("failed to compute intersection size %v", err)
+		}
 
-	if int(intersectionCnt) < (cntClientItems / 2) {
-		t.Errorf("Invalid intersection. expected lower bound %v. got %v", (cntClientItems / 2), intersectionCnt)
-	}
+		if int(intersectionCnt) < (cntClientItems / 2) {
+			t.Errorf("Invalid intersection. expected lower bound %v. got %v", (cntClientItems / 2), intersectionCnt)
+		}
 
-	if float64(intersectionCnt) > float64(cntClientItems/2)*float64(1.1) {
-		t.Errorf("Invalid intersection. expected upper bound %v. got %v", float64(cntClientItems/2)*float64(1.1), intersectionCnt)
+		if float64(intersectionCnt) > float64(cntClientItems/2)*float64(1.1) {
+			t.Errorf("Invalid intersection. expected upper bound %v. got %v", float64(cntClientItems/2)*float64(1.1), intersectionCnt)
+		}
+
 	}
+}
+
+func TestClientServer(t *testing.T) {
+
+	testClientServer(t, false)
+	testClientServer(t, true)
 }
 
 var result string
 
-func benchmarkClientCreateRequest(cnt int, b *testing.B) {
+func benchmarkClientCreateRequest(cnt int, revealIntersection bool, b *testing.B) {
 	b.ReportAllocs()
 	total := 0
 	for n := 0; n < b.N; n++ {
-		client, err := Create()
+		client, err := CreateWithNewKey(revealIntersection)
 		if err != nil || client == nil {
 			b.Errorf("failed to get client")
 		}
@@ -118,23 +188,37 @@ func benchmarkClientCreateRequest(cnt int, b *testing.B) {
 	b.ReportMetric(float64(total), "ElementsProcessed")
 }
 
-func BenchmarkClientCreateRequest1(b *testing.B)     { benchmarkClientCreateRequest(1, b) }
-func BenchmarkClientCreateRequest10(b *testing.B)    { benchmarkClientCreateRequest(10, b) }
-func BenchmarkClientCreateRequest100(b *testing.B)   { benchmarkClientCreateRequest(100, b) }
-func BenchmarkClientCreateRequest1000(b *testing.B)  { benchmarkClientCreateRequest(1000, b) }
-func BenchmarkClientCreateRequest10000(b *testing.B) { benchmarkClientCreateRequest(10000, b) }
+func BenchmarkClientCreateRequest1(b *testing.B)     { benchmarkClientCreateRequest(1, false, b) }
+func BenchmarkClientCreateRequest10(b *testing.B)    { benchmarkClientCreateRequest(10, false, b) }
+func BenchmarkClientCreateRequest100(b *testing.B)   { benchmarkClientCreateRequest(100, false, b) }
+func BenchmarkClientCreateRequest1000(b *testing.B)  { benchmarkClientCreateRequest(1000, false, b) }
+func BenchmarkClientCreateRequest10000(b *testing.B) { benchmarkClientCreateRequest(10000, false, b) }
+
+func BenchmarkClientCreateRequestIntersection1(b *testing.B) { benchmarkClientCreateRequest(1, true, b) }
+func BenchmarkClientCreateRequestIntersection10(b *testing.B) {
+	benchmarkClientCreateRequest(10, true, b)
+}
+func BenchmarkClientCreateRequestIntersection100(b *testing.B) {
+	benchmarkClientCreateRequest(100, true, b)
+}
+func BenchmarkClientCreateRequestIntersection1000(b *testing.B) {
+	benchmarkClientCreateRequest(1000, true, b)
+}
+func BenchmarkClientCreateRequestIntersection10000(b *testing.B) {
+	benchmarkClientCreateRequest(10000, true, b)
+}
 
 var dummyInt64 int64
 
-func benchmarkClientProcessResponse(cnt int, b *testing.B) {
+func benchmarkClientProcessResponse(cnt int, revealIntersection bool, b *testing.B) {
 	b.ReportAllocs()
 	total := 0
 	for n := 0; n < b.N; n++ {
-		client, err := Create()
+		client, err := CreateWithNewKey(revealIntersection)
 		if err != nil || client == nil {
 			b.Errorf("failed to get client")
 		}
-		server, err := server.CreateWithNewKey()
+		server, err := server.CreateWithNewKey(revealIntersection)
 		if err != nil || server == nil {
 			b.Errorf("failed to get server")
 		}
@@ -158,19 +242,51 @@ func benchmarkClientProcessResponse(cnt int, b *testing.B) {
 		if err != nil {
 			b.Errorf("failed to process request %v", err)
 		}
-		intersectionCnt, err := client.ProcessResponse(setup, serverResp)
-		if err != nil {
-			b.Errorf("failed to process response %v", err)
+
+		if revealIntersection {
+			intersection, err := client.GetIntersection(setup, serverResp)
+			if err != nil {
+				b.Errorf("failed to compute intersection %v", err)
+			}
+			intersectionSet := generateSet(intersection)
+			for idx := 0; idx < cnt; idx++ {
+				_, ok := intersectionSet[idx]
+				if !ok {
+					b.Errorf("Invalid intersection for item %v", idx)
+				}
+			}
+		} else {
+			intersectionCnt, err := client.GetIntersectionSize(setup, serverResp)
+			if err != nil {
+				b.Errorf("failed to process response %v", err)
+			}
+			total += cnt
+			//ugly hack for preventing compiler optimizations
+			dummyInt64 = intersectionCnt
 		}
-		total += cnt
-		//ugly hack for preventing compiler optimizations
-		dummyInt64 = intersectionCnt
 	}
 	b.ReportMetric(float64(total), "ElementsProcessed")
 }
 
-func BenchmarkClientProcessResponse1(b *testing.B)     { benchmarkClientProcessResponse(1, b) }
-func BenchmarkClientProcessResponse10(b *testing.B)    { benchmarkClientProcessResponse(10, b) }
-func BenchmarkClientProcessResponse100(b *testing.B)   { benchmarkClientProcessResponse(100, b) }
-func BenchmarkClientProcessResponse1000(b *testing.B)  { benchmarkClientProcessResponse(1000, b) }
-func BenchmarkClientProcessResponse10000(b *testing.B) { benchmarkClientProcessResponse(10000, b) }
+func BenchmarkClientProcessResponse1(b *testing.B)    { benchmarkClientProcessResponse(1, false, b) }
+func BenchmarkClientProcessResponse10(b *testing.B)   { benchmarkClientProcessResponse(10, false, b) }
+func BenchmarkClientProcessResponse100(b *testing.B)  { benchmarkClientProcessResponse(100, false, b) }
+func BenchmarkClientProcessResponse1000(b *testing.B) { benchmarkClientProcessResponse(1000, false, b) }
+func BenchmarkClientProcessResponse10000(b *testing.B) {
+	benchmarkClientProcessResponse(10000, false, b)
+}
+func BenchmarkClientProcessResponseIntersection1(b *testing.B) {
+	benchmarkClientProcessResponse(1, true, b)
+}
+func BenchmarkClientProcessResponseIntersection10(b *testing.B) {
+	benchmarkClientProcessResponse(10, true, b)
+}
+func BenchmarkClientProcessResponseIntersection100(b *testing.B) {
+	benchmarkClientProcessResponse(100, true, b)
+}
+func BenchmarkClientProcessResponseIntersection1000(b *testing.B) {
+	benchmarkClientProcessResponse(1000, true, b)
+}
+func BenchmarkClientProcessResponseIntersection10000(b *testing.B) {
+	benchmarkClientProcessResponse(10000, true, b)
+}

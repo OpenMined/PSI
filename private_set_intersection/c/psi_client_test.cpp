@@ -16,6 +16,7 @@
 
 #include "private_set_intersection/c/psi_client.h"
 
+#include "absl/container/flat_hash_set.h"
 #include "absl/strings/escaping.h"
 #include "absl/strings/str_cat.h"
 #include "crypto/ec_commutative_cipher.h"
@@ -31,21 +32,17 @@ namespace {
 
 class PsiClientTest : public ::testing::Test {
  protected:
-  void SetUp() {
-    char *err;
-    int ret = psi_client_create(&client_, &err);
-    ASSERT_TRUE(client_ != nullptr);
-    ASSERT_TRUE(ret == 0);
-  }
-  void TearDown() {
-    psi_client_delete(&client_);
-    ASSERT_TRUE(client_ == nullptr);
-  }
-
-  psi_client_ctx client_;
+  void SetUp() {}
+  void TearDown() {}
 };
 
-TEST_F(PsiClientTest, TestCorrectness) {
+void test_corectness(bool reveal_intersection) {
+  psi_client_ctx client;
+
+  char *err;
+  int ret = psi_client_create_with_new_key(reveal_intersection, &client, &err);
+  ASSERT_TRUE(client != nullptr);
+  ASSERT_TRUE(ret == 0);
   constexpr int num_client_elements = 1000, num_server_elements = 10000;
   double fpr = 0.01;
   std::vector<psi_client_buffer_t> client_elements(num_client_elements);
@@ -85,10 +82,9 @@ TEST_F(PsiClientTest, TestCorrectness) {
   // Compute client request.
   char *client_request = {0};
   size_t req_len = 0;
-  char *err;
-  int ret = psi_client_create_request(client_, client_elements.data(),
-                                      client_elements.size(), &client_request,
-                                      &req_len, &err);
+  ret = psi_client_create_request(client, client_elements.data(),
+                                  client_elements.size(), &client_request,
+                                  &req_len, &err);
 
   ASSERT_TRUE(ret == 0);
   ASSERT_TRUE(req_len > 0);
@@ -98,24 +94,33 @@ TEST_F(PsiClientTest, TestCorrectness) {
   rapidjson::Document request, response;
   request.Parse(client_request, strlen(client_request));
   ASSERT_FALSE(request.HasParseError());
-  ASSERT_TRUE(request.IsArray());
-  response.SetArray();
+  ASSERT_TRUE(request.IsObject());
+  const rapidjson::Value &encrypted_elements = request["encrypted_elements"];
+  ASSERT_TRUE(encrypted_elements.IsArray());
+  response.SetObject();
+  rapidjson::Value response_elements;
+  response_elements.SetArray();
   std::vector<std::string> reencrypted_elements(num_client_elements);
   for (int i = 0; i < num_client_elements; i++) {
-    ASSERT_TRUE(request[i].IsString());
-    std::string base64_element(request[i].GetString(),
-                               request[i].GetStringLength());
+    ASSERT_TRUE(encrypted_elements[i].IsString());
+    std::string base64_element(encrypted_elements[i].GetString(),
+                               encrypted_elements[i].GetStringLength());
     std::string encrypted_element;
     ASSERT_TRUE(absl::Base64Unescape(base64_element, &encrypted_element));
     PSI_ASSERT_OK_AND_ASSIGN(reencrypted_elements[i],
                              server_ec_cipher->ReEncrypt(encrypted_element));
 
     base64_element = absl::Base64Escape(reencrypted_elements[i]);
-    response.PushBack(rapidjson::Value().SetString(base64_element.data(),
-                                                   base64_element.size(),
-                                                   response.GetAllocator()),
-                      response.GetAllocator());
+    response_elements.PushBack(rapidjson::Value().SetString(
+                                   base64_element.data(), base64_element.size(),
+                                   response.GetAllocator()),
+                               response.GetAllocator());
   }
+  response.AddMember("encrypted_elements", response_elements.Move(),
+                     response.GetAllocator());
+  response.AddMember("reveal_intersection",
+                     rapidjson::Value(reveal_intersection).Move(),
+                     response.GetAllocator());
 
   // Encode re-encrypted messages as JSON.
   rapidjson::StringBuffer buffer;
@@ -123,21 +128,46 @@ TEST_F(PsiClientTest, TestCorrectness) {
   response.Accept(writer);
   std::string server_response(buffer.GetString());
 
-  // Compute intersection size.
-  int64_t intersection_size = 0;
-  ret = psi_client_process_response(client_, server_setup.c_str(),
-                                    server_response.c_str(), &intersection_size,
-                                    &err);
-  ASSERT_TRUE(ret == 0);
-  ASSERT_TRUE(intersection_size > 0);
+  // Compute intersection.
+  if (reveal_intersection) {
+    int64_t *intersection;
+    size_t intersectlen;
+    psi_client_get_intersection(client, server_setup.c_str(),
+                                server_response.c_str(), &intersection,
+                                &intersectlen, &err);
 
-  // Test if size is approximately as expected (up to 10%).
+    absl::flat_hash_set<int64_t> intersection_set(intersection,
+                                                  intersection + intersectlen);
 
-  EXPECT_GE(intersection_size, num_client_elements / 2);
-  EXPECT_LT(intersection_size, (num_client_elements / 2) * 1.1);
+    // Test if all even elements are present.
+    for (int i = 0; i < num_client_elements; i++) {
+      if (i % 2) {
+        EXPECT_FALSE(intersection_set.contains(i));
+      } else {
+        EXPECT_TRUE(intersection_set.contains(i));
+      }
+    }
+  } else {
+    int64_t intersection_size = 0;
+    ret = psi_client_get_intersection_size(client, server_setup.c_str(),
+                                           server_response.c_str(),
+                                           &intersection_size, &err);
+    ASSERT_TRUE(ret == 0);
+    ASSERT_TRUE(intersection_size > 0);
+    // Test if size is approximately as expected (up to 10%).
 
-  psi_client_delete_buffer(client_, &client_request);
+    EXPECT_GE(intersection_size, num_client_elements / 2);
+    EXPECT_LT(intersection_size, (num_client_elements / 2) * 1.1);
+  }
+  free(client_request);
+
+  psi_client_delete(&client);
+
+  ASSERT_TRUE(client == nullptr);
 }
+TEST_F(PsiClientTest, TestCorrectnessSize) { test_corectness(false); }
+
+TEST_F(PsiClientTest, TestCorrectness) { test_corectness(true); }
 
 }  // namespace
 }  // namespace private_set_intersection

@@ -33,17 +33,33 @@
 namespace private_set_intersection {
 
 PsiClient::PsiClient(
-    std::unique_ptr<::private_join_and_compute::ECCommutativeCipher> ec_cipher)
-    : ec_cipher_(std::move(ec_cipher)) {}
+    std::unique_ptr<::private_join_and_compute::ECCommutativeCipher> ec_cipher,
+    bool reveal_intersection)
+    : ec_cipher_(std::move(ec_cipher)),
+      reveal_intersection(reveal_intersection) {}
 
-StatusOr<std::unique_ptr<PsiClient>> PsiClient::Create() {
+StatusOr<std::unique_ptr<PsiClient>> PsiClient::CreateWithNewKey(
+    bool reveal_intersection) {
   // Create an EC cipher with curve P-256. This gives 128 bits of security.
   ASSIGN_OR_RETURN(
       auto ec_cipher,
       ::private_join_and_compute::ECCommutativeCipher::CreateWithNewKey(
           NID_X9_62_prime256v1,
           ::private_join_and_compute::ECCommutativeCipher::HashType::SHA256));
-  return absl::WrapUnique(new PsiClient(std::move(ec_cipher)));
+  return absl::WrapUnique(
+      new PsiClient(std::move(ec_cipher), reveal_intersection));
+}
+
+StatusOr<std::unique_ptr<PsiClient>> PsiClient::CreateFromKey(
+    const std::string& key_bytes, bool reveal_intersection) {
+  // Create an EC cipher with curve P-256. This gives 128 bits of security.
+  ASSIGN_OR_RETURN(
+      auto ec_cipher,
+      ::private_join_and_compute::ECCommutativeCipher::CreateFromKey(
+          NID_X9_62_prime256v1, key_bytes,
+          ::private_join_and_compute::ECCommutativeCipher::HashType::SHA256));
+  return absl::WrapUnique(
+      new PsiClient(std::move(ec_cipher), reveal_intersection));
 }
 
 StatusOr<std::string> PsiClient::CreateRequest(
@@ -55,18 +71,23 @@ StatusOr<std::string> PsiClient::CreateRequest(
     ASSIGN_OR_RETURN(encrypted_inputs[i], ec_cipher_->Encrypt(inputs[i]));
   }
 
-  // Sort inputs (same effect as shuffling as they are encrypted) and store
-  // them in a JSON array.
+  // Store encrypted inputs in a JSON array.
   rapidjson::Document request;
-  request.SetArray();
-  std::sort(encrypted_inputs.begin(), encrypted_inputs.end());
+  request.SetObject();
+  rapidjson::Value request_elements;
+  request_elements.SetArray();
   for (int64_t i = 0; i < input_size; i++) {
     std::string base64_element = absl::Base64Escape(encrypted_inputs[i]);
-    request.PushBack(rapidjson::Value().SetString(base64_element.data(),
-                                                  base64_element.size(),
-                                                  request.GetAllocator()),
-                     request.GetAllocator());
+    request_elements.PushBack(rapidjson::Value().SetString(
+                                  base64_element.data(), base64_element.size(),
+                                  request.GetAllocator()),
+                              request.GetAllocator());
   }
+  request.AddMember("encrypted_elements", request_elements.Move(),
+                    request.GetAllocator());
+  request.AddMember("reveal_intersection",
+                    rapidjson::Value(reveal_intersection).Move(),
+                    request.GetAllocator());
 
   // Return encrytped inputs as JSON array.
   rapidjson::StringBuffer buffer;
@@ -75,7 +96,27 @@ StatusOr<std::string> PsiClient::CreateRequest(
   return std::string(buffer.GetString());
 }
 
-StatusOr<int64_t> PsiClient::ProcessResponse(
+StatusOr<std::vector<int64_t>> PsiClient::GetIntersection(
+    const std::string& server_setup, const std::string& server_response) const {
+  if (!reveal_intersection) {
+    return ::private_join_and_compute::InvalidArgumentError(
+        "GetIntersection called on PsiClient with reveal_intersection == "
+        "false");
+  }
+  ASSIGN_OR_RETURN(std::vector<int64_t> intersection,
+                   ProcessResponse(server_setup, server_response));
+  intersection.shrink_to_fit();
+  return intersection;
+}
+
+StatusOr<int64_t> PsiClient::GetIntersectionSize(
+    const std::string& server_setup, const std::string& server_response) const {
+  ASSIGN_OR_RETURN(std::vector<int64_t> intersection,
+                   ProcessResponse(server_setup, server_response));
+  return static_cast<int64_t>(intersection.size());
+}
+
+StatusOr<std::vector<int64_t>> PsiClient::ProcessResponse(
     const std::string& server_setup, const std::string& server_response) const {
   // Parse setup and response message as JSON.
   rapidjson::Document setup, response;
@@ -97,18 +138,21 @@ StatusOr<int64_t> PsiClient::ProcessResponse(
                    BloomFilter::CreateFromJSON(server_setup));
 
   // Decrypt all elements in the response.
-  int64_t counter = 0;
-  if (!response.IsArray()) {
+  if (!response.IsObject() || !response.HasMember("encrypted_elements")) {
     return ::private_join_and_compute::InvalidArgumentError(
-        "`server_response` must be a JSON array");
+        "`server_response` is malformed");
   }
-  for (const auto& value : response.GetArray()) {
-    if (!value.IsString()) {
+  const auto response_array = response["encrypted_elements"].GetArray();
+  int64_t response_size = static_cast<int64_t>(response_array.Size());
+  std::vector<int64_t> result(0);
+  result.reserve(response_size);
+  for (int64_t i = 0; i < response_size; i++) {
+    if (!response_array[i].IsString()) {
       return ::private_join_and_compute::InvalidArgumentError(
           "`server_response` elements must be strings");
     }
-    std::string base64_encrypted_element(value.GetString(),
-                                         value.GetStringLength());
+    std::string base64_encrypted_element(response_array[i].GetString(),
+                                         response_array[i].GetStringLength());
     std::string encrypted_element;
     if (!absl::Base64Unescape(base64_encrypted_element, &encrypted_element)) {
       return ::private_join_and_compute::InvalidArgumentError(
@@ -118,10 +162,16 @@ StatusOr<int64_t> PsiClient::ProcessResponse(
                      ec_cipher_->Decrypt(encrypted_element));
     // Increase intersection size if element is found in the bloom filter.
     if (bloom_filter->Check(element)) {
-      counter++;
+      result.push_back(i);
     }
   }
-  return counter;
+  return result;
+}
+
+std::string PsiClient::GetPrivateKeyBytes() const {
+  std::string key = ec_cipher_->GetPrivateKeyBytes();
+  key.insert(key.begin(), 32 - key.length(), '\0');
+  return key;
 }
 
 }  // namespace private_set_intersection

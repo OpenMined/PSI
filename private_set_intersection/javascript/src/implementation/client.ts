@@ -5,14 +5,23 @@ import { ERROR_INSTANCE_DELETED } from './constants'
 export type Client = {
   readonly delete: () => void
   readonly createRequest: (clientInputs: readonly string[]) => string
-  readonly processResponse: (
+  readonly getIntersection: (
+    serverSetup: string,
+    serverResponse: string
+  ) => number[]
+  readonly getIntersectionSize: (
     serverSetup: string,
     serverResponse: string
   ) => number
+  readonly getPrivateKeyBytes: () => Uint8Array
 }
 
 export type ClientWrapper = {
-  readonly create: () => Client
+  readonly createWithNewKey: (revealIntersection?: boolean) => Client
+  readonly createFromKey: (
+    key: Uint8Array,
+    revealIntersection?: boolean
+  ) => Client
 }
 
 type ClientWrapperOptions = {
@@ -47,7 +56,7 @@ const ClientConstructor = (instance: psi.Client): Client => {
 
     /**
      * Creates a request message to be sent to the server. For each input element
-     * x, computes H(x)^c, where c is the secret key of ec_cipher_. The result is
+     * x, computes H(x)^c, where c is the client's secret key. The result is
      * sorted to hide the initial ordering of `inputs` and encoded as a JSON
      * array.
      *
@@ -68,27 +77,66 @@ const ClientConstructor = (instance: psi.Client): Client => {
     },
 
     /**
-     * Processes the server's response and returns the PSI cardinality. The first
+     * Processes the server's response and returns the PSI intersection. The first
      * argument, `setup`, is a bloom filter that encodes encrypted server
      * elements and is sent by the server in a setup phase. The second argument,
      * `response`, is the response received from the server after sending
-     * the result of `CreateRequest`.
+     * the result of `createRequest`.
      *
      * @function
-     * @name Client#processResponse
+     * @name Client#getIntersection
      * @param {String} setup The serialized server setup
      * @param {String} response The serialized server response
-     * @returns {Number} The PSI cardinality
+     * @returns {Number[]} The PSI intersection
      */
-    processResponse(setup: string, response: string): number {
+    getIntersection(setup: string, response: string): number[] {
       if (!_instance) {
         throw new Error(ERROR_INSTANCE_DELETED)
       }
-      const { Value, Status } = _instance.ProcessResponse(setup, response)
+      const { Value, Status } = _instance.GetIntersection(setup, response)
       if (Status) {
         throw new Error(Status.Message)
       }
       return Value
+    },
+
+    /**
+     * Processes the server's response and returns the PSI cardinality. The first
+     * argument, `setup`, is a bloom filter that encodes encrypted server
+     * elements and is sent by the server in a setup phase. The second argument,
+     * `response`, is the response received from the server after sending
+     * the result of `createRequest`.
+     *
+     * @function
+     * @name Client#getIntersectionSize
+     * @param {String} setup The serialized server setup
+     * @param {String} response The serialized server response
+     * @returns {Number} The PSI cardinality
+     */
+    getIntersectionSize(setup: string, response: string): number {
+      if (!_instance) {
+        throw new Error(ERROR_INSTANCE_DELETED)
+      }
+      const { Value, Status } = _instance.GetIntersectionSize(setup, response)
+      if (Status) {
+        throw new Error(Status.Message)
+      }
+      return Value
+    },
+
+    /**
+     * Returns this instance's private key. This key should only be used to create
+     * other server instances. DO NOT SEND THIS KEY TO ANY OTHER PARTY!
+     *
+     * @function
+     * @name Client#getPrivateKeyBytes
+     * @returns {Uint8Array} A binary Uint8Array representing the private key
+     */
+    getPrivateKeyBytes(): Uint8Array {
+      if (!_instance) {
+        throw new Error(ERROR_INSTANCE_DELETED)
+      }
+      return Uint8Array.from(_instance.GetPrivateKeyBytes())
     }
   }
 }
@@ -103,14 +151,41 @@ export const ClientWrapperConstructor = ({
      * Create a new PSI client
      *
      * @function
-     * @name Client.create
+     * @name Client.createWithNewKey
+     * @param {boolean} [revealIntersection=false] - If true, reveals the actual intersection instead of the cardinality.
      * @returns {Client} A Client instance
      */
-    create(): Client {
-      const { Value, Status } = library.PsiClient.Create()
+    createWithNewKey(revealIntersection = false): Client {
+      const { Value, Status } = library.PsiClient.CreateWithNewKey(
+        revealIntersection
+      )
       if (Status) {
         throw new Error(Status.Message)
       }
+      return ClientConstructor(Value)
+    },
+
+    /**
+     * Create a new PSI client from a key
+     *
+     * WARNING: This function should be used with caution, since reusing the client key for multiple requests can reveal
+     * information about the input sets. If in doubt, use `createWithNewKey`.
+     *
+     * @function
+     * @name Client.createFromKey
+     * @param {Uint8Array} key Private key as a binary Uint8Array
+     * @param {boolean} [revealIntersection=false] - If true, reveals the actual intersection instead of the cardinality.
+     * @returns {Client} A Client instance
+     */
+    createFromKey(key: Uint8Array, revealIntersection = false): Client {
+      const { Value, Status } = library.PsiClient.CreateFromKey(
+        key,
+        revealIntersection
+      )
+      if (Status) {
+        throw new Error(Status.Message)
+      }
+
       return ClientConstructor(Value)
     }
   }
