@@ -1,5 +1,7 @@
 #include "private_set_intersection/c/psi_client.h"
 
+#include <algorithm>
+
 #include "private_set_intersection/c/internal_utils.h"
 #include "private_set_intersection/cpp/psi_client.h"
 
@@ -106,7 +108,7 @@ int psi_client_get_intersection(psi_client_ctx ctx, const char *server_setup,
     auto result = result_or.ValueOrDie();
     *outlen = result.size();
     *out = (int64_t *)malloc(result.size() * sizeof(int64_t));
-    memmove(*out, result.data(), result.size() * sizeof(int64_t));
+    std::copy_n(result.begin(), result.size(), *out);
   }
   return 0;
 }
@@ -122,9 +124,9 @@ int psi_client_get_private_key_bytes(psi_client_ctx ctx, char **output,
   auto value = client->GetPrivateKeyBytes();
   size_t len = value.size();
 
-  // Private keys are raw bytes -> Use memcpy instead of strncpy.
+  // Private keys are raw bytes -> Use std::copy_n instead of strncpy.
   *output = (char *)malloc(len * sizeof(char));
-  memcpy(*output, value.data(), len);
+  std::copy_n(value.begin(), len, *output);
   *output_len = len;
 
   return 0;
