@@ -194,16 +194,13 @@ func (c *PsiClient) GetIntersection(serverSetup, serverResponse string) ([]int64
 		return nil, fmt.Errorf("process response failed: %v(%v)", c.loadCString(&err), rcode)
 	}
 
-	resultPtr := unsafe.Pointer(out)
-	resultLen := int64(outlen)
-
-	var result []int64
-	var idx int64
-	var ref C.int64_t
-
-	for idx = 0; idx < resultLen; idx++ {
-		val := (*int64)(unsafe.Pointer(uintptr(resultPtr) + uintptr(idx)*unsafe.Sizeof(&ref)))
-		result = append(result, *val)
+	// Cast C pointer as a pointer to a Go array that is large enough to hold any reasonable size.
+	// This array is not actually allocated, but it allows us to convert the C array to a Go slice
+	// without doing pointer arithmetic by hand.
+	resultArray := (*[int64(1) << 32]C.int64_t)(unsafe.Pointer(out))
+	result := make([]int64, 0, outlen)
+	for idx := int64(0); idx < int64(outlen); idx++ {
+		result = append(result, int64((*resultArray)[idx]))
 	}
 	C.free(unsafe.Pointer(out))
 	return result, nil
