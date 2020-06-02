@@ -10,13 +10,13 @@
 #include "util/canonical_errors.h"
 #include "util/status_macros.h"
 
-using namespace std;
-using namespace private_set_intersection;
+namespace {
 namespace psi = private_set_intersection;
 namespace py = pybind11;
+}  // namespace
 
 template <class T>
-T throwOrReturn(const StatusOr<T>& in) {
+T throwOrReturn(const private_join_and_compute::StatusOr<T>& in) {
   if (!in.ok()) throw std::runtime_error(in.status().message());
   return in.ValueOrDie();
 }
