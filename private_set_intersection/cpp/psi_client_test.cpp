@@ -112,8 +112,7 @@ TEST_F(PsiClientTest, TestCreatingFromKey) {
   PSI_ASSERT_OK_AND_ASSIGN(auto client1,
                            PsiClient::CreateFromKey(key_bytes, false));
 
-  int num_client_elements = 100, num_server_elements = 1000;
-  double fpr = 0.01;
+  int num_client_elements = 100;
   std::vector<std::string> client_elements(num_client_elements);
 
   // Create elements to sign
