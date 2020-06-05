@@ -1,6 +1,6 @@
-# PSI Cardinality - C++
+# PSI - C++
 
-Private Set Intersection Cardinality protocol based on ECDH and Bloom Filters.
+Private Set Intersection protocol based on ECDH and Bloom Filters.
 
 ## Build and test
 

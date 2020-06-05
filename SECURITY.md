@@ -1,12 +1,12 @@
 ## Caveats
-Several caveats should be carefully considered before using PSI-Cardinality.
+Several caveats should be carefully considered before using PSI.
 
 ### Information assumed public 
 1. Server set size
 2. Client set size
 (Note that Each of these can be turned into upper bounds by adding dummy elements.)
 
-### Security Limitations for the PSI-Cardinality protocol
+### Security Limitations for the PSI protocol
 
 Coordinated clients could get the actual intersection. However, server set items not
 in any of the client sets will never be uncovered.
@@ -30,7 +30,7 @@ your health authority only covers 10 possible geohashes, people could sidestep t
 entirely and submit location histories which unlock tests by brute force.
 
 
-A potential limitation with the PSI-cardinality approach is the communication complexity,
+A potential limitation with the PSI approach is the communication complexity,
 which scales linearly with the size of the larger set. This is of particular concern
 when performing PSI between a constrained device (cellphone) holding a small set, and a
 large service provider (e.g. WhatsApp), such as in the Private Contact Discovery application.

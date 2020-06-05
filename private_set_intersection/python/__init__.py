@@ -1,4 +1,4 @@
-"""Private Set Intersection Cardinality protocol based on ECDH and Bloom
+"""Private Set Intersection protocol based on ECDH and Bloom
 Filters.
 """
 from private_set_intersection.python import _psi_bindings

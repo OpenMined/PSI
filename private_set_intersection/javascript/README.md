@@ -1,6 +1,6 @@
-# PSI Cardinality - JavaScript
+# PSI - JavaScript
 
-Private Set Intersection Cardinality protocol based on ECDH and Bloom Filters.
+Private Set Intersection protocol based on ECDH and Bloom Filters.
 
 ## Installing
 

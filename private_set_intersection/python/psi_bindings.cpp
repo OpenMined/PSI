@@ -23,7 +23,7 @@ T throwOrReturn(const private_join_and_compute::StatusOr<T>& in) {
 
 PYBIND11_MODULE(_psi_bindings, m) {
   m.doc() =
-      "Private Set Intersection Cardinality protocol based on ECDH and Bloom "
+      "Private Set Intersection protocol based on ECDH and Bloom "
       "Filters";
 
   m.attr("__version__") = ::private_set_intersection::Package::kVersion;
