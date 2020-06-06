@@ -1,34 +1,38 @@
 ## Caveats
+
 Several caveats should be carefully considered before using PSI.
 
-### Information assumed public 
+### Information assumed public
+
 1. Server set size
 2. Client set size
-(Note that Each of these can be turned into upper bounds by adding dummy elements.)
+   (Note that Each of these can be turned into upper bounds by adding dummy elements.)
 
 ### Security Limitations for the PSI protocol
 
-Coordinated clients could get the actual intersection. However, server set items not
+There are two configurations for instantiating a new client/server pair by passing in a boolean switch into their respective constructors.
+
+1. One that reveals only the **size** (cardinality) of the intersection to the client.
+2. One that reveals the actual **intersecion** to the client.
+
+In the case of #1, coordinated clients could get the actual intersection. However, server set items not
 in any of the client sets will never be uncovered.
 Situations where it’s feasible for clients to send one request per element in the domain -
 there is a possbility that coordinated clients could uncover server set. A larger set means
 more bits turned on in bloom filter.
 
-
 Presence of new client set members or absence of former client set members can be
 detected by server/eavesdroppers if client secret is reused.
 
-
 In the absence of any rate limiting and assuming the client and server have enough
 computing power and bandwidth, small domains may be brute-forceable. However, a query
-needs to be  performed for each brute-force attempt.
-An example for this situation would be suppose you were trying to limit sending antibody 
+needs to be performed for each brute-force attempt.
+An example for this situation would be suppose you were trying to limit sending antibody
 tests to people based on whether they’d been in an infected location, so that people would
 have to share their location history to prove they’d been somewhere infected, and you were
 using PSI so people wouldn’t have to share their location history without good reason. If
 your health authority only covers 10 possible geohashes, people could sidestep the PSI step
 entirely and submit location histories which unlock tests by brute force.
-
 
 A potential limitation with the PSI approach is the communication complexity,
 which scales linearly with the size of the larger set. This is of particular concern
