@@ -18,7 +18,7 @@ import npmPackageLock from '../../package-lock.json'
   console.log('Updating package version to:', version)
   npmPackage.version = version
   npmPackageLock.version = version
-  const updatedPackage = JSON.stringify(npmPackage, null, 2)
+  const updatedPackage = JSON.stringify(npmPackage, null, 2) + '\n'
   const updatedPackageLock = JSON.stringify(npmPackageLock, null, 2)
   writeFileSync('package.json', updatedPackage)
   writeFileSync('package-lock.json', updatedPackageLock)
