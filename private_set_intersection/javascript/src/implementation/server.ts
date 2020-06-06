@@ -108,7 +108,7 @@ const ServerConstructor = (instance: psi.Server): Server => {
      * @function
      * @name Server#processRequest
      * @param {String} clientRequest The serialized client request
-     * @returns {String} The PSI cardinality
+     * @returns {String} The PSI cardinality or size
      */
     processRequest(clientRequest: string): string {
       if (!_instance) {
@@ -145,7 +145,7 @@ export const ServerWrapperConstructor = ({
 
   return {
     /**
-     * Create a new PSI Cardinality server
+     * Create a new PSI server
      *
      * @function
      * @name Server.createWithNewKey
@@ -163,7 +163,7 @@ export const ServerWrapperConstructor = ({
       return ServerConstructor(Value)
     },
     /**
-     * Create a new PSI Cardinality server from a key
+     * Create a new PSI server from a key
      *
      * @function
      * @name Server.createFromKey

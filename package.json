@@ -1,6 +1,6 @@
 {
   "name": "@openmined/psi.js",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Private Set Intersection for JavaScript",
   "repository": {
     "type": "git",
@@ -9,6 +9,7 @@
   "license": "Apache-2.0",
   "keywords": [
     "psi",
+    "psi.js",
     "private set intersection",
     "private join and compute"
   ],
@@ -35,6 +36,7 @@
     "build:benchmark:js": "bash private_set_intersection/javascript/scripts/build-benchmark-js.sh && npm run build:copy",
     "build:benchmark:wasm": "bash private_set_intersection/javascript/scripts/build-benchmark-wasm.sh && npm run build:copy",
     "build:copy": "bash private_set_intersection/javascript/scripts/build-copy.sh",
+    "postbuild": "node -r esm private_set_intersection/javascript/version.js",
     "prerollup": "bash private_set_intersection/javascript/scripts/prerollup.sh",
     "rollup": "rollup -c",
     "postrollup": "bash private_set_intersection/javascript/scripts/postrollup.sh",

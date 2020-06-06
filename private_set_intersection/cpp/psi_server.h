@@ -25,7 +25,7 @@ namespace private_set_intersection {
 
 using ::private_join_and_compute::StatusOr;
 
-// The server side of a Private Set Intersection Cardinality protocol.
+// The server side of a Private Set Intersection protocol.
 // See the documentation in PsiClient for a full description of the
 // protocol.
 class PsiServer {

@@ -42,7 +42,7 @@ export const PSIConstructor = ({
 
     /**
      * @description
-     * The server side of a Private Set Intersection Cardinality protocol.
+     * The server side of a Private Set Intersection protocol.
      * See the documentation in PSI.Client for a full description of the
      * protocol.
      *
@@ -59,12 +59,12 @@ export const PSIConstructor = ({
 
     /**
      * @description
-     * Client side of a Private Set Intersection-Cardinality protocol. In
-     * PSI-Cardinality, two parties (client and server) each hold a dataset, and at
+     * Client side of a Private Set Intersection protocol. In
+     * PSI, two parties (client and server) each hold a dataset, and at
      * the end of the protocol the client learns the size of the intersection of
      * both datasets, while no party learns anything beyond that.
      *
-     * This variant of PSI-Cardinality introduces a small false-positive rate (i.e.,
+     * This variant of PSI introduces a small false-positive rate (i.e.,
      * the reported cardinality will be slightly larger than the actual cardinality.
      * The false positive rate can be tuned by the server.
      *

@@ -5,9 +5,9 @@
 ![License](https://img.shields.io/github/license/OpenMined/PSI)
 ![OpenCollective](https://img.shields.io/opencollective/all/openmined)
 
-# PSI Cardinality
+# PSI
 
-Private Set Intersection Cardinality protocol based on ECDH and Bloom Filters.
+Private Set Intersection protocol based on ECDH and Bloom Filters.
 
 ## Requirements
 
