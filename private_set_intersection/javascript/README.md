@@ -198,7 +198,7 @@ const PSI = require('@openmined/psi.js')
 
 ## Contributors
 
-See [CONTRIBUTORS.md](CONTRIBUTORS.md).
+See [CONTRIBUTORS.md](../../../CONTRIBUTORS.md).
 
 ## Contributing
 
