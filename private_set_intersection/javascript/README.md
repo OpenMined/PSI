@@ -6,7 +6,7 @@
 
 # PSI - JavaScript
 
-Private Set Intersection protocol based on ECDH and Bloom Filters. The goal of this library is to allow a server to compute the intersection or intersection size (cardinality) from a set on the server and a set from a client without the server learning anything about the client's set.
+Private Set Intersection protocol based on ECDH and Bloom Filters. The goal of this library is to allow a server to compute and return the intersection or intersection size (cardinality) from a set on the server and a set from a client without the server learning anything about the client's set.
 
 - 💾 Low memory footprint
 - 🚀 Fastest implementation using WebAssembly
