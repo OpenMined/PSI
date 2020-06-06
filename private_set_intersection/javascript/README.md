@@ -77,7 +77,7 @@ import PSI from '@openmined/psi.js/server/js/es'
 })()
 ```
 
-To **manually** override load the `combined` default import:
+To **manually** override the `combined` default import:
 
 ```javascript
 // Loads the combined server and client, supporting WebAssembly or asm.js
@@ -189,7 +189,7 @@ const PSI = require('@openmined/psi.js')
   // Process the client's request and return to the client
   const serverResponse = server.processRequest(clientRequest)
 
-  // Client computes the intersection cardinality
+  // Client computes the intersection
   // and the server has learned nothing!
   const intersection = client.getIntersection(serverSetup, serverResponse)
   // intersection [ 0, 2, 4, 6, 8 ]
