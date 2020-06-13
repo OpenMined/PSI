@@ -29,6 +29,7 @@
 #include "rapidjson/writer.h"
 #include "util/canonical_errors.h"
 #include "util/status_macros.h"
+#include "private_set_intersection/proto/psi.pb.h"
 
 namespace private_set_intersection {
 
@@ -62,7 +63,7 @@ StatusOr<std::unique_ptr<PsiClient>> PsiClient::CreateFromKey(
       new PsiClient(std::move(ec_cipher), reveal_intersection));
 }
 
-StatusOr<std::string> PsiClient::CreateRequest(
+StatusOr<psi_proto::Request> PsiClient::CreateRequest(
     absl::Span<const std::string> inputs) const {
   // Encrypt inputs one by one.
   int64_t input_size = static_cast<int64_t>(inputs.size());
@@ -71,29 +72,18 @@ StatusOr<std::string> PsiClient::CreateRequest(
     ASSIGN_OR_RETURN(encrypted_inputs[i], ec_cipher_->Encrypt(inputs[i]));
   }
 
-  // Store encrypted inputs in a JSON array.
-  rapidjson::Document request;
-  request.SetObject();
-  rapidjson::Value request_elements;
-  request_elements.SetArray();
-  for (int64_t i = 0; i < input_size; i++) {
-    std::string base64_element = absl::Base64Escape(encrypted_inputs[i]);
-    request_elements.PushBack(rapidjson::Value().SetString(
-                                  base64_element.data(), base64_element.size(),
-                                  request.GetAllocator()),
-                              request.GetAllocator());
-  }
-  request.AddMember("encrypted_elements", request_elements.Move(),
-                    request.GetAllocator());
-  request.AddMember("reveal_intersection",
-                    rapidjson::Value(reveal_intersection).Move(),
-                    request.GetAllocator());
+  // Create a request protobuf
+  psi_proto::Request request;
 
-  // Return encrytped inputs as JSON array.
-  rapidjson::StringBuffer buffer;
-  rapidjson::Writer<rapidjson::StringBuffer> writer(buffer);
-  request.Accept(writer);
-  return std::string(buffer.GetString());
+  // Set the reveal flag
+  request.set_reveal_intersection(reveal_intersection);
+
+  // Add the encrypted elements
+  for (int64_t i = 0; i < input_size; i++) {
+    request.add_encrypted_elements(encrypted_inputs[i]);
+  }
+
+  return request;
 }
 
 StatusOr<std::vector<int64_t>> PsiClient::GetIntersection(

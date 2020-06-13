@@ -15,6 +15,7 @@
 //
 
 #include "private_set_intersection/cpp/bloom_filter.h"
+#include "private_set_intersection/proto/psi.pb.h"
 
 #include <cmath>
 
@@ -92,6 +93,19 @@ StatusOr<std::unique_ptr<BloomFilter>> BloomFilter::CreateFromJSON(
       new BloomFilter(num_hash_functions, std::move(bits), std::move(context)));
 }
 
+StatusOr<std::unique_ptr<BloomFilter>> BloomFilter::CreateFromProtobuf(
+    psi_proto::ServerSetup encoded_filter) {
+
+  if (!encoded_filter.IsInitialized()) {
+    return ::private_join_and_compute::InvalidArgumentError(
+        "`ServerSetup` is corrupt!");
+  }
+
+  auto context = absl::make_unique<::private_join_and_compute::Context>();
+  return absl::WrapUnique(
+      new BloomFilter(encoded_filter.num_hash_functions(), std::move(encoded_filter.bits()), std::move(context)));
+}
+
 void BloomFilter::Add(const std::string& input) {
   Add(absl::MakeConstSpan(&input, 1));
 }
@@ -131,7 +145,16 @@ std::string BloomFilter::ToJSON() const {
   return std::string(buffer.GetString());
 }
 
+psi_proto::ServerSetup BloomFilter::ToProtobuf() const {
+  psi_proto::ServerSetup server_setup;
+  server_setup.set_num_hash_functions(NumHashFunctions());
+  server_setup.set_bits(bits_);
+  return server_setup;
+}
+
 int BloomFilter::NumHashFunctions() const { return num_hash_functions_; }
+
+std::string BloomFilter::Bits() const { return bits_; }
 
 std::vector<int64_t> BloomFilter::Hash(const std::string& x) const {
   // Compute the number of bits (= size of the output domain) as an OpenSSL

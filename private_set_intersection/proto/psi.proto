@@ -15,12 +15,12 @@
 //
 syntax = "proto3";
 
-package psi;
+package psi_proto;
 
 // Setup phase message for server.
 message ServerSetup {
   int32 num_hash_functions = 1;
-  bytes encrypted_bits = 2;
+  bytes bits = 2;
 }
 
 // Client request with encoded elements sent to the server as an array of

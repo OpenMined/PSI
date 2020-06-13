@@ -20,6 +20,7 @@
 #include "absl/types/span.h"
 #include "crypto/ec_commutative_cipher.h"
 #include "util/statusor.h"
+#include "private_set_intersection/proto/psi.pb.h"
 
 namespace private_set_intersection {
 
@@ -63,7 +64,7 @@ class PsiServer {
   // `num_client_inputs` will result in a false positive.
   //
   // Returns INTERNAL if encryption fails.
-  StatusOr<std::string> CreateSetupMessage(
+  StatusOr<psi_proto::ServerSetup> CreateSetupMessage(
       double fpr, int64_t num_client_inputs,
       absl::Span<const std::string> inputs) const;
 

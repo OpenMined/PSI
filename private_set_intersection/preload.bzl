@@ -95,3 +95,14 @@ def psi_preload():
             strip_prefix = "rules_python_external-{version}".format(version = RULES_PYTHON_EXTERNAL_VERSION),
             url = "https://github.com/dillon-giacoppo/rules_python_external/archive/{version}.zip".format(version = RULES_PYTHON_EXTERNAL_VERSION),
         )
+
+    # No canonical implementation of py_proto_library in bazel
+    # https://thethoughtfulkoala.com/posts/2020/05/08/py-protobuf-bazel.html
+    if "six" not in native.existing_rules():
+        http_archive(
+            name = "six_archive",
+            build_file = "@com_google_protobuf//:six.BUILD",
+            sha256 = "105f8d68616f8248e24bf0e9372ef04d3cc10104f1980f54d57b2ce73a5ad56a",
+            urls = ["https://pypi.python.org/packages/source/s/six/six-1.10.0.tar.gz"],
+        )
+

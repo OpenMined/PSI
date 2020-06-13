@@ -20,6 +20,7 @@
 #include "absl/types/span.h"
 #include "crypto/ec_commutative_cipher.h"
 #include "util/statusor.h"
+#include "private_set_intersection/proto/psi.pb.h"
 
 namespace private_set_intersection {
 
@@ -116,7 +117,7 @@ class PsiClient {
   // element x, computes H(x)^c, where c is the secret key of ec_cipher_.
   //
   // Returns INTERNAL if encryption fails.
-  StatusOr<std::string> CreateRequest(
+  StatusOr<psi_proto::Request> CreateRequest(
       absl::Span<const std::string> inputs) const;
 
   // Processes the server's response and returns the intersection of the client

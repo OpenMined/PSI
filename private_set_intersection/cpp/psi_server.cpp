@@ -29,6 +29,7 @@
 #include "rapidjson/writer.h"
 #include "util/canonical_errors.h"
 #include "util/status_macros.h"
+#include "private_set_intersection/proto/psi.pb.h"
 
 namespace private_set_intersection {
 
@@ -62,7 +63,7 @@ StatusOr<std::unique_ptr<PsiServer>> PsiServer::CreateFromKey(
       new PsiServer(std::move(ec_cipher), reveal_intersection));
 }
 
-StatusOr<std::string> PsiServer::CreateSetupMessage(
+StatusOr<psi_proto::ServerSetup> PsiServer::CreateSetupMessage(
     double fpr, int64_t num_client_inputs,
     absl::Span<const std::string> inputs) const {
   auto num_inputs = static_cast<int64_t>(inputs.size());
@@ -78,8 +79,8 @@ StatusOr<std::string> PsiServer::CreateSetupMessage(
     bloom_filter->Add(encrypted_element);
   }
 
-  // Encode Bloom filter as JSON and return it.
-  return bloom_filter->ToJSON();
+  // Return the Bloom filter as a Protobuf
+  return bloom_filter->ToProtobuf();
 }
 
 StatusOr<std::string> PsiServer::ProcessRequest(
