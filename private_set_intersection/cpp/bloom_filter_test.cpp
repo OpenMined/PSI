@@ -81,7 +81,7 @@ TEST_F(BloomFilterTest, TestToProtobuf) {
     filter_->Add(absl::StrCat("Element ", i));
   }
 
-  // Encode Bloom filter as JSON and check if it matches.
+  // Create the protobuf from the Bloom filter and check if it matches.
   psi_proto::ServerSetup encoded_filter = filter_->ToProtobuf();
   EXPECT_EQ(encoded_filter.num_hash_functions(), filter_->NumHashFunctions());
   EXPECT_EQ(encoded_filter.num_hash_functions(), 7);
