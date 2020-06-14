@@ -22,10 +22,6 @@
 #include "absl/memory/memory.h"
 #include "absl/strings/escaping.h"
 #include "absl/strings/str_cat.h"
-#include "rapidjson/document.h"
-#include "rapidjson/error/en.h"
-#include "rapidjson/stringbuffer.h"
-#include "rapidjson/writer.h"
 #include "util/canonical_errors.h"
 
 namespace private_set_intersection {
@@ -56,45 +52,8 @@ StatusOr<std::unique_ptr<BloomFilter>> BloomFilter::Create(
       new BloomFilter(num_hash_functions, std::move(bits), std::move(context)));
 }
 
-StatusOr<std::unique_ptr<BloomFilter>> BloomFilter::CreateFromJSON(
-    const std::string& encoded_filter) {
-  rapidjson::Document json_filter;
-  if (json_filter.Parse(encoded_filter.data(), encoded_filter.size())
-          .HasParseError()) {
-    return ::private_join_and_compute::InvalidArgumentError(
-        absl::StrCat("Error parsing `encoded_filter`: ",
-                     rapidjson::GetParseError_En(json_filter.GetParseError()),
-                     "(", json_filter.GetErrorOffset(), ")"));
-  }
-  if (!json_filter.HasMember("num_hash_functions") ||
-      !json_filter["num_hash_functions"].IsInt() ||
-      !json_filter.HasMember("bits") || !json_filter["bits"].IsString()) {
-    return ::private_join_and_compute::InvalidArgumentError(
-        "`encoded_filter` does encode a valid Bloom filter");
-  }
-  int num_hash_functions = json_filter["num_hash_functions"].GetInt();
-  if (num_hash_functions < 0) {
-    return ::private_join_and_compute::InvalidArgumentError(
-        "`num_hash_functions` must be positive");
-  }
-  std::string base64_bits(json_filter["bits"].GetString(),
-                          json_filter["bits"].GetStringLength());
-  std::string bits;
-  if (!absl::Base64Unescape(base64_bits, &bits)) {
-    return ::private_join_and_compute::InvalidArgumentError(
-        "`bits` is not a valid Base64 string");
-  }
-  if (bits.empty()) {
-    return ::private_join_and_compute::InvalidArgumentError(
-        "`bits` must not be empty");
-  }
-  auto context = absl::make_unique<::private_join_and_compute::Context>();
-  return absl::WrapUnique(
-      new BloomFilter(num_hash_functions, std::move(bits), std::move(context)));
-}
-
 StatusOr<std::unique_ptr<BloomFilter>> BloomFilter::CreateFromProtobuf(
-    psi_proto::ServerSetup encoded_filter) {
+    const psi_proto::ServerSetup& encoded_filter) {
 
   if (!encoded_filter.IsInitialized()) {
     return ::private_join_and_compute::InvalidArgumentError(
@@ -124,25 +83,6 @@ bool BloomFilter::Check(const std::string& input) const {
     result &= ((bits_[index / 8] >> (index % 8)) & 1);
   }
   return result;
-}
-
-std::string BloomFilter::ToJSON() const {
-  // Encode bits_ using Base64.
-  std::string base64_bits = absl::Base64Escape(bits_);
-  // Encode Bloom filter as JSON.
-  rapidjson::Document json_filter;
-  json_filter.SetObject();
-  json_filter.AddMember("num_hash_functions",
-                        rapidjson::Value().SetInt(NumHashFunctions()),
-                        json_filter.GetAllocator());
-  json_filter.AddMember(
-      "bits",
-      rapidjson::Value().SetString(base64_bits.data(), base64_bits.size()),
-      json_filter.GetAllocator());
-  rapidjson::StringBuffer buffer;
-  rapidjson::Writer<decltype(buffer)> writer(buffer);
-  json_filter.Accept(writer);
-  return std::string(buffer.GetString());
 }
 
 psi_proto::ServerSetup BloomFilter::ToProtobuf() const {

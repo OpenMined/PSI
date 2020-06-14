@@ -15,7 +15,7 @@ void BM_ServerSetup(benchmark::State& state, double fpr,
   for (int i = 0; i < num_inputs; i++) {
     inputs[i] = absl::StrCat("Element", i);
   }
-  std::string setup;
+  psi_proto::ServerSetup setup;
   int64_t elements_processed = 0;
   for (auto _ : state) {
     setup =
@@ -24,7 +24,7 @@ void BM_ServerSetup(benchmark::State& state, double fpr,
     elements_processed += num_inputs;
   }
   state.counters["SetupSize"] = benchmark::Counter(
-      static_cast<double>(setup.size()), benchmark::Counter::kDefaults,
+      static_cast<double>(setup.ByteSizeLong()), benchmark::Counter::kDefaults,
       benchmark::Counter::kIs1024);
   state.counters["ElementsProcessed"] = benchmark::Counter(
       static_cast<double>(elements_processed), benchmark::Counter::kIsRate);
@@ -32,17 +32,17 @@ void BM_ServerSetup(benchmark::State& state, double fpr,
 // Range is for the number of inputs, and the captured argument is the false
 // positive rate for 10k client queries.
 BENCHMARK_CAPTURE(BM_ServerSetup, 0.001 size, 0.001, false)
-    ->RangeMultiplier(100)
-    ->Range(1, 1000000);
+    ->RangeMultiplier(10)
+    ->Range(1, 100000);
 BENCHMARK_CAPTURE(BM_ServerSetup, 0.000001 size, 0.000001, false)
-    ->RangeMultiplier(100)
-    ->Range(1, 1000000);
+    ->RangeMultiplier(10)
+    ->Range(1, 100000);
 BENCHMARK_CAPTURE(BM_ServerSetup, 0.001 intersection, 0.001, true)
-    ->RangeMultiplier(100)
-    ->Range(1, 1000000);
+    ->RangeMultiplier(10)
+    ->Range(1, 100000);
 BENCHMARK_CAPTURE(BM_ServerSetup, 0.000001 intersection, 0.000001, true)
-    ->RangeMultiplier(100)
-    ->Range(1, 1000000);
+    ->RangeMultiplier(10)
+    ->Range(1, 100000);
 
 void BM_ClientCreateRequest(benchmark::State& state, bool reveal_intersection) {
   auto client = PsiClient::CreateWithNewKey(reveal_intersection).ValueOrDie();
@@ -51,7 +51,7 @@ void BM_ClientCreateRequest(benchmark::State& state, bool reveal_intersection) {
   for (int i = 0; i < num_inputs; i++) {
     inputs[i] = absl::StrCat("Element", i);
   }
-  std::string request;
+  psi_proto::Request request;
   int64_t elements_processed = 0;
   for (auto _ : state) {
     request = client->CreateRequest(inputs).ValueOrDie();
@@ -59,7 +59,7 @@ void BM_ClientCreateRequest(benchmark::State& state, bool reveal_intersection) {
     elements_processed += num_inputs;
   }
   state.counters["RequestSize"] = benchmark::Counter(
-      static_cast<double>(request.size()), benchmark::Counter::kDefaults,
+      static_cast<double>(request.ByteSizeLong()), benchmark::Counter::kDefaults,
       benchmark::Counter::kIs1024);
   state.counters["ElementsProcessed"] = benchmark::Counter(
       static_cast<double>(elements_processed), benchmark::Counter::kIsRate);
@@ -81,8 +81,8 @@ void BM_ServerProcessRequest(benchmark::State& state,
   for (int i = 0; i < num_inputs; i++) {
     inputs[i] = absl::StrCat("Element", i);
   }
-  std::string request = client->CreateRequest(inputs).ValueOrDie();
-  std::string response;
+  psi_proto::Request request = client->CreateRequest(inputs).ValueOrDie();
+  psi_proto::Response response;
   int64_t elements_processed = 0;
   for (auto _ : state) {
     response = server->ProcessRequest(request).ValueOrDie();
@@ -90,7 +90,7 @@ void BM_ServerProcessRequest(benchmark::State& state,
     elements_processed += num_inputs;
   }
   state.counters["ResponseSize"] = benchmark::Counter(
-      static_cast<double>(response.size()), benchmark::Counter::kDefaults,
+      static_cast<double>(response.ByteSizeLong()), benchmark::Counter::kDefaults,
       benchmark::Counter::kIs1024);
   state.counters["ElementsProcessed"] = benchmark::Counter(
       static_cast<double>(elements_processed), benchmark::Counter::kIsRate);
@@ -113,10 +113,10 @@ void BM_ClientProcessResponse(benchmark::State& state,
   for (int i = 0; i < num_inputs; i++) {
     inputs[i] = absl::StrCat("Element", i);
   }
-  std::string setup =
+  psi_proto::ServerSetup setup =
       server->CreateSetupMessage(fpr, num_inputs, inputs).ValueOrDie();
-  std::string request = client->CreateRequest(inputs).ValueOrDie();
-  std::string response = server->ProcessRequest(request).ValueOrDie();
+  psi_proto::Request request = client->CreateRequest(inputs).ValueOrDie();
+  psi_proto::Response response = server->ProcessRequest(request).ValueOrDie();
   int64_t elements_processed = 0;
   for (auto _ : state) {
     if (reveal_intersection) {

@@ -58,16 +58,8 @@ class BloomFilter {
   //
   // Returns INVALID_ARGUMENT if `num_hash_functions` is not positive or if
   // `bits` is empty.
-  static StatusOr<std::unique_ptr<BloomFilter>> CreateFromJSON(
-      const std::string& encoded_filter);
-
-  // Creates a Bloom filter containing the bits of the passed string, and the
-  // given number of hash functions.
-  //
-  // Returns INVALID_ARGUMENT if `num_hash_functions` is not positive or if
-  // `bits` is empty.
   static StatusOr<std::unique_ptr<BloomFilter>> CreateFromProtobuf(
-      psi_proto::ServerSetup encoded_filter);
+      const psi_proto::ServerSetup& encoded_filter);
 
   // Adds `input` to the Bloom filter.
   void Add(const std::string& input);
@@ -77,17 +69,6 @@ class BloomFilter {
 
   // Checks if an element is present in the Bloom filter.
   bool Check(const std::string& input) const;
-
-  // Returns a JSON representation of the Bloom filter, in the following form:
-  //
-  //   {
-  //     "num_hash_functions": <int>,
-  //     "bits": <string>
-  //   }
-  //
-  // Where `bits` is encoded using Base64.
-  std::string ToJSON() const;
-
 
   // Returns a protobuf representation of the Bloom filter
   psi_proto::ServerSetup ToProtobuf() const;

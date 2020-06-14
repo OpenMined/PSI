@@ -79,7 +79,7 @@ class PsiServer {
   //
   // Returns INVALID_ARGUMENT if the request is malformed or if
   // reveal_intersection != client_request["reveal_intersection"].
-  StatusOr<std::string> ProcessRequest(const std::string& client_request) const;
+  StatusOr<psi_proto::Response> ProcessRequest(const psi_proto::Request& client_request) const;
 
   // Returns this instance's private key. This key should only be used to
   // create other server instances. DO NOT SEND THIS KEY TO ANY OTHER PARTY!

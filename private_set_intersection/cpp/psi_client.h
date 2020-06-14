@@ -131,8 +131,8 @@ class PsiClient {
   // Returns INVALID_ARGUMENT if any input messages are malformed, or INTERNAL
   // if decryption fails.
   StatusOr<std::vector<int64_t>> GetIntersection(
-      const std::string& server_setup,
-      const std::string& server_response) const;
+      const psi_proto::ServerSetup& server_setup,
+      const psi_proto::Response& server_response) const;
 
   // As `GetIntersection`, but only reveals the size of the intersection. Use
   // this function if this instance was created with `reveal_intersection =
@@ -141,8 +141,8 @@ class PsiClient {
   // Returns INVALID_ARGUMENT if any input messages are malformed, or INTERNAL
   // if decryption fails.
   StatusOr<int64_t> GetIntersectionSize(
-      const std::string& server_setup,
-      const std::string& server_response) const;
+      const psi_proto::ServerSetup& server_setup,
+      const psi_proto::Response& server_response) const;
 
   // Returns this instance's private key. This key should only be used to
   // create other client instances. DO NOT SEND THIS KEY TO ANY OTHER PARTY!
@@ -158,8 +158,8 @@ class PsiClient {
   // the bloom filter encoded by `server_setup`. This method is called by
   // GetIntersection and GetIntersectionSize internally.
   StatusOr<std::vector<int64_t>> ProcessResponse(
-      const std::string& server_setup,
-      const std::string& server_response) const;
+      const psi_proto::ServerSetup& server_setup,
+      const psi_proto::Response& server_response) const;
 
   std::unique_ptr<::private_join_and_compute::ECCommutativeCipher> ec_cipher_;
   bool reveal_intersection;

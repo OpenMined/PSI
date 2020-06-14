@@ -18,11 +18,12 @@
 
 #include "absl/container/flat_hash_set.h"
 #include "absl/strings/str_cat.h"
+#include "absl/strings/escaping.h"
 #include "crypto/ec_commutative_cipher.h"
 #include "gtest/gtest.h"
 #include "private_set_intersection/cpp/psi_client.h"
-#include "rapidjson/document.h"
 #include "util/status_matchers.h"
+#include "private_set_intersection/proto/psi.pb.h"
 
 namespace private_set_intersection {
 namespace {
@@ -142,15 +143,12 @@ TEST_F(PsiServerTest, TestArrayIsSortedWhenNotRevealingIntersection) {
   // Create Server response.
   PSI_ASSERT_OK_AND_ASSIGN(auto server_response,
                            server_->ProcessRequest(client_request));
-  rapidjson::Document response;
-  ASSERT_FALSE(response.Parse(server_response.data(), server_response.size())
-                   .HasParseError());
-  ASSERT_TRUE(response.IsObject() && response.HasMember("encrypted_elements"));
-  const auto response_array = response["encrypted_elements"].GetArray();
-  std::vector<std::string> response_vector(response_array.Size());
+
+  ASSERT_TRUE(server_response.IsInitialized());
+  const auto response_array = server_response.encrypted_elements();
+  std::vector<std::string> response_vector(response_array.size());
   for (int i = 0; i < num_client_elements; i++) {
-    response_vector[i] = std::string(response_array[i].GetString(),
-                                     response_array[i].GetStringLength());
+    response_vector[i] = response_vector[i];
   }
   EXPECT_TRUE(std::is_sorted(response_vector.begin(), response_vector.end()));
 }
@@ -190,7 +188,8 @@ TEST_F(PsiServerTest, TestCreatingFromKey) {
       server->CreateSetupMessage(fpr, num_client_elements, server_elements));
 
   // Both setup messages should be the same
-  EXPECT_EQ(server_setup, server_setup1);
+  EXPECT_EQ(server_setup.num_hash_functions(), server_setup1.num_hash_functions());
+  EXPECT_EQ(server_setup.bits(), server_setup1.bits());
 
   // Create a 31-byte key that should be equivalent to a 32-byte null-inserted
   // key.
@@ -209,21 +208,33 @@ TEST_F(PsiServerTest, TestCreatingFromKey) {
   PSI_ASSERT_OK_AND_ASSIGN(
       auto server_setup3,
       server3->CreateSetupMessage(fpr, num_client_elements, server_elements));
-  EXPECT_EQ(server_setup2, server_setup3);
+  EXPECT_EQ(server_setup2.num_hash_functions(), server_setup3.num_hash_functions());
+  EXPECT_EQ(server_setup2.bits(), server_setup3.bits());
 }
 
 TEST_F(PsiServerTest, FailIfRevealIntersectionDoesntMatch) {
-  std::string client_request_false =
-      R"({"reveal_intersection": false, "encrypted_elements": ["AiHdmxkmF/iOM0fFhny9917QYGcb9jq0GM9mP4L74ecM"]})";
+
+  psi_proto::Request client_request;
+
+  // Set the reveal intersection flag
+  client_request.set_reveal_intersection(false);
+
+  // Set a random encrypted element
+  std::string encrypted;
+  ASSERT_TRUE(absl::Base64Unescape("AiHdmxkmF/iOM0fFhny9917QYGcb9jq0GM9mP4L74ecM", &encrypted));
+  client_request.add_encrypted_elements(encrypted);
+
   SetUp(true);
-  EXPECT_THAT(server_->ProcessRequest(client_request_false),
+  EXPECT_THAT(server_->ProcessRequest(client_request),
               StatusIs(private_join_and_compute::kInvalidArgument,
                        "Client expects `reveal_intersection` = 0, but it is "
                        "actually 1"));
-  std::string client_request_true =
-      R"({"reveal_intersection": true, "encrypted_elements": ["AiHdmxkmF/iOM0fFhny9917QYGcb9jq0GM9mP4L74ecM"]})";
+
+  // Flip the reveal intersection flag
+  client_request.set_reveal_intersection(true);
+
   SetUp(false);
-  EXPECT_THAT(server_->ProcessRequest(client_request_true),
+  EXPECT_THAT(server_->ProcessRequest(client_request),
               StatusIs(private_join_and_compute::kInvalidArgument,
                        "Client expects `reveal_intersection` = 1, but it is "
                        "actually 0"));

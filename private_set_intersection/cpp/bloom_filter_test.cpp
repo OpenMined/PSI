@@ -73,25 +73,6 @@ TEST_F(BloomFilterTest, TestFPR) {
   }
 }
 
-TEST_F(BloomFilterTest, TestToJSON) {
-  double fpr = 0.01;
-  int max_elements = 100;
-  SetUp(fpr, max_elements);
-  for (int i = 0; i < max_elements; i++) {
-    filter_->Add(absl::StrCat("Element ", i));
-  }
-
-  // Encode Bloom filter as JSON and check if it matches.
-  std::string encoded_filter = filter_->ToJSON();
-  std::string expected =
-      "{\"num_hash_functions\":7,\"bits\":\"VN3/"
-      "BXfUjEDvJLcxCTepUCTXGQwlTax0xHiMohCNb45uShFsznK099RH0CFVIMn91Bdc7jLkXH"
-      "Xr"
-      "Xp1NimmZSDrYSj5sd/"
-      "500nroNOdXbtd53u8cejPMGxbx7kR1E1zyO19mSkYLXq4xf7au5dFN0qhxqfLnjaCE\"}";
-  EXPECT_EQ(encoded_filter, expected);
-}
-
 TEST_F(BloomFilterTest, TestToProtobuf) {
   double fpr = 0.01;
   int max_elements = 100;
@@ -102,21 +83,10 @@ TEST_F(BloomFilterTest, TestToProtobuf) {
 
   // Encode Bloom filter as JSON and check if it matches.
   psi_proto::ServerSetup encoded_filter = filter_->ToProtobuf();
+  EXPECT_EQ(encoded_filter.num_hash_functions(), filter_->NumHashFunctions());
   EXPECT_EQ(encoded_filter.num_hash_functions(), 7);
   EXPECT_EQ(encoded_filter.bits(), filter_->Bits());
   EXPECT_EQ(absl::Base64Escape(encoded_filter.bits()), "VN3/BXfUjEDvJLcxCTepUCTXGQwlTax0xHiMohCNb45uShFsznK099RH0CFVIMn91Bdc7jLkXHXrXp1NimmZSDrYSj5sd/500nroNOdXbtd53u8cejPMGxbx7kR1E1zyO19mSkYLXq4xf7au5dFN0qhxqfLnjaCE");
-}
-
-TEST_F(BloomFilterTest, TestCreateFromJSON) {
-  std::vector<std::string> elements = {"a", "b", "c", "d"};
-  filter_->Add(elements);
-  std::string encoded_filter = filter_->ToJSON();
-  PSI_ASSERT_OK_AND_ASSIGN(auto filter2,
-                           BloomFilter::CreateFromJSON(encoded_filter));
-  for (const auto& element : elements) {
-    EXPECT_TRUE(filter2->Check(element));
-  }
-  EXPECT_FALSE(filter2->Check("not present"));
 }
 
 TEST_F(BloomFilterTest, TestCreateFromProtobuf) {

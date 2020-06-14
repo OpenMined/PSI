@@ -61,7 +61,6 @@ cc_library(
         "@com_google_absl//absl/memory",
         "@com_google_absl//absl/strings",
         "@com_google_absl//absl/types:span",
-        "@com_tencent_rapidjson//:rapidjson",
         "@private_join_and_compute//crypto:bn_util",
         "@private_join_and_compute//util:status",
         "//private_set_intersection/proto:psi_cc_proto",
@@ -93,7 +92,6 @@ cc_library(
         "@com_google_absl//absl/memory",
         "@com_google_absl//absl/strings",
         "@com_google_absl//absl/types:span",
-        "@com_tencent_rapidjson//:rapidjson",
         "@private_join_and_compute//crypto:ec_commutative_cipher",
         "@private_join_and_compute//util:status",
         "//private_set_intersection/proto:psi_cc_proto",
@@ -111,7 +109,6 @@ cc_test(
         "@com_google_absl//absl/strings",
         "@com_google_googletest//:gtest",
         "@com_google_googletest//:gtest_main",
-        "@com_tencent_rapidjson//:rapidjson",
         "@private_join_and_compute//crypto:ec_commutative_cipher",
     ],
 )
@@ -127,7 +124,6 @@ cc_library(
         "@com_google_absl//absl/memory",
         "@com_google_absl//absl/strings",
         "@com_google_absl//absl/types:span",
-        "@com_tencent_rapidjson//:rapidjson",
         "@private_join_and_compute//crypto:ec_commutative_cipher",
         "@private_join_and_compute//util:status",
         "//private_set_intersection/proto:psi_cc_proto",
@@ -146,7 +142,6 @@ cc_test(
         "@com_google_absl//absl/strings",
         "@com_google_googletest//:gtest",
         "@com_google_googletest//:gtest_main",
-        "@com_tencent_rapidjson//:rapidjson",
     ],
 )
 
