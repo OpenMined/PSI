@@ -23,9 +23,9 @@
 #include "absl/strings/str_cat.h"
 #include "openssl/obj_mac.h"
 #include "private_set_intersection/cpp/bloom_filter.h"
+#include "private_set_intersection/proto/psi.pb.h"
 #include "util/canonical_errors.h"
 #include "util/status_macros.h"
-#include "private_set_intersection/proto/psi.pb.h"
 
 namespace private_set_intersection {
 
@@ -81,28 +81,30 @@ StatusOr<psi_proto::ServerSetup> PsiServer::CreateSetupMessage(
 
 StatusOr<psi_proto::Response> PsiServer::ProcessRequest(
     const psi_proto::Request& client_request) const {
-
   if (!client_request.IsInitialized()) {
     return ::private_join_and_compute::InvalidArgumentError(
         "`client_request` is corrupt!");
   }
 
   if (client_request.reveal_intersection() != reveal_intersection) {
-    return ::private_join_and_compute::InvalidArgumentError(absl::StrCat(
-        "Client expects `reveal_intersection` = ", client_request.reveal_intersection(),
-        ", but it is actually ", reveal_intersection));
+    return ::private_join_and_compute::InvalidArgumentError(
+        absl::StrCat("Client expects `reveal_intersection` = ",
+                     client_request.reveal_intersection(),
+                     ", but it is actually ", reveal_intersection));
   }
 
   // Re-encrypt elements.
   const auto encrypted_elements = client_request.encrypted_elements();
-  const std::int64_t num_client_elements = static_cast<std::int64_t>(encrypted_elements.size());
+  const std::int64_t num_client_elements =
+      static_cast<std::int64_t>(encrypted_elements.size());
 
   // Create the response
   psi_proto::Response response;
 
   // Re-encrypt the request's elements and add to the response
   for (int i = 0; i < num_client_elements; i++) {
-    ASSIGN_OR_RETURN(std::string encrypted, ec_cipher_->ReEncrypt(encrypted_elements[i]));
+    ASSIGN_OR_RETURN(std::string encrypted,
+                     ec_cipher_->ReEncrypt(encrypted_elements[i]));
     response.add_encrypted_elements(encrypted);
   }
 
@@ -110,8 +112,7 @@ StatusOr<psi_proto::Response> PsiServer::ProcessRequest(
   // client.
   if (!reveal_intersection) {
     auto sorted_elements = response.encrypted_elements();
-    std::sort(sorted_elements.begin(),
-              sorted_elements.end());
+    std::sort(sorted_elements.begin(), sorted_elements.end());
   }
   return response;
 }

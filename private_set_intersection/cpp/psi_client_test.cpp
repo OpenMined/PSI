@@ -40,7 +40,8 @@ class PsiClientTest : public ::testing::Test {
   }
 
   void CreateDummySetupMessage(absl::Span<const std::string> server_elements,
-                               double fpr, psi_proto::ServerSetup *server_setup) {
+                               double fpr,
+                               psi_proto::ServerSetup *server_setup) {
     auto num_server_elements = static_cast<int64_t>(server_elements.size());
     // Insert server elements into Bloom filter.
     PSI_ASSERT_OK_AND_ASSIGN(auto bloom_filter,
@@ -55,19 +56,21 @@ class PsiClientTest : public ::testing::Test {
 
   void CreateDummyResponse(const psi_proto::Request &client_request,
                            psi_proto::Response *server_response) {
-
     ASSERT_TRUE(client_request.IsInitialized());
     ASSERT_TRUE(server_response->IsInitialized());
 
     // Clear the elements
     server_response->clear_encrypted_elements();
-    
+
     const auto encrypted_elements = client_request.encrypted_elements();
-    const std::int64_t num_request_elements = static_cast<std::int64_t>(encrypted_elements.size());
+    const std::int64_t num_request_elements =
+        static_cast<std::int64_t>(encrypted_elements.size());
 
     // Re-encrypt the request's elements and add to the response
     for (int i = 0; i < num_request_elements; i++) {
-      PSI_ASSERT_OK_AND_ASSIGN(std::string encrypted, server_ec_cipher_->ReEncrypt(encrypted_elements[i]));
+      PSI_ASSERT_OK_AND_ASSIGN(
+          std::string encrypted,
+          server_ec_cipher_->ReEncrypt(encrypted_elements[i]));
       server_response->add_encrypted_elements(encrypted);
     }
   }
@@ -104,7 +107,8 @@ TEST_F(PsiClientTest, TestCreatingFromKey) {
                            client1->CreateRequest(client_elements));
 
   // Both requests should be the same
-  EXPECT_EQ(client_request0.reveal_intersection(), client_request1.reveal_intersection());
+  EXPECT_EQ(client_request0.reveal_intersection(),
+            client_request1.reveal_intersection());
   const auto elements0 = client_request0.encrypted_elements();
   const auto elements1 = client_request1.encrypted_elements();
   ASSERT_TRUE(elements0.size() == elements1.size());
@@ -126,7 +130,8 @@ TEST_F(PsiClientTest, TestCreatingFromKey) {
                            client2->CreateRequest(client_elements));
   PSI_ASSERT_OK_AND_ASSIGN(auto client_request3,
                            client3->CreateRequest(client_elements));
-  EXPECT_EQ(client_request2.reveal_intersection(), client_request3.reveal_intersection());
+  EXPECT_EQ(client_request2.reveal_intersection(),
+            client_request3.reveal_intersection());
   const auto elements2 = client_request0.encrypted_elements();
   const auto elements3 = client_request1.encrypted_elements();
   ASSERT_TRUE(elements2.size() == elements3.size());
@@ -217,7 +222,7 @@ TEST_F(PsiClientTest, TestCorrectnessIntersectionSize) {
 TEST_F(PsiClientTest, FailIfRevealIntersectionDoesntMatch) {
   SetUp(false);
   psi_proto::ServerSetup server_setup;
-  psi_proto::Response response; 
+  psi_proto::Response response;
   EXPECT_THAT(
       client_->GetIntersection(server_setup, response),
       StatusIs(

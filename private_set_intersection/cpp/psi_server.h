@@ -19,8 +19,8 @@
 
 #include "absl/types/span.h"
 #include "crypto/ec_commutative_cipher.h"
-#include "util/statusor.h"
 #include "private_set_intersection/proto/psi.pb.h"
+#include "util/statusor.h"
 
 namespace private_set_intersection {
 
@@ -79,7 +79,8 @@ class PsiServer {
   //
   // Returns INVALID_ARGUMENT if the request is malformed or if
   // reveal_intersection != client_request["reveal_intersection"].
-  StatusOr<psi_proto::Response> ProcessRequest(const psi_proto::Request& client_request) const;
+  StatusOr<psi_proto::Response> ProcessRequest(
+      const psi_proto::Request& client_request) const;
 
   // Returns this instance's private key. This key should only be used to
   // create other server instances. DO NOT SEND THIS KEY TO ANY OTHER PARTY!

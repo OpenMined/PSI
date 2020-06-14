@@ -23,9 +23,9 @@
 #include "absl/strings/str_cat.h"
 #include "openssl/obj_mac.h"
 #include "private_set_intersection/cpp/bloom_filter.h"
+#include "private_set_intersection/proto/psi.pb.h"
 #include "util/canonical_errors.h"
 #include "util/status_macros.h"
-#include "private_set_intersection/proto/psi.pb.h"
 
 namespace private_set_intersection {
 
@@ -83,7 +83,8 @@ StatusOr<psi_proto::Request> PsiClient::CreateRequest(
 }
 
 StatusOr<std::vector<int64_t>> PsiClient::GetIntersection(
-    const psi_proto::ServerSetup& server_setup, const psi_proto::Response& server_response) const {
+    const psi_proto::ServerSetup& server_setup,
+    const psi_proto::Response& server_response) const {
   if (!reveal_intersection) {
     return ::private_join_and_compute::InvalidArgumentError(
         "GetIntersection called on PsiClient with reveal_intersection == "
@@ -96,15 +97,16 @@ StatusOr<std::vector<int64_t>> PsiClient::GetIntersection(
 }
 
 StatusOr<int64_t> PsiClient::GetIntersectionSize(
-    const psi_proto::ServerSetup& server_setup, const psi_proto::Response& server_response) const {
+    const psi_proto::ServerSetup& server_setup,
+    const psi_proto::Response& server_response) const {
   ASSIGN_OR_RETURN(std::vector<int64_t> intersection,
                    ProcessResponse(server_setup, server_response));
   return static_cast<int64_t>(intersection.size());
 }
 
 StatusOr<std::vector<int64_t>> PsiClient::ProcessResponse(
-    const psi_proto::ServerSetup& server_setup, const psi_proto::Response& server_response) const {
-
+    const psi_proto::ServerSetup& server_setup,
+    const psi_proto::Response& server_response) const {
   // Ensure both items are valid
   if (!server_setup.IsInitialized()) {
     return ::private_join_and_compute::InvalidArgumentError(
@@ -121,7 +123,8 @@ StatusOr<std::vector<int64_t>> PsiClient::ProcessResponse(
                    BloomFilter::CreateFromProtobuf(server_setup));
 
   const auto response_array = server_response.encrypted_elements();
-  const std::int64_t response_size = static_cast<std::int64_t>(response_array.size());
+  const std::int64_t response_size =
+      static_cast<std::int64_t>(response_array.size());
   std::vector<int64_t> result(0);
   result.reserve(response_size);
 

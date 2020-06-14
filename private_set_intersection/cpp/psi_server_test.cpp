@@ -17,13 +17,13 @@
 #include "private_set_intersection/cpp/psi_server.h"
 
 #include "absl/container/flat_hash_set.h"
-#include "absl/strings/str_cat.h"
 #include "absl/strings/escaping.h"
+#include "absl/strings/str_cat.h"
 #include "crypto/ec_commutative_cipher.h"
 #include "gtest/gtest.h"
 #include "private_set_intersection/cpp/psi_client.h"
-#include "util/status_matchers.h"
 #include "private_set_intersection/proto/psi.pb.h"
+#include "util/status_matchers.h"
 
 namespace private_set_intersection {
 namespace {
@@ -188,7 +188,8 @@ TEST_F(PsiServerTest, TestCreatingFromKey) {
       server->CreateSetupMessage(fpr, num_client_elements, server_elements));
 
   // Both setup messages should be the same
-  EXPECT_EQ(server_setup.num_hash_functions(), server_setup1.num_hash_functions());
+  EXPECT_EQ(server_setup.num_hash_functions(),
+            server_setup1.num_hash_functions());
   EXPECT_EQ(server_setup.bits(), server_setup1.bits());
 
   // Create a 31-byte key that should be equivalent to a 32-byte null-inserted
@@ -208,12 +209,12 @@ TEST_F(PsiServerTest, TestCreatingFromKey) {
   PSI_ASSERT_OK_AND_ASSIGN(
       auto server_setup3,
       server3->CreateSetupMessage(fpr, num_client_elements, server_elements));
-  EXPECT_EQ(server_setup2.num_hash_functions(), server_setup3.num_hash_functions());
+  EXPECT_EQ(server_setup2.num_hash_functions(),
+            server_setup3.num_hash_functions());
   EXPECT_EQ(server_setup2.bits(), server_setup3.bits());
 }
 
 TEST_F(PsiServerTest, FailIfRevealIntersectionDoesntMatch) {
-
   psi_proto::Request client_request;
 
   // Set the reveal intersection flag
@@ -221,7 +222,8 @@ TEST_F(PsiServerTest, FailIfRevealIntersectionDoesntMatch) {
 
   // Set a random encrypted element
   std::string encrypted;
-  ASSERT_TRUE(absl::Base64Unescape("AiHdmxkmF/iOM0fFhny9917QYGcb9jq0GM9mP4L74ecM", &encrypted));
+  ASSERT_TRUE(absl::Base64Unescape(
+      "AiHdmxkmF/iOM0fFhny9917QYGcb9jq0GM9mP4L74ecM", &encrypted));
   client_request.add_encrypted_elements(encrypted);
 
   SetUp(true);

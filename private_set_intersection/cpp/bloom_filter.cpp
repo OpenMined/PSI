@@ -15,13 +15,13 @@
 //
 
 #include "private_set_intersection/cpp/bloom_filter.h"
-#include "private_set_intersection/proto/psi.pb.h"
 
 #include <cmath>
 
 #include "absl/memory/memory.h"
 #include "absl/strings/escaping.h"
 #include "absl/strings/str_cat.h"
+#include "private_set_intersection/proto/psi.pb.h"
 #include "util/canonical_errors.h"
 
 namespace private_set_intersection {
@@ -54,15 +54,15 @@ StatusOr<std::unique_ptr<BloomFilter>> BloomFilter::Create(
 
 StatusOr<std::unique_ptr<BloomFilter>> BloomFilter::CreateFromProtobuf(
     const psi_proto::ServerSetup& encoded_filter) {
-
   if (!encoded_filter.IsInitialized()) {
     return ::private_join_and_compute::InvalidArgumentError(
         "`ServerSetup` is corrupt!");
   }
 
   auto context = absl::make_unique<::private_join_and_compute::Context>();
-  return absl::WrapUnique(
-      new BloomFilter(encoded_filter.num_hash_functions(), std::move(encoded_filter.bits()), std::move(context)));
+  return absl::WrapUnique(new BloomFilter(encoded_filter.num_hash_functions(),
+                                          std::move(encoded_filter.bits()),
+                                          std::move(context)));
 }
 
 void BloomFilter::Add(const std::string& input) {

@@ -59,8 +59,8 @@ void BM_ClientCreateRequest(benchmark::State& state, bool reveal_intersection) {
     elements_processed += num_inputs;
   }
   state.counters["RequestSize"] = benchmark::Counter(
-      static_cast<double>(request.ByteSizeLong()), benchmark::Counter::kDefaults,
-      benchmark::Counter::kIs1024);
+      static_cast<double>(request.ByteSizeLong()),
+      benchmark::Counter::kDefaults, benchmark::Counter::kIs1024);
   state.counters["ElementsProcessed"] = benchmark::Counter(
       static_cast<double>(elements_processed), benchmark::Counter::kIsRate);
 }
@@ -90,8 +90,8 @@ void BM_ServerProcessRequest(benchmark::State& state,
     elements_processed += num_inputs;
   }
   state.counters["ResponseSize"] = benchmark::Counter(
-      static_cast<double>(response.ByteSizeLong()), benchmark::Counter::kDefaults,
-      benchmark::Counter::kIs1024);
+      static_cast<double>(response.ByteSizeLong()),
+      benchmark::Counter::kDefaults, benchmark::Counter::kIs1024);
   state.counters["ElementsProcessed"] = benchmark::Counter(
       static_cast<double>(elements_processed), benchmark::Counter::kIsRate);
 }

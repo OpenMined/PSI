@@ -16,11 +16,11 @@
 
 #include "private_set_intersection/cpp/bloom_filter.h"
 
-#include "absl/strings/str_cat.h"
 #include "absl/strings/escaping.h"
+#include "absl/strings/str_cat.h"
 #include "gtest/gtest.h"
-#include "util/status_matchers.h"
 #include "private_set_intersection/proto/psi.pb.h"
+#include "util/status_matchers.h"
 
 namespace private_set_intersection {
 namespace {
@@ -86,7 +86,12 @@ TEST_F(BloomFilterTest, TestToProtobuf) {
   EXPECT_EQ(encoded_filter.num_hash_functions(), filter_->NumHashFunctions());
   EXPECT_EQ(encoded_filter.num_hash_functions(), 7);
   EXPECT_EQ(encoded_filter.bits(), filter_->Bits());
-  EXPECT_EQ(absl::Base64Escape(encoded_filter.bits()), "VN3/BXfUjEDvJLcxCTepUCTXGQwlTax0xHiMohCNb45uShFsznK099RH0CFVIMn91Bdc7jLkXHXrXp1NimmZSDrYSj5sd/500nroNOdXbtd53u8cejPMGxbx7kR1E1zyO19mSkYLXq4xf7au5dFN0qhxqfLnjaCE");
+  EXPECT_EQ(
+      absl::Base64Escape(encoded_filter.bits()),
+      "VN3/"
+      "BXfUjEDvJLcxCTepUCTXGQwlTax0xHiMohCNb45uShFsznK099RH0CFVIMn91Bdc7jLkXHXr"
+      "Xp1NimmZSDrYSj5sd/"
+      "500nroNOdXbtd53u8cejPMGxbx7kR1E1zyO19mSkYLXq4xf7au5dFN0qhxqfLnjaCE");
 }
 
 TEST_F(BloomFilterTest, TestCreateFromProtobuf) {
