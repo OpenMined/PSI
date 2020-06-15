@@ -64,10 +64,16 @@ int psi_server_create_setup_message(psi_server_ctx ctx, double fpr,
     return generate_error(result.status(), error_out);
   }
 
-  auto value = result.ValueOrDie();
-  size_t len = value.size() + 1;
+  auto proto = result.ValueOrDie();
+  std::string value;
+  if (!proto.SerializeToString(&value)) {
+    return generate_error(::private_join_and_compute::InvalidArgumentError(
+                              "failed to serialize setup message"),
+                          error_out);
+  }
+  size_t len = value.size();
   *output = (char *)malloc(len * sizeof(char));
-  strncpy(*output, value.c_str(), len);
+  memcpy(*output, value.c_str(), len);
   *output_len = len;
 
   return 0;
@@ -84,16 +90,29 @@ int psi_server_process_request(psi_server_ctx ctx,
                           error_out);
   }
 
-  auto result = server->ProcessRequest(
-      std::string(client_request.buff, client_request.buff_len));
+  psi_proto::Request request_proto;
+  if (!request_proto.ParseFromString(
+          std::string(client_request.buff, client_request.buff_len))) {
+    return generate_error(::private_join_and_compute::InvalidArgumentError(
+                              "failed to parse client request"),
+                          error_out);
+  }
+  auto result = server->ProcessRequest(request_proto);
   if (!result.ok()) {
     return generate_error(result.status(), error_out);
   }
 
-  auto value = result.ValueOrDie();
-  size_t len = value.size() + 1;
+  auto proto = result.ValueOrDie();
+  std::string value;
+  if (!proto.SerializeToString(&value)) {
+    return generate_error(::private_join_and_compute::InvalidArgumentError(
+                              "failed to serialize server response"),
+                          error_out);
+  }
+
+  size_t len = value.size();
   *output = (char *)malloc(len * sizeof(char));
-  strncpy(*output, value.c_str(), len);
+  memcpy(*output, value.c_str(), len);
   *output_len = len;
 
   return 0;

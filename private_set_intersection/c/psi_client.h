@@ -43,11 +43,13 @@ int psi_client_create_request(psi_client_ctx ctx,
                               size_t input_len, char **output, size_t *out_len,
                               char **error_out);
 int psi_client_get_intersection_size(psi_client_ctx ctx,
-                                     const char *server_setup,
-                                     const char *server_response, int64_t *out,
+                                     const char *server_setup, size_t setup_len,
+                                     const char *server_response,
+                                     size_t response_len, int64_t *out,
                                      char **error_out);
 int psi_client_get_intersection(psi_client_ctx ctx, const char *server_setup,
-                                const char *server_response, int64_t **out,
+                                size_t setup_len, const char *server_response,
+                                size_t response_len, int64_t **out,
                                 size_t *out_len, char **error_out);
 int psi_client_get_private_key_bytes(psi_client_ctx ctx, char **output,
                                      size_t *output_len, char **error_out);

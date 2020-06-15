@@ -63,7 +63,6 @@ cc_test(
         "@com_google_absl//absl/strings",
         "@com_google_googletest//:gtest",
         "@com_google_googletest//:gtest_main",
-        "@com_tencent_rapidjson//:rapidjson",
         "@private_join_and_compute//crypto:ec_commutative_cipher",
         "@com_google_absl//absl/container:flat_hash_set",
     ],
@@ -90,7 +89,6 @@ cc_test(
         "@com_google_absl//absl/strings",
         "@com_google_googletest//:gtest",
         "@com_google_googletest//:gtest_main",
-        "@com_tencent_rapidjson//:rapidjson",
     ],
 )
 
