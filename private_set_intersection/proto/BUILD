@@ -31,12 +31,6 @@ cc_proto_library(
     deps = [":psi_proto"],
 )
 
-py_proto_library(
-    name = "psi_python_proto",
-    srcs = ["psi.proto"],
-    deps = [],
-)
-
 go_proto_library(
     name = "psi_go_proto",
     importpath = "github.com/openmined/psi/pb",
