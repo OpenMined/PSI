@@ -92,7 +92,7 @@ func CreateWithNewKey(revealIntersection bool) (*PsiClient, error) {
 	var err *C.char
 	rcode := C.psi_client_create_with_new_key(C.bool(revealIntersection), &psiClient.context, &err)
 	if rcode != 0 {
-		return nil, fmt.Errorf("failed to create client context: %v(%v)", psiClient.loadCString(&err), rcode)
+		return nil, fmt.Errorf("failed to create client context: %v(%v)", psiClient.loadString(&err), rcode)
 	}
 	if psiClient.context == nil {
 		return nil, errors.New("failed to create client context: Context is NULL. This should never happen")
@@ -117,7 +117,7 @@ func CreateFromKey(key []byte, revealIntersection bool) (*PsiClient, error) {
 		&psiClient.context, &err)
 
 	if rcode != 0 {
-		return nil, fmt.Errorf("failed to create client context: %v(%v)", psiClient.loadCString(&err), rcode)
+		return nil, fmt.Errorf("failed to create client context: %v(%v)", psiClient.loadString(&err), rcode)
 	}
 	if psiClient.context == nil {
 		return nil, errors.New("failed to create client context: Context is NULL. This should never happen")
@@ -157,10 +157,10 @@ func (c *PsiClient) CreateRequest(rawInput []string) (string, error) {
 	}
 
 	if rcode != 0 {
-		return "", fmt.Errorf("create request failed %v(%v)", c.loadCString(&err), rcode)
+		return "", fmt.Errorf("create request failed %v(%v)", c.loadString(&err), rcode)
 	}
 
-	return c.loadCString(&out), nil
+	return c.loadBytes(&out, C.int(outlen)), nil
 }
 
 // GetIntersection processes the server's response and returns the intersection of the client
@@ -188,10 +188,10 @@ func (c *PsiClient) GetIntersection(serverSetup, serverResponse string) ([]int64
 	cresponse := C.CString(serverResponse)
 	defer C.free(unsafe.Pointer(cresponse))
 
-	rcode := C.psi_client_get_intersection(c.context, csetup, C.size_t(len(serverSetup)), cresponse, C.size_t(len(serverResponse)), &out, &outlen, &err)
+	rcode := C.psi_client_get_intersection(c.context, C.struct_psi_client_buffer_t{csetup, C.size_t(len(serverSetup))}, C.struct_psi_client_buffer_t{cresponse, C.size_t(len(serverResponse))}, &out, &outlen, &err)
 
 	if rcode != 0 {
-		return nil, fmt.Errorf("process response failed: %v(%v)", c.loadCString(&err), rcode)
+		return nil, fmt.Errorf("process response failed: %v(%v)", c.loadString(&err), rcode)
 	}
 
 	// Cast C pointer as a pointer to a Go array that is large enough to hold any reasonable size.
@@ -226,10 +226,10 @@ func (c *PsiClient) GetIntersectionSize(serverSetup, serverResponse string) (int
 	cresponse := C.CString(serverResponse)
 	defer C.free(unsafe.Pointer(cresponse))
 
-	rcode := C.psi_client_get_intersection_size(c.context, csetup, C.size_t(len(serverSetup)), cresponse, C.size_t(len(serverResponse)), &result, &err)
+	rcode := C.psi_client_get_intersection_size(c.context, C.struct_psi_client_buffer_t{csetup, C.size_t(len(serverSetup))}, C.struct_psi_client_buffer_t{cresponse, C.size_t(len(serverResponse))}, &result, &err)
 
 	if rcode != 0 {
-		return 0, fmt.Errorf("process response failed: %v(%v)", c.loadCString(&err), rcode)
+		return 0, fmt.Errorf("process response failed: %v(%v)", c.loadString(&err), rcode)
 	}
 	return int64(result), nil
 }
@@ -248,7 +248,7 @@ func (c *PsiClient) GetPrivateKeyBytes() ([]byte, error) {
 	rcode := C.psi_client_get_private_key_bytes(c.context, &out, &outlen, &err)
 
 	if rcode != 0 {
-		return nil, fmt.Errorf("get private keys failed: %v(%v)", c.loadCString(&err), rcode)
+		return nil, fmt.Errorf("get private keys failed: %v(%v)", c.loadString(&err), rcode)
 	}
 
 	// Convert C array to a Go slice. Private Keys are guaranteed to be 32 bytes long.
@@ -271,7 +271,13 @@ func (c *PsiClient) Version() string {
 	return version.Version()
 }
 
-func (c *PsiClient) loadCString(buff **C.char) string {
+func (c *PsiClient) loadBytes(buff **C.char, buflen C.int) string {
+	str := C.GoBytes(unsafe.Pointer(*buff), buflen)
+	C.free(unsafe.Pointer(*buff))
+	return string(str)
+}
+
+func (c *PsiClient) loadString(buff **C.char) string {
 	str := C.GoString(*buff)
 	C.free(unsafe.Pointer(*buff))
 	return str

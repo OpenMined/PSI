@@ -114,9 +114,9 @@ void test_corectness(bool reveal_intersection) {
     int64_t *intersection;
     size_t intersectlen;
     psi_client_get_intersection(
-        client, server_setup_str.c_str(), server_setup_str.size(),
-        server_response_str.c_str(), server_response_str.size(), &intersection,
-        &intersectlen, &err);
+        client, {server_setup_str.c_str(), server_setup_str.size()},
+        {server_response_str.c_str(), server_response_str.size()},
+        &intersection, &intersectlen, &err);
 
     absl::flat_hash_set<int64_t> intersection_set(intersection,
                                                   intersection + intersectlen);
@@ -132,8 +132,8 @@ void test_corectness(bool reveal_intersection) {
   } else {
     int64_t intersection_size = 0;
     ret = psi_client_get_intersection_size(
-        client, server_setup_str.c_str(), server_setup_str.size(),
-        server_response_str.c_str(), server_response_str.size(),
+        client, {server_setup_str.c_str(), server_setup_str.size()},
+        {server_response_str.c_str(), server_response_str.size()},
         &intersection_size, &err);
     ASSERT_TRUE(ret == 0) << err;
     ASSERT_TRUE(intersection_size > 0);

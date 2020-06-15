@@ -97,8 +97,8 @@ void test_correctness(bool reveal_intersection) {
     // Compute intersection.
     int64_t *intersection;
     size_t intersectlen;
-    psi_client_get_intersection(client, server_setup, server_setup_buff_len,
-                                server_response, response_len, &intersection,
+    psi_client_get_intersection(client, {server_setup, server_setup_buff_len},
+                                {server_response, response_len}, &intersection,
                                 &intersectlen, &err);
 
     absl::flat_hash_set<int64_t> intersection_set(intersection,
@@ -116,9 +116,9 @@ void test_correctness(bool reveal_intersection) {
   } else {
     // Compute intersection size.
     int64_t intersection_size = 0;
-    psi_client_get_intersection_size(client, server_setup,
-                                     server_setup_buff_len, server_response,
-                                     response_len, &intersection_size, &err);
+    psi_client_get_intersection_size(
+        client, {server_setup, server_setup_buff_len},
+        {server_response, response_len}, &intersection_size, &err);
 
     // Test if size is approximately as expected (up to 10%).
     EXPECT_GE(intersection_size, num_client_elements / 2);

@@ -89,7 +89,7 @@ func CreateWithNewKey(revealIntersection bool) (*PsiServer, error) {
 	var err *C.char
 	rcode := C.psi_server_create_with_new_key(C.bool(revealIntersection), &psiServer.context, &err)
 	if rcode != 0 {
-		return nil, fmt.Errorf("failed to create server context: %v(%v)", psiServer.loadCString(&err), rcode)
+		return nil, fmt.Errorf("failed to create server context: %v(%v)", psiServer.loadString(&err), rcode)
 	}
 	if psiServer.context == nil {
 		return nil, errors.New("failed to create server context: Context is NULL. This should never happen")
@@ -114,7 +114,7 @@ func CreateFromKey(key []byte, revealIntersection bool) (*PsiServer, error) {
 		&psiServer.context, &err)
 
 	if rcode != 0 {
-		return nil, fmt.Errorf("failed to create server context: %v(%v)", psiServer.loadCString(&err), rcode)
+		return nil, fmt.Errorf("failed to create server context: %v(%v)", psiServer.loadString(&err), rcode)
 	}
 	if psiServer.context == nil {
 		return nil, errors.New("failed to create server context: Context is NULL. This should never happen")
@@ -162,9 +162,9 @@ func (s *PsiServer) CreateSetupMessage(fpr float64, inputCount int64, rawInput [
 		C.free(unsafe.Pointer(input[idx].buff))
 	}
 	if rcode != 0 {
-		return "", fmt.Errorf("setup_message failed: %v(%v)", s.loadCString(&err), rcode)
+		return "", fmt.Errorf("setup_message failed: %v(%v)", s.loadString(&err), rcode)
 	}
-	result := s.loadCString(&out)
+	result := s.loadBytes(&out, C.int(outlen))
 
 	return result, nil
 }
@@ -198,10 +198,10 @@ func (s *PsiServer) ProcessRequest(request string) (string, error) {
 	}, &out, &outlen, &err)
 
 	if rcode != 0 {
-		return "", fmt.Errorf("process request failed: %v(%v)", s.loadCString(&err), rcode)
+		return "", fmt.Errorf("process request failed: %v(%v)", s.loadString(&err), rcode)
 	}
 
-	result := s.loadCString(&out)
+	result := s.loadBytes(&out, C.int(outlen))
 	return result, nil
 
 }
@@ -220,7 +220,7 @@ func (s *PsiServer) GetPrivateKeyBytes() ([]byte, error) {
 	rcode := C.psi_server_get_private_key_bytes(s.context, &out, &outlen, &err)
 
 	if rcode != 0 {
-		return nil, fmt.Errorf("get private keys failed: %v(%v)", s.loadCString(&err), rcode)
+		return nil, fmt.Errorf("get private keys failed: %v(%v)", s.loadString(&err), rcode)
 	}
 
 	// Convert C array to a Go slice. Private Keys are guaranteed to be 32 bytes long.
@@ -243,8 +243,14 @@ func (s *PsiServer) Version() string {
 	return version.Version()
 }
 
-func (s *PsiServer) loadCString(buff **C.char) string {
+func (s *PsiServer) loadString(buff **C.char) string {
 	str := C.GoString(*buff)
 	C.free(unsafe.Pointer(*buff))
 	return str
+}
+
+func (s *PsiServer) loadBytes(buff **C.char, buflen C.int) string {
+	str := C.GoBytes(unsafe.Pointer(*buff), buflen)
+	C.free(unsafe.Pointer(*buff))
+	return string(str)
 }
