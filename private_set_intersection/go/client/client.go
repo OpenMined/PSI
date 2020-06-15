@@ -188,7 +188,7 @@ func (c *PsiClient) GetIntersection(serverSetup, serverResponse string) ([]int64
 	cresponse := C.CString(serverResponse)
 	defer C.free(unsafe.Pointer(cresponse))
 
-	rcode := C.psi_client_get_intersection(c.context, csetup, cresponse, &out, &outlen, &err)
+	rcode := C.psi_client_get_intersection(c.context, csetup, C.size_t(len(serverSetup)), cresponse, C.size_t(len(serverResponse)), &out, &outlen, &err)
 
 	if rcode != 0 {
 		return nil, fmt.Errorf("process response failed: %v(%v)", c.loadCString(&err), rcode)
@@ -226,7 +226,7 @@ func (c *PsiClient) GetIntersectionSize(serverSetup, serverResponse string) (int
 	cresponse := C.CString(serverResponse)
 	defer C.free(unsafe.Pointer(cresponse))
 
-	rcode := C.psi_client_get_intersection_size(c.context, csetup, cresponse, &result, &err)
+	rcode := C.psi_client_get_intersection_size(c.context, csetup, C.size_t(len(serverSetup)), cresponse, C.size_t(len(serverResponse)), &result, &err)
 
 	if rcode != 0 {
 		return 0, fmt.Errorf("process response failed: %v(%v)", c.loadCString(&err), rcode)

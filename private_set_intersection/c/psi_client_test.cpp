@@ -149,8 +149,7 @@ void test_corectness(bool reveal_intersection) {
   ASSERT_TRUE(client == nullptr);
 }
 TEST_F(PsiClientTest, TestCorrectnessSize) { test_corectness(false); }
-
-// TEST_F(PsiClientTest, TestCorrectness) { test_corectness(true); }
+TEST_F(PsiClientTest, TestCorrectness) { test_corectness(true); }
 
 }  // namespace
 }  // namespace private_set_intersection
