@@ -7,12 +7,20 @@ go_library(
     cgo = True,
     importpath = "github.com/openmined/psi/server",
     visibility = ["//visibility:public"],
-    deps = ["//private_set_intersection/go/version"],
+    deps = [
+        "//private_set_intersection/go/version",
+        "//private_set_intersection/proto:psi_go_proto",
+        "@com_github_golang_protobuf//proto:go_default_library",
+    ],
 )
 
 go_test(
     name = "server_test",
     srcs = ["server_test.go"],
     embed = [":server"],
-    deps = ["//private_set_intersection/go/client"],
+    deps = [
+        "//private_set_intersection/go/client",
+        "//private_set_intersection/proto:psi_go_proto",
+        "@com_github_golang_protobuf//proto:go_default_library",
+    ],
 )

@@ -70,6 +70,8 @@ import "C"
 import (
 	"errors"
 	"fmt"
+	"github.com/golang/protobuf/proto"
+	"github.com/openmined/psi/pb"
 	"github.com/openmined/psi/version"
 	"runtime"
 	"unsafe"
@@ -133,9 +135,9 @@ func CreateFromKey(key []byte, revealIntersection bool) (*PsiClient, error) {
 // a JSON array.
 //
 // Returns an error if the context is invalid or if the encryption fails.
-func (c *PsiClient) CreateRequest(rawInput []string) (string, error) {
+func (c *PsiClient) CreateRequest(rawInput []string) (*psi_proto.Request, error) {
 	if c.context == nil {
-		return "", errors.New("invalid context")
+		return nil, errors.New("invalid context")
 	}
 
 	inputs := []C.struct_psi_client_buffer_t{}
@@ -157,10 +159,14 @@ func (c *PsiClient) CreateRequest(rawInput []string) (string, error) {
 	}
 
 	if rcode != 0 {
-		return "", fmt.Errorf("create request failed %v(%v)", c.loadString(&err), rcode)
+		return nil, fmt.Errorf("create request failed %v(%v)", c.loadString(&err), rcode)
 	}
 
-	return c.loadBytes(&out, C.int(outlen)), nil
+	bytes := c.loadBytes(&out, C.int(outlen))
+
+	var req psi_proto.Request
+	parseErr := req.XXX_Unmarshal(bytes)
+	return &req, parseErr
 }
 
 // GetIntersection processes the server's response and returns the intersection of the client
@@ -173,19 +179,28 @@ func (c *PsiClient) CreateRequest(rawInput []string) (string, error) {
 //
 // Returns INVALID_ARGUMENT if any input messages are malformed, or INTERNAL
 // if decryption fails.
-func (c *PsiClient) GetIntersection(serverSetup, serverResponse string) ([]int64, error) {
+func (c *PsiClient) GetIntersection(serverSetupProto *psi_proto.ServerSetup, serverResponseProto *psi_proto.Response) ([]int64, error) {
 	if c.context == nil {
 		return nil, errors.New("invalid context")
+	}
+
+	serverSetup, parseErr := proto.Marshal(serverSetupProto)
+	if parseErr != nil {
+		return nil, parseErr
+	}
+	serverResponse, parseErr := proto.Marshal(serverResponseProto)
+	if parseErr != nil {
+		return nil, parseErr
 	}
 
 	var out *C.int64_t
 	var outlen C.size_t
 	var err *C.char
 
-	csetup := C.CString(serverSetup)
+	csetup := C.CString(string(serverSetup))
 	defer C.free(unsafe.Pointer(csetup))
 
-	cresponse := C.CString(serverResponse)
+	cresponse := C.CString(string(serverResponse))
 	defer C.free(unsafe.Pointer(cresponse))
 
 	rcode := C.psi_client_get_intersection(c.context, C.struct_psi_client_buffer_t{csetup, C.size_t(len(serverSetup))}, C.struct_psi_client_buffer_t{cresponse, C.size_t(len(serverResponse))}, &out, &outlen, &err)
@@ -212,18 +227,27 @@ func (c *PsiClient) GetIntersection(serverSetup, serverResponse string) ([]int64
 //
 // Returns INVALID_ARGUMENT if any input messages are malformed, or INTERNAL
 // if decryption fails.
-func (c *PsiClient) GetIntersectionSize(serverSetup, serverResponse string) (int64, error) {
+func (c *PsiClient) GetIntersectionSize(serverSetupProto *psi_proto.ServerSetup, serverResponseProto *psi_proto.Response) (int64, error) {
 	if c.context == nil {
 		return 0, errors.New("invalid context")
+	}
+
+	serverSetup, parseErr := proto.Marshal(serverSetupProto)
+	if parseErr != nil {
+		return 0, parseErr
+	}
+	serverResponse, parseErr := proto.Marshal(serverResponseProto)
+	if parseErr != nil {
+		return 0, parseErr
 	}
 
 	var result C.int64_t
 	var err *C.char
 
-	csetup := C.CString(serverSetup)
+	csetup := C.CString(string(serverSetup))
 	defer C.free(unsafe.Pointer(csetup))
 
-	cresponse := C.CString(serverResponse)
+	cresponse := C.CString(string(serverResponse))
 	defer C.free(unsafe.Pointer(cresponse))
 
 	rcode := C.psi_client_get_intersection_size(c.context, C.struct_psi_client_buffer_t{csetup, C.size_t(len(serverSetup))}, C.struct_psi_client_buffer_t{cresponse, C.size_t(len(serverResponse))}, &result, &err)
@@ -271,10 +295,10 @@ func (c *PsiClient) Version() string {
 	return version.Version()
 }
 
-func (c *PsiClient) loadBytes(buff **C.char, buflen C.int) string {
+func (c *PsiClient) loadBytes(buff **C.char, buflen C.int) []byte {
 	str := C.GoBytes(unsafe.Pointer(*buff), buflen)
 	C.free(unsafe.Pointer(*buff))
-	return string(str)
+	return str
 }
 
 func (c *PsiClient) loadString(buff **C.char) string {

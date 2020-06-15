@@ -70,6 +70,8 @@ import "C"
 import (
 	"errors"
 	"fmt"
+	"github.com/golang/protobuf/proto"
+	"github.com/openmined/psi/pb"
 	"github.com/openmined/psi/version"
 	"runtime"
 	"unsafe"
@@ -139,9 +141,9 @@ func CreateFromKey(key []byte, revealIntersection bool) (*PsiServer, error) {
 // `num_client_inputs` will result in a false positive.
 //
 // Returns an error if the context is invalid or if the encryption fails.
-func (s *PsiServer) CreateSetupMessage(fpr float64, inputCount int64, rawInput []string) (string, error) {
+func (s *PsiServer) CreateSetupMessage(fpr float64, inputCount int64, rawInput []string) (*psi_proto.ServerSetup, error) {
 	if s.context == nil {
-		return "", errors.New("invalid context")
+		return nil, errors.New("invalid context")
 	}
 
 	input := []C.struct_psi_server_buffer_t{}
@@ -162,11 +164,13 @@ func (s *PsiServer) CreateSetupMessage(fpr float64, inputCount int64, rawInput [
 		C.free(unsafe.Pointer(input[idx].buff))
 	}
 	if rcode != 0 {
-		return "", fmt.Errorf("setup_message failed: %v(%v)", s.loadString(&err), rcode)
+		return nil, fmt.Errorf("setup_message failed: %v(%v)", s.loadString(&err), rcode)
 	}
-	result := s.loadBytes(&out, C.int(outlen))
 
-	return result, nil
+	result := s.loadBytes(&out, C.int(outlen))
+	setup := &psi_proto.ServerSetup{}
+	parseErr := proto.Unmarshal(result, setup)
+	return setup, parseErr
 }
 
 // ProcessRequest processes a client query and returns the corresponding server response to
@@ -180,16 +184,21 @@ func (s *PsiServer) CreateSetupMessage(fpr float64, inputCount int64, rawInput [
 // elements in the intersection.
 //
 // Returns an error if the context is invalid.
-func (s *PsiServer) ProcessRequest(request string) (string, error) {
+func (s *PsiServer) ProcessRequest(requestProto *psi_proto.Request) (*psi_proto.Response, error) {
 	if s.context == nil {
-		return "", errors.New("invalid context")
+		return nil, errors.New("invalid context")
+	}
+
+	request, parseErr := proto.Marshal(requestProto)
+	if parseErr != nil {
+		return nil, parseErr
 	}
 
 	var out *C.char
 	var err *C.char
 	var outlen C.size_t
 
-	crequest := C.CString(request)
+	crequest := C.CString(string(request))
 	defer C.free(unsafe.Pointer(crequest))
 
 	rcode := C.psi_server_process_request(s.context, C.struct_psi_server_buffer_t{
@@ -198,11 +207,14 @@ func (s *PsiServer) ProcessRequest(request string) (string, error) {
 	}, &out, &outlen, &err)
 
 	if rcode != 0 {
-		return "", fmt.Errorf("process request failed: %v(%v)", s.loadString(&err), rcode)
+		return nil, fmt.Errorf("process request failed: %v(%v)", s.loadString(&err), rcode)
 	}
 
 	result := s.loadBytes(&out, C.int(outlen))
-	return result, nil
+	response := &psi_proto.Response{}
+	parseErr = proto.Unmarshal(result, response)
+
+	return response, parseErr
 
 }
 
@@ -249,8 +261,8 @@ func (s *PsiServer) loadString(buff **C.char) string {
 	return str
 }
 
-func (s *PsiServer) loadBytes(buff **C.char, buflen C.int) string {
+func (s *PsiServer) loadBytes(buff **C.char, buflen C.int) []byte {
 	str := C.GoBytes(unsafe.Pointer(*buff), buflen)
 	C.free(unsafe.Pointer(*buff))
-	return string(str)
+	return str
 }
