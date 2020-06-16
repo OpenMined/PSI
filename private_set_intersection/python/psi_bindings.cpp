@@ -29,27 +29,52 @@ PYBIND11_MODULE(_psi_bindings, m) {
 
   m.attr("__version__") = ::private_set_intersection::Package::kVersion;
   py::class_<psi_proto::ServerSetup>(m, "PsiProtoServerSetup")
-      .def("clear_bits", &psi_proto::ServerSetup::clear_bits)
       .def("bits", &psi_proto::ServerSetup::bits)
-      .def("set_allocated_bits", &psi_proto::ServerSetup::set_allocated_bits)
-      .def("clear_num_hash_functions",
-           &psi_proto::ServerSetup::clear_num_hash_functions)
+      .def("set_bits", py::overload_cast<const std::string &>(&psi_proto::ServerSetup::set_bits))
+      // .def("set_bits", py::overload_cast<std::string &&>(&psi_proto::ServerSetup::set_bits))
+      .def("set_bits", py::overload_cast<const char *>(&psi_proto::ServerSetup::set_bits))
+      .def("set_bits", py::overload_cast<const void *, size_t>(&psi_proto::ServerSetup::set_bits))
+      .def("clear_bits", &psi_proto::ServerSetup::clear_bits)
       .def("num_hash_functions", &psi_proto::ServerSetup::num_hash_functions)
       .def("set_num_hash_functions",
-           &psi_proto::ServerSetup::set_num_hash_functions);
+           &psi_proto::ServerSetup::set_num_hash_functions)
+      .def("clear_num_hash_functions",
+           &psi_proto::ServerSetup::clear_num_hash_functions);
   py::class_<psi_proto::Request>(m, "PsiProtoRequest")
       .def("encrypted_elements_size",
            &psi_proto::Request::encrypted_elements_size)
+      .def("encrypted_elements",
+           py::overload_cast<int>(&psi_proto::Request::encrypted_elements, py::const_))
+      // .def("add_encrypted_elements",
+      //     py::overload_cast<const std::string &>(&psi_proto::Request::add_encrypted_elements))
+      // .def("add_encrypted_elements",
+      //     py::overload_cast<std::string &&>(&psi_proto::Request::add_encrypted_elements))
+      // .def("add_encrypted_elements",
+      //     py::overload_cast<const char *>(&psi_proto::Request::add_encrypted_elements))
+      // .def("add_encrypted_elements",
+      //     py::overload_cast<const void *, size_t>(&psi_proto::Request::add_encrypted_elements))
       .def("clear_encrypted_elements",
            &psi_proto::Request::clear_encrypted_elements)
-      .def("clear_reveal_intersection",
-           &psi_proto::Request::clear_reveal_intersection)
       .def("reveal_intersection", &psi_proto::Request::reveal_intersection)
       .def("set_reveal_intersection",
-           &psi_proto::Request::set_reveal_intersection);
+           &psi_proto::Request::set_reveal_intersection)
+      .def("clear_reveal_intersection",
+           &psi_proto::Request::clear_reveal_intersection);
   py::class_<psi_proto::Response>(m, "PsiProtoResponse")
       .def("encrypted_elements_size",
-           &psi_proto::Response::encrypted_elements_size);
+           &psi_proto::Response::encrypted_elements_size)
+      .def("encrypted_elements",
+           py::overload_cast<int>(&psi_proto::Response::encrypted_elements, py::const_))
+      // .def("add_encrypted_elements",
+      //     py::overload_cast<const std::string &>(&psi_proto::Response::add_encrypted_elements))
+      // .def("add_encrypted_elements",
+      //     py::overload_cast<std::string &&>(&psi_proto::Response::add_encrypted_elements))
+      // .def("add_encrypted_elements",
+      //     py::overload_cast<const char *>(&psi_proto::Response::add_encrypted_elements))
+      // .def("add_encrypted_elements",
+      //     py::overload_cast<const void *, size_t>(&psi_proto::Response::add_encrypted_elements))
+      .def("clear_encrypted_elements",
+           &psi_proto::Response::clear_encrypted_elements);
   py::class_<psi::PsiClient>(m, "PsiClient")
       .def_static(
           "CreateWithNewKey",
