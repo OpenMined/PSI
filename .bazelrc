@@ -1,5 +1,5 @@
-##### Native #####
- # No need to specify additional configs
+##### Global #####
+build --cxxopt=--std=c++17
 
 ##### WASM #####
 # Use our custom-configured c++ toolchain.
