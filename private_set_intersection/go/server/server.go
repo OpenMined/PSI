@@ -147,7 +147,7 @@ func (s *PsiServer) CreateSetupMessage(fpr float64, inputCount int64, rawInput [
 	}
 
 	if len(rawInput) == 0 {
-		return "", errors.New("empty input")
+		return nil, errors.New("empty input")
 	}
 
 	input := []C.struct_psi_server_buffer_t{}
