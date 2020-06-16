@@ -32,8 +32,6 @@ PYBIND11_MODULE(_psi_bindings, m) {
       .def("bits", &psi_proto::ServerSetup::bits)
       .def("set_bits", py::overload_cast<const std::string&>(
                            &psi_proto::ServerSetup::set_bits))
-      // .def("set_bits", py::overload_cast<std::string
-      // &&>(&psi_proto::ServerSetup::set_bits))
       .def("set_bits",
            py::overload_cast<const char*>(&psi_proto::ServerSetup::set_bits))
       .def("set_bits", py::overload_cast<const void*, size_t>(
@@ -50,18 +48,9 @@ PYBIND11_MODULE(_psi_bindings, m) {
       .def("encrypted_elements",
            py::overload_cast<int>(&psi_proto::Request::encrypted_elements,
                                   py::const_))
-      // .def("add_encrypted_elements",
-      //     py::overload_cast<const std::string
-      //     &>(&psi_proto::Request::add_encrypted_elements))
-      // .def("add_encrypted_elements",
-      //     py::overload_cast<std::string
-      //     &&>(&psi_proto::Request::add_encrypted_elements))
-      // .def("add_encrypted_elements",
-      //     py::overload_cast<const char
-      //     *>(&psi_proto::Request::add_encrypted_elements))
-      // .def("add_encrypted_elements",
-      //     py::overload_cast<const void *,
-      //     size_t>(&psi_proto::Request::add_encrypted_elements))
+      .def("add_encrypted_elements",
+           py::overload_cast<const std::string&>(
+               &psi_proto::Request::add_encrypted_elements))
       .def("clear_encrypted_elements",
            &psi_proto::Request::clear_encrypted_elements)
       .def("reveal_intersection", &psi_proto::Request::reveal_intersection)
@@ -75,20 +64,12 @@ PYBIND11_MODULE(_psi_bindings, m) {
       .def("encrypted_elements",
            py::overload_cast<int>(&psi_proto::Response::encrypted_elements,
                                   py::const_))
-      // .def("add_encrypted_elements",
-      //     py::overload_cast<const std::string
-      //     &>(&psi_proto::Response::add_encrypted_elements))
-      // .def("add_encrypted_elements",
-      //     py::overload_cast<std::string
-      //     &&>(&psi_proto::Response::add_encrypted_elements))
-      // .def("add_encrypted_elements",
-      //     py::overload_cast<const char
-      //     *>(&psi_proto::Response::add_encrypted_elements))
-      // .def("add_encrypted_elements",
-      //     py::overload_cast<const void *,
-      //     size_t>(&psi_proto::Response::add_encrypted_elements))
+      .def("add_encrypted_elements",
+           py::overload_cast<const std::string&>(
+               &psi_proto::Response::add_encrypted_elements))
       .def("clear_encrypted_elements",
            &psi_proto::Response::clear_encrypted_elements);
+
   py::class_<psi::PsiClient>(m, "PsiClient")
       .def_static(
           "CreateWithNewKey",
