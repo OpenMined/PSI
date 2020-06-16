@@ -146,6 +146,10 @@ func (s *PsiServer) CreateSetupMessage(fpr float64, inputCount int64, rawInput [
 		return nil, errors.New("invalid context")
 	}
 
+	if len(rawInput) == 0 {
+		return "", errors.New("empty input")
+	}
+
 	input := []C.struct_psi_server_buffer_t{}
 	for idx := range rawInput {
 		input = append(input, C.struct_psi_server_buffer_t{
