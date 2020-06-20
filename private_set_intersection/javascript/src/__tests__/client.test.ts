@@ -1,6 +1,7 @@
 import PSI from '../index_combined_wasm'
 import { ERROR_INSTANCE_DELETED } from '../implementation/constants'
 import { PSILibrary } from 'src/implementation/psi'
+import { Response, ServerSetup } from '../implementation/proto/psi_pb'
 
 let psi: PSILibrary
 beforeAll(async () => {
@@ -53,8 +54,9 @@ describe('PSI Client', () => {
     )
 
     const request = client.createRequest(clientInputs)
-    const parsed = JSON.parse(request)
-    expect(parsed.encrypted_elements.length).toStrictEqual(numClientElements)
+    expect(request.getEncryptedElementsList().length).toStrictEqual(
+      numClientElements
+    )
   })
 
   test('It should throw if attempting to create a request after deletion', async () => {
@@ -74,135 +76,322 @@ describe('PSI Client', () => {
 
   test('It should process a response (cardinality)', async () => {
     const client = psi.client!.createWithNewKey()
-    const serverSetup = JSON.stringify({
-      // eslint-disable-next-line @typescript-eslint/camelcase
-      num_hash_functions: 14,
-      bits:
-        '1PnolAVduzqn+tXnoeyZ0ztdnwvAidt0U7gc2rWCtP5i6BDtSUydixXwGHP2mVAZ8PCNqGuTWUQO5VB0OEHTH8Cr1JhLxBDHRM4fAPEUvjjkBPNpsPRRtqzN2fW8y7rcANEwaRyInPsw1t4KYB0Q5vdy38VlPB1/Bz/adfGoGnXQ4fPNI/PN5s+zLcPev9odjAWyUQms8bvPHHsL2uyS7Uu5LRtOfdfYX5zWilxzNXECrabnnUnMqD5NH8c7oreTCWxwRQfYMxhf5K/EZTiTHphCi9O5Ey4ahwvNvykbvXdHQ7CDnLTKmomN6su5BrUt'
-    })
-    const serverResponse = JSON.stringify({
-      // eslint-disable-next-line @typescript-eslint/camelcase
-      encrypted_elements: [
-        'Aw8M6ufg9yUnMdHXQKqZ+2g4Z2uhLzn2J/7dKnp/uDEL',
-        'Av/dJyi/E7gunWLvXX2A1AcnU6dEmB40igRCrqskGTgB',
-        'Av8i8ltywvz4VRFTFju//VoavSL5Fmt95wWd8ChPCrCS',
-        'A1kEdR6hNbGz1sQfHSInQrbZfpDTu6OPiQbnEisAA1wl',
-        'Ap/z+I2cPqyUxM0YYlLOpKtRJYaSMfgNcyRY1Jynun0r',
-        'A6CpgzV4+F6Jjr+yOYbLdpkphMVTjoRuiZOP8uI+7he3',
-        'AnQOkG1+kkYuMvtOcQPqV5YKTYoVe/P+/cUHrfaWDJaD',
-        'An8POEQwL/cEHmQrwAdoBSPYh6a6jPOthH3vBx+2owOF',
-        'A23B3m3hJtAi607Z8FKF/P4fXCTdMCPzOjxgCFlna9K6',
-        'AqV+jTb23uTHPDQmPZsEuxDm5kKYIuI9pkEjvM8fMTG9'
-      ]
-    })
-    const intersection = client.getIntersectionSize(serverSetup, serverResponse)
+
+    // prettier-ignore
+    const serverSetup = ServerSetup.deserializeBinary(Uint8Array.from([
+        8,  14,  18, 240,   1,  28, 221,  81, 191,  60,  13, 235,
+      188, 165, 150,  39,  51,  24, 198,  25, 127, 247,  40, 126,
+      190, 190, 100,  80, 195, 200, 192, 165, 190,  60,  57,  77,
+       35, 163, 123, 245, 232, 208, 181, 102, 159,   5,  72, 167,
+      122,  20, 116, 200,  47,  82, 147, 137, 174, 171,  95, 158,
+       29, 144, 240, 116, 121, 160,  24,  53,  47, 135, 110,  13,
+        7, 119,  20,  41, 245, 251, 255, 223,   6, 172, 222,  66,
+      128, 119, 213, 108,  65, 103, 240, 115, 125, 166, 251, 174,
+      235,  74, 181,  17, 137, 146, 169, 244, 124,  74,  32,  85,
+       63, 178, 167, 140,  42,  84,  52, 241, 238,  22, 232, 100,
+       72, 174, 112, 173, 109, 232, 181, 111, 164,  90, 191,  86,
+      217, 234,  14,  23, 196, 145, 238, 158, 136, 193,  65, 201,
+      190, 107, 110, 214, 110, 172,  79, 134, 254,  22, 250,  41,
+      142, 206,  15, 252, 125, 161, 181, 215, 110, 185,  69,  23,
+      171,  91,  68, 116,  58, 251, 255,  81,  15, 163, 208, 134,
+      240, 173, 116, 141,  71, 250, 181,  45, 118,  10,  91, 150,
+      205, 141, 173, 212, 198, 133,  60, 213,  25,  69,  52,  33,
+      146,  81,  93, 159, 227, 124,  45, 196, 117, 114, 213, 145,
+      128,  74, 179, 215,  43, 192,  48,  79, 207, 178, 173, 148,
+      175, 231, 117, 169,   5, 243,  97, 165, 254,  46, 241,  90,
+       12,  29,  56,  36,  17
+    ]))
+
+    // prettier-ignore
+    const response = Response.deserializeBinary(Uint8Array.from([
+       10,  33,   2, 125, 239, 177,  48,  36,  91, 208, 137, 195,
+       26, 145, 226,   3,  71,  36, 225, 222, 126, 214,  92,  26,
+       17, 180, 212, 108,  53,   4, 187, 169, 249,  32, 174,  10,
+       33,   3, 225, 152, 173,  99, 198,  23,  39,  18,   6,  35,
+      233,  69,   8, 161,  94,  32, 151, 109, 207, 244,  42, 201,
+      170, 128, 160, 167, 188,  93, 252,  74, 132,  27,  10,  33,
+        2, 110, 188, 184, 246, 124,  36, 243, 244, 233, 169,   2,
+      162, 171,  64,  50,  11, 207, 182, 170, 253,  67,   7, 120,
+       36,  30, 229, 121, 206,  35, 180,  20, 180,  10,  33,   3,
+      146, 221,  47,  57,  42, 173,  88, 219, 214, 146, 165,  27,
+       36, 234,   0, 163,   6, 102, 189, 159, 177, 101, 181, 255,
+      132,  94,  19,  65, 126, 196, 182, 122,  10,  33,   3,  10,
+      185,  69,  68, 236, 153,  21, 102, 245,  24, 116,  28, 201,
+       22, 109,  70,  36, 145,   9, 200, 218, 213, 133,  63, 183,
+      242, 251,  58, 236, 242,  85,  55,  10,  33,   2, 231, 242,
+       26, 235, 232, 147, 199,  83,  12, 139,  98, 115,  79, 208,
+      118,  19, 232,  74, 175,  29, 119,  73, 191,  17,  49, 225,
+       52,  66,  70, 175, 245, 114,  10,  33,   2,  79,  15, 137,
+      221, 184, 140, 143,  52, 162,  69, 112,  54, 106,  19, 190,
+       64,  95, 246, 147, 248, 230, 144, 186, 141,  51,  47,  82,
+       47, 176, 123,  71, 201,  10,  33,   3,  54, 175, 242, 132,
+      182,  27,   7, 133,  63, 255, 155, 118, 163,  60, 147, 203,
+      204,  41, 156, 206, 177,  57,  87,  12,  32,  49, 107, 243,
+      147,  69,  36,  79,  10,  33,   3,  88,  41,  62, 184, 163,
+      200,  22, 174,  75, 248, 142,  32, 101, 137, 124,  34,  63,
+      117, 173, 143,  57, 149, 249, 162, 198, 216, 113, 174, 153,
+       55, 143,  15,  10,  33,   3,  12, 176,  41,  23,  55,  17,
+      234, 187,   6, 185, 253, 124, 232,  76,  93,  49, 207, 200,
+        0,  11, 131, 133,  61, 197, 143, 127,  52,  35, 132, 156,
+      223, 103
+    ]))
+
+    const intersection = client.getIntersectionSize(serverSetup, response)
     expect(intersection).toStrictEqual(0)
   })
 
   test('It should process a response (intersection)', async () => {
     const client = psi.client!.createWithNewKey(true)
-    const serverSetup = JSON.stringify({
-      // eslint-disable-next-line @typescript-eslint/camelcase
-      num_hash_functions: 14,
-      bits:
-        '1PnolAVduzqn+tXnoeyZ0ztdnwvAidt0U7gc2rWCtP5i6BDtSUydixXwGHP2mVAZ8PCNqGuTWUQO5VB0OEHTH8Cr1JhLxBDHRM4fAPEUvjjkBPNpsPRRtqzN2fW8y7rcANEwaRyInPsw1t4KYB0Q5vdy38VlPB1/Bz/adfGoGnXQ4fPNI/PN5s+zLcPev9odjAWyUQms8bvPHHsL2uyS7Uu5LRtOfdfYX5zWilxzNXECrabnnUnMqD5NH8c7oreTCWxwRQfYMxhf5K/EZTiTHphCi9O5Ey4ahwvNvykbvXdHQ7CDnLTKmomN6su5BrUt'
-    })
-    const serverResponse = JSON.stringify({
-      // eslint-disable-next-line @typescript-eslint/camelcase
-      encrypted_elements: [
-        'Aw8M6ufg9yUnMdHXQKqZ+2g4Z2uhLzn2J/7dKnp/uDEL',
-        'Av/dJyi/E7gunWLvXX2A1AcnU6dEmB40igRCrqskGTgB',
-        'Av8i8ltywvz4VRFTFju//VoavSL5Fmt95wWd8ChPCrCS',
-        'A1kEdR6hNbGz1sQfHSInQrbZfpDTu6OPiQbnEisAA1wl',
-        'Ap/z+I2cPqyUxM0YYlLOpKtRJYaSMfgNcyRY1Jynun0r',
-        'A6CpgzV4+F6Jjr+yOYbLdpkphMVTjoRuiZOP8uI+7he3',
-        'AnQOkG1+kkYuMvtOcQPqV5YKTYoVe/P+/cUHrfaWDJaD',
-        'An8POEQwL/cEHmQrwAdoBSPYh6a6jPOthH3vBx+2owOF',
-        'A23B3m3hJtAi607Z8FKF/P4fXCTdMCPzOjxgCFlna9K6',
-        'AqV+jTb23uTHPDQmPZsEuxDm5kKYIuI9pkEjvM8fMTG9'
-      ]
-    })
-    const intersection = client.getIntersection(serverSetup, serverResponse)
+
+    // prettier-ignore
+    const serverSetup = ServerSetup.deserializeBinary(Uint8Array.from([
+      8,  14,  18, 240,   1,  28, 221,  81, 191,  60,  13, 235,
+    188, 165, 150,  39,  51,  24, 198,  25, 127, 247,  40, 126,
+    190, 190, 100,  80, 195, 200, 192, 165, 190,  60,  57,  77,
+     35, 163, 123, 245, 232, 208, 181, 102, 159,   5,  72, 167,
+    122,  20, 116, 200,  47,  82, 147, 137, 174, 171,  95, 158,
+     29, 144, 240, 116, 121, 160,  24,  53,  47, 135, 110,  13,
+      7, 119,  20,  41, 245, 251, 255, 223,   6, 172, 222,  66,
+    128, 119, 213, 108,  65, 103, 240, 115, 125, 166, 251, 174,
+    235,  74, 181,  17, 137, 146, 169, 244, 124,  74,  32,  85,
+     63, 178, 167, 140,  42,  84,  52, 241, 238,  22, 232, 100,
+     72, 174, 112, 173, 109, 232, 181, 111, 164,  90, 191,  86,
+    217, 234,  14,  23, 196, 145, 238, 158, 136, 193,  65, 201,
+    190, 107, 110, 214, 110, 172,  79, 134, 254,  22, 250,  41,
+    142, 206,  15, 252, 125, 161, 181, 215, 110, 185,  69,  23,
+    171,  91,  68, 116,  58, 251, 255,  81,  15, 163, 208, 134,
+    240, 173, 116, 141,  71, 250, 181,  45, 118,  10,  91, 150,
+    205, 141, 173, 212, 198, 133,  60, 213,  25,  69,  52,  33,
+    146,  81,  93, 159, 227, 124,  45, 196, 117, 114, 213, 145,
+    128,  74, 179, 215,  43, 192,  48,  79, 207, 178, 173, 148,
+    175, 231, 117, 169,   5, 243,  97, 165, 254,  46, 241,  90,
+     12,  29,  56,  36,  17
+    ]))
+
+    // prettier-ignore
+    const response = Response.deserializeBinary(Uint8Array.from([
+     10,  33,   2, 125, 239, 177,  48,  36,  91, 208, 137, 195,
+     26, 145, 226,   3,  71,  36, 225, 222, 126, 214,  92,  26,
+     17, 180, 212, 108,  53,   4, 187, 169, 249,  32, 174,  10,
+     33,   3, 225, 152, 173,  99, 198,  23,  39,  18,   6,  35,
+    233,  69,   8, 161,  94,  32, 151, 109, 207, 244,  42, 201,
+    170, 128, 160, 167, 188,  93, 252,  74, 132,  27,  10,  33,
+      2, 110, 188, 184, 246, 124,  36, 243, 244, 233, 169,   2,
+    162, 171,  64,  50,  11, 207, 182, 170, 253,  67,   7, 120,
+     36,  30, 229, 121, 206,  35, 180,  20, 180,  10,  33,   3,
+    146, 221,  47,  57,  42, 173,  88, 219, 214, 146, 165,  27,
+     36, 234,   0, 163,   6, 102, 189, 159, 177, 101, 181, 255,
+    132,  94,  19,  65, 126, 196, 182, 122,  10,  33,   3,  10,
+    185,  69,  68, 236, 153,  21, 102, 245,  24, 116,  28, 201,
+     22, 109,  70,  36, 145,   9, 200, 218, 213, 133,  63, 183,
+    242, 251,  58, 236, 242,  85,  55,  10,  33,   2, 231, 242,
+     26, 235, 232, 147, 199,  83,  12, 139,  98, 115,  79, 208,
+    118,  19, 232,  74, 175,  29, 119,  73, 191,  17,  49, 225,
+     52,  66,  70, 175, 245, 114,  10,  33,   2,  79,  15, 137,
+    221, 184, 140, 143,  52, 162,  69, 112,  54, 106,  19, 190,
+     64,  95, 246, 147, 248, 230, 144, 186, 141,  51,  47,  82,
+     47, 176, 123,  71, 201,  10,  33,   3,  54, 175, 242, 132,
+    182,  27,   7, 133,  63, 255, 155, 118, 163,  60, 147, 203,
+    204,  41, 156, 206, 177,  57,  87,  12,  32,  49, 107, 243,
+    147,  69,  36,  79,  10,  33,   3,  88,  41,  62, 184, 163,
+    200,  22, 174,  75, 248, 142,  32, 101, 137, 124,  34,  63,
+    117, 173, 143,  57, 149, 249, 162, 198, 216, 113, 174, 153,
+     55, 143,  15,  10,  33,   3,  12, 176,  41,  23,  55,  17,
+    234, 187,   6, 185, 253, 124, 232,  76,  93,  49, 207, 200,
+      0,  11, 131, 133,  61, 197, 143, 127,  52,  35, 132, 156,
+    223, 103
+    ]))
+
+    const intersection = client.getIntersection(serverSetup, response)
     expect(intersection).toStrictEqual([])
   })
 
   test('It should throw if attempting to process a response after deletion (cardinality)', async () => {
     const client = psi.client!.createWithNewKey()
-    const serverSetup = JSON.stringify({
-      // eslint-disable-next-line @typescript-eslint/camelcase
-      num_hash_functions: 14,
-      bits:
-        '1PnolAVduzqn+tXnoeyZ0ztdnwvAidt0U7gc2rWCtP5i6BDtSUydixXwGHP2mVAZ8PCNqGuTWUQO5VB0OEHTH8Cr1JhLxBDHRM4fAPEUvjjkBPNpsPRRtqzN2fW8y7rcANEwaRyInPsw1t4KYB0Q5vdy38VlPB1/Bz/adfGoGnXQ4fPNI/PN5s+zLcPev9odjAWyUQms8bvPHHsL2uyS7Uu5LRtOfdfYX5zWilxzNXECrabnnUnMqD5NH8c7oreTCWxwRQfYMxhf5K/EZTiTHphCi9O5Ey4ahwvNvykbvXdHQ7CDnLTKmomN6su5BrUt'
-    })
-    const serverResponse = JSON.stringify({
-      // eslint-disable-next-line @typescript-eslint/camelcase
-      encrypted_elements: [
-        'Aw8M6ufg9yUnMdHXQKqZ+2g4Z2uhLzn2J/7dKnp/uDEL',
-        'Av/dJyi/E7gunWLvXX2A1AcnU6dEmB40igRCrqskGTgB',
-        'Av8i8ltywvz4VRFTFju//VoavSL5Fmt95wWd8ChPCrCS',
-        'A1kEdR6hNbGz1sQfHSInQrbZfpDTu6OPiQbnEisAA1wl',
-        'Ap/z+I2cPqyUxM0YYlLOpKtRJYaSMfgNcyRY1Jynun0r',
-        'A6CpgzV4+F6Jjr+yOYbLdpkphMVTjoRuiZOP8uI+7he3',
-        'AnQOkG1+kkYuMvtOcQPqV5YKTYoVe/P+/cUHrfaWDJaD',
-        'An8POEQwL/cEHmQrwAdoBSPYh6a6jPOthH3vBx+2owOF',
-        'A23B3m3hJtAi607Z8FKF/P4fXCTdMCPzOjxgCFlna9K6',
-        'AqV+jTb23uTHPDQmPZsEuxDm5kKYIuI9pkEjvM8fMTG9'
-      ]
-    })
+    // prettier-ignore
+    const serverSetup = ServerSetup.deserializeBinary(Uint8Array.from([
+      8,  14,  18, 240,   1,  28, 221,  81, 191,  60,  13, 235,
+    188, 165, 150,  39,  51,  24, 198,  25, 127, 247,  40, 126,
+    190, 190, 100,  80, 195, 200, 192, 165, 190,  60,  57,  77,
+     35, 163, 123, 245, 232, 208, 181, 102, 159,   5,  72, 167,
+    122,  20, 116, 200,  47,  82, 147, 137, 174, 171,  95, 158,
+     29, 144, 240, 116, 121, 160,  24,  53,  47, 135, 110,  13,
+      7, 119,  20,  41, 245, 251, 255, 223,   6, 172, 222,  66,
+    128, 119, 213, 108,  65, 103, 240, 115, 125, 166, 251, 174,
+    235,  74, 181,  17, 137, 146, 169, 244, 124,  74,  32,  85,
+     63, 178, 167, 140,  42,  84,  52, 241, 238,  22, 232, 100,
+     72, 174, 112, 173, 109, 232, 181, 111, 164,  90, 191,  86,
+    217, 234,  14,  23, 196, 145, 238, 158, 136, 193,  65, 201,
+    190, 107, 110, 214, 110, 172,  79, 134, 254,  22, 250,  41,
+    142, 206,  15, 252, 125, 161, 181, 215, 110, 185,  69,  23,
+    171,  91,  68, 116,  58, 251, 255,  81,  15, 163, 208, 134,
+    240, 173, 116, 141,  71, 250, 181,  45, 118,  10,  91, 150,
+    205, 141, 173, 212, 198, 133,  60, 213,  25,  69,  52,  33,
+    146,  81,  93, 159, 227, 124,  45, 196, 117, 114, 213, 145,
+    128,  74, 179, 215,  43, 192,  48,  79, 207, 178, 173, 148,
+    175, 231, 117, 169,   5, 243,  97, 165, 254,  46, 241,  90,
+     12,  29,  56,  36,  17
+  ]))
+
+    // prettier-ignore
+    const response = Response.deserializeBinary(Uint8Array.from([
+     10,  33,   2, 125, 239, 177,  48,  36,  91, 208, 137, 195,
+     26, 145, 226,   3,  71,  36, 225, 222, 126, 214,  92,  26,
+     17, 180, 212, 108,  53,   4, 187, 169, 249,  32, 174,  10,
+     33,   3, 225, 152, 173,  99, 198,  23,  39,  18,   6,  35,
+    233,  69,   8, 161,  94,  32, 151, 109, 207, 244,  42, 201,
+    170, 128, 160, 167, 188,  93, 252,  74, 132,  27,  10,  33,
+      2, 110, 188, 184, 246, 124,  36, 243, 244, 233, 169,   2,
+    162, 171,  64,  50,  11, 207, 182, 170, 253,  67,   7, 120,
+     36,  30, 229, 121, 206,  35, 180,  20, 180,  10,  33,   3,
+    146, 221,  47,  57,  42, 173,  88, 219, 214, 146, 165,  27,
+     36, 234,   0, 163,   6, 102, 189, 159, 177, 101, 181, 255,
+    132,  94,  19,  65, 126, 196, 182, 122,  10,  33,   3,  10,
+    185,  69,  68, 236, 153,  21, 102, 245,  24, 116,  28, 201,
+     22, 109,  70,  36, 145,   9, 200, 218, 213, 133,  63, 183,
+    242, 251,  58, 236, 242,  85,  55,  10,  33,   2, 231, 242,
+     26, 235, 232, 147, 199,  83,  12, 139,  98, 115,  79, 208,
+    118,  19, 232,  74, 175,  29, 119,  73, 191,  17,  49, 225,
+     52,  66,  70, 175, 245, 114,  10,  33,   2,  79,  15, 137,
+    221, 184, 140, 143,  52, 162,  69, 112,  54, 106,  19, 190,
+     64,  95, 246, 147, 248, 230, 144, 186, 141,  51,  47,  82,
+     47, 176, 123,  71, 201,  10,  33,   3,  54, 175, 242, 132,
+    182,  27,   7, 133,  63, 255, 155, 118, 163,  60, 147, 203,
+    204,  41, 156, 206, 177,  57,  87,  12,  32,  49, 107, 243,
+    147,  69,  36,  79,  10,  33,   3,  88,  41,  62, 184, 163,
+    200,  22, 174,  75, 248, 142,  32, 101, 137, 124,  34,  63,
+    117, 173, 143,  57, 149, 249, 162, 198, 216, 113, 174, 153,
+     55, 143,  15,  10,  33,   3,  12, 176,  41,  23,  55,  17,
+    234, 187,   6, 185, 253, 124, 232,  76,  93,  49, 207, 200,
+      0,  11, 131, 133,  61, 197, 143, 127,  52,  35, 132, 156,
+    223, 103
+  ]))
+
     client.delete()
 
     expect(
-      client.getIntersectionSize.bind(client, serverSetup, serverResponse)
+      client.getIntersectionSize.bind(client, serverSetup, response)
     ).toThrowError(ERROR_INSTANCE_DELETED)
   })
 
   test('It should throw if attempting to process a response after deletion (intersection)', async () => {
     const client = psi.client!.createWithNewKey(true)
-    const serverSetup = JSON.stringify({
-      // eslint-disable-next-line @typescript-eslint/camelcase
-      num_hash_functions: 14,
-      bits:
-        '1PnolAVduzqn+tXnoeyZ0ztdnwvAidt0U7gc2rWCtP5i6BDtSUydixXwGHP2mVAZ8PCNqGuTWUQO5VB0OEHTH8Cr1JhLxBDHRM4fAPEUvjjkBPNpsPRRtqzN2fW8y7rcANEwaRyInPsw1t4KYB0Q5vdy38VlPB1/Bz/adfGoGnXQ4fPNI/PN5s+zLcPev9odjAWyUQms8bvPHHsL2uyS7Uu5LRtOfdfYX5zWilxzNXECrabnnUnMqD5NH8c7oreTCWxwRQfYMxhf5K/EZTiTHphCi9O5Ey4ahwvNvykbvXdHQ7CDnLTKmomN6su5BrUt'
-    })
-    const serverResponse = JSON.stringify({
-      // eslint-disable-next-line @typescript-eslint/camelcase
-      encrypted_elements: [
-        'Aw8M6ufg9yUnMdHXQKqZ+2g4Z2uhLzn2J/7dKnp/uDEL',
-        'Av/dJyi/E7gunWLvXX2A1AcnU6dEmB40igRCrqskGTgB',
-        'Av8i8ltywvz4VRFTFju//VoavSL5Fmt95wWd8ChPCrCS',
-        'A1kEdR6hNbGz1sQfHSInQrbZfpDTu6OPiQbnEisAA1wl',
-        'Ap/z+I2cPqyUxM0YYlLOpKtRJYaSMfgNcyRY1Jynun0r',
-        'A6CpgzV4+F6Jjr+yOYbLdpkphMVTjoRuiZOP8uI+7he3',
-        'AnQOkG1+kkYuMvtOcQPqV5YKTYoVe/P+/cUHrfaWDJaD',
-        'An8POEQwL/cEHmQrwAdoBSPYh6a6jPOthH3vBx+2owOF',
-        'A23B3m3hJtAi607Z8FKF/P4fXCTdMCPzOjxgCFlna9K6',
-        'AqV+jTb23uTHPDQmPZsEuxDm5kKYIuI9pkEjvM8fMTG9'
-      ]
-    })
+    // prettier-ignore
+    const serverSetup = ServerSetup.deserializeBinary(Uint8Array.from([
+      8,  14,  18, 240,   1,  28, 221,  81, 191,  60,  13, 235,
+    188, 165, 150,  39,  51,  24, 198,  25, 127, 247,  40, 126,
+    190, 190, 100,  80, 195, 200, 192, 165, 190,  60,  57,  77,
+     35, 163, 123, 245, 232, 208, 181, 102, 159,   5,  72, 167,
+    122,  20, 116, 200,  47,  82, 147, 137, 174, 171,  95, 158,
+     29, 144, 240, 116, 121, 160,  24,  53,  47, 135, 110,  13,
+      7, 119,  20,  41, 245, 251, 255, 223,   6, 172, 222,  66,
+    128, 119, 213, 108,  65, 103, 240, 115, 125, 166, 251, 174,
+    235,  74, 181,  17, 137, 146, 169, 244, 124,  74,  32,  85,
+     63, 178, 167, 140,  42,  84,  52, 241, 238,  22, 232, 100,
+     72, 174, 112, 173, 109, 232, 181, 111, 164,  90, 191,  86,
+    217, 234,  14,  23, 196, 145, 238, 158, 136, 193,  65, 201,
+    190, 107, 110, 214, 110, 172,  79, 134, 254,  22, 250,  41,
+    142, 206,  15, 252, 125, 161, 181, 215, 110, 185,  69,  23,
+    171,  91,  68, 116,  58, 251, 255,  81,  15, 163, 208, 134,
+    240, 173, 116, 141,  71, 250, 181,  45, 118,  10,  91, 150,
+    205, 141, 173, 212, 198, 133,  60, 213,  25,  69,  52,  33,
+    146,  81,  93, 159, 227, 124,  45, 196, 117, 114, 213, 145,
+    128,  74, 179, 215,  43, 192,  48,  79, 207, 178, 173, 148,
+    175, 231, 117, 169,   5, 243,  97, 165, 254,  46, 241,  90,
+     12,  29,  56,  36,  17
+  ]))
+
+    // prettier-ignore
+    const response = Response.deserializeBinary(Uint8Array.from([
+     10,  33,   2, 125, 239, 177,  48,  36,  91, 208, 137, 195,
+     26, 145, 226,   3,  71,  36, 225, 222, 126, 214,  92,  26,
+     17, 180, 212, 108,  53,   4, 187, 169, 249,  32, 174,  10,
+     33,   3, 225, 152, 173,  99, 198,  23,  39,  18,   6,  35,
+    233,  69,   8, 161,  94,  32, 151, 109, 207, 244,  42, 201,
+    170, 128, 160, 167, 188,  93, 252,  74, 132,  27,  10,  33,
+      2, 110, 188, 184, 246, 124,  36, 243, 244, 233, 169,   2,
+    162, 171,  64,  50,  11, 207, 182, 170, 253,  67,   7, 120,
+     36,  30, 229, 121, 206,  35, 180,  20, 180,  10,  33,   3,
+    146, 221,  47,  57,  42, 173,  88, 219, 214, 146, 165,  27,
+     36, 234,   0, 163,   6, 102, 189, 159, 177, 101, 181, 255,
+    132,  94,  19,  65, 126, 196, 182, 122,  10,  33,   3,  10,
+    185,  69,  68, 236, 153,  21, 102, 245,  24, 116,  28, 201,
+     22, 109,  70,  36, 145,   9, 200, 218, 213, 133,  63, 183,
+    242, 251,  58, 236, 242,  85,  55,  10,  33,   2, 231, 242,
+     26, 235, 232, 147, 199,  83,  12, 139,  98, 115,  79, 208,
+    118,  19, 232,  74, 175,  29, 119,  73, 191,  17,  49, 225,
+     52,  66,  70, 175, 245, 114,  10,  33,   2,  79,  15, 137,
+    221, 184, 140, 143,  52, 162,  69, 112,  54, 106,  19, 190,
+     64,  95, 246, 147, 248, 230, 144, 186, 141,  51,  47,  82,
+     47, 176, 123,  71, 201,  10,  33,   3,  54, 175, 242, 132,
+    182,  27,   7, 133,  63, 255, 155, 118, 163,  60, 147, 203,
+    204,  41, 156, 206, 177,  57,  87,  12,  32,  49, 107, 243,
+    147,  69,  36,  79,  10,  33,   3,  88,  41,  62, 184, 163,
+    200,  22, 174,  75, 248, 142,  32, 101, 137, 124,  34,  63,
+    117, 173, 143,  57, 149, 249, 162, 198, 216, 113, 174, 153,
+     55, 143,  15,  10,  33,   3,  12, 176,  41,  23,  55,  17,
+    234, 187,   6, 185, 253, 124, 232,  76,  93,  49, 207, 200,
+      0,  11, 131, 133,  61, 197, 143, 127,  52,  35, 132, 156,
+    223, 103
+  ]))
+
     client.delete()
 
     expect(
-      client.getIntersection.bind(client, serverSetup, serverResponse)
+      client.getIntersection.bind(client, serverSetup, response)
     ).toThrowError(ERROR_INSTANCE_DELETED)
   })
 
-  test('It should fail to process a response (cardinality)', async () => {
+  test.skip('It should fail to process a response (cardinality)', async () => {
     const client = psi.client!.createWithNewKey()
-    const serverSetup = 'invalid'
-    const serverResponse = 'invalid'
+    const serverSetup = new ServerSetup()
+    const serverResponse = new Response()
 
     expect(
       client.getIntersectionSize.bind(client, serverSetup, serverResponse)
     ).toThrow()
   })
 
-  test('It should fail to process a response (intersection)', async () => {
+  test.skip('It should fail to process a response (intersection)', async () => {
     const client = psi.client!.createWithNewKey(true)
-    const serverSetup = 'invalid'
-    const serverResponse = 'invalid'
+    const serverSetup = new ServerSetup()
+    const serverResponse = new Response()
 
     expect(
       client.getIntersection.bind(client, serverSetup, serverResponse)
     ).toThrow()
   })
 })
+
+// const request = Request.deserializeBinary(Uint8Array.from([
+//   18,  33,   2,   3, 219,  96,  37, 182, 133, 228,  25,  79,
+//  234,  44, 142,  91,  90,  22, 254,  26,  85, 201,   1, 156,
+//   53,  47, 231, 118,  42, 240, 188,  89, 160, 180, 240,  18,
+//   33,   3,  38, 205,  60, 197,  53, 232,  56, 179, 140, 157,
+//  110, 175, 219,  95, 190, 185, 219,  33,  40, 221, 106,  42,
+//  159,  57,  21, 166, 225, 111, 183, 142,  25, 217,  18,  33,
+//    2, 137,  13, 129, 117,  62,  62, 141,  34,   1, 108, 181,
+//  149, 219,  90,  51,  13,  24,   5, 198,  81,  75, 114,  57,
+//   50,  14,  83, 176, 247, 251, 230, 174, 151,  18,  33,   3,
+//  174, 135,   0, 184, 126, 207, 121,  90, 221, 248, 120, 116,
+//  212, 125,  74, 199, 188, 206,  64, 171,  44, 140,  29,  33,
+//  204,  37,  51,  60, 187, 171, 190, 140,  18,  33,   3, 107,
+//  179, 129, 236, 175, 208, 179,  90, 102,  86, 209, 237,  32,
+//  176, 187,  99, 156, 237,  50, 193, 107, 226,  98, 175,  90,
+//    1, 179,  52, 192, 248,  92, 244,  18,  33,   3,  96,  57,
+//  220, 207, 167, 203,  19,  11, 120, 189,  33,  69, 249,  66,
+//  156, 188, 251,   5, 133, 148,  32, 230,  76,  66, 199, 151,
+//  178, 152,  50, 176, 121, 253,  18,  33,   2, 108,  40,  24,
+//  235,  61, 178,  53,  93,  59, 221, 145,  50, 205, 218, 118,
+//  244, 167, 118, 204, 238,  51,  93,  46, 189, 168,  41,  50,
+//  144, 106, 226, 185,  77,  18,  33,   2, 137, 185, 176, 205,
+//   77, 212, 199,  54, 193,  72, 141,  23, 252, 194, 187,  27,
+//  150, 197, 124, 201, 183,   7, 100,  43, 197, 142,   6, 138,
+//   96,  73,  11,  38,  18,  33,   2, 101, 115, 165, 127, 201,
+//   74, 239,  33, 103,  94,  18,  43,  62,  50,  17, 223,  83,
+//  177,  25,  23, 196, 200, 192, 198, 115,  40,  84,  90, 137,
+//  228, 118,  16,  18,  33,   2,  82,  37, 166, 155,   4, 244,
+//  228, 122, 150, 169, 225,  71, 110, 213,  42,  18, 105, 146,
+//   58, 180, 149, 197,  47, 214,  81, 126, 113, 248,   5,  16,
+//   19, 194
+// ]))

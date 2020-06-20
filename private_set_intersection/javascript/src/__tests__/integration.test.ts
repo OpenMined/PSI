@@ -14,7 +14,6 @@ describe('PSI Integration', () => {
       Buffer.from('djY2Bgt4JwfbjvJn6dDzpwrTvKWVE1Ks458mlrd1/tY=', 'base64')
     )
     const server = psi.server!.createFromKey(key, true)
-
     const fpr = 0.01
     const numClientElements = 100
     const numServerElements = 1000
@@ -26,7 +25,6 @@ describe('PSI Integration', () => {
       { length: numServerElements },
       (_, i) => `Element ${i * 2}`
     )
-
     const serverSetup = server.createSetupMessage(
       fpr,
       numClientElements,
@@ -46,7 +44,6 @@ describe('PSI Integration', () => {
       Buffer.from('djY2Bgt4JwfbjvJn6dDzpwrTvKWVE1Ks458mlrd1/tY=', 'base64')
     )
     const server = psi.server!.createFromKey(key)
-
     const fpr = 0.01
     const numClientElements = 100
     const numServerElements = 1000
@@ -58,7 +55,6 @@ describe('PSI Integration', () => {
       { length: numServerElements },
       (_, i) => `Element ${i * 2}`
     )
-
     const serverSetup = server.createSetupMessage(
       fpr,
       numClientElements,

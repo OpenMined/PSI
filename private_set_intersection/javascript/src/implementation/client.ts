@@ -1,17 +1,18 @@
 import * as psi from 'psi_'
 import { Loader } from '../loader'
 import { ERROR_INSTANCE_DELETED } from './constants'
+import { Request, Response, ServerSetup } from './proto/psi_pb'
 
 export type Client = {
   readonly delete: () => void
-  readonly createRequest: (clientInputs: readonly string[]) => string
+  readonly createRequest: (clientInputs: readonly string[]) => Request
   readonly getIntersection: (
-    serverSetup: string,
-    serverResponse: string
+    serverSetup: ServerSetup,
+    serverResponse: Response
   ) => number[]
   readonly getIntersectionSize: (
-    serverSetup: string,
-    serverResponse: string
+    serverSetup: ServerSetup,
+    serverResponse: Response
   ) => number
   readonly getPrivateKeyBytes: () => Uint8Array
 }
@@ -63,9 +64,9 @@ const ClientConstructor = (instance: psi.Client): Client => {
      * @function
      * @name Client#createRequest
      * @param {Array<String>} inputs
-     * @returns {String} The serialized request
+     * @returns {Uint8Array} The serialized request
      */
-    createRequest(inputs: readonly string[]): string {
+    createRequest(inputs: readonly string[]): Request {
       if (!_instance) {
         throw new Error(ERROR_INSTANCE_DELETED)
       }
@@ -73,7 +74,8 @@ const ClientConstructor = (instance: psi.Client): Client => {
       if (Status) {
         throw new Error(Status.Message)
       }
-      return Value
+
+      return Request.deserializeBinary(Value)
     },
 
     /**
@@ -85,15 +87,19 @@ const ClientConstructor = (instance: psi.Client): Client => {
      *
      * @function
      * @name Client#getIntersection
-     * @param {String} setup The serialized server setup
-     * @param {String} response The serialized server response
+     * @param {ServerSetup} setup The serialized server setup
+     * @param {Response} response The serialized server response
      * @returns {Number[]} The PSI intersection
      */
-    getIntersection(setup: string, response: string): number[] {
+    getIntersection(setup: ServerSetup, response: Response): number[] {
       if (!_instance) {
         throw new Error(ERROR_INSTANCE_DELETED)
       }
-      const { Value, Status } = _instance.GetIntersection(setup, response)
+
+      const { Value, Status } = _instance.GetIntersection(
+        setup.serializeBinary(),
+        response.serializeBinary()
+      )
       if (Status) {
         throw new Error(Status.Message)
       }
@@ -109,15 +115,18 @@ const ClientConstructor = (instance: psi.Client): Client => {
      *
      * @function
      * @name Client#getIntersectionSize
-     * @param {String} setup The serialized server setup
-     * @param {String} response The serialized server response
+     * @param {ServerSetup} setup The serialized server setup
+     * @param {StriUint8Arrayng} response The serialized server response
      * @returns {Number} The PSI cardinality
      */
-    getIntersectionSize(setup: string, response: string): number {
+    getIntersectionSize(setup: ServerSetup, response: Response): number {
       if (!_instance) {
         throw new Error(ERROR_INSTANCE_DELETED)
       }
-      const { Value, Status } = _instance.GetIntersectionSize(setup, response)
+      const { Value, Status } = _instance.GetIntersectionSize(
+        setup.serializeBinary(),
+        response.serializeBinary()
+      )
       if (Status) {
         throw new Error(Status.Message)
       }
