@@ -35,7 +35,8 @@ emscripten::val ToJSObject(private_join_and_compute::StatusOr<T> statusor) {
 }
 
 template <typename T>
-emscripten::val ToSerializedJSObject(private_join_and_compute::StatusOr<T> statusor) {
+emscripten::val ToSerializedJSObject(
+    private_join_and_compute::StatusOr<T> statusor) {
   auto result = emscripten::val::object();
   if (statusor.ok()) {
     const T protobuf = statusor.ValueOrDie();

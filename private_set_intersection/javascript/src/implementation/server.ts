@@ -54,12 +54,12 @@ const ServerConstructor = (instance: psi.Server): Server => {
 
     /**
      * Creates a setup message from the server's dataset to be sent to the client.
-     * The setup message is a JSON-encoded Bloom filter containing H(x)^s for each
-     * element x in `inputs`, where s is the server's secret key. The message has
-     * the following form:
+     * The setup message is a protobuf Bloom filter containing H(x)^s for each
+     * element x in `inputs`, where s is the server's secret key. The protobuf
+     * has the folloing following structure:
      *
      *   {
-     *     "num_hash_functions": <int>,
+     *     "numHashFunctions": <int>,
      *     "bits": <string>
      *   }
      *
@@ -72,7 +72,7 @@ const ServerConstructor = (instance: psi.Server): Server => {
      * @param {Number} fpr False positive rate
      * @param {Number} numClientInputs The number of expected client inputs
      * @param {Array<String>} inputs The server's dataset
-     * @returns {ServerSetup} The serialized setup message
+     * @returns {ServerSetup} The ServerSetup protobuf
      */
     createSetupMessage(
       fpr: number,
@@ -105,8 +105,8 @@ const ServerConstructor = (instance: psi.Server): Server => {
      *
      * @function
      * @name Server#processRequest
-     * @param {Request} clientRequest The serialized client request
-     * @returns {Response} The serialized response
+     * @param {Request} clientRequest The Request protobuf
+     * @returns {Response} The Response protobuf
      */
     processRequest(clientRequest: Request): Response {
       if (!_instance) {

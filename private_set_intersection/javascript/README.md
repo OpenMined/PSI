@@ -211,6 +211,7 @@ Please make sure to update tests as appropriate.
 Ensure your environment has the following global dependencies:
 
 - [Bazel](https://bazel.build)
+- [Protoc](http://google.github.io/proto-lens/installing-protoc.html)
 - [NodeJS](https://nodejs.org/en/)
 
 Next, ensure you have updated submodules
@@ -232,10 +233,22 @@ Now, install the rest of the dev dependencies
 npm install
 ```
 
-To build the client, server, or combined (both client and server) for WebAssembly and pure JS
+To compile the client, server, or combined (both client and server) for WebAssembly and pure JS
 
 ```
 npm run build
+```
+
+Now, build the JS protobufs for TypeScript.
+
+```
+npm run build:proto
+```
+
+Compile TypeScript to JS
+
+```
+npm run compile
 ```
 
 Run the tests or generate coverage reports. **Note** tests are run using the WASM variant.
@@ -271,6 +284,10 @@ Ensure we start with a clean build
 Build the client, server, and combined (client and server)
 
 `npm run build`
+
+Build protobufs
+
+`npm run build:proto`
 
 Compile typescript
 

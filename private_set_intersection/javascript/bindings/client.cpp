@@ -53,84 +53,88 @@ EMSCRIPTEN_BINDINGS(PSI_Client) {
                   }
                   return ToSerializedJSObject(request);
                 }))
-      .function("GetIntersection",
-                optional_override([](const PsiClient& self,
-                                     const emscripten::val& server_setup_array,
-                                     const emscripten::val& server_response_array) {
-                  const std::size_t server_setup_length =
-                      server_setup_array["length"].as<std::size_t>();
-                  std::string server_setup_string(server_setup_length, '\0');
-                  for (std::size_t i = 0; i < server_setup_length; i++) {
-                    server_setup_string[i] = server_setup_array[i].as<std::uint8_t>();
-                  }
+      .function(
+          "GetIntersection",
+          optional_override([](const PsiClient& self,
+                               const emscripten::val& server_setup_array,
+                               const emscripten::val& server_response_array) {
+            const std::size_t server_setup_length =
+                server_setup_array["length"].as<std::size_t>();
+            std::string server_setup_string(server_setup_length, '\0');
+            for (std::size_t i = 0; i < server_setup_length; i++) {
+              server_setup_string[i] = server_setup_array[i].as<std::uint8_t>();
+            }
 
-                  const std::size_t server_response_length =
-                      server_response_array["length"].as<std::size_t>();
-                  std::string server_response_string(server_response_length, '\0');
-                  for (std::size_t i = 0; i < server_response_length; i++) {
-                    server_response_string[i] = server_response_array[i].as<std::uint8_t>();
-                  }
+            const std::size_t server_response_length =
+                server_response_array["length"].as<std::size_t>();
+            std::string server_response_string(server_response_length, '\0');
+            for (std::size_t i = 0; i < server_response_length; i++) {
+              server_response_string[i] =
+                  server_response_array[i].as<std::uint8_t>();
+            }
 
-                  psi_proto::ServerSetup server_setup;
-                  server_setup.ParseFromString(server_setup_string);
-                  psi_proto::Response server_response;
-                  server_response.ParseFromString(server_response_string);
+            psi_proto::ServerSetup server_setup;
+            server_setup.ParseFromString(server_setup_string);
+            psi_proto::Response server_response;
+            server_response.ParseFromString(server_response_string);
 
-                  // We need to convert to a JS array explicitly because JS
-                  // doesn't know about vector<int64_t>.
-                  StatusOr<emscripten::val> result;
-                  const auto status =
-                      self.GetIntersection(server_setup, server_response);
-                  if (status.ok()) {
-                    // Convert int64_t to int32_t for JS
-                    const std::vector<std::int64_t> unsupported_result =
-                        status.ValueOrDie();
-                    const std::vector<std::int32_t> supported_result(
-                        unsupported_result.begin(), unsupported_result.end());
-                    // Convert vector to JS array
-                    emscripten::val array = emscripten::val::array(
-                        supported_result.begin(), supported_result.end());
-                    result = std::move(StatusOr<emscripten::val>(array));
-                  } else {
-                    result = status.status();
-                  }
-                  return ToJSObject(result);
-                }))
-      .function("GetIntersectionSize",
-                optional_override([](const PsiClient& self,
-                                     const emscripten::val& server_setup_array,
-                                     const emscripten::val& server_response_array) {
-                  const std::size_t server_setup_length =
-                      server_setup_array["length"].as<std::size_t>();
-                  std::string server_setup_string(server_setup_length, '\0');
-                  for (std::size_t i = 0; i < server_setup_length; i++) {
-                    server_setup_string[i] = server_setup_array[i].as<std::uint8_t>();
-                  }
+            // We need to convert to a JS array explicitly because JS
+            // doesn't know about vector<int64_t>.
+            StatusOr<emscripten::val> result;
+            const auto status =
+                self.GetIntersection(server_setup, server_response);
+            if (status.ok()) {
+              // Convert int64_t to int32_t for JS
+              const std::vector<std::int64_t> unsupported_result =
+                  status.ValueOrDie();
+              const std::vector<std::int32_t> supported_result(
+                  unsupported_result.begin(), unsupported_result.end());
+              // Convert vector to JS array
+              emscripten::val array = emscripten::val::array(
+                  supported_result.begin(), supported_result.end());
+              result = std::move(StatusOr<emscripten::val>(array));
+            } else {
+              result = status.status();
+            }
+            return ToJSObject(result);
+          }))
+      .function(
+          "GetIntersectionSize",
+          optional_override([](const PsiClient& self,
+                               const emscripten::val& server_setup_array,
+                               const emscripten::val& server_response_array) {
+            const std::size_t server_setup_length =
+                server_setup_array["length"].as<std::size_t>();
+            std::string server_setup_string(server_setup_length, '\0');
+            for (std::size_t i = 0; i < server_setup_length; i++) {
+              server_setup_string[i] = server_setup_array[i].as<std::uint8_t>();
+            }
 
-                  const std::size_t server_response_length =
-                      server_response_array["length"].as<std::size_t>();
-                  std::string server_response_string(server_response_length, '\0');
-                  for (std::size_t i = 0; i < server_response_length; i++) {
-                    server_response_string[i] = server_response_array[i].as<std::uint8_t>();
-                  }
+            const std::size_t server_response_length =
+                server_response_array["length"].as<std::size_t>();
+            std::string server_response_string(server_response_length, '\0');
+            for (std::size_t i = 0; i < server_response_length; i++) {
+              server_response_string[i] =
+                  server_response_array[i].as<std::uint8_t>();
+            }
 
-                  psi_proto::ServerSetup server_setup;
-                  server_setup.ParseFromString(server_setup_string);
-                  psi_proto::Response server_response;
-                  server_response.ParseFromString(server_response_string);
+            psi_proto::ServerSetup server_setup;
+            server_setup.ParseFromString(server_setup_string);
+            psi_proto::Response server_response;
+            server_response.ParseFromString(server_response_string);
 
-                  // We need to convert to an int32 explicitly because JS
-                  // doesn't have 64-bit integers.
-                  StatusOr<uint32_t> result;
-                  const auto status =
-                      self.GetIntersectionSize(server_setup, server_response);
-                  if (status.ok()) {
-                    result = status.ValueOrDie();
-                  } else {
-                    result = status.status();
-                  }
-                  return ToJSObject(result);
-                }))
+            // We need to convert to an int32 explicitly because JS
+            // doesn't have 64-bit integers.
+            StatusOr<uint32_t> result;
+            const auto status =
+                self.GetIntersectionSize(server_setup, server_response);
+            if (status.ok()) {
+              result = status.ValueOrDie();
+            } else {
+              result = status.status();
+            }
+            return ToJSObject(result);
+          }))
       .function(
           "GetPrivateKeyBytes", optional_override([](const PsiClient& self) {
             const std::string byte_string = self.GetPrivateKeyBytes();

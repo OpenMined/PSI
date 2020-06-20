@@ -58,13 +58,12 @@ const ClientConstructor = (instance: psi.Client): Client => {
     /**
      * Creates a request message to be sent to the server. For each input element
      * x, computes H(x)^c, where c is the client's secret key. The result is
-     * sorted to hide the initial ordering of `inputs` and encoded as a JSON
-     * array.
+     * sorted to hide the initial ordering of `inputs` and returned as a protobuf
      *
      * @function
      * @name Client#createRequest
      * @param {Array<String>} inputs
-     * @returns {Uint8Array} The serialized request
+     * @returns {Request} The Request protobuf
      */
     createRequest(inputs: readonly string[]): Request {
       if (!_instance) {
@@ -87,8 +86,8 @@ const ClientConstructor = (instance: psi.Client): Client => {
      *
      * @function
      * @name Client#getIntersection
-     * @param {ServerSetup} setup The serialized server setup
-     * @param {Response} response The serialized server response
+     * @param {ServerSetup} setup The ServerServer protobuf
+     * @param {Response} response The Response protobuf
      * @returns {Number[]} The PSI intersection
      */
     getIntersection(setup: ServerSetup, response: Response): number[] {
@@ -115,8 +114,8 @@ const ClientConstructor = (instance: psi.Client): Client => {
      *
      * @function
      * @name Client#getIntersectionSize
-     * @param {ServerSetup} setup The serialized server setup
-     * @param {StriUint8Arrayng} response The serialized server response
+     * @param {ServerSetup} setup The ServerServer protobuf
+     * @param {Response} response The Response protobuf
      * @returns {Number} The PSI cardinality
      */
     getIntersectionSize(setup: ServerSetup, response: Response): number {

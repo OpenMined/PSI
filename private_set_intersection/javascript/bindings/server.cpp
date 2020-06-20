@@ -1,7 +1,7 @@
 #include "emscripten/bind.h"
 #include "private_set_intersection/cpp/psi_server.h"
-#include "private_set_intersection/proto/psi.pb.h"
 #include "private_set_intersection/javascript/bindings/utils.h"
+#include "private_set_intersection/proto/psi.pb.h"
 
 EMSCRIPTEN_BINDINGS(PSI_Server) {
   using emscripten::optional_override;
@@ -46,7 +46,8 @@ EMSCRIPTEN_BINDINGS(PSI_Server) {
                   }
 
                   StatusOr<psi_proto::ServerSetup> server_setup;
-                  const auto status = self.CreateSetupMessage(fpr, num_client_inputs, string_vector);
+                  const auto status = self.CreateSetupMessage(
+                      fpr, num_client_inputs, string_vector);
                   if (status.ok()) {
                     server_setup = status.ValueOrDie();
                   } else {
@@ -57,9 +58,7 @@ EMSCRIPTEN_BINDINGS(PSI_Server) {
       .function("ProcessRequest",
                 optional_override([](const PsiServer &self,
                                      const emscripten::val &byte_array) {
-
-                  const std::size_t l =
-                      byte_array["length"].as<std::size_t>();
+                  const std::size_t l = byte_array["length"].as<std::size_t>();
                   std::string byte_string(l, '\0');
 
                   for (std::size_t i = 0; i < l; i++) {
@@ -68,7 +67,7 @@ EMSCRIPTEN_BINDINGS(PSI_Server) {
 
                   psi_proto::Request client_request;
                   client_request.ParseFromString(byte_string);
-                  
+
                   StatusOr<psi_proto::Response> response;
                   const auto status = self.ProcessRequest(client_request);
                   if (status.ok()) {
