@@ -54,16 +54,9 @@ const ServerConstructor = (instance: psi.Server): Server => {
 
     /**
      * Creates a setup message from the server's dataset to be sent to the client.
-     * The setup message is a protobuf Bloom filter containing H(x)^s for each
-     * element x in `inputs`, where s is the server's secret key. The protobuf
-     * has the folloing following structure:
+     * The setup message is a Bloom filter protobuf containing H(x)^s for each
+     * element x in `inputs`, where s is the server's secret key.
      *
-     *   {
-     *     "numHashFunctions": <int>,
-     *     "bits": <string>
-     *   }
-     *
-     * `bits` is encoded as Base64.
      * The false-positive rate `fpr` is the probability that any query of size
      * `numClientInputs` will result in a false positive.
      *
