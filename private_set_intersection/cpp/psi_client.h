@@ -42,8 +42,8 @@ using ::private_join_and_compute::StatusOr;
 //
 // The server encrypts all its elements x under a commutative encryption scheme,
 // computing H(x)^s where s is its secret key. The encrypted elements are then
-// inserted in a Bloom filter, which is sent to the client in the form of a serialized
-// protobuf. The protobuf has the following form:
+// inserted in a Bloom filter, which is sent to the client in the form of a
+// serialized protobuf. The protobuf has the following form:
 //
 //   {
 //     "num_hash_functions": <int>,
@@ -56,10 +56,10 @@ using ::private_join_and_compute::StatusOr;
 //
 // The client encrypts all their elements x using the commutative encryption
 // scheme, computing H(x)^c, where c is the client's secret key. The encoded
-// elements are sent to the server as an array together with a boolean reveal_intersection 
-// that indicates whether the client wants to learn the elements in the 
-// intersection or only its size. The payload is sent as a serialized protobuf
-// to the client and holds the following form:
+// elements are sent to the server as an array together with a boolean
+// reveal_intersection that indicates whether the client wants to learn the
+// elements in the intersection or only its size. The payload is sent as a
+// serialized protobuf to the client and holds the following form:
 //
 //
 //   {
@@ -114,8 +114,8 @@ class PsiClient {
   static StatusOr<std::unique_ptr<PsiClient>> CreateFromKey(
       const std::string& key_bytes, bool reveal_intersection);
 
-  // Creates a request protobuf to be serialized and sent to the server. 
-  // For each input element x, computes H(x)^c, where c is the secret 
+  // Creates a request protobuf to be serialized and sent to the server.
+  // For each input element x, computes H(x)^c, where c is the secret
   // key of ec_cipher_.
   //
   // Returns INTERNAL if encryption fails.

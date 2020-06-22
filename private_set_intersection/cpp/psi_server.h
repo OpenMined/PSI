@@ -52,7 +52,7 @@ class PsiServer {
   // Creates a setup message from the server's dataset to be sent to the
   // client. The setup message is a Bloom filter containing
   // H(x)^s for each element x in `inputs`, where s is the server's secret
-  // key. The setup is sent to the client as a serialized protobuf with 
+  // key. The setup is sent to the client as a serialized protobuf with
   // the following form:
   //
   //   {
