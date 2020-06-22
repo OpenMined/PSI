@@ -50,16 +50,17 @@ class PsiServer {
       const std::string& key_bytes, bool reveal_intersection);
 
   // Creates a setup message from the server's dataset to be sent to the
-  // client. The setup message is a JSON-encoded Bloom filter containing
+  // client. The setup message is a Bloom filter containing
   // H(x)^s for each element x in `inputs`, where s is the server's secret
-  // key. The message has the following form:
+  // key. The setup is sent to the client as a serialized protobuf with 
+  // the following form:
   //
   //   {
   //     "num_hash_functions": <int>,
   //     "bits": <string>
   //   }
   //
-  // `bits` is encoded as Base64.
+  // `bits` is a binary string.
   // The false-positive rate `fpr` is the probability that any query of size
   // `num_client_inputs` will result in a false positive.
   //
@@ -70,8 +71,8 @@ class PsiServer {
 
   // Processes a client query and returns the corresponding server response to
   // be sent to the client. For each encrytped element H(x)^c in the decoded
-  // `client_request`, computes (H(x)^c)^s = H(X)^(cs) and returns these as a
-  // JSON array.
+  // `client_request`, computes (H(x)^c)^s = H(X)^(cs) and returns these as an
+  // array inside a protobuf.
   // If reveal_intersection == false, the resulting array is sorted, which
   // prevents the client from matching the individual response elements to the
   // ones in the request, ensuring that they can only learn the intersection

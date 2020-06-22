@@ -15,28 +15,29 @@
 //
 // The server encrypts all its elements x under a commutative encryption scheme,
 // computing H(x)^s where s is its secret key. The encrypted elements are then
-// inserted in a Bloom filter, which is sent to the client encoded as JSON. The
-// message has the following form:
+// inserted in a Bloom filter, which is sent to the client in the form of a serialized
+// protobuf. The protobuf has the following form:
 //
 //   {
 //     "num_hash_functions": <int>,
 //     "bits": <string>
 //   }
 //
-// Here, `bits` is a Base64-encoded string.
+// Here, `bits` is a binary string.
 //
 // 2. Client request
 //
 // The client encrypts all their elements x using the commutative encryption
 // scheme, computing H(x)^c, where c is the client's secret key. The encoded
-// elements are sent to the server as a JSON array of Base64 strings, together
-// with a boolean reveal_intersection that indicates whether the client wants to
-// learn the elements in the intersection or only its size.
+// elements are sent to the server as an array together with a boolean reveal_intersection
+// that indicates whether the client wants to learn the elements in the
+// intersection or only its size. The payload is sent as a serialized protobuf
+// to the client and holds the following form:
 //
 //
 //   {
 //     "reveal_intersection": <bool>,
-//     "encrypted_elements": [ Base64(H(x_1)^c), Base64(H(x_2)^c), ... ]
+//     "encrypted_elements": [ H(x_1)^c, H(x_2)^c, ... ]
 //   }
 //
 //
@@ -45,10 +46,10 @@
 // For each encrypted element H(x)^c received from the client, the server
 // encrypts it again under the commutative encryption scheme with its secret
 // key s, computing (H(x)^c)^s = H(x)^(cs). The result is sent back to the
-// client as a JSON array of strings:
+// client as a serialized protobuf holding the following form:
 //
 //   {
-//     "encrypted_elements": [ Base64(H(x_1)^c), Base64(H(x_2)^c), ... ]
+//     "encrypted_elements": [ H(x_1)^c, H(x_2)^c, ... ]
 //   }
 //
 // If reveal_intersection is false, the array is sorted to hide the order of
@@ -70,11 +71,11 @@ import "C"
 import (
 	"errors"
 	"fmt"
-	"github.com/golang/protobuf/proto"
-	"github.com/openmined/psi/pb"
-	"github.com/openmined/psi/version"
 	"runtime"
 	"unsafe"
+
+	"github.com/golang/protobuf/proto"
+	"github.com/openmined/psi/version"
 )
 
 // PsiServer context for the server side of a Private Set Intersection protocol.
@@ -126,10 +127,11 @@ func CreateFromKey(key []byte, revealIntersection bool) (*PsiServer, error) {
 	return psiServer, nil
 }
 
-// CreateSetupMessage creates a setup message from the server's dataset to be sent to the
-// client. The setup message is a JSON-encoded Bloom filter containing
-// H(x)^s for each element x in `rawInput`, where s is the server's secret
-// key. The message has the following form:
+// CreateSetupMessage - Creates a setup message from the server's dataset to be sent to the
+// client. The setup message is a Bloom filter containing
+// H(x)^s for each element x in `inputs`, where s is the server's secret
+// key. The setup is sent to the client as a serialized protobuf with
+// the following form:
 //
 //   {
 //     "num_hash_functions": <int>,
@@ -139,8 +141,6 @@ func CreateFromKey(key []byte, revealIntersection bool) (*PsiServer, error) {
 // `bits` is encoded as Base64.
 // The false-positive rate `fpr` is the probability that any query of size
 // `num_client_inputs` will result in a false positive.
-//
-// Returns an error if the context is invalid or if the encryption fails.
 func (s *PsiServer) CreateSetupMessage(fpr float64, inputCount int64, rawInput []string) (*psi_proto.ServerSetup, error) {
 	if s.context == nil {
 		return nil, errors.New("invalid context")
@@ -177,17 +177,18 @@ func (s *PsiServer) CreateSetupMessage(fpr float64, inputCount int64, rawInput [
 	return setup, parseErr
 }
 
-// ProcessRequest processes a client query and returns the corresponding server response to
-// be sent to the client.
+// ProcessRequest - Processes a client query and returns the corresponding
+// server response to be sent to the client. For each encrytped element
+// H(x)^c in the decoded `client_request`, computes (H(x)^c)^s = H(X)^(cs)
+// and returns these as an array inside a protobuf.
 //
-// For each encrypted element H(x)^c in the decoded `client_request`, computes
-// (H(x)^c)^s = H(X)^(cs) and returns these as a
-// sorted JSON array. Sorting the output prevents the client from matching
-// the individual response elements to the ones in the request, ensuring
-// that they can only learn the intersection size but not individual
-// elements in the intersection.
+// If reveal_intersection == false, the resulting array is sorted, which
+// prevents the client from matching the individual response elements to the
+// ones in the request, ensuring that they can only learn the intersection
+// size but not individual elements in the intersection.
 //
-// Returns an error if the context is invalid.
+// Returns INVALID_ARGUMENT if the request is malformed or if
+// reveal_intersection != client_request["reveal_intersection"].
 func (s *PsiServer) ProcessRequest(requestProto *psi_proto.Request) (*psi_proto.Response, error) {
 	if s.context == nil {
 		return nil, errors.New("invalid context")

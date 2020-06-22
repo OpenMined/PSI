@@ -24,7 +24,7 @@ message ServerSetup {
 }
 
 // Client request with encoded elements sent to the server as an array of
-// Base64 strings, together with a boolean reveal_intersection that
+// binary strings, together with a boolean reveal_intersection that
 // indicates whether the client wants to learn the elements in
 // the intersection or only its size.
 message Request {
@@ -34,7 +34,7 @@ message Request {
 
 // Server response after encrypting client elements under the
 // commutative encryption scheme, sent back to the client
-// as an array of Base64 strings.
+// as an array of binary strings.
 message Response {
   repeated bytes encrypted_elements = 1;
 }

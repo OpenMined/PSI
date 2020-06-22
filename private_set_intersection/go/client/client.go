@@ -15,28 +15,29 @@
 //
 // The server encrypts all its elements x under a commutative encryption scheme,
 // computing H(x)^s where s is its secret key. The encrypted elements are then
-// inserted in a Bloom filter, which is sent to the client encoded as JSON. The
-// message has the following form:
+// inserted in a Bloom filter, which is sent to the client in the form of a serialized
+// protobuf. The protobuf has the following form:
 //
 //   {
 //     "num_hash_functions": <int>,
 //     "bits": <string>
 //   }
 //
-// Here, `bits` is a Base64-encoded string.
+// Here, `bits` is a binary string.
 //
 // 2. Client request
 //
 // The client encrypts all their elements x using the commutative encryption
 // scheme, computing H(x)^c, where c is the client's secret key. The encoded
-// elements are sent to the server as a JSON array of Base64 strings, together
-// with a boolean reveal_intersection that indicates whether the client wants to
-// learn the elements in the intersection or only its size.
+// elements are sent to the server as an array together with a boolean reveal_intersection
+// that indicates whether the client wants to learn the elements in the
+// intersection or only its size. The payload is sent as a serialized protobuf
+// to the client and holds the following form:
 //
 //
 //   {
 //     "reveal_intersection": <bool>,
-//     "encrypted_elements": [ Base64(H(x_1)^c), Base64(H(x_2)^c), ... ]
+//     "encrypted_elements": [ H(x_1)^c, H(x_2)^c, ... ]
 //   }
 //
 //
@@ -45,10 +46,10 @@
 // For each encrypted element H(x)^c received from the client, the server
 // encrypts it again under the commutative encryption scheme with its secret
 // key s, computing (H(x)^c)^s = H(x)^(cs). The result is sent back to the
-// client as a JSON array of strings:
+// client as a serialized protobuf holding the following form:
 //
 //   {
-//     "encrypted_elements": [ Base64(H(x_1)^c), Base64(H(x_2)^c), ... ]
+//     "encrypted_elements": [ H(x_1)^c, H(x_2)^c, ... ]
 //   }
 //
 // If reveal_intersection is false, the array is sorted to hide the order of
@@ -70,11 +71,11 @@ import "C"
 import (
 	"errors"
 	"fmt"
-	"github.com/golang/protobuf/proto"
-	"github.com/openmined/psi/pb"
-	"github.com/openmined/psi/version"
 	"runtime"
 	"unsafe"
+
+	"github.com/golang/protobuf/proto"
+	"github.com/openmined/psi/version"
 )
 
 // PsiClient context for the client side of a Private Set Intersection protocol.
@@ -129,10 +130,9 @@ func CreateFromKey(key []byte, revealIntersection bool) (*PsiClient, error) {
 	return psiClient, nil
 }
 
-// CreateRequest generates a request message to be sent to the server. For each input
-// element x, computes H(x)^c, where c is the secret key of ec_cipher. The
-// result is sorted to hide the initial ordering of `rawInput` and encoded as
-// a JSON array.
+// CreateRequest - Creates a request protobuf to be serialized and sent
+// to the server. For each input element x, computes H(x)^c, where c
+// is the secret key of ec_cipher_.
 //
 // Returns an error if the context is invalid or if the encryption fails.
 func (c *PsiClient) CreateRequest(rawInput []string) (*psi_proto.Request, error) {
@@ -169,7 +169,7 @@ func (c *PsiClient) CreateRequest(rawInput []string) (*psi_proto.Request, error)
 	return &req, parseErr
 }
 
-// GetIntersection processes the server's response and returns the intersection of the client
+// GetIntersection - processes the server's response and returns the intersection of the client
 // and server inputs. Use this function if this instance was created with
 // `reveal_intersection = true`. The first argument, `server_setup`, is a
 // bloom filter that encodes encrypted server elements and is sent by the
@@ -221,7 +221,7 @@ func (c *PsiClient) GetIntersection(serverSetupProto *psi_proto.ServerSetup, ser
 	return result, nil
 }
 
-// GetIntersectionSize reveals the size of the intersection. Use
+// GetIntersectionSize - reveals the size of the intersection. Use
 // this function if this instance was created with `reveal_intersection =
 // false`.
 //
@@ -258,7 +258,7 @@ func (c *PsiClient) GetIntersectionSize(serverSetupProto *psi_proto.ServerSetup,
 	return int64(result), nil
 }
 
-// GetPrivateKeyBytes returns this instance's private key. This key should only be used to
+// GetPrivateKeyBytes - returns this instance's private key. This key should only be used to
 // create other client instances. DO NOT SEND THIS KEY TO ANY OTHER PARTY!
 func (c *PsiClient) GetPrivateKeyBytes() ([]byte, error) {
 	if c.context == nil {

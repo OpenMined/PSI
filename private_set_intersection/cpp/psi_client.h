@@ -42,28 +42,29 @@ using ::private_join_and_compute::StatusOr;
 //
 // The server encrypts all its elements x under a commutative encryption scheme,
 // computing H(x)^s where s is its secret key. The encrypted elements are then
-// inserted in a Bloom filter, which is sent to the client encoded as JSON. The
-// message has the following form:
+// inserted in a Bloom filter, which is sent to the client in the form of a serialized
+// protobuf. The protobuf has the following form:
 //
 //   {
 //     "num_hash_functions": <int>,
 //     "bits": <string>
 //   }
 //
-// Here, `bits` is a Base64-encoded string.
+// Here, `bits` is a binary string.
 //
 // 2. Client request
 //
 // The client encrypts all their elements x using the commutative encryption
 // scheme, computing H(x)^c, where c is the client's secret key. The encoded
-// elements are sent to the server as a JSON array of Base64 strings, together
-// with a boolean reveal_intersection that indicates whether the client wants to
-// learn the elements in the intersection or only its size.
+// elements are sent to the server as an array together with a boolean reveal_intersection 
+// that indicates whether the client wants to learn the elements in the 
+// intersection or only its size. The payload is sent as a serialized protobuf
+// to the client and holds the following form:
 //
 //
 //   {
 //     "reveal_intersection": <bool>,
-//     "encrypted_elements": [ Base64(H(x_1)^c), Base64(H(x_2)^c), ... ]
+//     "encrypted_elements": [ H(x_1)^c, H(x_2)^c, ... ]
 //   }
 //
 //
@@ -72,10 +73,10 @@ using ::private_join_and_compute::StatusOr;
 // For each encrypted element H(x)^c received from the client, the server
 // encrypts it again under the commutative encryption scheme with its secret
 // key s, computing (H(x)^c)^s = H(x)^(cs). The result is sent back to the
-// client as a JSON array of strings:
+// client as a serialized protobuf holding the following form:
 //
 //   {
-//     "encrypted_elements": [ Base64(H(x_1)^c), Base64(H(x_2)^c), ... ]
+//     "encrypted_elements": [ H(x_1)^c, H(x_2)^c, ... ]
 //   }
 //
 // If reveal_intersection is false, the array is sorted to hide the order of
@@ -113,8 +114,9 @@ class PsiClient {
   static StatusOr<std::unique_ptr<PsiClient>> CreateFromKey(
       const std::string& key_bytes, bool reveal_intersection);
 
-  // Creates a request message to be sent to the server. For each input
-  // element x, computes H(x)^c, where c is the secret key of ec_cipher_.
+  // Creates a request protobuf to be serialized and sent to the server. 
+  // For each input element x, computes H(x)^c, where c is the secret 
+  // key of ec_cipher_.
   //
   // Returns INTERNAL if encryption fails.
   StatusOr<psi_proto::Request> CreateRequest(

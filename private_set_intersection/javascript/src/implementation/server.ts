@@ -91,7 +91,7 @@ const ServerConstructor = (instance: psi.Server): Server => {
      * Processes a client query and returns the corresponding server response to
      * be sent to the client. For each encrytped element H(x)^c in the decoded
      * `clientRequest`, computes (H(x)^c)^s = H(X)^(cs) and returns these as a
-     * sorted JSON array. Sorting the output prevents the client from matching the
+     * sorted array. Sorting the output prevents the client from matching the
      * individual response elements to the ones in the request, ensuring that they
      * can only learn the intersection size but not individual elements in the
      * intersection.
