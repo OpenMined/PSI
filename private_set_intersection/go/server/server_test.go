@@ -30,8 +30,8 @@ func testServerSanity(t *testing.T, revealIntersection bool) {
 		t.Errorf("Failed to create a PSI server %v", err)
 	}
 	_, err = server.CreateSetupMessage(0.001, 1000, []string{})
-	if err == nil {
-		t.Errorf("Failed to ignore empty input for setup")
+	if err != nil {
+		t.Errorf("Should not fail on empty input %v", err)
 	}
 	key, err := server.GetPrivateKeyBytes()
 	if err != nil {

@@ -39,7 +39,7 @@ StatusOr<std::unique_ptr<BloomFilter>> BloomFilter::Create(
     return ::private_join_and_compute::InvalidArgumentError(
         "`fpr` must be in (0,1)");
   }
-  if (max_elements <= 0) {
+  if (max_elements < 0) {
     return ::private_join_and_compute::InvalidArgumentError(
         "`max_elements` must be positive");
   }

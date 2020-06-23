@@ -75,6 +75,7 @@ import (
 	"unsafe"
 
 	"github.com/golang/protobuf/proto"
+	"github.com/openmined/psi/pb"
 	"github.com/openmined/psi/version"
 )
 
@@ -146,10 +147,6 @@ func (s *PsiServer) CreateSetupMessage(fpr float64, inputCount int64, rawInput [
 		return nil, errors.New("invalid context")
 	}
 
-	if len(rawInput) == 0 {
-		return nil, errors.New("empty input")
-	}
-
 	input := []C.struct_psi_server_buffer_t{}
 	for idx := range rawInput {
 		input = append(input, C.struct_psi_server_buffer_t{
@@ -162,7 +159,11 @@ func (s *PsiServer) CreateSetupMessage(fpr float64, inputCount int64, rawInput [
 	var err *C.char
 	var outlen C.size_t
 
-	rcode := C.psi_server_create_setup_message(s.context, C.double(fpr), C.int64_t(inputCount), &input[0], C.size_t(len(input)), &out, &outlen, &err)
+	var inputPtr *C.struct_psi_server_buffer_t
+	if len(input) > 0 {
+		inputPtr = &input[0]
+	}
+	rcode := C.psi_server_create_setup_message(s.context, C.double(fpr), C.int64_t(inputCount), inputPtr, C.size_t(len(input)), &out, &outlen, &err)
 
 	for idx := range input {
 		C.free(unsafe.Pointer(input[idx].buff))
