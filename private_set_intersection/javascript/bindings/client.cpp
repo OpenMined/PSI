@@ -34,14 +34,14 @@ EMSCRIPTEN_BINDINGS(PSI_Client) {
                       }))
       .function("CreateRequest",
                 optional_override([](const PsiClient& self,
-                                     const emscripten::val& string_array) {
+                                     const emscripten::val& byte_array) {
                   std::vector<std::string> string_vector;
                   const std::size_t l =
-                      string_array["length"].as<std::size_t>();
+                      byte_array["length"].as<std::size_t>();
                   string_vector.reserve(l);
 
                   for (std::size_t i = 0; i < l; ++i) {
-                    string_vector.push_back(string_array[i].as<std::string>());
+                    string_vector.push_back(byte_array[i].as<std::string>());
                   }
 
                   StatusOr<psi_proto::Request> request;
