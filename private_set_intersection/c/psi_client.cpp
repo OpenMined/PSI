@@ -65,17 +65,21 @@ int psi_client_create_request(psi_client_ctx ctx, psi_client_buffer_t *inputs,
   auto proto = std::move(result).ValueOrDie();
 
   std::string value;
-  if (!proto.SerializeToString(&value)) {
+
+  *output = (char *)malloc(proto.ByteSizeLong() * sizeof(char));
+  if (*output == nullptr) {
+    return generate_error(::private_join_and_compute::InvalidArgumentError(
+                              "failed to allocate memory"),
+                          error_out);
+  }
+
+  if (!proto.SerializeToArray(*output, proto.ByteSizeLong())) {
     return generate_error(::private_join_and_compute::InvalidArgumentError(
                               "failed to serialize protobuffer"),
                           error_out);
   }
 
-  size_t len = value.size();
-  *output = (char *)malloc(len * sizeof(char));
-  memcpy(*output, value.c_str(), len);
-  *out_len = len;
-
+  *out_len = proto.ByteSizeLong();
   return 0;
 }
 
@@ -91,17 +95,16 @@ int psi_client_get_intersection_size(psi_client_ctx ctx,
   }
 
   psi_proto::ServerSetup server_setup_proto;
-  auto setup_str = std::string(server_setup.buff, server_setup.buff_len);
-  if (!server_setup_proto.ParseFromString(setup_str)) {
+  if (!server_setup_proto.ParseFromArray(server_setup.buff,
+                                         server_setup.buff_len)) {
     return generate_error(::private_join_and_compute::InvalidArgumentError(
                               "failed to parse server setup"),
                           error_out);
   }
 
   psi_proto::Response server_response_proto;
-  auto response_str =
-      std::string(server_response.buff, server_response.buff_len);
-  if (!server_response_proto.ParseFromString(response_str)) {
+  if (!server_response_proto.ParseFromArray(server_response.buff,
+                                            server_response.buff_len)) {
     return generate_error(::private_join_and_compute::InvalidArgumentError(
                               "failed to parse server response"),
                           error_out);
@@ -130,17 +133,16 @@ int psi_client_get_intersection(psi_client_ctx ctx,
                           error_out);
   }
   psi_proto::ServerSetup server_setup_proto;
-  auto setup_str = std::string(server_setup.buff, server_setup.buff_len);
-  if (!server_setup_proto.ParseFromString(setup_str)) {
+  if (!server_setup_proto.ParseFromArray(server_setup.buff,
+                                         server_setup.buff_len)) {
     return generate_error(::private_join_and_compute::InvalidArgumentError(
                               "failed to parse server setup"),
                           error_out);
   }
 
   psi_proto::Response server_response_proto;
-  auto response_str =
-      std::string(server_response.buff, server_response.buff_len);
-  if (!server_response_proto.ParseFromString(response_str)) {
+  if (!server_response_proto.ParseFromArray(server_response.buff,
+                                            server_response.buff_len)) {
     return generate_error(::private_join_and_compute::InvalidArgumentError(
                               "failed to parse server response"),
                           error_out);
