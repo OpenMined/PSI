@@ -43,8 +43,7 @@ emscripten::val ToSerializedJSObject(
     const size_t size = protobuf.ByteSizeLong();
     std::vector<std::uint8_t> byte_vector(size);
     protobuf.SerializeToArray(byte_vector.data(), size);
-    emscripten::val byte_array =
-        emscripten::val::array(byte_vector);
+    emscripten::val byte_array = emscripten::val::array(byte_vector);
     result.set("Value", byte_array);
     result.set("Status", emscripten::val::null());
   } else {
