@@ -40,12 +40,11 @@ emscripten::val ToSerializedJSObject(
   auto result = emscripten::val::object();
   if (statusor.ok()) {
     const T protobuf = statusor.ValueOrDie();
-    std::string byte_string;
-    protobuf.SerializeToString(&byte_string);
-    const std::vector<std::uint8_t> byte_vector(byte_string.begin(),
-                                                byte_string.end());
+    const size_t size = protobuf.ByteSizeLong();
+    std::vector<std::uint8_t> byte_vector(size);
+    protobuf.SerializeToArray(byte_vector.data(), size);
     emscripten::val byte_array =
-        emscripten::val::array(byte_vector.begin(), byte_vector.end());
+        emscripten::val::array(byte_vector);
     result.set("Value", byte_array);
     result.set("Status", emscripten::val::null());
   } else {
