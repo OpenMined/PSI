@@ -53,7 +53,7 @@ class BloomFilter {
   static StatusOr<std::unique_ptr<BloomFilter>> Create(double fpr,
                                                        int64_t max_elements);
 
-  // Creates a Bloom filter containing the bits of the passed string, and the
+  // Creates a Bloom filter containing the bits of the passed protobuf, and the
   // given number of hash functions.
   //
   // Returns INVALID_ARGUMENT if `num_hash_functions` is not positive or if

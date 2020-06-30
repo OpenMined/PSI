@@ -94,7 +94,7 @@ StatusOr<psi_proto::Response> PsiServer::ProcessRequest(
   }
 
   // Re-encrypt elements.
-  const auto encrypted_elements = client_request.encrypted_elements();
+  const google::protobuf::RepeatedPtrField encrypted_elements = client_request.encrypted_elements();
   const std::int64_t num_client_elements =
       static_cast<std::int64_t>(encrypted_elements.size());
 
@@ -111,8 +111,13 @@ StatusOr<psi_proto::Response> PsiServer::ProcessRequest(
   // sort the resulting ciphertexts if we want to hide the intersection from the
   // client.
   if (!reveal_intersection) {
-    auto sorted_elements = response.encrypted_elements();
+    const google::protobuf::RepeatedPtrField elements = response.encrypted_elements();
+    // Create a copy to mutate
+    google::protobuf::RepeatedPtrField sorted_elements = elements;
     std::sort(sorted_elements.begin(), sorted_elements.end());
+    for (int i = 0; i < num_client_elements; i++) {
+      response.set_encrypted_elements(i, sorted_elements[i]);
+    }
   }
   return response;
 }

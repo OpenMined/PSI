@@ -145,12 +145,8 @@ TEST_F(PsiServerTest, TestArrayIsSortedWhenNotRevealingIntersection) {
                            server_->ProcessRequest(client_request));
 
   ASSERT_TRUE(server_response.IsInitialized());
-  const auto response_array = server_response.encrypted_elements();
-  std::vector<std::string> response_vector(response_array.size());
-  for (int i = 0; i < num_client_elements; i++) {
-    response_vector[i] = response_vector[i];
-  }
-  EXPECT_TRUE(std::is_sorted(response_vector.begin(), response_vector.end()));
+  const google::protobuf::RepeatedPtrField response_array = server_response.encrypted_elements();
+  EXPECT_TRUE(std::is_sorted(response_array.begin(), response_array.end()));
 }
 
 TEST_F(PsiServerTest, TestCreatingFromKey) {
