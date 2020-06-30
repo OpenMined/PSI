@@ -144,7 +144,7 @@ func (c *PsiClient) CreateRequest(rawInput []string) (*psi_proto.Request, error)
 	inputs := []C.struct_psi_client_buffer_t{}
 	for idx := range rawInput {
 		inputs = append(inputs, C.struct_psi_client_buffer_t{
-			buff:     C.CString(rawInput[idx]),
+			buff:     C.CString((rawInput[idx])),
 			buff_len: C.size_t(len(rawInput[idx])),
 		})
 	}
@@ -167,7 +167,10 @@ func (c *PsiClient) CreateRequest(rawInput []string) (*psi_proto.Request, error)
 
 	var req psi_proto.Request
 	parseErr := req.XXX_Unmarshal(bytes)
-	return &req, parseErr
+	if parseErr != nil {
+		return nil, parseErr
+	}
+	return &req, nil
 }
 
 // GetIntersection - processes the server's response and returns the intersection of the client
@@ -198,10 +201,10 @@ func (c *PsiClient) GetIntersection(serverSetupProto *psi_proto.ServerSetup, ser
 	var outlen C.size_t
 	var err *C.char
 
-	csetup := C.CString(string(serverSetup))
+	csetup := (*C.char)(C.CBytes(serverSetup))
 	defer C.free(unsafe.Pointer(csetup))
 
-	cresponse := C.CString(string(serverResponse))
+	cresponse := (*C.char)(C.CBytes(serverResponse))
 	defer C.free(unsafe.Pointer(cresponse))
 
 	rcode := C.psi_client_get_intersection(c.context, C.struct_psi_client_buffer_t{csetup, C.size_t(len(serverSetup))}, C.struct_psi_client_buffer_t{cresponse, C.size_t(len(serverResponse))}, &out, &outlen, &err)
@@ -245,10 +248,10 @@ func (c *PsiClient) GetIntersectionSize(serverSetupProto *psi_proto.ServerSetup,
 	var result C.int64_t
 	var err *C.char
 
-	csetup := C.CString(string(serverSetup))
+	csetup := (*C.char)(C.CBytes(serverSetup))
 	defer C.free(unsafe.Pointer(csetup))
 
-	cresponse := C.CString(string(serverResponse))
+	cresponse := (*C.char)(C.CBytes(serverResponse))
 	defer C.free(unsafe.Pointer(cresponse))
 
 	rcode := C.psi_client_get_intersection_size(c.context, C.struct_psi_client_buffer_t{csetup, C.size_t(len(serverSetup))}, C.struct_psi_client_buffer_t{cresponse, C.size_t(len(serverResponse))}, &result, &err)

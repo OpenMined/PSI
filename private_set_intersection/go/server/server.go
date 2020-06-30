@@ -175,7 +175,10 @@ func (s *PsiServer) CreateSetupMessage(fpr float64, inputCount int64, rawInput [
 	result := s.loadBytes(&out, C.int(outlen))
 	setup := &psi_proto.ServerSetup{}
 	parseErr := proto.Unmarshal(result, setup)
-	return setup, parseErr
+	if parseErr != nil {
+		return nil, parseErr
+	}
+	return setup, nil
 }
 
 // ProcessRequest - Processes a client query and returns the corresponding
@@ -204,7 +207,7 @@ func (s *PsiServer) ProcessRequest(requestProto *psi_proto.Request) (*psi_proto.
 	var err *C.char
 	var outlen C.size_t
 
-	crequest := C.CString(string(request))
+	crequest := (*C.char)(C.CBytes(request))
 	defer C.free(unsafe.Pointer(crequest))
 
 	rcode := C.psi_server_process_request(s.context, C.struct_psi_server_buffer_t{
@@ -219,8 +222,10 @@ func (s *PsiServer) ProcessRequest(requestProto *psi_proto.Request) (*psi_proto.
 	result := s.loadBytes(&out, C.int(outlen))
 	response := &psi_proto.Response{}
 	parseErr = proto.Unmarshal(result, response)
-
-	return response, parseErr
+	if parseErr != nil {
+		return nil, parseErr
+	}
+	return response, nil
 
 }
 
