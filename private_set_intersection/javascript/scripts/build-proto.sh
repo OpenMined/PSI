@@ -1,16 +1,20 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Path to this plugin
+# Path to this plugin.
 PROTOC_GEN_TS_PATH="./node_modules/.bin/protoc-gen-ts"
 
-# Directory to write generated code to (.js and .d.ts files)
+# Directory to write generated code to (.js and .d.ts files).
 OUT_DIR_JS="./private_set_intersection/javascript/bin"
 OUT_DIR_TS="./private_set_intersection/javascript/src/implementation/proto"
 
 PROTO_DIR="./private_set_intersection/proto"
 
-protoc \
+# Build the protobuf compiler.
+bazel build -c opt --platforms="@local_config_platform//:host" @com_google_protobuf//:protoc
+PROTOC_BINARY="./bazel-bin/external/com_google_protobuf/protoc"
+
+"$PROTOC_BINARY" \
     --plugin="protoc-gen-ts=${PROTOC_GEN_TS_PATH}" \
     --proto_path="${PROTO_DIR}" \
     --js_out="import_style=commonjs,binary:${OUT_DIR_JS}" \
