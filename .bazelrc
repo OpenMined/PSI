@@ -1,4 +1,5 @@
 ##### Global #####
+# Neede for python (pybind11) bindings
 build --cxxopt=--std=c++17
 
 ##### WASM #####
