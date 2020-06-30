@@ -27,10 +27,6 @@ jobs:
         os: [macos-latest, ubuntu-18.04]
     steps:
       - uses: actions/checkout@v2
-      - name: Install dependencies
-        uses: arduino/setup-protoc@master
-        with:
-          version: '3.12.x'
       - name: Run tests
         timeout-minutes: 30
         run: .github/workflows/scripts/run_tests_js.sh
