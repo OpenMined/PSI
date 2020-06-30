@@ -73,7 +73,7 @@ int psi_server_create_setup_message(psi_server_ctx ctx, double fpr,
   }
   size_t len = value.size();
   *output = (char *)malloc(len * sizeof(char));
-  memcpy(*output, value.c_str(), len);
+  std::copy(value.begin(), value.end(), *output);
   *output_len = len;
 
   return 0;
@@ -91,8 +91,8 @@ int psi_server_process_request(psi_server_ctx ctx,
   }
 
   psi_proto::Request request_proto;
-  if (!request_proto.ParseFromString(
-          std::string(client_request.buff, client_request.buff_len))) {
+  if (!request_proto.ParseFromArray(client_request.buff,
+                                    client_request.buff_len)) {
     return generate_error(::private_join_and_compute::InvalidArgumentError(
                               "failed to parse client request"),
                           error_out);
@@ -112,7 +112,7 @@ int psi_server_process_request(psi_server_ctx ctx,
 
   size_t len = value.size();
   *output = (char *)malloc(len * sizeof(char));
-  memcpy(*output, value.c_str(), len);
+  std::copy(value.begin(), value.end(), *output);
   *output_len = len;
 
   return 0;
