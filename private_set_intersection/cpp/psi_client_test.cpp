@@ -62,7 +62,8 @@ class PsiClientTest : public ::testing::Test {
     // Clear the elements
     server_response->clear_encrypted_elements();
 
-    const google::protobuf::RepeatedPtrField encrypted_elements = client_request.encrypted_elements();
+    const google::protobuf::RepeatedPtrField encrypted_elements =
+        client_request.encrypted_elements();
     const std::int64_t num_request_elements =
         static_cast<std::int64_t>(encrypted_elements.size());
 
@@ -109,8 +110,10 @@ TEST_F(PsiClientTest, TestCreatingFromKey) {
   // Both requests should be the same
   EXPECT_EQ(client_request0.reveal_intersection(),
             client_request1.reveal_intersection());
-  const google::protobuf::RepeatedPtrField elements0 = client_request0.encrypted_elements();
-  const google::protobuf::RepeatedPtrField elements1 = client_request1.encrypted_elements();
+  const google::protobuf::RepeatedPtrField elements0 =
+      client_request0.encrypted_elements();
+  const google::protobuf::RepeatedPtrField elements1 =
+      client_request1.encrypted_elements();
   ASSERT_TRUE(elements0.size() == elements1.size());
   for (int i = 0; i < elements0.size(); i++) {
     EXPECT_EQ(elements0[i], elements1[i]);
@@ -132,8 +135,10 @@ TEST_F(PsiClientTest, TestCreatingFromKey) {
                            client3->CreateRequest(client_elements));
   EXPECT_EQ(client_request2.reveal_intersection(),
             client_request3.reveal_intersection());
-  const google::protobuf::RepeatedPtrField elements2 = client_request0.encrypted_elements();
-  const google::protobuf::RepeatedPtrField elements3 = client_request1.encrypted_elements();
+  const google::protobuf::RepeatedPtrField elements2 =
+      client_request0.encrypted_elements();
+  const google::protobuf::RepeatedPtrField elements3 =
+      client_request1.encrypted_elements();
   ASSERT_TRUE(elements2.size() == elements3.size());
   for (int i = 0; i < elements2.size(); i++) {
     EXPECT_EQ(elements2[i], elements3[i]);

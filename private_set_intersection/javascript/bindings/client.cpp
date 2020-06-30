@@ -36,8 +36,7 @@ EMSCRIPTEN_BINDINGS(PSI_Client) {
                 optional_override([](const PsiClient& self,
                                      const emscripten::val& byte_array) {
                   std::vector<std::string> string_vector;
-                  const std::size_t l =
-                      byte_array["length"].as<std::size_t>();
+                  const std::size_t l = byte_array["length"].as<std::size_t>();
                   string_vector.reserve(l);
 
                   for (std::size_t i = 0; i < l; ++i) {

@@ -93,7 +93,8 @@ void test_corectness(bool reveal_intersection) {
       request_proto.ParseFromString(std::string(client_request, req_len)));
 
   // Re-encrypt elements.
-  const google::protobuf::RepeatedPtrField encrypted_elements = request_proto.encrypted_elements();
+  const google::protobuf::RepeatedPtrField encrypted_elements =
+      request_proto.encrypted_elements();
 
   // Create the response
   psi_proto::Response response;

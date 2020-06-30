@@ -122,7 +122,8 @@ StatusOr<std::vector<int64_t>> PsiClient::ProcessResponse(
   ASSIGN_OR_RETURN(auto bloom_filter,
                    BloomFilter::CreateFromProtobuf(server_setup));
 
-  const google::protobuf::RepeatedPtrField response_array = server_response.encrypted_elements();
+  const google::protobuf::RepeatedPtrField response_array =
+      server_response.encrypted_elements();
   const std::int64_t response_size =
       static_cast<std::int64_t>(response_array.size());
   std::vector<int64_t> result(0);
