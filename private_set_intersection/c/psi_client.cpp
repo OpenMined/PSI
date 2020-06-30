@@ -65,17 +65,21 @@ int psi_client_create_request(psi_client_ctx ctx, psi_client_buffer_t *inputs,
   auto proto = std::move(result).ValueOrDie();
 
   std::string value;
-  if (!proto.SerializeToString(&value)) {
+
+  *output = (char *)malloc(proto.ByteSizeLong() * sizeof(char));
+  if (*output == nullptr) {
+    return generate_error(::private_join_and_compute::InvalidArgumentError(
+                              "failed to allocate memory"),
+                          error_out);
+  }
+
+  if (!proto.SerializeToArray(*output, proto.ByteSizeLong())) {
     return generate_error(::private_join_and_compute::InvalidArgumentError(
                               "failed to serialize protobuffer"),
                           error_out);
   }
 
-  size_t len = value.size();
-  *output = (char *)malloc(len * sizeof(char));
-  std::copy(value.begin(), value.end(), *output);
-  *out_len = len;
-
+  *out_len = proto.ByteSizeLong();
   return 0;
 }
 

@@ -65,17 +65,21 @@ int psi_server_create_setup_message(psi_server_ctx ctx, double fpr,
   }
 
   auto proto = result.ValueOrDie();
-  std::string value;
-  if (!proto.SerializeToString(&value)) {
+
+  *output = (char *)malloc(proto.ByteSizeLong() * sizeof(char));
+  if (*output == nullptr) {
+    return generate_error(::private_join_and_compute::InvalidArgumentError(
+                              "failed to allocate memory"),
+                          error_out);
+  }
+
+  if (!proto.SerializeToArray(*output, proto.ByteSizeLong())) {
     return generate_error(::private_join_and_compute::InvalidArgumentError(
                               "failed to serialize setup message"),
                           error_out);
   }
-  size_t len = value.size();
-  *output = (char *)malloc(len * sizeof(char));
-  std::copy(value.begin(), value.end(), *output);
-  *output_len = len;
 
+  *output_len = proto.ByteSizeLong();
   return 0;
 }
 
@@ -103,18 +107,20 @@ int psi_server_process_request(psi_server_ctx ctx,
   }
 
   auto proto = result.ValueOrDie();
-  std::string value;
-  if (!proto.SerializeToString(&value)) {
+  *output = (char *)malloc(proto.ByteSizeLong() * sizeof(char));
+  if (*output == nullptr) {
+    return generate_error(::private_join_and_compute::InvalidArgumentError(
+                              "failed to allocate memory"),
+                          error_out);
+  }
+
+  if (!proto.SerializeToArray(*output, proto.ByteSizeLong())) {
     return generate_error(::private_join_and_compute::InvalidArgumentError(
                               "failed to serialize server response"),
                           error_out);
   }
 
-  size_t len = value.size();
-  *output = (char *)malloc(len * sizeof(char));
-  std::copy(value.begin(), value.end(), *output);
-  *output_len = len;
-
+  *output_len = proto.ByteSizeLong();
   return 0;
 }
 
