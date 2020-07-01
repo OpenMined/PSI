@@ -175,7 +175,7 @@ const PSI = require('@openmined/psi.js')
    *** 3. Server ****
    ******************/
   // Deserialize the client request for the server
-  const deserializedClientRequest = psi.Request.deserializeBinary(serializedClientRequest)
+  const deserializedClientRequest = psi.request.deserializeBinary(serializedClientRequest)
 
   // Process the client's request and return to the client
   const serverResponse = server.processRequest(deserializedClientRequest)
@@ -191,10 +191,10 @@ const PSI = require('@openmined/psi.js')
    *** 4. Client ****
    ******************/
   // Deserialize the server response
-  const deserializedServerResponse = psi.Response.deserializeBinary(serializedServerResponse)
+  const deserializedServerResponse = psi.response.deserializeBinary(serializedServerResponse)
 
   // Deserialize the server setup
-  const deserializedServerSetup = psi.ServerSetup.deserializeBinary(serializedServerSetup)
+  const deserializedServerSetup = psi.serverSetup.deserializeBinary(serializedServerSetup)
 
   // NOTE: 
   // A client can compute either the intersection size (cardinality) or
