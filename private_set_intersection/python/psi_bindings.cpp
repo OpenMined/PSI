@@ -7,6 +7,7 @@
 #include "private_set_intersection/cpp/package.h"
 #include "private_set_intersection/cpp/psi_client.h"
 #include "private_set_intersection/cpp/psi_server.h"
+#include "private_set_intersection/proto/psi.pb.h"
 #include "util/canonical_errors.h"
 #include "util/status_macros.h"
 
@@ -27,6 +28,48 @@ PYBIND11_MODULE(_psi_bindings, m) {
       "Filters";
 
   m.attr("__version__") = ::private_set_intersection::Package::kVersion;
+  py::class_<psi_proto::ServerSetup>(m, "PsiProtoServerSetup")
+      .def("bits", &psi_proto::ServerSetup::bits)
+      .def("set_bits", py::overload_cast<const std::string&>(
+                           &psi_proto::ServerSetup::set_bits))
+      .def("set_bits",
+           py::overload_cast<const char*>(&psi_proto::ServerSetup::set_bits))
+      .def("set_bits", py::overload_cast<const void*, size_t>(
+                           &psi_proto::ServerSetup::set_bits))
+      .def("clear_bits", &psi_proto::ServerSetup::clear_bits)
+      .def("num_hash_functions", &psi_proto::ServerSetup::num_hash_functions)
+      .def("set_num_hash_functions",
+           &psi_proto::ServerSetup::set_num_hash_functions)
+      .def("clear_num_hash_functions",
+           &psi_proto::ServerSetup::clear_num_hash_functions);
+  py::class_<psi_proto::Request>(m, "PsiProtoRequest")
+      .def("encrypted_elements_size",
+           &psi_proto::Request::encrypted_elements_size)
+      .def("encrypted_elements",
+           py::overload_cast<int>(&psi_proto::Request::encrypted_elements,
+                                  py::const_))
+      .def("add_encrypted_elements",
+           py::overload_cast<const std::string&>(
+               &psi_proto::Request::add_encrypted_elements))
+      .def("clear_encrypted_elements",
+           &psi_proto::Request::clear_encrypted_elements)
+      .def("reveal_intersection", &psi_proto::Request::reveal_intersection)
+      .def("set_reveal_intersection",
+           &psi_proto::Request::set_reveal_intersection)
+      .def("clear_reveal_intersection",
+           &psi_proto::Request::clear_reveal_intersection);
+  py::class_<psi_proto::Response>(m, "PsiProtoResponse")
+      .def("encrypted_elements_size",
+           &psi_proto::Response::encrypted_elements_size)
+      .def("encrypted_elements",
+           py::overload_cast<int>(&psi_proto::Response::encrypted_elements,
+                                  py::const_))
+      .def("add_encrypted_elements",
+           py::overload_cast<const std::string&>(
+               &psi_proto::Response::add_encrypted_elements))
+      .def("clear_encrypted_elements",
+           &psi_proto::Response::clear_encrypted_elements);
+
   py::class_<psi::PsiClient>(m, "PsiClient")
       .def_static(
           "CreateWithNewKey",
@@ -56,16 +99,18 @@ PYBIND11_MODULE(_psi_bindings, m) {
           py::call_guard<py::gil_scoped_release>())
       .def(
           "GetIntersection",
-          [](const psi::PsiClient& obj, const std::string& server_setup,
-             const std::string& server_response) {
+          [](const psi::PsiClient& obj,
+             const psi_proto::ServerSetup& server_setup,
+             const psi_proto::Response& server_response) {
             return throwOrReturn(
                 obj.GetIntersection(server_setup, server_response));
           },
           py::call_guard<py::gil_scoped_release>())
       .def(
           "GetIntersectionSize",
-          [](const psi::PsiClient& obj, const std::string& server_setup,
-             const std::string& server_response) {
+          [](const psi::PsiClient& obj,
+             const psi_proto::ServerSetup& server_setup,
+             const psi_proto::Response& server_response) {
             return throwOrReturn(
                 obj.GetIntersectionSize(server_setup, server_response));
           },
@@ -107,7 +152,8 @@ PYBIND11_MODULE(_psi_bindings, m) {
           py::call_guard<py::gil_scoped_release>())
       .def(
           "ProcessRequest",
-          [](const psi::PsiServer& obj, const std::string& client_request) {
+          [](const psi::PsiServer& obj,
+             const psi_proto::Request& client_request) {
             return throwOrReturn(obj.ProcessRequest(client_request));
           },
           py::call_guard<py::gil_scoped_release>())

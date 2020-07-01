@@ -38,7 +38,7 @@ declare module 'psi_*' {
       numClientInputs: number,
       inputs: readonly string[]
     ) => CreateSetupMessageResult
-    readonly ProcessRequest: (clientRequest: string) => ProcessRequestResult
+    readonly ProcessRequest: (clientRequest: Uint8Array) => ProcessRequestResult
     readonly GetPrivateKeyBytes: () => Uint8Array
   }
 
@@ -48,12 +48,12 @@ declare module 'psi_*' {
       clientInputs: readonly string[]
     ) => CreateRequestResult
     readonly GetIntersection: (
-      serverSetup: string,
-      serverResponse: string
+      serverSetup: Uint8Array,
+      serverResponse: Uint8Array
     ) => GetIntersectionResult
     readonly GetIntersectionSize: (
-      serverSetup: string,
-      serverResponse: string
+      serverSetup: Uint8Array,
+      serverResponse: Uint8Array
     ) => GetIntersectionSizeResult
     readonly GetPrivateKeyBytes: () => Uint8Array
   }

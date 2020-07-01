@@ -16,8 +16,10 @@
 
 #include "private_set_intersection/cpp/bloom_filter.h"
 
+#include "absl/strings/escaping.h"
 #include "absl/strings/str_cat.h"
 #include "gtest/gtest.h"
+#include "private_set_intersection/proto/psi.pb.h"
 #include "util/status_matchers.h"
 
 namespace private_set_intersection {
@@ -71,7 +73,7 @@ TEST_F(BloomFilterTest, TestFPR) {
   }
 }
 
-TEST_F(BloomFilterTest, TestToJSON) {
+TEST_F(BloomFilterTest, TestToProtobuf) {
   double fpr = 0.01;
   int max_elements = 100;
   SetUp(fpr, max_elements);
@@ -79,23 +81,25 @@ TEST_F(BloomFilterTest, TestToJSON) {
     filter_->Add(absl::StrCat("Element ", i));
   }
 
-  // Encode Bloom filter as JSON and check if it matches.
-  std::string encoded_filter = filter_->ToJSON();
-  std::string expected =
-      "{\"num_hash_functions\":7,\"bits\":\"VN3/"
-      "BXfUjEDvJLcxCTepUCTXGQwlTax0xHiMohCNb45uShFsznK099RH0CFVIMn91Bdc7jLkXH"
-      "Xr"
+  // Create the protobuf from the Bloom filter and check if it matches.
+  psi_proto::ServerSetup encoded_filter = filter_->ToProtobuf();
+  EXPECT_EQ(encoded_filter.num_hash_functions(), filter_->NumHashFunctions());
+  EXPECT_EQ(encoded_filter.num_hash_functions(), 7);
+  EXPECT_EQ(encoded_filter.bits(), filter_->Bits());
+  EXPECT_EQ(
+      absl::Base64Escape(encoded_filter.bits()),
+      "VN3/"
+      "BXfUjEDvJLcxCTepUCTXGQwlTax0xHiMohCNb45uShFsznK099RH0CFVIMn91Bdc7jLkXHXr"
       "Xp1NimmZSDrYSj5sd/"
-      "500nroNOdXbtd53u8cejPMGxbx7kR1E1zyO19mSkYLXq4xf7au5dFN0qhxqfLnjaCE\"}";
-  EXPECT_EQ(encoded_filter, expected);
+      "500nroNOdXbtd53u8cejPMGxbx7kR1E1zyO19mSkYLXq4xf7au5dFN0qhxqfLnjaCE");
 }
 
-TEST_F(BloomFilterTest, TestCreateFromJSON) {
+TEST_F(BloomFilterTest, TestCreateFromProtobuf) {
   std::vector<std::string> elements = {"a", "b", "c", "d"};
   filter_->Add(elements);
-  std::string encoded_filter = filter_->ToJSON();
+  psi_proto::ServerSetup encoded_filter = filter_->ToProtobuf();
   PSI_ASSERT_OK_AND_ASSIGN(auto filter2,
-                           BloomFilter::CreateFromJSON(encoded_filter));
+                           BloomFilter::CreateFromProtobuf(encoded_filter));
   for (const auto& element : elements) {
     EXPECT_TRUE(filter2->Check(element));
   }

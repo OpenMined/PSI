@@ -96,7 +96,14 @@ import PSI from '@openmined/psi.js/combined/js/es'
 })()
 ```
 
-## Example (intersection size)
+## Example
+
+We show an example following the steps:
+
+1. Initialize the server and create the `server setup` to be sent later
+2. Initialize the client and create a client `request` to be sent to the server
+3. Process the `request` and send both the `server setup` and `response` to the client
+4. Client receives the `setup` and `response` and computes the intersection
 
 ```javascript
 const PSI = require('@openmined/psi.js')
@@ -104,94 +111,108 @@ const PSI = require('@openmined/psi.js')
 ;(async () => {
   const psi = await PSI()
 
-  // Create new server and client instances
-  const server = psi.server.createWithNewKey()
-  const client = psi.client.createWithNewKey()
-
-  // Define mutually agreed upon parameters
+  // Define mutually agreed upon parameters for both client and server
   const fpr = 0.001 // false positive rate (0.1%)
   const numClientElements = 10 // Size of the client set to check
   const numTotalElements = 100 // Maximum size of the server set
-
+  const revealIntersection = false // Reveals cardinality (false) -or- the intersection (true)
+  /******************
+   *** 1. Server ****
+   ******************/
+  // Create new server instance
+  //
+  // By default, the server will only support calculating 
+  // the intersection size (cardinality). To obtain the 
+  // intersection of the two sets, pass in the boolean `true`.
+  //
+  // Ex: const server = psi.server.createWithNewKey(true)
+  const server = psi.server.createWithNewKey(revealIntersection)
+  // Specifying no parameters is equivalent to passing in `false`
+  // const server = psi.server.createWithNewKey() 
+  
   // Example server set of data
   const serverInputs = Array.from(
     { length: numTotalElements },
     (_, i) => `Element ${i * 2}`
   )
 
-  // Example client set of data to check
-  const clientInputs = Array.from(
-    { length: numClientElements },
-    (_, i) => `Element ${i}`
-  )
-
   // Create the setup message that will later
-  // be used to compute the intersection. Send to client
+  // be used to compute the intersection.
   const serverSetup = server.createSetupMessage(
     fpr,
     numClientElements,
     serverInputs
   )
 
-  // Create a client request to send to the server
-  const clientRequest = client.createRequest(clientInputs)
-
-  // Process the client's request and return to the client
-  const serverResponse = server.processRequest(clientRequest)
-
-  // Client computes the intersection cardinality
-  // and the server has learned nothing!
-  const intersection = client.getIntersectionSize(serverSetup, serverResponse)
-  // intersection = 5
-})()
-```
-
-## Example (intersection)
-
-```javascript
-const PSI = require('@openmined/psi.js')
-
-;(async () => {
-  const psi = await PSI()
-
-  // Create new server and client instances
-  const server = psi.server.createWithNewKey(true)
-  const client = psi.client.createWithNewKey(true)
-
-  // Define mutually agreed upon parameters
-  const fpr = 0.001 // false positive rate (0.1%)
-  const numClientElements = 10 // Size of the client set to check
-  const numTotalElements = 100 // Maximum size of the server set
-
-  // Example server set of data
-  const serverInputs = Array.from(
-    { length: numTotalElements },
-    (_, i) => `Element ${i * 2}`
-  )
+  /******************
+   *** 2. Client ****
+   ******************/
+  // Create new client instance
+  //
+  // By default, the client will only support calculating 
+  // the intersection size (cardinality). To obtain the 
+  // intersection of the two sets, pass in the boolean `true`.
+  //
+  // Ex: const server = psi.client.createWithNewKey(true)
+  const client = psi.client.createWithNewKey(revealIntersection)
+  // Specifying no parameters is equivalent to passing in `false`
+  // const client = psi.client.createWithNewKey() 
 
   // Example client set of data to check
   const clientInputs = Array.from(
     { length: numClientElements },
     (_, i) => `Element ${i}`
   )
-
-  // Create the setup message that will later
-  // be used to compute the intersection. Send to client
-  const serverSetup = server.createSetupMessage(
-    fpr,
-    numClientElements,
-    serverInputs
-  )
-
   // Create a client request to send to the server
   const clientRequest = client.createRequest(clientInputs)
 
-  // Process the client's request and return to the client
-  const serverResponse = server.processRequest(clientRequest)
+  // Serialize the client request. Will be a Uint8Array.
+  const serializedClientRequest = clientRequest.serializeBinary()
 
-  // Client computes the intersection
-  // and the server has learned nothing!
-  const intersection = client.getIntersection(serverSetup, serverResponse)
+  // ... send the serialized client request from client -> server
+
+  /******************
+   *** 3. Server ****
+   ******************/
+  // Deserialize the client request for the server
+  const deserializedClientRequest = new psi.Request()
+  deserializedClientRequest.deserializeBinary(serializedClientRequest)
+
+  // Process the client's request and return to the client
+  const serverResponse = server.processRequest(deserializedClientRequest)
+
+  // Serialize the server response. Will be a Uint8Array.
+  const serializedServerResponse = serverResponse.serializeBinary()
+
+  // Serialize the server setup. Will be an Uint8Array.
+  const serializedServerSetup = serverSetup.serializeBinary()
+  // ... send the serialized server setup _and_ server response from server -> client
+
+  /******************
+   *** 4. Client ****
+   ******************/
+  // Deserialize the server response
+  const deserializedServerResponse = new psi.Response()
+  deserializedServerResponse.deserializeBinary(serializedServerResponse)
+
+  // Deserialize the server setup
+  const deserializedServerSetup = new psi.ServerSetup()
+  deserializedServerSetup.deserializeBinary(serializedServerSetup)
+
+  // NOTE: 
+  // A client can compute either the intersection size (cardinality) or
+  // reveal the actual intersection between the two arrays.
+  // This is dependent on whether or not _both_ client/server were initialized
+  // with the same boolean `true` value which sets an internal `reveal_intersection` flag. 
+  // By default, both client and server instances will only reveal the 
+  // cardinality and any calls made to `getIntersection` will throw an error.
+
+  // Reveal the cardinality (by default, only if `revealIntersection` is false)
+  const intersectionSize = client.getIntersectionSize(deserializedServerSetup, deserializedServerResponse)
+  // intsersectionSize 5
+
+  // Reveal the intersection (only if `revealIntersection` is true)
+  const intersection = client.getIntersection(deserializedServerSetup, deserializedServerResponse)
   // intersection [ 0, 2, 4, 6, 8 ]
 })()
 ```
@@ -211,6 +232,7 @@ Please make sure to update tests as appropriate.
 Ensure your environment has the following global dependencies:
 
 - [Bazel](https://bazel.build)
+- [Protoc](http://google.github.io/proto-lens/installing-protoc.html)
 - [NodeJS](https://nodejs.org/en/)
 
 Next, ensure you have updated submodules
@@ -232,10 +254,22 @@ Now, install the rest of the dev dependencies
 npm install
 ```
 
-To build the client, server, or combined (both client and server) for WebAssembly and pure JS
+To compile the client, server, or combined (both client and server) for WebAssembly and pure JS
 
 ```
 npm run build
+```
+
+Now, build the JS protobufs for TypeScript.
+
+```
+npm run build:proto
+```
+
+Compile TypeScript to JS
+
+```
+npm run compile
 ```
 
 Run the tests or generate coverage reports. **Note** tests are run using the WASM variant.
@@ -271,6 +305,10 @@ Ensure we start with a clean build
 Build the client, server, and combined (client and server)
 
 `npm run build`
+
+Build protobufs
+
+`npm run build:proto`
 
 Compile typescript
 

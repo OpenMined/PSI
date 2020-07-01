@@ -22,9 +22,6 @@
 #include "crypto/ec_commutative_cipher.h"
 #include "gtest/gtest.h"
 #include "private_set_intersection/cpp/bloom_filter.h"
-#include "rapidjson/document.h"
-#include "rapidjson/stringbuffer.h"
-#include "rapidjson/writer.h"
 #include "util/status_matchers.h"
 
 namespace private_set_intersection {
@@ -43,7 +40,8 @@ class PsiClientTest : public ::testing::Test {
   }
 
   void CreateDummySetupMessage(absl::Span<const std::string> server_elements,
-                               double fpr, std::string *server_setup) {
+                               double fpr,
+                               psi_proto::ServerSetup *server_setup) {
     auto num_server_elements = static_cast<int64_t>(server_elements.size());
     // Insert server elements into Bloom filter.
     PSI_ASSERT_OK_AND_ASSIGN(auto bloom_filter,
@@ -53,46 +51,29 @@ class PsiClientTest : public ::testing::Test {
                                server_ec_cipher_->Encrypt(server_elements[i]));
       bloom_filter->Add(encrypted_element);
     }
-    *server_setup = bloom_filter->ToJSON();
+    *server_setup = bloom_filter->ToProtobuf();
   }
 
-  void CreateDummyResponse(const std::string &client_request,
-                           std::string *server_response) {
-    // Unpack client message and re-encrypt.
-    rapidjson::Document request, response;
-    request.Parse(client_request.data(), client_request.size());
-    ASSERT_FALSE(request.HasParseError());
-    ASSERT_TRUE(request.IsObject());
-    ASSERT_TRUE(request.HasMember("encrypted_elements"));
-    ASSERT_TRUE(request["encrypted_elements"].IsArray());
-    const auto request_elements = request["encrypted_elements"].GetArray();
-    response.SetObject();
-    rapidjson::Value response_elements;
-    response_elements.SetArray();
-    for (int i = 0; i < static_cast<int>(request_elements.Size()); i++) {
-      ASSERT_TRUE(request_elements[i].IsString());
-      std::string base64_element(request_elements[i].GetString(),
-                                 request_elements[i].GetStringLength());
-      std::string encrypted_element;
-      ASSERT_TRUE(absl::Base64Unescape(base64_element, &encrypted_element));
-      PSI_ASSERT_OK_AND_ASSIGN(std::string reencrypted_element,
-                               server_ec_cipher_->ReEncrypt(encrypted_element));
+  void CreateDummyResponse(const psi_proto::Request &client_request,
+                           psi_proto::Response *server_response) {
+    ASSERT_TRUE(client_request.IsInitialized());
+    ASSERT_TRUE(server_response->IsInitialized());
 
-      base64_element = absl::Base64Escape(reencrypted_element);
-      response_elements.PushBack(
-          rapidjson::Value().SetString(base64_element.data(),
-                                       base64_element.size(),
-                                       response.GetAllocator()),
-          response.GetAllocator());
+    // Clear the elements
+    server_response->clear_encrypted_elements();
+
+    const google::protobuf::RepeatedPtrField encrypted_elements =
+        client_request.encrypted_elements();
+    const std::int64_t num_request_elements =
+        static_cast<std::int64_t>(encrypted_elements.size());
+
+    // Re-encrypt the request's elements and add to the response
+    for (int i = 0; i < num_request_elements; i++) {
+      PSI_ASSERT_OK_AND_ASSIGN(
+          std::string encrypted,
+          server_ec_cipher_->ReEncrypt(encrypted_elements[i]));
+      server_response->add_encrypted_elements(encrypted);
     }
-    response.AddMember("encrypted_elements", response_elements.Move(),
-                       response.GetAllocator());
-
-    // Encode re-encrypted messages as JSON.
-    rapidjson::StringBuffer buffer;
-    rapidjson::Writer<decltype(buffer)> writer(buffer);
-    response.Accept(writer);
-    *server_response = buffer.GetString();
   }
 
   std::unique_ptr<PsiClient> client_;
@@ -127,7 +108,16 @@ TEST_F(PsiClientTest, TestCreatingFromKey) {
                            client1->CreateRequest(client_elements));
 
   // Both requests should be the same
-  EXPECT_EQ(client_request0, client_request1);
+  EXPECT_EQ(client_request0.reveal_intersection(),
+            client_request1.reveal_intersection());
+  const google::protobuf::RepeatedPtrField elements0 =
+      client_request0.encrypted_elements();
+  const google::protobuf::RepeatedPtrField elements1 =
+      client_request1.encrypted_elements();
+  ASSERT_TRUE(elements0.size() == elements1.size());
+  for (int i = 0; i < elements0.size(); i++) {
+    EXPECT_EQ(elements0[i], elements1[i]);
+  }
 
   // Create a 31-byte key that should be equivalent to a 32-byte null-inserted
   // key.
@@ -143,7 +133,16 @@ TEST_F(PsiClientTest, TestCreatingFromKey) {
                            client2->CreateRequest(client_elements));
   PSI_ASSERT_OK_AND_ASSIGN(auto client_request3,
                            client3->CreateRequest(client_elements));
-  EXPECT_EQ(client_request2, client_request3);
+  EXPECT_EQ(client_request2.reveal_intersection(),
+            client_request3.reveal_intersection());
+  const google::protobuf::RepeatedPtrField elements2 =
+      client_request0.encrypted_elements();
+  const google::protobuf::RepeatedPtrField elements3 =
+      client_request1.encrypted_elements();
+  ASSERT_TRUE(elements2.size() == elements3.size());
+  for (int i = 0; i < elements2.size(); i++) {
+    EXPECT_EQ(elements2[i], elements3[i]);
+  }
 }
 
 TEST_F(PsiClientTest, TestCorrectnessIntersection) {
@@ -161,15 +160,15 @@ TEST_F(PsiClientTest, TestCorrectnessIntersection) {
   for (int i = 0; i < num_server_elements; i++) {
     server_elements[i] = absl::StrCat("Element ", 2 * i);
   }
-  std::string server_setup;
+  psi_proto::ServerSetup server_setup;
   CreateDummySetupMessage(server_elements, fpr / num_client_elements,
                           &server_setup);
 
   // Compute client request.
-  PSI_ASSERT_OK_AND_ASSIGN(std::string client_request,
+  PSI_ASSERT_OK_AND_ASSIGN(psi_proto::Request client_request,
                            client_->CreateRequest(client_elements));
 
-  std::string server_response;
+  psi_proto::Response server_response;
   CreateDummyResponse(client_request, &server_response);
 
   // Compute intersection.
@@ -204,15 +203,15 @@ TEST_F(PsiClientTest, TestCorrectnessIntersectionSize) {
   for (int i = 0; i < num_server_elements; i++) {
     server_elements[i] = absl::StrCat("Element ", 2 * i);
   }
-  std::string server_setup;
+  psi_proto::ServerSetup server_setup;
   CreateDummySetupMessage(server_elements, fpr / num_client_elements,
                           &server_setup);
 
   // Compute client request.
-  PSI_ASSERT_OK_AND_ASSIGN(std::string client_request,
+  PSI_ASSERT_OK_AND_ASSIGN(psi_proto::Request client_request,
                            client_->CreateRequest(client_elements));
 
-  std::string server_response;
+  psi_proto::Response server_response;
   CreateDummyResponse(client_request, &server_response);
 
   // Compute intersection size.
@@ -227,8 +226,10 @@ TEST_F(PsiClientTest, TestCorrectnessIntersectionSize) {
 
 TEST_F(PsiClientTest, FailIfRevealIntersectionDoesntMatch) {
   SetUp(false);
+  psi_proto::ServerSetup server_setup;
+  psi_proto::Response response;
   EXPECT_THAT(
-      client_->GetIntersection("", ""),
+      client_->GetIntersection(server_setup, response),
       StatusIs(
           private_join_and_compute::kInvalidArgument,
           "GetIntersection called on PsiClient with reveal_intersection == "

@@ -1,5 +1,6 @@
-##### Native #####
- # No need to specify additional configs
+##### Global #####
+# Needed for python (pybind11) bindings
+build --cxxopt=--std=c++17
 
 ##### WASM #####
 # Use our custom-configured c++ toolchain.

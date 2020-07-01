@@ -23,10 +23,7 @@
 #include "absl/strings/str_cat.h"
 #include "openssl/obj_mac.h"
 #include "private_set_intersection/cpp/bloom_filter.h"
-#include "rapidjson/document.h"
-#include "rapidjson/error/en.h"
-#include "rapidjson/stringbuffer.h"
-#include "rapidjson/writer.h"
+#include "private_set_intersection/proto/psi.pb.h"
 #include "util/canonical_errors.h"
 #include "util/status_macros.h"
 
@@ -62,7 +59,7 @@ StatusOr<std::unique_ptr<PsiServer>> PsiServer::CreateFromKey(
       new PsiServer(std::move(ec_cipher), reveal_intersection));
 }
 
-StatusOr<std::string> PsiServer::CreateSetupMessage(
+StatusOr<psi_proto::ServerSetup> PsiServer::CreateSetupMessage(
     double fpr, int64_t num_client_inputs,
     absl::Span<const std::string> inputs) const {
   auto num_inputs = static_cast<int64_t>(inputs.size());
@@ -78,84 +75,53 @@ StatusOr<std::string> PsiServer::CreateSetupMessage(
     bloom_filter->Add(encrypted_element);
   }
 
-  // Encode Bloom filter as JSON and return it.
-  return bloom_filter->ToJSON();
+  // Return the Bloom filter as a Protobuf
+  return bloom_filter->ToProtobuf();
 }
 
-StatusOr<std::string> PsiServer::ProcessRequest(
-    const std::string& client_request) const {
-  // Unpack client message.
-  rapidjson::Document request;
-  request.Parse(client_request.data(), client_request.size());
-  if (request.HasParseError()) {
+StatusOr<psi_proto::Response> PsiServer::ProcessRequest(
+    const psi_proto::Request& client_request) const {
+  if (!client_request.IsInitialized()) {
     return ::private_join_and_compute::InvalidArgumentError(
-        absl::StrCat("Error parsing `client_request`: ",
-                     rapidjson::GetParseError_En(request.GetParseError()), "(",
-                     request.GetErrorOffset(), ")"));
+        "`client_request` is corrupt!");
   }
-  if (!request.IsObject()) {
+
+  if (client_request.reveal_intersection() != reveal_intersection) {
     return ::private_join_and_compute::InvalidArgumentError(
-        "`client_request` must be a JSON object");
-  }
-  bool client_wants_intersection = (request.HasMember("reveal_intersection") &&
-                                    request["reveal_intersection"].IsBool() &&
-                                    request["reveal_intersection"].GetBool());
-  if (client_wants_intersection != reveal_intersection) {
-    return ::private_join_and_compute::InvalidArgumentError(absl::StrCat(
-        "Client expects `reveal_intersection` = ", client_wants_intersection,
-        ", but it is actually ", reveal_intersection));
-  }
-  if (!request.HasMember("encrypted_elements")) {
-    return ::private_join_and_compute::InvalidArgumentError(
-        "`client_request` must contain member `encrytped_elements`");
+        absl::StrCat("Client expects `reveal_intersection` = ",
+                     client_request.reveal_intersection(),
+                     ", but it is actually ", reveal_intersection));
   }
 
   // Re-encrypt elements.
-  const auto encrypted_elements = request["encrypted_elements"].GetArray();
-  auto num_client_elements = static_cast<int64_t>(encrypted_elements.Size());
-  std::vector<std::string> reencrypted_elements(num_client_elements);
+  const google::protobuf::RepeatedPtrField encrypted_elements =
+      client_request.encrypted_elements();
+  const std::int64_t num_client_elements =
+      static_cast<std::int64_t>(encrypted_elements.size());
+
+  // Create the response
+  psi_proto::Response response;
+
+  // Re-encrypt the request's elements and add to the response
   for (int i = 0; i < num_client_elements; i++) {
-    if (!encrypted_elements[i].IsString()) {
-      return ::private_join_and_compute::InvalidArgumentError(
-          "`client_request` elements must be strings");
-    }
-    std::string base64_encrypted_element(
-        encrypted_elements[i].GetString(),
-        encrypted_elements[i].GetStringLength());
-    std::string encrypted_element;
-    if (!absl::Base64Unescape(base64_encrypted_element, &encrypted_element)) {
-      return ::private_join_and_compute::InvalidArgumentError(
-          "`client_request` elements must be valid Base64");
-    }
-    ASSIGN_OR_RETURN(reencrypted_elements[i],
-                     ec_cipher_->ReEncrypt(encrypted_element));
-    reencrypted_elements[i] = absl::Base64Escape(reencrypted_elements[i]);
+    ASSIGN_OR_RETURN(std::string encrypted,
+                     ec_cipher_->ReEncrypt(encrypted_elements[i]));
+    response.add_encrypted_elements(encrypted);
   }
 
   // sort the resulting ciphertexts if we want to hide the intersection from the
   // client.
   if (!reveal_intersection) {
-    std::sort(reencrypted_elements.begin(), reencrypted_elements.end());
+    const google::protobuf::RepeatedPtrField elements =
+        response.encrypted_elements();
+    // Create a copy to mutate
+    google::protobuf::RepeatedPtrField sorted_elements = elements;
+    std::sort(sorted_elements.begin(), sorted_elements.end());
+    for (int i = 0; i < num_client_elements; i++) {
+      response.set_encrypted_elements(i, sorted_elements[i]);
+    }
   }
-
-  // Encode re-encrypted elements as JSON.
-  rapidjson::Document response;
-  response.SetObject();
-  rapidjson::Value response_elements;
-  response_elements.SetArray();
-  for (int i = 0; i < num_client_elements; i++) {
-    response_elements.PushBack(
-        rapidjson::Value().SetString(reencrypted_elements[i].data(),
-                                     reencrypted_elements[i].size(),
-                                     response.GetAllocator()),
-        response.GetAllocator());
-  }
-  response.AddMember("encrypted_elements", response_elements.Move(),
-                     response.GetAllocator());
-  rapidjson::StringBuffer buffer;
-  rapidjson::Writer<rapidjson::StringBuffer> writer(buffer);
-  response.Accept(writer);
-  return std::string(buffer.GetString());
+  return response;
 }
 
 std::string PsiServer::GetPrivateKeyBytes() const {

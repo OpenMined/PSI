@@ -21,6 +21,7 @@
 
 #include "absl/types/span.h"
 #include "crypto/context.h"
+#include "private_set_intersection/proto/psi.pb.h"
 #include "util/statusor.h"
 
 namespace private_set_intersection {
@@ -52,13 +53,13 @@ class BloomFilter {
   static StatusOr<std::unique_ptr<BloomFilter>> Create(double fpr,
                                                        int64_t max_elements);
 
-  // Creates a Bloom filter containing the bits of the passed string, and the
+  // Creates a Bloom filter containing the bits of the passed protobuf, and the
   // given number of hash functions.
   //
   // Returns INVALID_ARGUMENT if `num_hash_functions` is not positive or if
   // `bits` is empty.
-  static StatusOr<std::unique_ptr<BloomFilter>> CreateFromJSON(
-      const std::string& encoded_filter);
+  static StatusOr<std::unique_ptr<BloomFilter>> CreateFromProtobuf(
+      const psi_proto::ServerSetup& encoded_filter);
 
   // Adds `input` to the Bloom filter.
   void Add(const std::string& input);
@@ -69,18 +70,14 @@ class BloomFilter {
   // Checks if an element is present in the Bloom filter.
   bool Check(const std::string& input) const;
 
-  // Returns a JSON representation of the Bloom filter, in the following form:
-  //
-  //   {
-  //     "num_hash_functions": <int>,
-  //     "bits": <string>
-  //   }
-  //
-  // Where `bits` is encoded using Base64.
-  std::string ToJSON() const;
+  // Returns a protobuf representation of the Bloom filter
+  psi_proto::ServerSetup ToProtobuf() const;
 
   // Returns the number of hash functions of the Bloom filter.
   int NumHashFunctions() const;
+
+  // Returns the bit representation of the Bloom filter in its current state.
+  std::string Bits() const;
 
  private:
   BloomFilter(int num_hash_functions, std::string bits,

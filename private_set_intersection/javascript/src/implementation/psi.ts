@@ -1,8 +1,12 @@
 import { PackageWrapper } from './package'
 import { ClientWrapper } from './client'
 import { ServerWrapper } from './server'
+import { ServerSetup, Request, Response } from './proto/psi_pb'
 
 export type PSILibrary = {
+  readonly serverSetup: typeof ServerSetup
+  readonly request: typeof Request
+  readonly response: typeof Response
   readonly package: PackageWrapper
   readonly server?: ServerWrapper
   readonly client?: ClientWrapper
@@ -26,6 +30,75 @@ export const PSIConstructor = ({
    * @interface PSI
    */
   return {
+    /**
+     * @description
+     * The server setup message protobuf
+     *
+     * @readonly
+     * @name PSI.serverSetup
+     * @type {ServerSetup}
+     * @example
+     * import PSI from '@openmined/psi.js'
+     * const psi = await PSI()
+     * const { serverSetup, server } = psi
+     *
+     * // A ServerSetup message is returned from the server
+     * const setup = server.createSetupMessage(...)
+     *
+     * // Serialize the object to binary data (Uint8Array) for transport
+     * const binary = setup.serializeBinary()
+     *
+     * // Deserialize binary data into a ServerSetup object
+     * const setup = serverSetup.deserializeBinary(binary)
+     */
+    ...{ serverSetup: ServerSetup },
+
+    /**
+     * @description
+     * The client request protobuf
+     *
+     * @readonly
+     * @name PSI.request
+     * @type {Request}
+     * @example
+     * import PSI from '@openmined/psi.js'
+     * const psi = await PSI()
+     * const { Request, client } = psi
+     *
+     * // A Request is returned from the server
+     * const clientRequest = client.createRequest(...)
+     *
+     * // Serialize the object to binary data (Uint8Array) for transport
+     * const binary = clientRequest.serializeBinary()
+     *
+     * // Deserialize binary data into a Request object
+     * const clientRequest = request.deserializeBinary(binary)
+     */
+    ...{ request: Request },
+
+    /**
+     * @description
+     * The server response protobuf
+     *
+     * @readonly
+     * @name PSI.response
+     * @type {Response}
+     * @example
+     * import PSI from '@openmined/psi.js'
+     * const psi = await PSI()
+     * const { Response, server } = psi
+     *
+     * // A Response is returned from the server
+     * const serverResponse = server.processRequest(...)
+     *
+     * // Serialize the object to binary data (Uint8Array) for transport
+     * const binary = serverResponse.serializeBinary()
+     *
+     * // Deserialize binary data into a Response object
+     * const serverResponse = request.deserializeBinary(binary)
+     */
+    ...{ response: Response },
+
     /**
      * @description
      * Information about the package

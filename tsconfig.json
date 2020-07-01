@@ -5,7 +5,7 @@
     "declarationDir": "./private_set_intersection/javascript/tsc-out/types",
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
-    "module": "ESNext",
+    "module": "ES2020",
     "moduleResolution": "node",
     "newLine": "LF",
     "noEmitOnError": true,
@@ -23,13 +23,11 @@
     "rootDir": "./private_set_intersection/javascript/src",
     "sourceMap": true,
     "strict": true,
-    "target": "ESNext",
+    "target": "ES2019",
     "typeRoots": [
       "./private_set_intersection/javascript/custom_types",
       "./node_modules/@types"
     ]
   },
-  "include": [
-    "./private_set_intersection/javascript/src/**/*"
-  ]
+  "include": ["./private_set_intersection/javascript/src/**/*"]
 }

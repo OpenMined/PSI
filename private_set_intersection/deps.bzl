@@ -27,15 +27,6 @@ load("@rules_python_external//:defs.bzl", "pip_install")
 
 def psi_deps():
     # General dependencies.
-    if "com_tencent_rapidjson" not in native.existing_rules():
-        http_archive(
-            name = "com_tencent_rapidjson",
-            build_file = "@org_openmined_psi//third_party:rapidjson.BUILD",
-            sha256 = "e6fc99c7df7f29995838a764dd68df87b71db360f7727ace467b21b82c85efda",
-            strip_prefix = "rapidjson-8f4c021fa2f1e001d2376095928fc0532adf2ae6/include",
-            url = "https://github.com/Tencent/rapidjson/archive/8f4c021fa2f1e001d2376095928fc0532adf2ae6.zip",
-        )
-
     if "private_join_and_compute" not in native.existing_rules():
         http_archive(
             name = "private_join_and_compute",

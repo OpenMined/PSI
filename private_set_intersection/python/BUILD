@@ -11,6 +11,7 @@ pybind_extension(
         "//private_set_intersection/cpp:package",
         "//private_set_intersection/cpp:psi_client",
         "//private_set_intersection/cpp:psi_server",
+        "//private_set_intersection/proto:psi_cc_proto",
     ],
 )
 

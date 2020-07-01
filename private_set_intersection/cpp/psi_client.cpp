@@ -23,10 +23,7 @@
 #include "absl/strings/str_cat.h"
 #include "openssl/obj_mac.h"
 #include "private_set_intersection/cpp/bloom_filter.h"
-#include "rapidjson/document.h"
-#include "rapidjson/error/en.h"
-#include "rapidjson/stringbuffer.h"
-#include "rapidjson/writer.h"
+#include "private_set_intersection/proto/psi.pb.h"
 #include "util/canonical_errors.h"
 #include "util/status_macros.h"
 
@@ -62,7 +59,7 @@ StatusOr<std::unique_ptr<PsiClient>> PsiClient::CreateFromKey(
       new PsiClient(std::move(ec_cipher), reveal_intersection));
 }
 
-StatusOr<std::string> PsiClient::CreateRequest(
+StatusOr<psi_proto::Request> PsiClient::CreateRequest(
     absl::Span<const std::string> inputs) const {
   // Encrypt inputs one by one.
   int64_t input_size = static_cast<int64_t>(inputs.size());
@@ -71,33 +68,23 @@ StatusOr<std::string> PsiClient::CreateRequest(
     ASSIGN_OR_RETURN(encrypted_inputs[i], ec_cipher_->Encrypt(inputs[i]));
   }
 
-  // Store encrypted inputs in a JSON array.
-  rapidjson::Document request;
-  request.SetObject();
-  rapidjson::Value request_elements;
-  request_elements.SetArray();
-  for (int64_t i = 0; i < input_size; i++) {
-    std::string base64_element = absl::Base64Escape(encrypted_inputs[i]);
-    request_elements.PushBack(rapidjson::Value().SetString(
-                                  base64_element.data(), base64_element.size(),
-                                  request.GetAllocator()),
-                              request.GetAllocator());
-  }
-  request.AddMember("encrypted_elements", request_elements.Move(),
-                    request.GetAllocator());
-  request.AddMember("reveal_intersection",
-                    rapidjson::Value(reveal_intersection).Move(),
-                    request.GetAllocator());
+  // Create a request protobuf
+  psi_proto::Request request;
 
-  // Return encrytped inputs as JSON array.
-  rapidjson::StringBuffer buffer;
-  rapidjson::Writer<rapidjson::StringBuffer> writer(buffer);
-  request.Accept(writer);
-  return std::string(buffer.GetString());
+  // Set the reveal flag
+  request.set_reveal_intersection(reveal_intersection);
+
+  // Add the encrypted elements
+  for (int64_t i = 0; i < input_size; i++) {
+    request.add_encrypted_elements(encrypted_inputs[i]);
+  }
+
+  return request;
 }
 
 StatusOr<std::vector<int64_t>> PsiClient::GetIntersection(
-    const std::string& server_setup, const std::string& server_response) const {
+    const psi_proto::ServerSetup& server_setup,
+    const psi_proto::Response& server_response) const {
   if (!reveal_intersection) {
     return ::private_join_and_compute::InvalidArgumentError(
         "GetIntersection called on PsiClient with reveal_intersection == "
@@ -110,56 +97,42 @@ StatusOr<std::vector<int64_t>> PsiClient::GetIntersection(
 }
 
 StatusOr<int64_t> PsiClient::GetIntersectionSize(
-    const std::string& server_setup, const std::string& server_response) const {
+    const psi_proto::ServerSetup& server_setup,
+    const psi_proto::Response& server_response) const {
   ASSIGN_OR_RETURN(std::vector<int64_t> intersection,
                    ProcessResponse(server_setup, server_response));
   return static_cast<int64_t>(intersection.size());
 }
 
 StatusOr<std::vector<int64_t>> PsiClient::ProcessResponse(
-    const std::string& server_setup, const std::string& server_response) const {
-  // Parse setup and response message as JSON.
-  rapidjson::Document setup, response;
-  if (setup.Parse(server_setup.data(), server_setup.size()).HasParseError()) {
+    const psi_proto::ServerSetup& server_setup,
+    const psi_proto::Response& server_response) const {
+  // Ensure both items are valid
+  if (!server_setup.IsInitialized()) {
     return ::private_join_and_compute::InvalidArgumentError(
-        absl::StrCat("Error parsing `server_setup`: ",
-                     rapidjson::GetParseError_En(setup.GetParseError()), "(",
-                     setup.GetErrorOffset(), ")"));
-  }
-  if (response.Parse(server_response.c_str()).HasParseError()) {
-    return ::private_join_and_compute::InvalidArgumentError(
-        absl::StrCat("Error parsing `server_response`: ",
-                     rapidjson::GetParseError_En(response.GetParseError()), "(",
-                     response.GetErrorOffset(), ")"));
+        "`server_setup` is corrupt!");
   }
 
-  // Decode Bloom filter from setup message.
+  if (!server_response.IsInitialized()) {
+    return ::private_join_and_compute::InvalidArgumentError(
+        "`server_response` is corrupt!");
+  }
+
+  // Decode Bloom filter from the server setup.
   ASSIGN_OR_RETURN(auto bloom_filter,
-                   BloomFilter::CreateFromJSON(server_setup));
+                   BloomFilter::CreateFromProtobuf(server_setup));
 
-  // Decrypt all elements in the response.
-  if (!response.IsObject() || !response.HasMember("encrypted_elements")) {
-    return ::private_join_and_compute::InvalidArgumentError(
-        "`server_response` is malformed");
-  }
-  const auto response_array = response["encrypted_elements"].GetArray();
-  int64_t response_size = static_cast<int64_t>(response_array.Size());
+  const google::protobuf::RepeatedPtrField response_array =
+      server_response.encrypted_elements();
+  const std::int64_t response_size =
+      static_cast<std::int64_t>(response_array.size());
   std::vector<int64_t> result(0);
   result.reserve(response_size);
+
+  // Decrypt and check if the element is in our filter
   for (int64_t i = 0; i < response_size; i++) {
-    if (!response_array[i].IsString()) {
-      return ::private_join_and_compute::InvalidArgumentError(
-          "`server_response` elements must be strings");
-    }
-    std::string base64_encrypted_element(response_array[i].GetString(),
-                                         response_array[i].GetStringLength());
-    std::string encrypted_element;
-    if (!absl::Base64Unescape(base64_encrypted_element, &encrypted_element)) {
-      return ::private_join_and_compute::InvalidArgumentError(
-          "`server_response` elements must be valid Base64");
-    }
     ASSIGN_OR_RETURN(std::string element,
-                     ec_cipher_->Decrypt(encrypted_element));
+                     ec_cipher_->Decrypt(response_array[i]));
     // Increase intersection size if element is found in the bloom filter.
     if (bloom_filter->Check(element)) {
       result.push_back(i);

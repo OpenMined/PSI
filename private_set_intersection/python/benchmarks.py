@@ -4,7 +4,7 @@ import private_set_intersection.python as psi
 
 
 def helper_client_create_request(cnt, reveal_intersection):
-    c = psi.client.Create(reveal_intersection)
+    c = psi.client.CreateWithNewKey(reveal_intersection)
     inputs = ["Element " + str(i) for i in range(cnt)]
     req = c.CreateRequest(inputs)
 
@@ -16,7 +16,7 @@ def test_client_create_request(cnt, reveal_intersection, benchmark):
 
 
 def helper_client_process_response(cnt, reveal_intersection):
-    c = psi.client.Create(reveal_intersection)
+    c = psi.client.CreateWithNewKey(reveal_intersection)
     s = psi.server.CreateWithNewKey(reveal_intersection)
 
     fpr = 1.0 / 1000000
@@ -52,7 +52,7 @@ def test_server_setup(cnt, fpr, reveal_intersection, benchmark):
 
 
 def helper_server_process_request(cnt, reveal_intersection):
-    c = psi.client.Create(reveal_intersection)
+    c = psi.client.CreateWithNewKey(reveal_intersection)
     s = psi.server.CreateWithNewKey(reveal_intersection)
 
     fpr = 1.0 / 1000000

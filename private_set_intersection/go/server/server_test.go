@@ -3,6 +3,7 @@ package server
 import (
 	"bytes"
 	"github.com/openmined/psi/client"
+	"github.com/openmined/psi/pb"
 	"regexp"
 	"testing"
 )
@@ -29,8 +30,8 @@ func testServerSanity(t *testing.T, revealIntersection bool) {
 		t.Errorf("Failed to create a PSI server %v", err)
 	}
 	_, err = server.CreateSetupMessage(0.001, 1000, []string{})
-	if err == nil {
-		t.Errorf("Failed to ignore empty input for setup")
+	if err != nil {
+		t.Errorf("Should not fail on empty input %v", err)
 	}
 	key, err := server.GetPrivateKeyBytes()
 	if err != nil {
@@ -75,15 +76,9 @@ func testServerFailure(t *testing.T, revealIntersection bool) {
 		t.Errorf("CreateSetupMessage should fail with an invalid context %v", err)
 	}
 
-	_, err = server.ProcessRequest("dummy")
+	_, err = server.ProcessRequest(&psi_proto.Request{})
 	if err == nil {
 		t.Errorf("ProcessRequest should fail with an invalid context %v", err)
-	}
-
-	server, _ = CreateWithNewKey(revealIntersection)
-	_, err = server.ProcessRequest("dummy")
-	if err == nil {
-		t.Errorf("ProcessRequest should fail with an invalid input %v", err)
 	}
 
 	client, err := client.CreateWithNewKey(!revealIntersection)
@@ -168,7 +163,7 @@ func TestServerClient(t *testing.T) {
 	testServerClient(t, true)
 }
 
-var dummyString string
+var dummyString *psi_proto.ServerSetup
 
 func benchmarkServerSetup(cnt int, fpr float64, revealIntersection bool, b *testing.B) {
 	b.ReportAllocs()
@@ -225,6 +220,8 @@ func BenchmarkServerSetupIntersection10000fpr6(b *testing.B) {
 	benchmarkServerSetup(10000, fpr6, true, b)
 }
 
+var dummyResponse *psi_proto.Response
+
 func benchmarkServerProcessRequest(cnt int, revealIntersection bool, b *testing.B) {
 	b.ReportAllocs()
 	total := 0
@@ -252,9 +249,9 @@ func benchmarkServerProcessRequest(cnt int, revealIntersection bool, b *testing.
 			b.Errorf("failed to process request %v", err)
 		}
 		total += cnt
-		b.ReportMetric(float64(len(serverResp)), "ResponseSize")
+		b.ReportMetric(float64(serverResp.XXX_Size()), "ResponseSize")
 		//ugly hack for preventing compiler optimizations
-		dummyString = serverResp
+		dummyResponse = serverResp
 	}
 	b.ReportMetric(float64(total), "ElementsProcessed")
 }

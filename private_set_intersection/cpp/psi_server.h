@@ -19,6 +19,7 @@
 
 #include "absl/types/span.h"
 #include "crypto/ec_commutative_cipher.h"
+#include "private_set_intersection/proto/psi.pb.h"
 #include "util/statusor.h"
 
 namespace private_set_intersection {
@@ -49,28 +50,29 @@ class PsiServer {
       const std::string& key_bytes, bool reveal_intersection);
 
   // Creates a setup message from the server's dataset to be sent to the
-  // client. The setup message is a JSON-encoded Bloom filter containing
+  // client. The setup message is a Bloom filter containing
   // H(x)^s for each element x in `inputs`, where s is the server's secret
-  // key. The message has the following form:
+  // key. The setup is sent to the client as a serialized protobuf with
+  // the following form:
   //
   //   {
   //     "num_hash_functions": <int>,
   //     "bits": <string>
   //   }
   //
-  // `bits` is encoded as Base64.
+  // `bits` is a binary string.
   // The false-positive rate `fpr` is the probability that any query of size
   // `num_client_inputs` will result in a false positive.
   //
   // Returns INTERNAL if encryption fails.
-  StatusOr<std::string> CreateSetupMessage(
+  StatusOr<psi_proto::ServerSetup> CreateSetupMessage(
       double fpr, int64_t num_client_inputs,
       absl::Span<const std::string> inputs) const;
 
   // Processes a client query and returns the corresponding server response to
   // be sent to the client. For each encrytped element H(x)^c in the decoded
-  // `client_request`, computes (H(x)^c)^s = H(X)^(cs) and returns these as a
-  // JSON array.
+  // `client_request`, computes (H(x)^c)^s = H(X)^(cs) and returns these as an
+  // array inside a protobuf.
   // If reveal_intersection == false, the resulting array is sorted, which
   // prevents the client from matching the individual response elements to the
   // ones in the request, ensuring that they can only learn the intersection
@@ -78,7 +80,8 @@ class PsiServer {
   //
   // Returns INVALID_ARGUMENT if the request is malformed or if
   // reveal_intersection != client_request["reveal_intersection"].
-  StatusOr<std::string> ProcessRequest(const std::string& client_request) const;
+  StatusOr<psi_proto::Response> ProcessRequest(
+      const psi_proto::Request& client_request) const;
 
   // Returns this instance's private key. This key should only be used to
   // create other server instances. DO NOT SEND THIS KEY TO ANY OTHER PARTY!

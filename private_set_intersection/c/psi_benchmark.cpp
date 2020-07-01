@@ -195,13 +195,15 @@ void BM_ClientProcessResponse(benchmark::State &state,
     if (reveal_intersection) {
       int64_t *out;
       size_t count = 0;
-      psi_client_get_intersection(client_, server_setup, server_response, &out,
-                                  &count, &err);
+      psi_client_get_intersection(
+          client_, {server_setup, server_setup_buff_len},
+          {server_response, response_len}, &out, &count, &err);
       ::benchmark::DoNotOptimize(count);
     } else {
       int64_t count = 0;
-      psi_client_get_intersection_size(client_, server_setup, server_response,
-                                       &count, &err);
+      psi_client_get_intersection_size(
+          client_, {server_setup, server_setup_buff_len},
+          {server_response, response_len}, &count, &err);
       ::benchmark::DoNotOptimize(count);
     }
     elements_processed += num_inputs;

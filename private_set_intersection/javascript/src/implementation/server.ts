@@ -1,6 +1,7 @@
 import * as psi from 'psi_'
 import { Loader } from '../loader'
 import { ERROR_INSTANCE_DELETED } from './constants'
+import { Request, Response, ServerSetup } from './proto/psi_pb'
 
 export type Server = {
   readonly delete: () => void
@@ -8,8 +9,8 @@ export type Server = {
     fpr: number,
     numClientInputs: number,
     inputs: readonly string[]
-  ) => string
-  readonly processRequest: (clientRequest: string) => string
+  ) => ServerSetup
+  readonly processRequest: (clientRequest: Request) => Response
   readonly getPrivateKeyBytes: () => Uint8Array
 }
 
@@ -53,35 +54,24 @@ const ServerConstructor = (instance: psi.Server): Server => {
 
     /**
      * Creates a setup message from the server's dataset to be sent to the client.
-     * The setup message is a JSON-encoded Bloom filter containing H(x)^s for each
-     * element x in `inputs`, where s is the server's secret key. The message has
-     * the following form:
+     * The setup message is a Bloom filter protobuf containing H(x)^s for each
+     * element x in `inputs`, where s is the server's secret key.
      *
-     *   {
-     *     "num_hash_functions": <int>,
-     *     "bits": <string>
-     *   }
-     *
-     * `bits` is encoded as Base64.
      * The false-positive rate `fpr` is the probability that any query of size
      * `numClientInputs` will result in a false positive.
-     *
-     * @typedef {Object} SetupMessage
-     * @property {Number} num_hash_functions - The number of hashing functions rounds
-     * @property {String} bits - The base64 encoded bits from the underlying bloom filter
      *
      * @function
      * @name Server#createSetupMessage
      * @param {Number} fpr False positive rate
      * @param {Number} numClientInputs The number of expected client inputs
      * @param {Array<String>} inputs The server's dataset
-     * @returns {SetupMessage} The serialized setup message
+     * @returns {ServerSetup} The ServerSetup protobuf
      */
     createSetupMessage(
       fpr: number,
       numClientInputs: number,
       inputs: readonly string[]
-    ): string {
+    ): ServerSetup {
       if (!_instance) {
         throw new Error(ERROR_INSTANCE_DELETED)
       }
@@ -93,32 +83,35 @@ const ServerConstructor = (instance: psi.Server): Server => {
       if (Status) {
         throw new Error(Status.Message)
       }
-      return Value
+
+      return ServerSetup.deserializeBinary(Value)
     },
 
     /**
      * Processes a client query and returns the corresponding server response to
      * be sent to the client. For each encrytped element H(x)^c in the decoded
      * `clientRequest`, computes (H(x)^c)^s = H(X)^(cs) and returns these as a
-     * sorted JSON array. Sorting the output prevents the client from matching the
+     * sorted array. Sorting the output prevents the client from matching the
      * individual response elements to the ones in the request, ensuring that they
      * can only learn the intersection size but not individual elements in the
      * intersection.
      *
      * @function
      * @name Server#processRequest
-     * @param {String} clientRequest The serialized client request
-     * @returns {String} The PSI cardinality or size
+     * @param {Request} clientRequest The Request protobuf
+     * @returns {Response} The Response protobuf
      */
-    processRequest(clientRequest: string): string {
+    processRequest(clientRequest: Request): Response {
       if (!_instance) {
         throw new Error(ERROR_INSTANCE_DELETED)
       }
-      const { Value, Status } = _instance.ProcessRequest(clientRequest)
+      const { Value, Status } = _instance.ProcessRequest(
+        clientRequest.serializeBinary()
+      )
       if (Status) {
         throw new Error(Status.Message)
       }
-      return Value
+      return Response.deserializeBinary(Value)
     },
 
     /**

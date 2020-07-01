@@ -22,7 +22,9 @@
 namespace private_set_intersection {
 
 namespace c_bindings_internal {
-int generate_error(private_join_and_compute::Status status, char **error_out);
-}
+int generate_error(private_join_and_compute::Status status, char** error_out);
+
+}  // namespace c_bindings_internal
+
 }  // namespace private_set_intersection
 #endif  // PRIVATE_SET_INTERSECTION_C_INTERNAL_UTILS_H_

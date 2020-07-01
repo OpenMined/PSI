@@ -2,6 +2,7 @@ package client
 
 import (
 	"bytes"
+	"github.com/openmined/psi/pb"
 	"github.com/openmined/psi/server"
 	"regexp"
 	"testing"
@@ -60,27 +61,17 @@ func testClientFailure(t *testing.T, revealIntersection bool) {
 	if err == nil {
 		t.Errorf("CreateRequest with an invalid context should fail")
 	}
+	dummy1 := &psi_proto.ServerSetup{}
+	dummy2 := &psi_proto.Response{}
 	if revealIntersection {
-		_, err = c.GetIntersection("dummy1", "dummy2")
+		_, err = c.GetIntersection(dummy1, dummy2)
 		if err == nil {
 			t.Errorf("GetIntersection with an invalid context should fail")
 		}
 	} else {
-		_, err = c.GetIntersectionSize("dummy1", "dummy2")
+		_, err = c.GetIntersectionSize(dummy1, dummy2)
 		if err == nil {
 			t.Errorf("GetIntersectionSize with an invalid context should fail")
-		}
-	}
-	c, _ = CreateWithNewKey(revealIntersection)
-	if revealIntersection {
-		_, err = c.GetIntersection("dummy1", "dummy2")
-		if err == nil {
-			t.Errorf("GetIntersection with an invalid input should fail")
-		}
-	} else {
-		_, err = c.GetIntersectionSize("dummy1", "dummy2")
-		if err == nil {
-			t.Errorf("GetIntersectionSize with an invalid input should fail")
 		}
 	}
 }
@@ -159,7 +150,7 @@ func TestClientServer(t *testing.T) {
 	testClientServer(t, true)
 }
 
-var result string
+var result *psi_proto.Request
 
 func benchmarkClientCreateRequest(cnt int, revealIntersection bool, b *testing.B) {
 	b.ReportAllocs()
@@ -182,7 +173,7 @@ func benchmarkClientCreateRequest(cnt int, revealIntersection bool, b *testing.B
 		result = request
 
 		total += cnt
-		b.ReportMetric(float64(len(request)), "RequestSize")
+		b.ReportMetric(float64(request.XXX_Size()), "RequestSize")
 
 	}
 	b.ReportMetric(float64(total), "ElementsProcessed")

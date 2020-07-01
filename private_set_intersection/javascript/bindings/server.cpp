@@ -1,11 +1,14 @@
 #include "emscripten/bind.h"
 #include "private_set_intersection/cpp/psi_server.h"
 #include "private_set_intersection/javascript/bindings/utils.h"
+#include "private_set_intersection/proto/psi.pb.h"
 
 EMSCRIPTEN_BINDINGS(PSI_Server) {
   using emscripten::optional_override;
+  using private_join_and_compute::StatusOr;
   using private_set_intersection::PsiServer;
   using private_set_intersection::ToJSObject;
+  using private_set_intersection::ToSerializedJSObject;
   using private_set_intersection::ToShared;
 
   emscripten::class_<PsiServer>("PsiServer")
@@ -18,11 +21,11 @@ EMSCRIPTEN_BINDINGS(PSI_Server) {
       .class_function("CreateFromKey",
                       optional_override([](const emscripten::val &byte_array,
                                            bool reveal_intersection) {
-                        const std::uint32_t l =
-                            byte_array["length"].as<std::uint32_t>();
+                        const std::size_t l =
+                            byte_array["length"].as<std::size_t>();
                         std::string byte_string(l, '\0');
 
-                        for (std::uint32_t i = 0; i < l; i++) {
+                        for (std::size_t i = 0; i < l; i++) {
                           byte_string[i] = byte_array[i].as<std::uint8_t>();
                         }
 
@@ -31,24 +34,47 @@ EMSCRIPTEN_BINDINGS(PSI_Server) {
                       }))
       .function("CreateSetupMessage",
                 optional_override([](const PsiServer &self, const double fpr,
-                                     const int32_t num_client_inputs,
-                                     const emscripten::val &string_array) {
+                                     const std::size_t num_client_inputs,
+                                     const emscripten::val &byte_array) {
                   std::vector<std::string> string_vector;
-                  const std::uint32_t l =
-                      string_array["length"].as<std::uint32_t>();
+                  const std::size_t l = byte_array["length"].as<std::size_t>();
                   string_vector.reserve(l);
 
-                  for (std::uint32_t i = 0; i < l; ++i) {
-                    string_vector.push_back(string_array[i].as<std::string>());
+                  for (std::size_t i = 0; i < l; ++i) {
+                    string_vector.push_back(byte_array[i].as<std::string>());
                   }
 
-                  return ToJSObject(self.CreateSetupMessage(
-                      fpr, num_client_inputs, string_vector));
+                  StatusOr<psi_proto::ServerSetup> server_setup;
+                  const auto status = self.CreateSetupMessage(
+                      fpr, num_client_inputs, string_vector);
+                  if (status.ok()) {
+                    server_setup = status.ValueOrDie();
+                  } else {
+                    server_setup = status.status();
+                  }
+                  return ToSerializedJSObject(server_setup);
                 }))
       .function("ProcessRequest",
                 optional_override([](const PsiServer &self,
-                                     const std::string &client_request) {
-                  return ToJSObject(self.ProcessRequest(client_request));
+                                     const emscripten::val &byte_array) {
+                  const std::size_t l = byte_array["length"].as<std::size_t>();
+                  std::string byte_string(l, '\0');
+
+                  for (std::size_t i = 0; i < l; i++) {
+                    byte_string[i] = byte_array[i].as<std::uint8_t>();
+                  }
+
+                  psi_proto::Request client_request;
+                  client_request.ParseFromString(byte_string);
+
+                  StatusOr<psi_proto::Response> response;
+                  const auto status = self.ProcessRequest(client_request);
+                  if (status.ok()) {
+                    response = status.ValueOrDie();
+                  } else {
+                    response = status.status();
+                  }
+                  return ToSerializedJSObject(response);
                 }))
       .function(
           "GetPrivateKeyBytes", optional_override([](const PsiServer &self) {

@@ -15,28 +15,29 @@
 //
 // The server encrypts all its elements x under a commutative encryption scheme,
 // computing H(x)^s where s is its secret key. The encrypted elements are then
-// inserted in a Bloom filter, which is sent to the client encoded as JSON. The
-// message has the following form:
+// inserted in a Bloom filter, which is sent to the client in the form of a serialized
+// protobuf. The protobuf has the following form:
 //
 //   {
 //     "num_hash_functions": <int>,
 //     "bits": <string>
 //   }
 //
-// Here, `bits` is a Base64-encoded string.
+// Here, `bits` is a binary string.
 //
 // 2. Client request
 //
 // The client encrypts all their elements x using the commutative encryption
 // scheme, computing H(x)^c, where c is the client's secret key. The encoded
-// elements are sent to the server as a JSON array of Base64 strings, together
-// with a boolean reveal_intersection that indicates whether the client wants to
-// learn the elements in the intersection or only its size.
+// elements are sent to the server as an array together with a boolean reveal_intersection
+// that indicates whether the client wants to learn the elements in the
+// intersection or only its size. The payload is sent as a serialized protobuf
+// to the client and holds the following form:
 //
 //
 //   {
 //     "reveal_intersection": <bool>,
-//     "encrypted_elements": [ Base64(H(x_1)^c), Base64(H(x_2)^c), ... ]
+//     "encrypted_elements": [ H(x_1)^c, H(x_2)^c, ... ]
 //   }
 //
 //
@@ -45,10 +46,10 @@
 // For each encrypted element H(x)^c received from the client, the server
 // encrypts it again under the commutative encryption scheme with its secret
 // key s, computing (H(x)^c)^s = H(x)^(cs). The result is sent back to the
-// client as a JSON array of strings:
+// client as a serialized protobuf holding the following form:
 //
 //   {
-//     "encrypted_elements": [ Base64(H(x_1)^c), Base64(H(x_2)^c), ... ]
+//     "encrypted_elements": [ H(x_1)^c, H(x_2)^c, ... ]
 //   }
 //
 // If reveal_intersection is false, the array is sorted to hide the order of
@@ -70,9 +71,12 @@ import "C"
 import (
 	"errors"
 	"fmt"
-	"github.com/openmined/psi/version"
 	"runtime"
 	"unsafe"
+
+	"github.com/golang/protobuf/proto"
+	"github.com/openmined/psi/pb"
+	"github.com/openmined/psi/version"
 )
 
 // PsiClient context for the client side of a Private Set Intersection protocol.
@@ -92,7 +96,7 @@ func CreateWithNewKey(revealIntersection bool) (*PsiClient, error) {
 	var err *C.char
 	rcode := C.psi_client_create_with_new_key(C.bool(revealIntersection), &psiClient.context, &err)
 	if rcode != 0 {
-		return nil, fmt.Errorf("failed to create client context: %v(%v)", psiClient.loadCString(&err), rcode)
+		return nil, fmt.Errorf("failed to create client context: %v(%v)", psiClient.loadString(&err), rcode)
 	}
 	if psiClient.context == nil {
 		return nil, errors.New("failed to create client context: Context is NULL. This should never happen")
@@ -117,7 +121,7 @@ func CreateFromKey(key []byte, revealIntersection bool) (*PsiClient, error) {
 		&psiClient.context, &err)
 
 	if rcode != 0 {
-		return nil, fmt.Errorf("failed to create client context: %v(%v)", psiClient.loadCString(&err), rcode)
+		return nil, fmt.Errorf("failed to create client context: %v(%v)", psiClient.loadString(&err), rcode)
 	}
 	if psiClient.context == nil {
 		return nil, errors.New("failed to create client context: Context is NULL. This should never happen")
@@ -127,21 +131,20 @@ func CreateFromKey(key []byte, revealIntersection bool) (*PsiClient, error) {
 	return psiClient, nil
 }
 
-// CreateRequest generates a request message to be sent to the server. For each input
-// element x, computes H(x)^c, where c is the secret key of ec_cipher. The
-// result is sorted to hide the initial ordering of `rawInput` and encoded as
-// a JSON array.
+// CreateRequest - Creates a request protobuf to be serialized and sent
+// to the server. For each input element x, computes H(x)^c, where c
+// is the secret key of ec_cipher_.
 //
 // Returns an error if the context is invalid or if the encryption fails.
-func (c *PsiClient) CreateRequest(rawInput []string) (string, error) {
+func (c *PsiClient) CreateRequest(rawInput []string) (*psi_proto.Request, error) {
 	if c.context == nil {
-		return "", errors.New("invalid context")
+		return nil, errors.New("invalid context")
 	}
 
 	inputs := []C.struct_psi_client_buffer_t{}
 	for idx := range rawInput {
 		inputs = append(inputs, C.struct_psi_client_buffer_t{
-			buff:     C.CString(rawInput[idx]),
+			buff:     C.CString((rawInput[idx])),
 			buff_len: C.size_t(len(rawInput[idx])),
 		})
 	}
@@ -157,13 +160,20 @@ func (c *PsiClient) CreateRequest(rawInput []string) (string, error) {
 	}
 
 	if rcode != 0 {
-		return "", fmt.Errorf("create request failed %v(%v)", c.loadCString(&err), rcode)
+		return nil, fmt.Errorf("create request failed %v(%v)", c.loadString(&err), rcode)
 	}
 
-	return c.loadCString(&out), nil
+	bytes := c.loadBytes(&out, C.int(outlen))
+
+	var req psi_proto.Request
+	parseErr := req.XXX_Unmarshal(bytes)
+	if parseErr != nil {
+		return nil, parseErr
+	}
+	return &req, nil
 }
 
-// GetIntersection processes the server's response and returns the intersection of the client
+// GetIntersection - processes the server's response and returns the intersection of the client
 // and server inputs. Use this function if this instance was created with
 // `reveal_intersection = true`. The first argument, `server_setup`, is a
 // bloom filter that encodes encrypted server elements and is sent by the
@@ -173,25 +183,34 @@ func (c *PsiClient) CreateRequest(rawInput []string) (string, error) {
 //
 // Returns INVALID_ARGUMENT if any input messages are malformed, or INTERNAL
 // if decryption fails.
-func (c *PsiClient) GetIntersection(serverSetup, serverResponse string) ([]int64, error) {
+func (c *PsiClient) GetIntersection(serverSetupProto *psi_proto.ServerSetup, serverResponseProto *psi_proto.Response) ([]int64, error) {
 	if c.context == nil {
 		return nil, errors.New("invalid context")
+	}
+
+	serverSetup, parseErr := proto.Marshal(serverSetupProto)
+	if parseErr != nil {
+		return nil, parseErr
+	}
+	serverResponse, parseErr := proto.Marshal(serverResponseProto)
+	if parseErr != nil {
+		return nil, parseErr
 	}
 
 	var out *C.int64_t
 	var outlen C.size_t
 	var err *C.char
 
-	csetup := C.CString(serverSetup)
+	csetup := (*C.char)(C.CBytes(serverSetup))
 	defer C.free(unsafe.Pointer(csetup))
 
-	cresponse := C.CString(serverResponse)
+	cresponse := (*C.char)(C.CBytes(serverResponse))
 	defer C.free(unsafe.Pointer(cresponse))
 
-	rcode := C.psi_client_get_intersection(c.context, csetup, cresponse, &out, &outlen, &err)
+	rcode := C.psi_client_get_intersection(c.context, C.struct_psi_client_buffer_t{csetup, C.size_t(len(serverSetup))}, C.struct_psi_client_buffer_t{cresponse, C.size_t(len(serverResponse))}, &out, &outlen, &err)
 
 	if rcode != 0 {
-		return nil, fmt.Errorf("process response failed: %v(%v)", c.loadCString(&err), rcode)
+		return nil, fmt.Errorf("process response failed: %v(%v)", c.loadString(&err), rcode)
 	}
 
 	// Cast C pointer as a pointer to a Go array that is large enough to hold any reasonable size.
@@ -206,35 +225,44 @@ func (c *PsiClient) GetIntersection(serverSetup, serverResponse string) ([]int64
 	return result, nil
 }
 
-// GetIntersectionSize reveals the size of the intersection. Use
+// GetIntersectionSize - reveals the size of the intersection. Use
 // this function if this instance was created with `reveal_intersection =
 // false`.
 //
 // Returns INVALID_ARGUMENT if any input messages are malformed, or INTERNAL
 // if decryption fails.
-func (c *PsiClient) GetIntersectionSize(serverSetup, serverResponse string) (int64, error) {
+func (c *PsiClient) GetIntersectionSize(serverSetupProto *psi_proto.ServerSetup, serverResponseProto *psi_proto.Response) (int64, error) {
 	if c.context == nil {
 		return 0, errors.New("invalid context")
+	}
+
+	serverSetup, parseErr := proto.Marshal(serverSetupProto)
+	if parseErr != nil {
+		return 0, parseErr
+	}
+	serverResponse, parseErr := proto.Marshal(serverResponseProto)
+	if parseErr != nil {
+		return 0, parseErr
 	}
 
 	var result C.int64_t
 	var err *C.char
 
-	csetup := C.CString(serverSetup)
+	csetup := (*C.char)(C.CBytes(serverSetup))
 	defer C.free(unsafe.Pointer(csetup))
 
-	cresponse := C.CString(serverResponse)
+	cresponse := (*C.char)(C.CBytes(serverResponse))
 	defer C.free(unsafe.Pointer(cresponse))
 
-	rcode := C.psi_client_get_intersection_size(c.context, csetup, cresponse, &result, &err)
+	rcode := C.psi_client_get_intersection_size(c.context, C.struct_psi_client_buffer_t{csetup, C.size_t(len(serverSetup))}, C.struct_psi_client_buffer_t{cresponse, C.size_t(len(serverResponse))}, &result, &err)
 
 	if rcode != 0 {
-		return 0, fmt.Errorf("process response failed: %v(%v)", c.loadCString(&err), rcode)
+		return 0, fmt.Errorf("process response failed: %v(%v)", c.loadString(&err), rcode)
 	}
 	return int64(result), nil
 }
 
-// GetPrivateKeyBytes returns this instance's private key. This key should only be used to
+// GetPrivateKeyBytes - returns this instance's private key. This key should only be used to
 // create other client instances. DO NOT SEND THIS KEY TO ANY OTHER PARTY!
 func (c *PsiClient) GetPrivateKeyBytes() ([]byte, error) {
 	if c.context == nil {
@@ -248,7 +276,7 @@ func (c *PsiClient) GetPrivateKeyBytes() ([]byte, error) {
 	rcode := C.psi_client_get_private_key_bytes(c.context, &out, &outlen, &err)
 
 	if rcode != 0 {
-		return nil, fmt.Errorf("get private keys failed: %v(%v)", c.loadCString(&err), rcode)
+		return nil, fmt.Errorf("get private keys failed: %v(%v)", c.loadString(&err), rcode)
 	}
 
 	// Convert C array to a Go slice. Private Keys are guaranteed to be 32 bytes long.
@@ -271,7 +299,13 @@ func (c *PsiClient) Version() string {
 	return version.Version()
 }
 
-func (c *PsiClient) loadCString(buff **C.char) string {
+func (c *PsiClient) loadBytes(buff **C.char, buflen C.int) []byte {
+	str := C.GoBytes(unsafe.Pointer(*buff), buflen)
+	C.free(unsafe.Pointer(*buff))
+	return str
+}
+
+func (c *PsiClient) loadString(buff **C.char) string {
 	str := C.GoString(*buff)
 	C.free(unsafe.Pointer(*buff))
 	return str
