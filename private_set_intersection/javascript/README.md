@@ -230,7 +230,6 @@ Please make sure to update tests as appropriate.
 Ensure your environment has the following global dependencies:
 
 - [Bazel](https://bazel.build)
-- [Protoc](http://google.github.io/proto-lens/installing-protoc.html)
 - [NodeJS](https://nodejs.org/en/)
 
 Next, ensure you have updated submodules
