@@ -115,7 +115,7 @@ const PSI = require('@openmined/psi.js')
   const fpr = 0.001 // false positive rate (0.1%)
   const numClientElements = 10 // Size of the client set to check
   const numTotalElements = 100 // Maximum size of the server set
-  const revealIntersection = false // Reveals cardinality (false) -or- the intersection (true)
+  const revealIntersection = false // Allows to reveal the intersection (true)
   /******************
    *** 1. Server ****
    ******************/
@@ -197,19 +197,20 @@ const PSI = require('@openmined/psi.js')
   const deserializedServerSetup = psi.serverSetup.deserializeBinary(serializedServerSetup)
 
   // NOTE: 
-  // A client can compute either the intersection size (cardinality) or
-  // reveal the actual intersection between the two arrays.
+  // A client can always compute the intersection size (cardinality), but by 
+  // default does not reveal the actual intersection between the two arrays.
   // This is dependent on whether or not _both_ client/server were initialized
   // with the same boolean `true` value which sets an internal `reveal_intersection` flag. 
-  // By default, both client and server instances will only reveal the 
-  // cardinality and any calls made to `getIntersection` will throw an error.
+  // Any calls made to `getIntersection` will throw an error if this flag was not set to true.
 
-  // Reveal the cardinality (by default, only if `revealIntersection` is false)
+  // Reveal the cardinality
   const intersectionSize = client.getIntersectionSize(deserializedServerSetup, deserializedServerResponse)
+  console.log('intersectionSize', intersectionSize)
   // intsersectionSize 5
 
-  // Reveal the intersection (only if `revealIntersection` is true)
+  // Reveal the intersection (only if `revealIntersection` was set to true)
   const intersection = client.getIntersection(deserializedServerSetup, deserializedServerResponse)
+  console.log('intersection', intersection)
   // intersection [ 0, 2, 4, 6, 8 ]
 })()
 ```
