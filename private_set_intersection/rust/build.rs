@@ -9,6 +9,9 @@ fn main() {
     let bindings = bindgen::Builder::default()
         .header("wrapper.h")
         .clang_arg("-I../cpp")
+        .clang_arg("-I/home/username/repos/abseil-cpp")
+        .clang_arg("-I/usr/include/c++/9")
+        .clang_arg("-I/snap/gnome-3-34-1804/36/usr/include/x86_64-linux-gnu/c++/6")
         .generate()
         .expect("unable to generate bindings");
 
