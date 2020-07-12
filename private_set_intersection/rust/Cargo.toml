@@ -1,0 +1,8 @@
+[package]
+name = "PSI"
+version = "0.1.0"
+authors = ["Ben Szymkow <simcof@gmail.com>"]
+edition = "2018"
+
+[build-dependencies]
+bindgen = "0.53.1"
