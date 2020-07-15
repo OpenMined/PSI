@@ -7,6 +7,9 @@ pybind_extension(
     features = ["-use_header_modules"],
     linkstatic = True,
     visibility = ["//visibility:private"],
+    copts = [
+        "--std=c++17"
+    ],
     deps = [
         "//private_set_intersection/cpp:package",
         "//private_set_intersection/cpp:psi_client",

@@ -75,7 +75,14 @@ describe('PSI Client', () => {
   })
 
   test('It should process a response (cardinality)', async () => {
-    const client = psi.client!.createWithNewKey()
+    // prettier-ignore
+    const key = Uint8Array.from([
+      160, 193, 102,   5, 219, 141,  42, 183,
+      157, 180,  97, 194,  33, 176,  95, 191,
+       77, 185, 205, 139,  61, 124,   1, 178,
+      198, 110, 236, 127,  64, 242, 152,  15
+    ])
+    const client = psi.client!.createFromKey(key)
 
     // prettier-ignore
     const serverSetup = ServerSetup.deserializeBinary(Uint8Array.from([
@@ -141,7 +148,14 @@ describe('PSI Client', () => {
   })
 
   test('It should process a response (intersection)', async () => {
-    const client = psi.client!.createWithNewKey(true)
+    // prettier-ignore
+    const key = Uint8Array.from([
+      160, 193, 102,   5, 219, 141,  42, 183,
+      157, 180,  97, 194,  33, 176,  95, 191,
+       77, 185, 205, 139,  61, 124,   1, 178,
+      198, 110, 236, 127,  64, 242, 152,  15
+    ])
+    const client = psi.client!.createFromKey(key, true)
 
     // prettier-ignore
     const serverSetup = ServerSetup.deserializeBinary(Uint8Array.from([
