@@ -8,7 +8,7 @@ Fix:
 
 Breaking:
 
-- Deep import links have changed to now support `cjs`, `iife`, and `es`. Notably, `umd` has been removed and superceeded by `cjs` and `iife`, respectively. Users will need to specify the deep import paths for nodejs (`cjs`) and the browser (`iife` or `es`) instead of relying on the previous `umd` build.
+- Deep import links have changed to now support `cjs`, `iife`, and `es`. Notably, `umd` has been removed and superceeded by `cjs` and `iife` due to the fix above. Users will need to specify the deep import paths for nodejs (`cjs`) and the browser (`iife` or `es`) instead of relying on the previous `umd` build.
 
 # Version 0.2.0
 
