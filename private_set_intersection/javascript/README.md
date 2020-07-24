@@ -361,7 +361,7 @@ different targets listed above.
 
 ## Changes
 
-See `JS` [CHANGES.md](/CHANGES.md).
+See `JS` [CHANGES.md](https://github.com/OpenMined/PSI/blob/master/CHANGES.md).
 
 ## License
 
