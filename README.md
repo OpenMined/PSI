@@ -1,4 +1,3 @@
-
 ![om-logo](https://github.com/OpenMined/design-assets/blob/master/logos/OM/horizontal-primary-trans.png)
 
 [![Tests](https://github.com/OpenMined/PSI/workflows/Tests/badge.svg?branch=master&event=push)](https://github.com/OpenMined/PSI/actions?query=workflow%3ATests+branch%3Amaster+event%3Apush)
@@ -44,7 +43,6 @@ See the [Go README.md](private_set_intersection/go/README.md)
 
 See the [Python README.md](private_set_intersection/python/README.md)
 
-
 ## Usage
 
 To use this library in another Bazel project, add the following in your WORKSPACE file:
@@ -73,8 +71,12 @@ A full description of the protocol can be found in the documentation of the [Psi
 The corresponding server class is [PsiServer](private_set_intersection/cpp/psi_server.h).
 An example of how to interleave the different phases of the protocol can be found in [psi_server_test.cpp](private_set_intersection/cpp/psi_server_test.cpp).
 
+## Changes
+
+See [CHANGES.md](CHANGES.md).
 
 ## Contributing
+
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
 
 Please make sure to update tests as appropriate.
@@ -84,4 +86,5 @@ Please make sure to update tests as appropriate.
 See [CONTRIBUTORS.md](CONTRIBUTORS.md).
 
 ## License
+
 [Apache License 2.0](https://choosealicense.com/licenses/apache-2.0/)
