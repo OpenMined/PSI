@@ -13,8 +13,8 @@
     "private set intersection",
     "private join and compute"
   ],
-  "main": "combined/wasm/umd/index.js",
-  "browser": "combined/wasm/umd/index.js",
+  "main": "combined/wasm/cjs/index.js",
+  "browser": "combined/wasm/iife/index.js",
   "module": "combined/wasm/es/index.js",
   "files": [
     "**/*.js"

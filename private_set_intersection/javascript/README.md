@@ -361,7 +361,7 @@ different targets listed above.
 
 ## Changes
 
-See [CHANGES.md](CHANGES.md).
+See `JS` [CHANGES.md](/CHANGES.md).
 
 ## License
 

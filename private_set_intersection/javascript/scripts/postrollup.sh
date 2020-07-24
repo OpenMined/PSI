@@ -5,9 +5,7 @@ set -euo pipefail
 cp -rf package.json private_set_intersection/javascript/dist
 cp -rf private_set_intersection/javascript/README.md private_set_intersection/javascript/dist
 cp -rf LICENSE private_set_intersection/javascript/dist
-
-# Copy the changelog into the js directory so that it is visible from 
-cp -rf CHANGES.md private_set_intersection/javascript
+cp -rf CHANGES.md private_set_intersection/javascript/dist
 
 # Change directory into dist and pack to get
 # shorter deep import links.
