@@ -9,8 +9,8 @@ cp -rf LICENSE private_set_intersection/javascript/dist
 # Change directory into dist and pack to get
 # shorter deep import links.
 # Ex: 
-# import PSI from '@openmined/psi.js/client/wasm/es'
-# import PSI from '@openmined/psi.js/server/js/umd'
+# import PSI from '@openmined/psi.js/client/wasm/iife'
+# import PSI from '@openmined/psi.js/server/js/cjs'
 # import PSI from '@openmined/psi.js/combined/wasm/es'
 cd private_set_intersection/javascript/dist
 

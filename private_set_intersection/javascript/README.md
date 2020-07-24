@@ -33,21 +33,23 @@ import PSI from '@openmined/psi.js'
 const PSI = require('@openmined/psi.js')
 ```
 
-By **default**, the package will use the `combined` build with the `wasm` target using the `umd` variant. This includes both `client` and `server` implementations, but often only one is used. We offer deep import
+By **default**, the package will use the `combined` build with the `wasm` target using the `cjs` variant. This includes both `client` and `server` implementations, but often only one is used. We offer deep import
 links to only load what is needed for your specific environment.
 
 The deep import structure is as follows:
-`<package name> / <client|server|combined> / <wasm|js> / <umd|es>`
+`<package name> / <client|server|combined> / <wasm|js> / <cjs|iife|es>`
 
 To only load the `client`:
 
 ```javascript
 // Loads only the client, supporting WebAssembly or asm.js
-// with either `umd` (Browser + NodeJS) or `es` (ES6 modules)
+// with either `cjs` (NodeJS), `iife` (Browser) or `es` (ES6 modules)
 // Pick one of the following:
-import PSI from '@openmined/psi.js/client/wasm/umd'
+import PSI from '@openmined/psi.js/client/wasm/cjs'
+import PSI from '@openmined/psi.js/client/wasm/iife'
 import PSI from '@openmined/psi.js/client/wasm/es'
-import PSI from '@openmined/psi.js/client/js/umd'
+import PSI from '@openmined/psi.js/client/js/cjs'
+import PSI from '@openmined/psi.js/client/js/iife'
 import PSI from '@openmined/psi.js/client/js/es'
 ;(async () => {
   // Wait for the library to initialize
@@ -62,11 +64,13 @@ To only load the `server`:
 
 ```javascript
 // Loads only the server, supporting WebAssembly or asm.js
-// with either `umd` (Browser + NodeJS) or `es` (ES6 modules)
+// with either `cjs` (NodeJS), `iife` (Browser) or `es` (ES6 modules)
 // Pick one of the following:
-import PSI from '@openmined/psi.js/server/wasm/umd'
+import PSI from '@openmined/psi.js/server/wasm/cjs'
+import PSI from '@openmined/psi.js/server/wasm/iife'
 import PSI from '@openmined/psi.js/server/wasm/es'
-import PSI from '@openmined/psi.js/server/js/umd'
+import PSI from '@openmined/psi.js/server/js/cjs'
+import PSI from '@openmined/psi.js/server/js/iife'
 import PSI from '@openmined/psi.js/server/js/es'
 ;(async () => {
   // Wait for the library to initialize
@@ -81,11 +85,13 @@ To **manually** override the `combined` default import:
 
 ```javascript
 // Loads the combined server and client, supporting WebAssembly or asm.js
-// with either `umd` (Browser + NodeJS) or `es` (ES6 modules)
+// with either `cjs` (NodeJS), `iife` (Browser) or `es` (ES6 modules)
 // Pick one of the following:
-import PSI from '@openmined/psi.js/combined/wasm/umd' // Default
+import PSI from '@openmined/psi.js/combined/wasm/cjs' // Default
+import PSI from '@openmined/psi.js/combined/wasm/iife'
 import PSI from '@openmined/psi.js/combined/wasm/es'
-import PSI from '@openmined/psi.js/combined/js/umd'
+import PSI from '@openmined/psi.js/combined/js/cjs'
+import PSI from '@openmined/psi.js/combined/js/iife'
 import PSI from '@openmined/psi.js/combined/js/es'
 ;(async () => {
   // Wait for the library to initialize
