@@ -92,8 +92,7 @@ void test_corectness(bool reveal_intersection) {
   ASSERT_TRUE(request_proto.ParseFromArray(client_request, req_len));
 
   // Re-encrypt elements.
-  const google::protobuf::RepeatedPtrField encrypted_elements =
-      request_proto.encrypted_elements();
+  const auto &encrypted_elements = request_proto.encrypted_elements();
 
   // Create the response
   psi_proto::Response response;

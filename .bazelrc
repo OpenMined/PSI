@@ -1,7 +1,3 @@
-##### Global #####
-# Needed for python (pybind11) bindings
-build --cxxopt=--std=c++17
-
 ##### WASM #####
 # Use our custom-configured c++ toolchain.
 build:wasm --crosstool_top=//private_set_intersection/javascript/toolchain:emscripten

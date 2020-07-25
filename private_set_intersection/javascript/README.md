@@ -33,21 +33,23 @@ import PSI from '@openmined/psi.js'
 const PSI = require('@openmined/psi.js')
 ```
 
-By **default**, the package will use the `combined` build with the `wasm` target using the `umd` variant. This includes both `client` and `server` implementations, but often only one is used. We offer deep import
+By **default**, the package will use the `combined` build with the `wasm` target using the `cjs` variant. This includes both `client` and `server` implementations, but often only one is used. We offer deep import
 links to only load what is needed for your specific environment.
 
 The deep import structure is as follows:
-`<package name> / <client|server|combined> / <wasm|js> / <umd|es>`
+`<package name> / <client|server|combined> / <wasm|js> / <cjs|iife|es>`
 
 To only load the `client`:
 
 ```javascript
 // Loads only the client, supporting WebAssembly or asm.js
-// with either `umd` (Browser + NodeJS) or `es` (ES6 modules)
+// with either `cjs` (NodeJS), `iife` (Browser) or `es` (ES6 modules)
 // Pick one of the following:
-import PSI from '@openmined/psi.js/client/wasm/umd'
+import PSI from '@openmined/psi.js/client/wasm/cjs'
+import PSI from '@openmined/psi.js/client/wasm/iife'
 import PSI from '@openmined/psi.js/client/wasm/es'
-import PSI from '@openmined/psi.js/client/js/umd'
+import PSI from '@openmined/psi.js/client/js/cjs'
+import PSI from '@openmined/psi.js/client/js/iife'
 import PSI from '@openmined/psi.js/client/js/es'
 ;(async () => {
   // Wait for the library to initialize
@@ -62,11 +64,13 @@ To only load the `server`:
 
 ```javascript
 // Loads only the server, supporting WebAssembly or asm.js
-// with either `umd` (Browser + NodeJS) or `es` (ES6 modules)
+// with either `cjs` (NodeJS), `iife` (Browser) or `es` (ES6 modules)
 // Pick one of the following:
-import PSI from '@openmined/psi.js/server/wasm/umd'
+import PSI from '@openmined/psi.js/server/wasm/cjs'
+import PSI from '@openmined/psi.js/server/wasm/iife'
 import PSI from '@openmined/psi.js/server/wasm/es'
-import PSI from '@openmined/psi.js/server/js/umd'
+import PSI from '@openmined/psi.js/server/js/cjs'
+import PSI from '@openmined/psi.js/server/js/iife'
 import PSI from '@openmined/psi.js/server/js/es'
 ;(async () => {
   // Wait for the library to initialize
@@ -81,11 +85,13 @@ To **manually** override the `combined` default import:
 
 ```javascript
 // Loads the combined server and client, supporting WebAssembly or asm.js
-// with either `umd` (Browser + NodeJS) or `es` (ES6 modules)
+// with either `cjs` (NodeJS), `iife` (Browser) or `es` (ES6 modules)
 // Pick one of the following:
-import PSI from '@openmined/psi.js/combined/wasm/umd' // Default
+import PSI from '@openmined/psi.js/combined/wasm/cjs' // Default
+import PSI from '@openmined/psi.js/combined/wasm/iife'
 import PSI from '@openmined/psi.js/combined/wasm/es'
-import PSI from '@openmined/psi.js/combined/js/umd'
+import PSI from '@openmined/psi.js/combined/js/cjs'
+import PSI from '@openmined/psi.js/combined/js/iife'
 import PSI from '@openmined/psi.js/combined/js/es'
 ;(async () => {
   // Wait for the library to initialize
@@ -121,15 +127,15 @@ const PSI = require('@openmined/psi.js')
    ******************/
   // Create new server instance
   //
-  // By default, the server will only support calculating 
-  // the intersection size (cardinality). To obtain the 
+  // By default, the server will only support calculating
+  // the intersection size (cardinality). To obtain the
   // intersection of the two sets, pass in the boolean `true`.
   //
   // Ex: const server = psi.server.createWithNewKey(true)
   const server = psi.server.createWithNewKey(revealIntersection)
   // Specifying no parameters is equivalent to passing in `false`
-  // const server = psi.server.createWithNewKey() 
-  
+  // const server = psi.server.createWithNewKey()
+
   // Example server set of data
   const serverInputs = Array.from(
     { length: numTotalElements },
@@ -149,14 +155,14 @@ const PSI = require('@openmined/psi.js')
    ******************/
   // Create new client instance
   //
-  // By default, the client will only support calculating 
-  // the intersection size (cardinality). To obtain the 
+  // By default, the client will only support calculating
+  // the intersection size (cardinality). To obtain the
   // intersection of the two sets, pass in the boolean `true`.
   //
   // Ex: const server = psi.client.createWithNewKey(true)
   const client = psi.client.createWithNewKey(revealIntersection)
   // Specifying no parameters is equivalent to passing in `false`
-  // const client = psi.client.createWithNewKey() 
+  // const client = psi.client.createWithNewKey()
 
   // Example client set of data to check
   const clientInputs = Array.from(
@@ -175,7 +181,9 @@ const PSI = require('@openmined/psi.js')
    *** 3. Server ****
    ******************/
   // Deserialize the client request for the server
-  const deserializedClientRequest = psi.request.deserializeBinary(serializedClientRequest)
+  const deserializedClientRequest = psi.request.deserializeBinary(
+    serializedClientRequest
+  )
 
   // Process the client's request and return to the client
   const serverResponse = server.processRequest(deserializedClientRequest)
@@ -191,25 +199,35 @@ const PSI = require('@openmined/psi.js')
    *** 4. Client ****
    ******************/
   // Deserialize the server response
-  const deserializedServerResponse = psi.response.deserializeBinary(serializedServerResponse)
+  const deserializedServerResponse = psi.response.deserializeBinary(
+    serializedServerResponse
+  )
 
   // Deserialize the server setup
-  const deserializedServerSetup = psi.serverSetup.deserializeBinary(serializedServerSetup)
+  const deserializedServerSetup = psi.serverSetup.deserializeBinary(
+    serializedServerSetup
+  )
 
-  // NOTE: 
-  // A client can always compute the intersection size (cardinality), but by 
+  // NOTE:
+  // A client can always compute the intersection size (cardinality), but by
   // default does not reveal the actual intersection between the two arrays.
   // This is dependent on whether or not _both_ client/server were initialized
-  // with the same boolean `true` value which sets an internal `reveal_intersection` flag. 
+  // with the same boolean `true` value which sets an internal `reveal_intersection` flag.
   // Any calls made to `getIntersection` will throw an error if this flag was not set to true.
 
   // Reveal the cardinality
-  const intersectionSize = client.getIntersectionSize(deserializedServerSetup, deserializedServerResponse)
+  const intersectionSize = client.getIntersectionSize(
+    deserializedServerSetup,
+    deserializedServerResponse
+  )
   console.log('intersectionSize', intersectionSize)
   // intsersectionSize 5
 
   // Reveal the intersection (only if `revealIntersection` was set to true)
-  const intersection = client.getIntersection(deserializedServerSetup, deserializedServerResponse)
+  const intersection = client.getIntersection(
+    deserializedServerSetup,
+    deserializedServerResponse
+  )
   console.log('intersection', intersection)
   // intersection [ 0, 2, 4, 6, 8 ]
 })()
@@ -340,6 +358,10 @@ Finally, publish the bundle
 Instead, we have a custom override which will publish the npm package from a specific directory.
 This allows us to publish a single package with shortened deep import links that specify the
 different targets listed above.
+
+## Changes
+
+See `JS` [CHANGES.md](https://github.com/OpenMined/PSI/blob/master/CHANGES.md).
 
 ## License
 

@@ -76,7 +76,7 @@ using ::private_join_and_compute::StatusOr;
 // client as a serialized protobuf holding the following form:
 //
 //   {
-//     "encrypted_elements": [ H(x_1)^c, H(x_2)^c, ... ]
+//     "encrypted_elements": [ H(x_1)^(cs), H(x_2)^(cs), ... ]
 //   }
 //
 // If reveal_intersection is false, the array is sorted to hide the order of
