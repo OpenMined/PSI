@@ -9,3 +9,5 @@
 [Phillipp Schoppmann](https://github.com/schoppmp)
 
 [Rutuja Surve](https://github.com/rutujasurve94)
+
+[Ben Szymkow](https://github.com/simcof)
