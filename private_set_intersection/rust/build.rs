@@ -1,4 +1,4 @@
-use protoc_rust;
+use protobuf_codegen_pure;
 
 fn main() {
     println!("cargo:rustc-link-lib=dylib=c++");
@@ -60,10 +60,11 @@ fn main() {
     println!("cargo:rustc-link-lib=static=raw_logging_internal");
     println!("cargo:rustc-link-lib=static=spinlock_wait");
 
-    protoc_rust::Codegen::new()
+    // use pure Rust protobuf codegen because protoc does not always work
+    protobuf_codegen_pure::Codegen::new()
         .out_dir("src/proto")
         .include("../proto")
         .inputs(&["../proto/psi.proto"])
         .run()
-        .expect("protoc");
+        .expect("Codegen failed!");
 }
