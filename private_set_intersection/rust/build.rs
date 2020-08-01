@@ -1,3 +1,5 @@
+use protoc_rust;
+
 fn main() {
     println!("cargo:rustc-link-lib=dylib=c++");
 
@@ -57,4 +59,11 @@ fn main() {
     println!("cargo:rustc-link-lib=static=base");
     println!("cargo:rustc-link-lib=static=raw_logging_internal");
     println!("cargo:rustc-link-lib=static=spinlock_wait");
+
+    protoc_rust::Codegen::new()
+        .out_dir("src/proto")
+        .include("../proto")
+        .inputs(&["../proto/psi.proto"])
+        .run()
+        .expect("protoc");
 }

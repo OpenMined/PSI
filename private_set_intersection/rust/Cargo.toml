@@ -8,3 +8,7 @@ edition = "2018"
 
 [dependencies]
 libc = ">=0.2.0"
+protobuf = ">=2.0"
+
+[build-dependencies]
+protoc-rust = ">=2.0"
