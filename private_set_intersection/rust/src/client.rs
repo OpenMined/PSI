@@ -115,7 +115,7 @@ impl PsiClient {
         }
     }
 
-    pub fn get_intersection_size(&self, server_setup: &ServerSetup, response_proto: &Response) -> ClientResult<i64> {
+    pub fn get_intersection_size(&self, server_setup: &ServerSetup, response_proto: &Response) -> ClientResult<usize> {
         unsafe {
             let mut setup = match server_setup.write_to_bytes() {
                 Ok(s) => s,
@@ -146,7 +146,7 @@ impl PsiClient {
                 return Err(ClientError::new(format!("Failed to get intersection size: {} ({})", error_str, res_code)));
             }
 
-            Ok(out_res)
+            Ok(out_res as usize)
         }
     }
 

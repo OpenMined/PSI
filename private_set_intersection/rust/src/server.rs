@@ -77,7 +77,7 @@ impl PsiServer {
         }
     }
 
-    pub fn create_setup_message(&self, fpr: f64, input_count: u64, raw_input: &[&[u8]]) -> ServerResult<ServerSetup> {
+    pub fn create_setup_message(&self, fpr: f64, input_count: usize, raw_input: &[&[u8]]) -> ServerResult<ServerSetup> {
         if raw_input.is_empty() {
             return Err(ServerError::new("raw_input cannot be empty".to_string()));
         }
