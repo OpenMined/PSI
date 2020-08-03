@@ -1,0 +1,33 @@
+package(default_visibility = ["//visibility:public"])
+
+load("@io_bazel_rules_rust//rust:rust.bzl", "rust_library", "rust_test", "rust_benchmark")
+load("@io_bazel_rules_rust//proto:proto.bzl", "rust_proto_library")
+load("@io_bazel_rules_rust//proto:toolchain.bzl", "PROTO_COMPILE_DEPS")
+
+rust_library(
+    name = "rust_psi",
+    srcs = [
+        "src/server.rs",
+        "src/client.rs",
+        "src/lib.rs",
+    ],
+    deps = [
+        "//private_set_intersection/c:psi_server",
+        "//private_set_intersection/c:psi_client",
+        "//third_party/cargo:libc",
+        "//third_party/cargo:protobuf",
+        "//private_set_intersection/proto:psi_rust_proto"
+    ] + PROTO_COMPILE_DEPS
+)
+
+rust_test(
+    name = "rust_psi_server_unit_test",
+    crate_root = "src/server.rs",
+    deps = [":rust_psi"]
+)
+
+rust_test(
+    name = "rust_psi_client_unit_test",
+    crate_root = "src/client.rs",
+    deps = [":rust_psi"]
+)

@@ -5,7 +5,7 @@ use std::ffi::CStr;
 
 use protobuf::{self, Message};
 
-use super::proto::psi::*;
+use psi_rust_proto::*;
 
 type PsiClientContext = *mut c_void;
 

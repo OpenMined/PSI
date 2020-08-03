@@ -17,6 +17,7 @@
 load("@rules_proto//proto:defs.bzl", "proto_library")
 load("@rules_cc//cc:defs.bzl", "cc_proto_library")
 load("@io_bazel_rules_go//proto:def.bzl", "go_proto_library")
+load("@io_bazel_rules_rust//proto:proto.bzl", "rust_proto_library")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -34,4 +35,9 @@ go_proto_library(
     name = "psi_go_proto",
     importpath = "github.com/openmined/psi/pb",
     protos = [":psi_proto"],
+)
+
+rust_proto_library(
+    name = "psi_rust_proto",
+    deps = [":psi_proto"]
 )
