@@ -12,8 +12,8 @@ rust_library(
         "src/lib.rs",
     ],
     deps = [
-        "//private_set_intersection/c:psi_server",
-        "//private_set_intersection/c:psi_client",
+        "//private_set_intersection/c:c_psi_server",
+        "//private_set_intersection/c:c_psi_client",
         "//third_party/cargo:libc",
         "//third_party/cargo:protobuf",
         "//private_set_intersection/proto:psi_rust_proto"
@@ -21,13 +21,6 @@ rust_library(
 )
 
 rust_test(
-    name = "rust_psi_server_unit_test",
-    crate_root = "src/server.rs",
-    deps = [":rust_psi"]
-)
-
-rust_test(
-    name = "rust_psi_client_unit_test",
-    crate_root = "src/client.rs",
-    deps = [":rust_psi"]
+    name = "rust_psi_unit_test",
+    crate = ":rust_psi"
 )

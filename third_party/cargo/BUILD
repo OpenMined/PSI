@@ -15,6 +15,6 @@ alias(
 )
 alias(
     name = "protobuf",
-    actual = "@raze__protobuf__2_16_2//:protobuf",
+    actual = "@raze__protobuf__2_8_2//:protobuf",
     tags = ["cargo-raze"],
 )

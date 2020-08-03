@@ -43,7 +43,7 @@ cargo_build_script(
     },
     data = glob(["**"]),
     tags = ["cargo-raze"],
-    version = "2.16.2",
+    version = "2.8.2",
     visibility = ["//visibility:private"],
 )
 
@@ -62,7 +62,7 @@ rust_library(
     rustc_flags = [
         "--cap-lints=allow",
     ],
-    version = "2.16.2",
+    version = "2.8.2",
     tags = ["cargo-raze"],
     crate_features = [
     ],

@@ -25,10 +25,10 @@ def raze_fetch_remote_crates():
     )
 
     _new_http_archive(
-        name = "raze__protobuf__2_16_2",
-        url = "https://crates-io.s3-us-west-1.amazonaws.com/crates/protobuf/protobuf-2.16.2.crate",
+        name = "raze__protobuf__2_8_2",
+        url = "https://crates-io.s3-us-west-1.amazonaws.com/crates/protobuf/protobuf-2.8.2.crate",
         type = "tar.gz",
-        strip_prefix = "protobuf-2.16.2",
-        build_file = Label("//third_party/cargo/remote:protobuf-2.16.2.BUILD"),
+        strip_prefix = "protobuf-2.8.2",
+        build_file = Label("//third_party/cargo/remote:protobuf-2.8.2.BUILD"),
     )
 

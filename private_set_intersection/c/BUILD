@@ -45,7 +45,7 @@ cc_library(
 )
 
 cc_library(
-    name = "psi_client",
+    name = "c_psi_client",
     srcs = ["psi_client.cpp"],
     hdrs = ["psi_client.h"],
     deps = [
@@ -55,10 +55,10 @@ cc_library(
 )
 
 cc_test(
-    name = "psi_client_test",
+    name = "c_psi_client_test",
     srcs = ["psi_client_test.cpp"],
     deps = [
-        ":psi_client",
+        ":c_psi_client",
         "//private_set_intersection/cpp/util:status_matchers",
         "@com_google_absl//absl/container:flat_hash_set",
         "@com_google_absl//absl/strings",
@@ -69,7 +69,7 @@ cc_test(
 )
 
 cc_library(
-    name = "psi_server",
+    name = "c_psi_server",
     srcs = ["psi_server.cpp"],
     hdrs = ["psi_server.h"],
     deps = [
@@ -79,11 +79,11 @@ cc_library(
 )
 
 cc_test(
-    name = "psi_server_test",
+    name = "c_psi_server_test",
     srcs = ["psi_server_test.cpp"],
     deps = [
-        ":psi_client",
-        ":psi_server",
+        ":c_psi_client",
+        ":c_psi_server",
         "//private_set_intersection/cpp/util:status_matchers",
         "@com_google_absl//absl/container:flat_hash_set",
         "@com_google_absl//absl/strings",
@@ -93,11 +93,11 @@ cc_test(
 )
 
 cc_binary(
-    name = "psi_benchmark",
+    name = "c_psi_benchmark",
     srcs = ["psi_benchmark.cpp"],
     deps = [
-        ":psi_client",
-        ":psi_server",
+        ":c_psi_client",
+        ":c_psi_server",
         "@com_google_absl//absl/strings",
         "@com_google_benchmark//:benchmark_main",
     ],
