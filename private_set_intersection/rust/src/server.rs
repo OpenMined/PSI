@@ -67,7 +67,7 @@ impl PsiServer {
             let mut null_ptr: *mut c_char = ptr::null_mut();
             let error_ptr = &mut null_ptr;
             let key_bytes = PsiServerBuffer {
-                ptr: key.as_ptr() as *mut c_char,
+                ptr: key.as_mut_ptr() as *mut c_char,
                 len: key.len() as size_t
             };
 
@@ -93,10 +93,10 @@ impl PsiServer {
     ///
     /// The false-positive rate `fpr` is the probability that any query of size `input_count`
     /// will result in a false positive.
-    pub fn create_setup_message(&self, fpr: f64, input_count: usize, raw_input: &[&[u8]]) -> ServerResult<ServerSetup> {
+    pub fn create_setup_message<T: AsRef<str>>(&self, fpr: f64, input_count: usize, raw_input: &[T]) -> ServerResult<ServerSetup> {
         unsafe {
             let mut input: Vec<PsiServerBuffer> = raw_input.iter().map(|&s| PsiServerBuffer {
-                ptr: s.as_ptr() as *mut c_char,
+                ptr: s.as_mut_ptr() as *mut c_char,
                 len: s.len() as size_t
             }).collect();
 
@@ -240,7 +240,7 @@ impl error::Error for ServerError {
 mod tests {
     use super::*;
 
-    use mem;
+    use std::mem;
 
     #[test]
     fn test_create() {
@@ -249,8 +249,8 @@ mod tests {
             server.create_setup_message(0.001, 1000, &vec![]).unwrap();
 
             let server = PsiServer::create_with_new_key(reveal).unwrap();
-            let new_server = PsiServer::create_from_key(server.get_private_key_bytes().unwrap(), reveal).unwrap();
-            assert_eq!(server.get_private_key_bytes(), new_server.get_private_key_bytes());
+            let new_server = PsiServer::create_from_key(&server.get_private_key_bytes().unwrap(), reveal).unwrap();
+            assert_eq!(server.get_private_key_bytes().unwrap(), new_server.get_private_key_bytes().unwrap());
 
             let server = PsiServer::create_from_key(&vec![1u8; 32], reveal).unwrap();
             assert_eq!(server.get_private_key_bytes().unwrap(), vec![1u8; 32]);
@@ -262,7 +262,7 @@ mod tests {
         for &reveal in &[false, true] {
             unsafe {
                 let server: PsiServer = mem::zeroed();
-                assert!(server.create_setup_message(0.001, 1000, &vec![b"dummy"]).is_err());
+                assert!(server.create_setup_message(0.001, 1000, &vec!["dummy"]).is_err());
 
                 let server = PsiServer::create_with_new_key(reveal).unwrap();
                 let dummy_request: Request = mem::zeroed();

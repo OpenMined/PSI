@@ -33,7 +33,7 @@ fn test_client_server() {
 
         if reveal {
             let intersection = client.get_intersection(&setup, &response).unwrap();
-            let set = HashSet::from_iter(&intersection);
+            let set = HashSet::from_iter(intersection.into_iter());
 
             for i in 0..(num_client_elements / 2) as i64 {
                 assert!(set.contains(i * 2));
@@ -45,4 +45,8 @@ fn test_client_server() {
             assert!((intersection_size as f64) < ((num_client_elements as f64) / 2.0 * 1.1));
         }
     }
+}
+
+fn generate_elements(n: usize, m: usize) -> Vec<String> {
+    (0..n).map(|i| format!("Element {}", i * m)).collect()
 }

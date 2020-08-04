@@ -69,7 +69,7 @@ impl PsiClient {
             let mut null_ptr: *mut c_char = ptr::null_mut();
             let error_ptr = &mut null_ptr;
             let key_bytes = PsiClientBuffer {
-                ptr: key.as_ptr() as *mut c_char,
+                ptr: key.as_mut_ptr() as *mut c_char,
                 len: key.len() as size_t
             };
 
@@ -93,10 +93,10 @@ impl PsiClient {
     ///
     /// For each input element `x`, this computes `H(x)^c`, where `c` is the client's
     /// secret key for `ec_cipher`.
-    pub fn create_request(&self, raw_input: &[&[u8]]) -> ClientResult<Request> {
+    pub fn create_request<T: AsRef<str>>(&self, raw_input: &[T]) -> ClientResult<Request> {
         unsafe {
             let mut input: Vec<PsiClientBuffer> = raw_input.iter().map(|&s| PsiClientBuffer {
-                ptr: s.as_ptr() as *mut c_char,
+                ptr: s.as_mut_ptr() as *mut c_char,
                 len: s.len() as size_t
             }).collect();
 
@@ -290,7 +290,7 @@ impl error::Error for ClientError {
 mod tests {
     use super::*;
 
-    use mem;
+    use std::mem;
 
     #[test]
     fn test_create() {
@@ -299,8 +299,8 @@ mod tests {
             client.create_request(&vec![]).unwrap();
 
             let client = PsiClient::create_with_new_key(reveal).unwrap();
-            let new_client = PsiClient::create_from_key(client.get_private_key_bytes().unwrap(), reveal).unwrap();
-            assert_eq!(client.get_private_key_bytes(), new_client.get_private_key_bytes());
+            let new_client = PsiClient::create_from_key(&client.get_private_key_bytes().unwrap(), reveal).unwrap();
+            assert_eq!(client.get_private_key_bytes().unwrap(), new_client.get_private_key_bytes().unwrap());
 
             let client = PsiClient::create_from_key(&vec![1u8; 32], reveal).unwrap();
             assert_eq!(client.get_private_key_bytes().unwrap(), vec![1u8; 32]);
@@ -312,7 +312,7 @@ mod tests {
         for &reveal in &[false, true] {
             unsafe {
                 let client: PsiClient = mem::zeroed();
-                assert!(client.create_request(&vec![b"dummy"]).is_err());
+                assert!(client.create_request(&vec!["dummy"]).is_err());
 
                 let client = PsiClient::create_with_new_key(reveal).unwrap();
                 let dummy_setup: ServerSetup = mem::zeroed();
