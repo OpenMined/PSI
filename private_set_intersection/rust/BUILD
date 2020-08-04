@@ -25,6 +25,12 @@ rust_test(
     crate = ":rust_psi"
 )
 
+rust_test(
+    name = "rust_psi_test",
+    srcs = ["tests/client_server_test.rs"],
+    deps = [":rust_psi"]
+)
+
 rust_doc(
     name = "rust_psi_doc",
     dep = ":rust_psi"

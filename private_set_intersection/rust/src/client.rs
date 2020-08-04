@@ -94,10 +94,6 @@ impl PsiClient {
     /// For each input element `x`, this computes `H(x)^c`, where `c` is the client's
     /// secret key for `ec_cipher`.
     pub fn create_request(&self, raw_input: &[&[u8]]) -> ClientResult<Request> {
-        if raw_input.is_empty() {
-            return Err(ClientError::new("raw_input cannot be empty".to_string()));
-        }
-
         unsafe {
             let mut input: Vec<PsiClientBuffer> = raw_input.iter().map(|&s| PsiClientBuffer {
                 ptr: s.as_ptr() as *mut c_char,
@@ -136,6 +132,10 @@ impl PsiClient {
     /// This should be used if this `PsiClient` instance was created with
     /// `reveal_intersection = false`.
     pub fn get_intersection_size(&self, server_setup: &ServerSetup, response_proto: &Response) -> ClientResult<usize> {
+        if self.reveal_intersection {
+            return Err(ClientError::new("reveal_intersection must be false!".to_string()));
+        }
+
         unsafe {
             let mut setup = match server_setup.write_to_bytes() {
                 Ok(s) => s,
@@ -290,10 +290,36 @@ impl error::Error for ClientError {
 mod tests {
     use super::*;
 
+    use mem;
+
     #[test]
     fn test_create() {
-        PsiClient::create_with_new_key(true).unwrap();
-        let client = PsiClient::create_from_key(&vec![1u8; 32], true).unwrap();
-        assert_eq!(client.get_private_key_bytes().unwrap(), vec![1u8; 32]);
+        for &reveal in &[false, true] {
+            let client = PsiClient::create_with_new_key(reveal).unwrap();
+            client.create_request(&vec![]).unwrap();
+
+            let client = PsiClient::create_with_new_key(reveal).unwrap();
+            let new_client = PsiClient::create_from_key(client.get_private_key_bytes().unwrap(), reveal).unwrap();
+            assert_eq!(client.get_private_key_bytes(), new_client.get_private_key_bytes());
+
+            let client = PsiClient::create_from_key(&vec![1u8; 32], reveal).unwrap();
+            assert_eq!(client.get_private_key_bytes().unwrap(), vec![1u8; 32]);
+        }
+    }
+
+    #[test]
+    fn test_error() {
+        for &reveal in &[false, true] {
+            unsafe {
+                let client: PsiClient = mem::zeroed();
+                assert!(client.create_request(&vec![b"dummy"]).is_err());
+
+                let client = PsiClient::create_with_new_key(reveal).unwrap();
+                let dummy_setup: ServerSetup = mem::zeroed();
+                let dummy_response: Response = mem::zeroed();
+                assert!(client.get_intersection(&dummy_setup, &dummy_response).is_err());
+                assert!(client.get_intersection_size(&dummy_setup, &dummy_response).is_err());
+            }
+        }
     }
 }

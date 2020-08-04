@@ -94,10 +94,6 @@ impl PsiServer {
     /// The false-positive rate `fpr` is the probability that any query of size `input_count`
     /// will result in a false positive.
     pub fn create_setup_message(&self, fpr: f64, input_count: usize, raw_input: &[&[u8]]) -> ServerResult<ServerSetup> {
-        if raw_input.is_empty() {
-            return Err(ServerError::new("raw_input cannot be empty".to_string()));
-        }
-
         unsafe {
             let mut input: Vec<PsiServerBuffer> = raw_input.iter().map(|&s| PsiServerBuffer {
                 ptr: s.as_ptr() as *mut c_char,
@@ -244,10 +240,34 @@ impl error::Error for ServerError {
 mod tests {
     use super::*;
 
+    use mem;
+
     #[test]
     fn test_create() {
-        PsiServer::create_with_new_key(true).unwrap();
-        let server = PsiServer::create_from_key(&vec![1u8; 32], true).unwrap();
-        assert_eq!(server.get_private_key_bytes().unwrap(), vec![1u8; 32]);
+        for &reveal in &[false, true] {
+            let server = PsiServer::create_with_new_key(reveal).unwrap();
+            server.create_setup_message(0.001, 1000, &vec![]).unwrap();
+
+            let server = PsiServer::create_with_new_key(reveal).unwrap();
+            let new_server = PsiServer::create_from_key(server.get_private_key_bytes().unwrap(), reveal).unwrap();
+            assert_eq!(server.get_private_key_bytes(), new_server.get_private_key_bytes());
+
+            let server = PsiServer::create_from_key(&vec![1u8; 32], reveal).unwrap();
+            assert_eq!(server.get_private_key_bytes().unwrap(), vec![1u8; 32]);
+        }
+    }
+
+    #[test]
+    fn test_error() {
+        for &reveal in &[false, true] {
+            unsafe {
+                let server: PsiServer = mem::zeroed();
+                assert!(server.create_setup_message(0.001, 1000, &vec![b"dummy"]).is_err());
+
+                let server = PsiServer::create_with_new_key(reveal).unwrap();
+                let dummy_request: Request = mem::zeroed();
+                assert!(server.process_request(&dummy_request).is_err());
+            }
+        }
     }
 }
