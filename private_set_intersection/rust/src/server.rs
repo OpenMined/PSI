@@ -1,3 +1,6 @@
+//! Provides a way to create a `PsiServer` for the server side of the Private Set Intersection
+//! protocol.
+
 use libc::*;
 
 use std::{fmt, error, ptr};
@@ -9,6 +12,7 @@ use psi_rust_proto::*;
 
 type PsiServerContext = *mut c_void;
 
+/// A handle for the C context of a PSI server.
 pub struct PsiServer {
     ctx: PsiServerContext
 }
@@ -29,6 +33,7 @@ extern {
 }
 
 impl PsiServer {
+    /// Creates a new `PsiServer` instance with a fresh private key.
     pub fn create_with_new_key(reveal_intersection: bool) -> ServerResult<Self> {
         unsafe {
             let mut server = Self { ctx: ptr::null_mut() };
@@ -51,6 +56,11 @@ impl PsiServer {
         }
     }
 
+    /// Creates a new `PsiServer` instance with the provided private key.
+    ///
+    /// **Warning: this function should be used with caution, since reusing the server key
+    /// for multiple requests can reveal information about the input sets. If in doubt,
+    /// use `PsiServer::create_with_new_key`.**
     pub fn create_from_key(key: &[u8], reveal_intersection: bool) -> ServerResult<Self> {
         unsafe {
             let mut server = Self { ctx: ptr::null_mut() };
@@ -77,6 +87,12 @@ impl PsiServer {
         }
     }
 
+    /// Creates a setup message that can be sent to the client from the server's bloom
+    /// filter that contains `H(x)^s`, for each element `x`, where `s` is the server's secret
+    /// key.
+    ///
+    /// The false-positive rate `fpr` is the probability that any query of size `input_count`
+    /// will result in a false positive.
     pub fn create_setup_message(&self, fpr: f64, input_count: usize, raw_input: &[&[u8]]) -> ServerResult<ServerSetup> {
         if raw_input.is_empty() {
             return Err(ServerError::new("raw_input cannot be empty".to_string()));
@@ -113,6 +129,15 @@ impl PsiServer {
         }
     }
 
+    /// Processes a client request and creates the server response that can be sent
+    /// to the client.
+    ///
+    /// For each encrypted element `H(x)^c`, `(H(x)^c)^s) = H(x)^(cs)` is calculated
+    /// and returned in the response.
+    ///
+    /// If `reveal_intersection = false`, then the calculated elements are sorted, so
+    /// the client can only learn the size of the intersection, without being able to
+    /// match individual elements between the client's dataset and the server's dataset.
     pub fn process_request(&self, request_proto: &Request) -> ServerResult<Response> {
         unsafe {
             let mut request = match request_proto.write_to_bytes() {
@@ -149,6 +174,10 @@ impl PsiServer {
         }
     }
 
+    /// Returns this `PsiServer` instance's private key. This key should only be used to create
+    /// other `PsiServer` instances.
+    ///
+    /// **Do not send this key to any other party!**
     pub fn get_private_key_bytes(&self) -> ServerResult<Vec<u8>> {
         unsafe {
             let mut null_ptr: *mut c_char = ptr::null_mut();
@@ -184,8 +213,10 @@ impl Drop for PsiServer {
     }
 }
 
-type ServerResult<T> = Result<T, ServerError>;
+/// Result of a fallible PSI server function.
+pub type ServerResult<T> = Result<T, ServerError>;
 
+/// Error type typically used to indicate an encryption or C interface error for PSI servers.
 #[derive(Debug)]
 pub struct ServerError {
     msg: String

@@ -24,3 +24,8 @@ rust_test(
     name = "rust_psi_unit_test",
     crate = ":rust_psi"
 )
+
+rust_doc(
+    name = "rust_psi_doc",
+    dep = ":rust_psi"
+)

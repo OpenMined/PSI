@@ -1,3 +1,6 @@
+//! Provides a way to create a `PsiClient` for the client side of the Private Set Intersection
+//! protocol.
+
 use libc::*;
 
 use std::{fmt, error, ptr};
@@ -9,6 +12,7 @@ use psi_rust_proto::*;
 
 type PsiClientContext = *mut c_void;
 
+/// A handle for the C context of a PSI client.
 pub struct PsiClient {
     ctx: PsiClientContext,
     reveal_intersection: bool
@@ -31,6 +35,7 @@ extern {
 }
 
 impl PsiClient {
+    /// Creates a new `PsiClient` instance with a fresh private key.
     pub fn create_with_new_key(reveal_intersection: bool) -> ClientResult<Self> {
         unsafe {
             let mut client = Self { ctx: ptr::null_mut(), reveal_intersection: reveal_intersection };
@@ -53,6 +58,11 @@ impl PsiClient {
         }
     }
 
+    /// Creates a new `PsiClient` instance with the provided private key.
+    ///
+    /// **Warning: this function should be used with caution, since reusing the client key
+    /// for multiple requests can reveal information about the input sets. If in doubt,
+    /// use `PsiClient::create_with_new_key`.**
     pub fn create_from_key(key: &[u8], reveal_intersection: bool) -> ClientResult<Self> {
         unsafe {
             let mut client = Self { ctx: ptr::null_mut(), reveal_intersection: reveal_intersection };
@@ -79,6 +89,10 @@ impl PsiClient {
         }
     }
 
+    /// Creates a request protobuf that can be serialized and sent to the server.
+    ///
+    /// For each input element `x`, this computes `H(x)^c`, where `c` is the client's
+    /// secret key for `ec_cipher`.
     pub fn create_request(&self, raw_input: &[&[u8]]) -> ClientResult<Request> {
         if raw_input.is_empty() {
             return Err(ClientError::new("raw_input cannot be empty".to_string()));
@@ -115,6 +129,12 @@ impl PsiClient {
         }
     }
 
+    /// Gets the size of the intersection between the bloom filter of encrypted server
+    /// elements sent by the server during the setup phase, and the response given
+    /// by the server after sending the request created using `PsiClient::create_request`.
+    ///
+    /// This should be used if this `PsiClient` instance was created with
+    /// `reveal_intersection = false`.
     pub fn get_intersection_size(&self, server_setup: &ServerSetup, response_proto: &Response) -> ClientResult<usize> {
         unsafe {
             let mut setup = match server_setup.write_to_bytes() {
@@ -150,6 +170,12 @@ impl PsiClient {
         }
     }
 
+    /// Gets the intersection between the bloom filter of encrypted server
+    /// elements sent by the server during the setup phase, and the response given
+    /// by the server after sending the request created using `PsiClient::create_request`.
+    ///
+    /// This should be used if this `PsiClient` instance was created with
+    /// `reveal_intersection = true`.
     pub fn get_intersection(&self, server_setup: &ServerSetup, response_proto: &Response) -> ClientResult<Vec<i64>> {
         if !self.reveal_intersection {
             return Err(ClientError::new("reveal_intersection must be true!".to_string()));
@@ -194,6 +220,10 @@ impl PsiClient {
         }
     }
 
+    /// Returns this `PsiClient` instance's private key. This key should only be used to create
+    /// other `PsiClient` instances.
+    ///
+    /// **Do not send this key to any other party!**
     pub fn get_private_key_bytes(&self) -> ClientResult<Vec<u8>> {
         unsafe {
             let mut null_ptr: *mut c_char = ptr::null_mut();
@@ -229,8 +259,10 @@ impl Drop for PsiClient {
     }
 }
 
-type ClientResult<T> = Result<T, ClientError>;
+/// Result of a fallible PSI client function.
+pub type ClientResult<T> = Result<T, ClientError>;
 
+/// Error type typically used to indicate an encryption or C interface error for PSI clients.
 #[derive(Debug)]
 pub struct ClientError {
     msg: String
