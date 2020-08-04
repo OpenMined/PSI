@@ -1,6 +1,6 @@
 package(default_visibility = ["//visibility:public"])
 
-load("@io_bazel_rules_rust//rust:rust.bzl", "rust_library", "rust_test", "rust_benchmark")
+load("@io_bazel_rules_rust//rust:rust.bzl", "rust_library", "rust_test", "rust_doc")
 load("@io_bazel_rules_rust//proto:proto.bzl", "rust_proto_library")
 load("@io_bazel_rules_rust//proto:toolchain.bzl", "PROTO_COMPILE_DEPS")
 
