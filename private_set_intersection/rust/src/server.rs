@@ -37,8 +37,8 @@ impl PsiServer {
     pub fn create_with_new_key(reveal_intersection: bool) -> ServerResult<Self> {
         unsafe {
             let mut server = Self { ctx: ptr::null_mut() };
-            let mut null_ptr: *mut c_char = ptr::null_mut();
-            let error_ptr = &mut null_ptr;
+            let mut error_null_ptr: *mut c_char = ptr::null_mut();
+            let error_ptr = &mut error_null_ptr;
 
             let res_code = psi_server_create_with_new_key(reveal_intersection, &mut server.ctx, error_ptr);
 
@@ -64,8 +64,8 @@ impl PsiServer {
     pub fn create_from_key(key: &[u8], reveal_intersection: bool) -> ServerResult<Self> {
         unsafe {
             let mut server = Self { ctx: ptr::null_mut() };
-            let mut null_ptr: *mut c_char = ptr::null_mut();
-            let error_ptr = &mut null_ptr;
+            let mut error_null_ptr: *mut c_char = ptr::null_mut();
+            let error_ptr = &mut error_null_ptr;
 
             let key_bytes = PsiServerBuffer {
                 ptr: mem::ManuallyDrop::new(key.to_owned()).as_ptr() as *const c_char,
@@ -101,10 +101,10 @@ impl PsiServer {
                 len: s.as_ref().len() as size_t
             }).collect();
 
-            let mut null_ptr: *mut c_char = ptr::null_mut();
-            let error_ptr = &mut null_ptr;
-            let mut null_ptr: *mut c_char = ptr::null_mut();
-            let out_ptr = &mut null_ptr;
+            let mut error_null_ptr: *mut c_char = ptr::null_mut();
+            let error_ptr = &mut error_null_ptr;
+            let mut out_null_ptr: *mut c_char = ptr::null_mut();
+            let out_ptr = &mut out_null_ptr;
             let mut out_len = 0 as size_t;
 
             let res_code = psi_server_create_setup_message(self.ctx, fpr as c_double, input_count as i64, input.as_ptr(), input.len() as size_t, out_ptr, &mut out_len, error_ptr);
@@ -142,10 +142,10 @@ impl PsiServer {
                 Err(e) => return Err(ServerError::new(e.to_string()))
             };
 
-            let mut null_ptr: *mut c_char = ptr::null_mut();
-            let error_ptr = &mut null_ptr;
-            let mut null_ptr: *mut c_char = ptr::null_mut();
-            let out_ptr = &mut null_ptr;
+            let mut error_null_ptr: *mut c_char = ptr::null_mut();
+            let error_ptr = &mut error_null_ptr;
+            let mut out_null_ptr: *mut c_char = ptr::null_mut();
+            let out_ptr = &mut out_null_ptr;
             let mut out_len = 0 as size_t;
             let request_buf = PsiServerBuffer {
                 ptr: request.as_ptr() as *const c_char,
@@ -177,10 +177,10 @@ impl PsiServer {
     /// **Do not send this key to any other party!**
     pub fn get_private_key_bytes(&self) -> ServerResult<Vec<u8>> {
         unsafe {
-            let mut null_ptr: *mut c_char = ptr::null_mut();
-            let error_ptr = &mut null_ptr;
-            let mut null_ptr: *mut c_char = ptr::null_mut();
-            let out_ptr = &mut null_ptr;
+            let mut error_null_ptr: *mut c_char = ptr::null_mut();
+            let error_ptr = &mut error_null_ptr;
+            let mut out_null_ptr: *mut c_char = ptr::null_mut();
+            let out_ptr = &mut out_null_ptr;
             let mut out_len = 0 as size_t;
 
             let res_code = psi_server_get_private_key_bytes(self.ctx, out_ptr, &mut out_len, error_ptr);
