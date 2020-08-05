@@ -4,6 +4,8 @@ use rust_psi::*;
 
 use std::collections::HashSet;
 
+use std::iter::FromIterator;
+
 #[test]
 fn test_client_server() {
     for &reveal in &[false, true] {
@@ -33,10 +35,10 @@ fn test_client_server() {
 
         if reveal {
             let intersection = client.get_intersection(&setup, &response).unwrap();
-            let set = HashSet::from_iter(intersection.into_iter());
+            let set: HashSet<i64> = HashSet::from_iter(intersection.into_iter());
 
-            for i in 0..(num_client_elements / 2) as i64 {
-                assert!(set.contains(i * 2));
+            for i in 0..num_client_elements as i64 {
+                assert_eq!(set.contains(&i), i % 2 == 0);
             }
         } else {
             let intersection_size = client.get_intersection_size(&setup, &response).unwrap();

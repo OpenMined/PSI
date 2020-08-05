@@ -3,7 +3,7 @@
 
 use libc::*;
 
-use std::{fmt, error, ptr};
+use std::{fmt, error, ptr, mem};
 use std::ffi::CStr;
 
 use protobuf::{self, Message};
@@ -20,7 +20,7 @@ pub struct PsiClient {
 
 #[repr(C)]
 struct PsiClientBuffer {
-    ptr: *mut c_char,
+    ptr: *const c_char,
     len: size_t
 }
 
@@ -28,7 +28,7 @@ extern {
     fn psi_client_create_with_new_key(reveal_intersection: bool, ctx: *mut PsiClientContext, error_out: *mut *mut c_char) -> c_int;
     fn psi_client_create_from_key(key_bytes: PsiClientBuffer, reveal_intersection: bool, ctx: *mut PsiClientContext, error_out: *mut *mut c_char) -> c_int;
     fn psi_client_delete(ctx: *mut PsiClientContext);
-    fn psi_client_create_request(ctx: PsiClientContext, inputs: *mut PsiClientBuffer, input_len: size_t, output: *mut *mut c_char, output_len: *mut size_t, error_out: *mut *mut c_char) -> c_int;
+    fn psi_client_create_request(ctx: PsiClientContext, inputs: *const PsiClientBuffer, input_len: size_t, output: *mut *mut c_char, output_len: *mut size_t, error_out: *mut *mut c_char) -> c_int;
     fn psi_client_get_intersection_size(ctx: PsiClientContext, server_setup: PsiClientBuffer, server_response: PsiClientBuffer, output: *mut i64, error_out: *mut *mut c_char) -> c_int;
     fn psi_client_get_intersection(ctx: PsiClientContext, server_setup: PsiClientBuffer, server_response: PsiClientBuffer, output: *mut *mut i64, output_len: *mut size_t, error_out: *mut *mut c_char) -> c_int;
     fn psi_client_get_private_key_bytes(ctx: PsiClientContext, output: *mut *mut c_char, output_len: *mut size_t, error_out: *mut *mut c_char) -> c_int;
@@ -69,7 +69,7 @@ impl PsiClient {
             let mut null_ptr: *mut c_char = ptr::null_mut();
             let error_ptr = &mut null_ptr;
             let key_bytes = PsiClientBuffer {
-                ptr: key.as_mut_ptr() as *mut c_char,
+                ptr: mem::ManuallyDrop::new(key.to_owned()).as_ptr() as *const c_char,
                 len: key.len() as size_t
             };
 
@@ -95,9 +95,9 @@ impl PsiClient {
     /// secret key for `ec_cipher`.
     pub fn create_request<T: AsRef<str>>(&self, raw_input: &[T]) -> ClientResult<Request> {
         unsafe {
-            let mut input: Vec<PsiClientBuffer> = raw_input.iter().map(|&s| PsiClientBuffer {
-                ptr: s.as_mut_ptr() as *mut c_char,
-                len: s.len() as size_t
+            let input: Vec<PsiClientBuffer> = raw_input.iter().map(|s| PsiClientBuffer {
+                ptr: s.as_ref().as_ptr() as *const c_char,
+                len: s.as_ref().len() as size_t
             }).collect();
 
             let mut null_ptr: *mut c_char = ptr::null_mut();
@@ -106,7 +106,7 @@ impl PsiClient {
             let out_ptr = &mut null_ptr;
             let mut out_len = 0 as size_t;
 
-            let res_code = psi_client_create_request(self.ctx, input.as_mut_ptr(), input.len() as size_t, out_ptr, &mut out_len, error_ptr);
+            let res_code = psi_client_create_request(self.ctx, input.as_ptr(), input.len() as size_t, out_ptr, &mut out_len, error_ptr);
 
             if res_code != 0 {
                 let error_str = CStr::from_ptr(*error_ptr).to_str().unwrap().to_owned();
@@ -137,11 +137,11 @@ impl PsiClient {
         }
 
         unsafe {
-            let mut setup = match server_setup.write_to_bytes() {
+            let setup = match server_setup.write_to_bytes() {
                 Ok(s) => s,
                 Err(e) => return Err(ClientError::new(e.to_string()))
             };
-            let mut response = match response_proto.write_to_bytes() {
+            let response = match response_proto.write_to_bytes() {
                 Ok(r) => r,
                 Err(e) => return Err(ClientError::new(e.to_string()))
             };
@@ -150,11 +150,11 @@ impl PsiClient {
             let error_ptr = &mut null_ptr;
             let mut out_res = 0i64;
             let setup_buf = PsiClientBuffer {
-                ptr: setup.as_mut_ptr() as *mut c_char,
+                ptr: setup.as_ptr() as *const c_char,
                 len: setup.len() as size_t
             };
             let response_buf = PsiClientBuffer {
-                ptr: response.as_mut_ptr() as *mut c_char,
+                ptr: response.as_ptr() as *const c_char,
                 len: response.len() as size_t
             };
 
@@ -182,11 +182,11 @@ impl PsiClient {
         }
 
         unsafe {
-            let mut setup = match server_setup.write_to_bytes() {
+            let setup = match server_setup.write_to_bytes() {
                 Ok(s) => s,
                 Err(e) => return Err(ClientError::new(e.to_string()))
             };
-            let mut response = match response_proto.write_to_bytes() {
+            let response = match response_proto.write_to_bytes() {
                 Ok(r) => r,
                 Err(e) => return Err(ClientError::new(e.to_string()))
             };
@@ -197,11 +197,11 @@ impl PsiClient {
             let out_ptr = &mut null_ptr;
             let mut out_len = 0 as size_t;
             let setup_buf = PsiClientBuffer {
-                ptr: setup.as_mut_ptr() as *mut c_char,
+                ptr: setup.as_ptr() as *const c_char,
                 len: setup.len() as size_t
             };
             let response_buf = PsiClientBuffer {
-                ptr: response.as_mut_ptr() as *mut c_char,
+                ptr: response.as_ptr() as *const c_char,
                 len: response.len() as size_t
             };
 
@@ -240,13 +240,14 @@ impl PsiClient {
                 return Err(ClientError::new(format!("Failed to get private key bytes: {} ({})", error_str, res_code)));
             }
 
-            // give ownership of the output to a vector, so it will be automatically freed
-            let res = Vec::from_raw_parts(*out_ptr as *mut u8, out_len as usize, out_len as usize);
-
             // private key is 32 bytes long
             assert_eq!(out_len as usize, 32);
 
-            Ok(res.clone())
+            // do not free the private key bytes
+            let mut res = vec![0u8; out_len as usize];
+            ptr::copy_nonoverlapping(*out_ptr as *const u8, res.as_mut_ptr(), out_len as usize);
+
+            Ok(res)
         }
     }
 }
@@ -290,13 +291,11 @@ impl error::Error for ClientError {
 mod tests {
     use super::*;
 
-    use std::mem;
-
     #[test]
     fn test_create() {
         for &reveal in &[false, true] {
             let client = PsiClient::create_with_new_key(reveal).unwrap();
-            client.create_request(&vec![]).unwrap();
+            client.create_request::<String>(&vec![]).unwrap();
 
             let client = PsiClient::create_with_new_key(reveal).unwrap();
             let new_client = PsiClient::create_from_key(&client.get_private_key_bytes().unwrap(), reveal).unwrap();
@@ -310,16 +309,7 @@ mod tests {
     #[test]
     fn test_error() {
         for &reveal in &[false, true] {
-            unsafe {
-                let client: PsiClient = mem::zeroed();
-                assert!(client.create_request(&vec!["dummy"]).is_err());
-
-                let client = PsiClient::create_with_new_key(reveal).unwrap();
-                let dummy_setup: ServerSetup = mem::zeroed();
-                let dummy_response: Response = mem::zeroed();
-                assert!(client.get_intersection(&dummy_setup, &dummy_response).is_err());
-                assert!(client.get_intersection_size(&dummy_setup, &dummy_response).is_err());
-            }
+            assert!(PsiClient::create_from_key(&vec![0u8; 32], reveal).is_err());
         }
     }
 }

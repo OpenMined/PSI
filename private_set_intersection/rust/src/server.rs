@@ -3,7 +3,7 @@
 
 use libc::*;
 
-use std::{fmt, error, ptr};
+use std::{fmt, error, ptr, mem};
 use std::ffi::CStr;
 
 use protobuf::{self, Message};
@@ -19,7 +19,7 @@ pub struct PsiServer {
 
 #[repr(C)]
 struct PsiServerBuffer {
-    ptr: *mut c_char,
+    ptr: *const c_char,
     len: size_t
 }
 
@@ -27,7 +27,7 @@ extern {
     fn psi_server_create_with_new_key(reveal_intersection: bool, ctx: *mut PsiServerContext, error_out: *mut *mut c_char) -> c_int;
     fn psi_server_create_from_key(key_bytes: PsiServerBuffer, reveal_intersection: bool, ctx: *mut PsiServerContext, error_out: *mut *mut c_char) -> c_int;
     fn psi_server_delete(ctx: *mut PsiServerContext);
-    fn psi_server_create_setup_message(ctx: PsiServerContext, fpr: c_double, num_client_inputs: i64, input: *mut PsiServerBuffer, input_len: size_t, output: *mut *mut c_char, output_len: *mut size_t, error_out: *mut *mut c_char) -> c_int;
+    fn psi_server_create_setup_message(ctx: PsiServerContext, fpr: c_double, num_client_inputs: i64, input: *const PsiServerBuffer, input_len: size_t, output: *mut *mut c_char, output_len: *mut size_t, error_out: *mut *mut c_char) -> c_int;
     fn psi_server_process_request(ctx: PsiServerContext, client_request: PsiServerBuffer, output: *mut *mut c_char, output_len: *mut size_t, error_out: *mut *mut c_char) -> c_int;
     fn psi_server_get_private_key_bytes(ctx: PsiServerContext, output: *mut *mut c_char, output_len: *mut size_t, error_out: *mut *mut c_char) -> c_int;
 }
@@ -66,8 +66,9 @@ impl PsiServer {
             let mut server = Self { ctx: ptr::null_mut() };
             let mut null_ptr: *mut c_char = ptr::null_mut();
             let error_ptr = &mut null_ptr;
+
             let key_bytes = PsiServerBuffer {
-                ptr: key.as_mut_ptr() as *mut c_char,
+                ptr: mem::ManuallyDrop::new(key.to_owned()).as_ptr() as *const c_char,
                 len: key.len() as size_t
             };
 
@@ -95,9 +96,9 @@ impl PsiServer {
     /// will result in a false positive.
     pub fn create_setup_message<T: AsRef<str>>(&self, fpr: f64, input_count: usize, raw_input: &[T]) -> ServerResult<ServerSetup> {
         unsafe {
-            let mut input: Vec<PsiServerBuffer> = raw_input.iter().map(|&s| PsiServerBuffer {
-                ptr: s.as_mut_ptr() as *mut c_char,
-                len: s.len() as size_t
+            let input: Vec<PsiServerBuffer> = raw_input.iter().map(|s| PsiServerBuffer {
+                ptr: s.as_ref().as_ptr() as *const c_char,
+                len: s.as_ref().len() as size_t
             }).collect();
 
             let mut null_ptr: *mut c_char = ptr::null_mut();
@@ -106,7 +107,7 @@ impl PsiServer {
             let out_ptr = &mut null_ptr;
             let mut out_len = 0 as size_t;
 
-            let res_code = psi_server_create_setup_message(self.ctx, fpr as c_double, input_count as i64, input.as_mut_ptr(), input.len() as size_t, out_ptr, &mut out_len, error_ptr);
+            let res_code = psi_server_create_setup_message(self.ctx, fpr as c_double, input_count as i64, input.as_ptr(), input.len() as size_t, out_ptr, &mut out_len, error_ptr);
 
             if res_code != 0 {
                 let error_str = CStr::from_ptr(*error_ptr).to_str().unwrap().to_owned();
@@ -136,7 +137,7 @@ impl PsiServer {
     /// match individual elements between the client's dataset and the server's dataset.
     pub fn process_request(&self, request_proto: &Request) -> ServerResult<Response> {
         unsafe {
-            let mut request = match request_proto.write_to_bytes() {
+            let request = match request_proto.write_to_bytes() {
                 Ok(r) => r,
                 Err(e) => return Err(ServerError::new(e.to_string()))
             };
@@ -147,7 +148,7 @@ impl PsiServer {
             let out_ptr = &mut null_ptr;
             let mut out_len = 0 as size_t;
             let request_buf = PsiServerBuffer {
-                ptr: request.as_mut_ptr() as *mut c_char,
+                ptr: request.as_ptr() as *const c_char,
                 len: request.len() as size_t
             };
 
@@ -190,13 +191,14 @@ impl PsiServer {
                 return Err(ServerError::new(format!("Failed to get private key bytes: {} ({})", error_str, res_code)));
             }
 
-            // give ownership of the output to a vector, so it will be automatically freed
-            let res = Vec::from_raw_parts(*out_ptr as *mut u8, out_len as usize, out_len as usize);
-
             // private key is 32 bytes long
             assert_eq!(out_len as usize, 32);
 
-            Ok(res.clone())
+            // do not free the private key bytes
+            let mut res = vec![0u8; out_len as usize];
+            ptr::copy_nonoverlapping(*out_ptr as *const u8, res.as_mut_ptr(), out_len as usize);
+
+            Ok(res)
         }
     }
 }
@@ -240,13 +242,11 @@ impl error::Error for ServerError {
 mod tests {
     use super::*;
 
-    use std::mem;
-
     #[test]
     fn test_create() {
         for &reveal in &[false, true] {
             let server = PsiServer::create_with_new_key(reveal).unwrap();
-            server.create_setup_message(0.001, 1000, &vec![]).unwrap();
+            server.create_setup_message::<String>(0.001, 1000, &vec![]).unwrap();
 
             let server = PsiServer::create_with_new_key(reveal).unwrap();
             let new_server = PsiServer::create_from_key(&server.get_private_key_bytes().unwrap(), reveal).unwrap();
@@ -260,14 +260,7 @@ mod tests {
     #[test]
     fn test_error() {
         for &reveal in &[false, true] {
-            unsafe {
-                let server: PsiServer = mem::zeroed();
-                assert!(server.create_setup_message(0.001, 1000, &vec!["dummy"]).is_err());
-
-                let server = PsiServer::create_with_new_key(reveal).unwrap();
-                let dummy_request: Request = mem::zeroed();
-                assert!(server.process_request(&dummy_request).is_err());
-            }
+            assert!(PsiServer::create_from_key(&vec![0u8; 32], reveal).is_err());
         }
     }
 }
