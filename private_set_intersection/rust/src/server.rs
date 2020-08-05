@@ -35,25 +35,21 @@ extern {
 impl PsiServer {
     /// Creates a new `PsiServer` instance with a fresh private key.
     pub fn create_with_new_key(reveal_intersection: bool) -> ServerResult<Self> {
-        unsafe {
-            let mut server = Self { ctx: ptr::null_mut() };
-            let mut error_null_ptr: *mut c_char = ptr::null_mut();
-            let error_ptr = &mut error_null_ptr;
+        let mut server = Self { ctx: ptr::null_mut() };
+        let mut error_null_ptr: *mut c_char = ptr::null_mut();
+        let error_ptr = &mut error_null_ptr;
 
-            let res_code = psi_server_create_with_new_key(reveal_intersection, &mut server.ctx, error_ptr);
+        let res_code = unsafe { psi_server_create_with_new_key(reveal_intersection, &mut server.ctx, error_ptr) };
 
-            if res_code != 0 {
-                let error_str = CStr::from_ptr(*error_ptr).to_str().unwrap().to_owned();
-                free(*error_ptr as *mut c_void);
-                return Err(ServerError::new(format!("Failed to create server context: {} ({})", error_str, res_code)));
-            }
-
-            if server.ctx.is_null() {
-                return Err(ServerError::new("Failed to create server context: Context is NULL. This should never happen.".to_string()));
-            }
-
-            Ok(server)
+        if res_code != 0 {
+            return Err(get_error("Failed to create server context", *error_ptr, res_code));
         }
+
+        if server.ctx.is_null() {
+            return Err(ServerError::new("Failed to create server context: Context is NULL. This should never happen.".to_string()));
+        }
+
+        Ok(server)
     }
 
     /// Creates a new `PsiServer` instance with the provided private key.
@@ -62,30 +58,26 @@ impl PsiServer {
     /// for multiple requests can reveal information about the input sets. If in doubt,
     /// use `PsiServer::create_with_new_key`.**
     pub fn create_from_key(key: &[u8], reveal_intersection: bool) -> ServerResult<Self> {
-        unsafe {
-            let mut server = Self { ctx: ptr::null_mut() };
-            let mut error_null_ptr: *mut c_char = ptr::null_mut();
-            let error_ptr = &mut error_null_ptr;
+        let mut server = Self { ctx: ptr::null_mut() };
+        let mut error_null_ptr: *mut c_char = ptr::null_mut();
+        let error_ptr = &mut error_null_ptr;
 
-            let key_bytes = PsiServerBuffer {
-                ptr: mem::ManuallyDrop::new(key.to_owned()).as_ptr() as *const c_char,
-                len: key.len() as size_t
-            };
+        let key_bytes = PsiServerBuffer {
+            ptr: mem::ManuallyDrop::new(key.to_owned()).as_ptr() as *const c_char,
+            len: key.len() as size_t
+        };
 
-            let res_code = psi_server_create_from_key(key_bytes, reveal_intersection, &mut server.ctx, error_ptr);
+        let res_code = unsafe { psi_server_create_from_key(key_bytes, reveal_intersection, &mut server.ctx, error_ptr) };
 
-            if res_code != 0 {
-                let error_str = CStr::from_ptr(*error_ptr).to_str().unwrap().to_owned();
-                free(*error_ptr as *mut c_void);
-                return Err(ServerError::new(format!("Failed to create server context: {} ({})", error_str, res_code)));
-            }
-
-            if server.ctx.is_null() {
-                return Err(ServerError::new("Failed to create server context: Context is NULL. This should never happen.".to_string()));
-            }
-
-            Ok(server)
+        if res_code != 0 {
+            return Err(get_error("Failed to create server context", *error_ptr, res_code));
         }
+
+        if server.ctx.is_null() {
+            return Err(ServerError::new("Failed to create server context: Context is NULL. This should never happen.".to_string()));
+        }
+
+        Ok(server)
     }
 
     /// Creates a setup message that can be sent to the client from the server's bloom
@@ -95,35 +87,31 @@ impl PsiServer {
     /// The false-positive rate `fpr` is the probability that any query of size `input_count`
     /// will result in a false positive.
     pub fn create_setup_message<T: AsRef<str>>(&self, fpr: f64, input_count: usize, raw_input: &[T]) -> ServerResult<ServerSetup> {
-        unsafe {
-            let input: Vec<PsiServerBuffer> = raw_input.iter().map(|s| PsiServerBuffer {
-                ptr: s.as_ref().as_ptr() as *const c_char,
-                len: s.as_ref().len() as size_t
-            }).collect();
+        let input: Vec<PsiServerBuffer> = raw_input.iter().map(|s| PsiServerBuffer {
+            ptr: s.as_ref().as_ptr() as *const c_char,
+            len: s.as_ref().len() as size_t
+        }).collect();
 
-            let mut error_null_ptr: *mut c_char = ptr::null_mut();
-            let error_ptr = &mut error_null_ptr;
-            let mut out_null_ptr: *mut c_char = ptr::null_mut();
-            let out_ptr = &mut out_null_ptr;
-            let mut out_len = 0 as size_t;
+        let mut error_null_ptr: *mut c_char = ptr::null_mut();
+        let error_ptr = &mut error_null_ptr;
+        let mut out_null_ptr: *mut c_char = ptr::null_mut();
+        let out_ptr = &mut out_null_ptr;
+        let mut out_len = 0 as size_t;
 
-            let res_code = psi_server_create_setup_message(self.ctx, fpr as c_double, input_count as i64, input.as_ptr(), input.len() as size_t, out_ptr, &mut out_len, error_ptr);
+        let res_code = unsafe { psi_server_create_setup_message(self.ctx, fpr as c_double, input_count as i64, input.as_ptr(), input.len() as size_t, out_ptr, &mut out_len, error_ptr) };
 
-            if res_code != 0 {
-                let error_str = CStr::from_ptr(*error_ptr).to_str().unwrap().to_owned();
-                free(*error_ptr as *mut c_void);
-                return Err(ServerError::new(format!("Failed to create setup message: {} ({})", error_str, res_code)));
-            }
-
-            // give ownership of the output to a vector, so it will be automatically freed
-            let res = Vec::from_raw_parts(*out_ptr as *mut u8, out_len as usize, out_len as usize);
-            let server_setup: ServerSetup = match protobuf::parse_from_bytes(&res) {
-                Ok(s) => s,
-                Err(e) => return Err(ServerError::new(e.to_string()))
-            };
-
-            Ok(server_setup)
+        if res_code != 0 {
+            return Err(get_error("Failed to create setup message", *error_ptr, res_code));
         }
+
+        // give ownership of the output to a vector, so it will be automatically freed
+        let res = unsafe { Vec::from_raw_parts(*out_ptr as *mut u8, out_len as usize, out_len as usize) };
+        let server_setup: ServerSetup = match protobuf::parse_from_bytes(&res) {
+            Ok(s) => s,
+            Err(e) => return Err(ServerError::new(e.to_string()))
+        };
+
+        Ok(server_setup)
     }
 
     /// Processes a client request and creates the server response that can be sent
@@ -136,39 +124,35 @@ impl PsiServer {
     /// the client can only learn the size of the intersection, without being able to
     /// match individual elements between the client's dataset and the server's dataset.
     pub fn process_request(&self, request_proto: &Request) -> ServerResult<Response> {
-        unsafe {
-            let request = match request_proto.write_to_bytes() {
-                Ok(r) => r,
-                Err(e) => return Err(ServerError::new(e.to_string()))
-            };
+        let request = match request_proto.write_to_bytes() {
+            Ok(r) => r,
+            Err(e) => return Err(ServerError::new(e.to_string()))
+        };
 
-            let mut error_null_ptr: *mut c_char = ptr::null_mut();
-            let error_ptr = &mut error_null_ptr;
-            let mut out_null_ptr: *mut c_char = ptr::null_mut();
-            let out_ptr = &mut out_null_ptr;
-            let mut out_len = 0 as size_t;
-            let request_buf = PsiServerBuffer {
-                ptr: request.as_ptr() as *const c_char,
-                len: request.len() as size_t
-            };
+        let mut error_null_ptr: *mut c_char = ptr::null_mut();
+        let error_ptr = &mut error_null_ptr;
+        let mut out_null_ptr: *mut c_char = ptr::null_mut();
+        let out_ptr = &mut out_null_ptr;
+        let mut out_len = 0 as size_t;
+        let request_buf = PsiServerBuffer {
+            ptr: request.as_ptr() as *const c_char,
+            len: request.len() as size_t
+        };
 
-            let res_code = psi_server_process_request(self.ctx, request_buf, out_ptr, &mut out_len, error_ptr);
+        let res_code = unsafe { psi_server_process_request(self.ctx, request_buf, out_ptr, &mut out_len, error_ptr) };
 
-            if res_code != 0 {
-                let error_str = CStr::from_ptr(*error_ptr).to_str().unwrap().to_owned();
-                free(*error_ptr as *mut c_void);
-                return Err(ServerError::new(format!("Failed to process request: {} ({})", error_str, res_code)));
-            }
-
-            // give ownership of the output to a vector, so it will be automatically freed
-            let res = Vec::from_raw_parts(*out_ptr as *mut u8, out_len as usize, out_len as usize);
-            let response: Response = match protobuf::parse_from_bytes(&res) {
-                Ok(r) => r,
-                Err(e) => return Err(ServerError::new(e.to_string()))
-            };
-
-            Ok(response)
+        if res_code != 0 {
+            return Err(get_error("Failed to process request", *error_ptr, res_code));
         }
+
+        // give ownership of the output to a vector, so it will be automatically freed
+        let res = unsafe { Vec::from_raw_parts(*out_ptr as *mut u8, out_len as usize, out_len as usize) };
+        let response: Response = match protobuf::parse_from_bytes(&res) {
+            Ok(r) => r,
+            Err(e) => return Err(ServerError::new(e.to_string()))
+        };
+
+        Ok(response)
     }
 
     /// Returns this `PsiServer` instance's private key. This key should only be used to create
@@ -176,30 +160,29 @@ impl PsiServer {
     ///
     /// **Do not send this key to any other party!**
     pub fn get_private_key_bytes(&self) -> ServerResult<Vec<u8>> {
-        unsafe {
-            let mut error_null_ptr: *mut c_char = ptr::null_mut();
-            let error_ptr = &mut error_null_ptr;
-            let mut out_null_ptr: *mut c_char = ptr::null_mut();
-            let out_ptr = &mut out_null_ptr;
-            let mut out_len = 0 as size_t;
+        let mut error_null_ptr: *mut c_char = ptr::null_mut();
+        let error_ptr = &mut error_null_ptr;
+        let mut out_null_ptr: *mut c_char = ptr::null_mut();
+        let out_ptr = &mut out_null_ptr;
+        let mut out_len = 0 as size_t;
 
-            let res_code = psi_server_get_private_key_bytes(self.ctx, out_ptr, &mut out_len, error_ptr);
+        let res_code = unsafe { psi_server_get_private_key_bytes(self.ctx, out_ptr, &mut out_len, error_ptr) };
 
-            if res_code != 0 {
-                let error_str = CStr::from_ptr(*error_ptr).to_str().unwrap().to_owned();
-                free(*error_ptr as *mut c_void);
-                return Err(ServerError::new(format!("Failed to get private key bytes: {} ({})", error_str, res_code)));
-            }
-
-            // private key is 32 bytes long
-            assert_eq!(out_len as usize, 32);
-
-            // do not free the private key bytes
-            let mut res = vec![0u8; out_len as usize];
-            ptr::copy_nonoverlapping(*out_ptr as *const u8, res.as_mut_ptr(), out_len as usize);
-
-            Ok(res)
+        if res_code != 0 {
+            return Err(get_error("Failed to get private key bytes", *error_ptr, res_code));
         }
+
+        // private key is 32 bytes long
+        assert_eq!(out_len as usize, 32);
+
+        // do not free the private key bytes
+        let mut res = vec![0u8; out_len as usize];
+
+        unsafe {
+            ptr::copy_nonoverlapping(*out_ptr as *const u8, res.as_mut_ptr(), out_len as usize);
+        }
+
+        Ok(res)
     }
 }
 
@@ -209,6 +192,16 @@ impl Drop for PsiServer {
             psi_server_delete(&mut self.ctx);
         }
     }
+}
+
+fn get_error(msg: &str, error_ptr: *mut c_char, res_code: c_int) -> ServerError {
+    let error_str = unsafe { CStr::from_ptr(error_ptr).to_str().expect("Failed to get error string.").to_owned() };
+
+    unsafe {
+        free(error_ptr as *mut c_void);
+    }
+
+    return ServerError::new(format!("{}: {} ({})", msg, error_str, res_code));
 }
 
 /// Result of a fallible PSI server function.

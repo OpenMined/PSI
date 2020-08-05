@@ -37,25 +37,21 @@ extern {
 impl PsiClient {
     /// Creates a new `PsiClient` instance with a fresh private key.
     pub fn create_with_new_key(reveal_intersection: bool) -> ClientResult<Self> {
-        unsafe {
-            let mut client = Self { ctx: ptr::null_mut(), reveal_intersection: reveal_intersection };
-            let mut error_null_ptr: *mut c_char = ptr::null_mut();
-            let error_ptr = &mut error_null_ptr;
+        let mut client = Self { ctx: ptr::null_mut(), reveal_intersection: reveal_intersection };
+        let mut error_null_ptr: *mut c_char = ptr::null_mut();
+        let error_ptr = &mut error_null_ptr;
 
-            let res_code = psi_client_create_with_new_key(reveal_intersection, &mut client.ctx, error_ptr);
+        let res_code = unsafe { psi_client_create_with_new_key(reveal_intersection, &mut client.ctx, error_ptr) };
 
-            if res_code != 0 {
-                let error_str = CStr::from_ptr(*error_ptr).to_str().unwrap().to_owned();
-                free(*error_ptr as *mut c_void);
-                return Err(ClientError::new(format!("Failed to create client context: {} ({})", error_str, res_code)));
-            }
-
-            if client.ctx.is_null() {
-                return Err(ClientError::new("Failed to create client context: Context is NULL. This should never happen.".to_string()));
-            }
-
-            Ok(client)
+        if res_code != 0 {
+            return Err(get_error("Failed to create client context", *error_ptr, res_code));
         }
+
+        if client.ctx.is_null() {
+            return Err(ClientError::new("Failed to create client context: Context is NULL. This should never happen.".to_string()));
+        }
+
+        Ok(client)
     }
 
     /// Creates a new `PsiClient` instance with the provided private key.
@@ -64,29 +60,25 @@ impl PsiClient {
     /// for multiple requests can reveal information about the input sets. If in doubt,
     /// use `PsiClient::create_with_new_key`.**
     pub fn create_from_key(key: &[u8], reveal_intersection: bool) -> ClientResult<Self> {
-        unsafe {
-            let mut client = Self { ctx: ptr::null_mut(), reveal_intersection: reveal_intersection };
-            let mut error_null_ptr: *mut c_char = ptr::null_mut();
-            let error_ptr = &mut error_null_ptr;
-            let key_bytes = PsiClientBuffer {
-                ptr: mem::ManuallyDrop::new(key.to_owned()).as_ptr() as *const c_char,
-                len: key.len() as size_t
-            };
+        let mut client = Self { ctx: ptr::null_mut(), reveal_intersection: reveal_intersection };
+        let mut error_null_ptr: *mut c_char = ptr::null_mut();
+        let error_ptr = &mut error_null_ptr;
+        let key_bytes = PsiClientBuffer {
+            ptr: mem::ManuallyDrop::new(key.to_owned()).as_ptr() as *const c_char,
+            len: key.len() as size_t
+        };
 
-            let res_code = psi_client_create_from_key(key_bytes, reveal_intersection, &mut client.ctx, error_ptr);
+        let res_code = unsafe { psi_client_create_from_key(key_bytes, reveal_intersection, &mut client.ctx, error_ptr) };
 
-            if res_code != 0 {
-                let error_str = CStr::from_ptr(*error_ptr).to_str().unwrap().to_owned();
-                free(*error_ptr as *mut c_void);
-                return Err(ClientError::new(format!("Failed to create client context: {} ({})", error_str, res_code)));
-            }
-
-            if client.ctx.is_null() {
-                return Err(ClientError::new("Failed to create client context: Context is NULL. This should never happen.".to_string()));
-            }
-
-            Ok(client)
+        if res_code != 0 {
+            return Err(get_error("Failed to create client context", *error_ptr, res_code));
         }
+
+        if client.ctx.is_null() {
+            return Err(ClientError::new("Failed to create client context: Context is NULL. This should never happen.".to_string()));
+        }
+
+        Ok(client)
     }
 
     /// Creates a request protobuf that can be serialized and sent to the server.
@@ -94,35 +86,31 @@ impl PsiClient {
     /// For each input element `x`, this computes `H(x)^c`, where `c` is the client's
     /// secret key for `ec_cipher`.
     pub fn create_request<T: AsRef<str>>(&self, raw_input: &[T]) -> ClientResult<Request> {
-        unsafe {
-            let input: Vec<PsiClientBuffer> = raw_input.iter().map(|s| PsiClientBuffer {
-                ptr: s.as_ref().as_ptr() as *const c_char,
-                len: s.as_ref().len() as size_t
-            }).collect();
+        let input: Vec<PsiClientBuffer> = raw_input.iter().map(|s| PsiClientBuffer {
+            ptr: s.as_ref().as_ptr() as *const c_char,
+            len: s.as_ref().len() as size_t
+        }).collect();
 
-            let mut error_null_ptr: *mut c_char = ptr::null_mut();
-            let error_ptr = &mut error_null_ptr;
-            let mut out_null_ptr: *mut c_char = ptr::null_mut();
-            let out_ptr = &mut out_null_ptr;
-            let mut out_len = 0 as size_t;
+        let mut error_null_ptr: *mut c_char = ptr::null_mut();
+        let error_ptr = &mut error_null_ptr;
+        let mut out_null_ptr: *mut c_char = ptr::null_mut();
+        let out_ptr = &mut out_null_ptr;
+        let mut out_len = 0 as size_t;
 
-            let res_code = psi_client_create_request(self.ctx, input.as_ptr(), input.len() as size_t, out_ptr, &mut out_len, error_ptr);
+        let res_code = unsafe { psi_client_create_request(self.ctx, input.as_ptr(), input.len() as size_t, out_ptr, &mut out_len, error_ptr) };
 
-            if res_code != 0 {
-                let error_str = CStr::from_ptr(*error_ptr).to_str().unwrap().to_owned();
-                free(*error_ptr as *mut c_void);
-                return Err(ClientError::new(format!("Failed to create request: {} ({})", error_str, res_code)));
-            }
-
-            // give ownership of the output to a vector, so it will be automatically freed
-            let res = Vec::from_raw_parts(*out_ptr as *mut u8, out_len as usize, out_len as usize);
-            let request: Request = match protobuf::parse_from_bytes(&res) {
-                Ok(r) => r,
-                Err(e) => return Err(ClientError::new(e.to_string()))
-            };
-
-            Ok(request)
+        if res_code != 0 {
+            return Err(get_error("Failed to create request", *error_ptr, res_code));
         }
+
+        // give ownership of the output to a vector, so it will be automatically freed
+        let res = unsafe { Vec::from_raw_parts(*out_ptr as *mut u8, out_len as usize, out_len as usize) };
+        let request: Request = match protobuf::parse_from_bytes(&res) {
+            Ok(r) => r,
+            Err(e) => return Err(ClientError::new(e.to_string()))
+        };
+
+        Ok(request)
     }
 
     /// Gets the size of the intersection between the bloom filter of encrypted server
@@ -136,38 +124,34 @@ impl PsiClient {
             return Err(ClientError::new("reveal_intersection must be false!".to_string()));
         }
 
-        unsafe {
-            let setup = match server_setup.write_to_bytes() {
-                Ok(s) => s,
-                Err(e) => return Err(ClientError::new(e.to_string()))
-            };
-            let response = match response_proto.write_to_bytes() {
-                Ok(r) => r,
-                Err(e) => return Err(ClientError::new(e.to_string()))
-            };
+        let setup = match server_setup.write_to_bytes() {
+            Ok(s) => s,
+            Err(e) => return Err(ClientError::new(e.to_string()))
+        };
+        let response = match response_proto.write_to_bytes() {
+            Ok(r) => r,
+            Err(e) => return Err(ClientError::new(e.to_string()))
+        };
 
-            let mut error_null_ptr: *mut c_char = ptr::null_mut();
-            let error_ptr = &mut error_null_ptr;
-            let mut out_res = 0i64;
-            let setup_buf = PsiClientBuffer {
-                ptr: setup.as_ptr() as *const c_char,
-                len: setup.len() as size_t
-            };
-            let response_buf = PsiClientBuffer {
-                ptr: response.as_ptr() as *const c_char,
-                len: response.len() as size_t
-            };
+        let mut error_null_ptr: *mut c_char = ptr::null_mut();
+        let error_ptr = &mut error_null_ptr;
+        let mut out_res = 0i64;
+        let setup_buf = PsiClientBuffer {
+            ptr: setup.as_ptr() as *const c_char,
+            len: setup.len() as size_t
+        };
+        let response_buf = PsiClientBuffer {
+            ptr: response.as_ptr() as *const c_char,
+            len: response.len() as size_t
+        };
 
-            let res_code = psi_client_get_intersection_size(self.ctx, setup_buf, response_buf, &mut out_res, error_ptr);
+        let res_code = unsafe { psi_client_get_intersection_size(self.ctx, setup_buf, response_buf, &mut out_res, error_ptr) };
 
-            if res_code != 0 {
-                let error_str = CStr::from_ptr(*error_ptr).to_str().unwrap().to_owned();
-                free(*error_ptr as *mut c_void);
-                return Err(ClientError::new(format!("Failed to get intersection size: {} ({})", error_str, res_code)));
-            }
-
-            Ok(out_res as usize)
+        if res_code != 0 {
+            return Err(get_error("Failed to get intersection size", *error_ptr, res_code));
         }
+
+        Ok(out_res as usize)
     }
 
     /// Gets the intersection between the bloom filter of encrypted server
@@ -181,43 +165,39 @@ impl PsiClient {
             return Err(ClientError::new("reveal_intersection must be true!".to_string()));
         }
 
-        unsafe {
-            let setup = match server_setup.write_to_bytes() {
-                Ok(s) => s,
-                Err(e) => return Err(ClientError::new(e.to_string()))
-            };
-            let response = match response_proto.write_to_bytes() {
-                Ok(r) => r,
-                Err(e) => return Err(ClientError::new(e.to_string()))
-            };
+        let setup = match server_setup.write_to_bytes() {
+            Ok(s) => s,
+            Err(e) => return Err(ClientError::new(e.to_string()))
+        };
+        let response = match response_proto.write_to_bytes() {
+            Ok(r) => r,
+            Err(e) => return Err(ClientError::new(e.to_string()))
+        };
 
-            let mut error_null_ptr: *mut c_char = ptr::null_mut();
-            let error_ptr = &mut error_null_ptr;
-            let mut out_null_ptr: *mut i64 = ptr::null_mut();
-            let out_ptr = &mut out_null_ptr;
-            let mut out_len = 0 as size_t;
-            let setup_buf = PsiClientBuffer {
-                ptr: setup.as_ptr() as *const c_char,
-                len: setup.len() as size_t
-            };
-            let response_buf = PsiClientBuffer {
-                ptr: response.as_ptr() as *const c_char,
-                len: response.len() as size_t
-            };
+        let mut error_null_ptr: *mut c_char = ptr::null_mut();
+        let error_ptr = &mut error_null_ptr;
+        let mut out_null_ptr: *mut i64 = ptr::null_mut();
+        let out_ptr = &mut out_null_ptr;
+        let mut out_len = 0 as size_t;
+        let setup_buf = PsiClientBuffer {
+            ptr: setup.as_ptr() as *const c_char,
+            len: setup.len() as size_t
+        };
+        let response_buf = PsiClientBuffer {
+            ptr: response.as_ptr() as *const c_char,
+            len: response.len() as size_t
+        };
 
-            let res_code = psi_client_get_intersection(self.ctx, setup_buf, response_buf, out_ptr, &mut out_len, error_ptr);
+        let res_code = unsafe { psi_client_get_intersection(self.ctx, setup_buf, response_buf, out_ptr, &mut out_len, error_ptr) };
 
-            if res_code != 0 {
-                let error_str = CStr::from_ptr(*error_ptr).to_str().unwrap().to_owned();
-                free(*error_ptr as *mut c_void);
-                return Err(ClientError::new(format!("Failed to get intersection: {} ({})", error_str, res_code)));
-            }
-
-            // give ownership of the output to a vector, so it will be automatically freed
-            let res = Vec::from_raw_parts(*out_ptr as *mut i64, out_len as usize, out_len as usize);
-
-            Ok(res.clone())
+        if res_code != 0 {
+            return Err(get_error("Failed to get intersection", *error_ptr, res_code));
         }
+
+        // give ownership of the output to a vector, so it will be automatically freed
+        let res = unsafe { Vec::from_raw_parts(*out_ptr as *mut i64, out_len as usize, out_len as usize) };
+
+        Ok(res.clone())
     }
 
     /// Returns this `PsiClient` instance's private key. This key should only be used to create
@@ -225,30 +205,29 @@ impl PsiClient {
     ///
     /// **Do not send this key to any other party!**
     pub fn get_private_key_bytes(&self) -> ClientResult<Vec<u8>> {
-        unsafe {
-            let mut error_null_ptr: *mut c_char = ptr::null_mut();
-            let error_ptr = &mut error_null_ptr;
-            let mut out_null_ptr: *mut c_char = ptr::null_mut();
-            let out_ptr = &mut out_null_ptr;
-            let mut out_len = 0 as size_t;
+        let mut error_null_ptr: *mut c_char = ptr::null_mut();
+        let error_ptr = &mut error_null_ptr;
+        let mut out_null_ptr: *mut c_char = ptr::null_mut();
+        let out_ptr = &mut out_null_ptr;
+        let mut out_len = 0 as size_t;
 
-            let res_code = psi_client_get_private_key_bytes(self.ctx, out_ptr, &mut out_len, error_ptr);
+        let res_code = unsafe { psi_client_get_private_key_bytes(self.ctx, out_ptr, &mut out_len, error_ptr) };
 
-            if res_code != 0 {
-                let error_str = CStr::from_ptr(*error_ptr).to_str().unwrap().to_owned();
-                free(*error_ptr as *mut c_void);
-                return Err(ClientError::new(format!("Failed to get private key bytes: {} ({})", error_str, res_code)));
-            }
-
-            // private key is 32 bytes long
-            assert_eq!(out_len as usize, 32);
-
-            // do not free the private key bytes
-            let mut res = vec![0u8; out_len as usize];
-            ptr::copy_nonoverlapping(*out_ptr as *const u8, res.as_mut_ptr(), out_len as usize);
-
-            Ok(res)
+        if res_code != 0 {
+            return Err(get_error("Failed to get private key bytes", *error_ptr, res_code));
         }
+
+        // private key is 32 bytes long
+        assert_eq!(out_len as usize, 32);
+
+        // do not free the private key bytes
+        let mut res = vec![0u8; out_len as usize];
+
+        unsafe {
+            ptr::copy_nonoverlapping(*out_ptr as *const u8, res.as_mut_ptr(), out_len as usize);
+        }
+
+        Ok(res)
     }
 }
 
@@ -258,6 +237,16 @@ impl Drop for PsiClient {
             psi_client_delete(&mut self.ctx);
         }
     }
+}
+
+fn get_error(msg: &str, error_ptr: *mut c_char, res_code: c_int) -> ClientError {
+    let error_str = unsafe { CStr::from_ptr(error_ptr).to_str().expect("Failed to get error string.").to_owned() };
+
+    unsafe {
+        free(error_ptr as *mut c_void);
+    }
+
+    return ClientError::new(format!("{}: {} ({})", msg, error_str, res_code));
 }
 
 /// Result of a fallible PSI client function.
