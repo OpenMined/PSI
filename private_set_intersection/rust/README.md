@@ -24,8 +24,8 @@ bazel test //private_set_intersection/rust/...
 
 ## Use in other projects
 
-Add `deps = ["//private_set_intersection/rust:rust_psi"]` to your Bazel rule in your project's
-`BUILD` file.
+Add `deps = ["@org_openmined_psi//private_set_intersection/rust:rust_psi"]` to your Bazel rule
+in your project's `BUILD` file.
 
 ## Updating crate dependencies
 

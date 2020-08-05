@@ -43,6 +43,10 @@ See the [Go README.md](private_set_intersection/go/README.md)
 
 See the [Python README.md](private_set_intersection/python/README.md)
 
+### Rust
+
+See the [Rust README.md](private_set_intersection/rust/README.md)
+
 ## Usage
 
 To use this library in another Bazel project, add the following in your WORKSPACE file:
