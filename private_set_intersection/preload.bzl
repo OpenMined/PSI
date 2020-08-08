@@ -15,6 +15,7 @@
 #
 
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
+load("@bazel_tools//tools/build_defs/repo:git.bzl", "git_repository")
 
 def psi_preload():
     if "rules_proto" not in native.existing_rules():
@@ -65,9 +66,9 @@ def psi_preload():
     if "pybind11_bazel" not in native.existing_rules():
         http_archive(
             name = "pybind11_bazel",
-            strip_prefix = "pybind11_bazel-203508e14aab7309892a1c5f7dd05debda22d9a5",
-            urls = ["https://github.com/pybind/pybind11_bazel/archive/203508e14aab7309892a1c5f7dd05debda22d9a5.zip"],
-            sha256 = "75922da3a1bdb417d820398eb03d4e9bd067c4905a4246d35a44c01d62154d91",
+            strip_prefix = "pybind11_bazel-4d5fd2acb7284fb715fa973cd84e48156bacb196",
+            urls = ["https://github.com/s0l0ist/pybind11_bazel/archive/4d5fd2acb7284fb715fa973cd84e48156bacb196.zip"],
+            sha256 = "323701a91ebef243511a97917e995ad821029a36ed31e6c878cae9021ed5c942",
         )
 
     if "pybind11" not in native.existing_rules():
@@ -85,6 +86,29 @@ def psi_preload():
             url = "https://github.com/bazelbuild/rules_python/archive/a0fbf98d4e3a232144df4d0d80b577c7a693b570.zip",
             strip_prefix = "rules_python-a0fbf98d4e3a232144df4d0d80b577c7a693b570",
             sha256 = "98c9b903f6e8fe20b7e56d19c4822c8c49a11b475bd4ec0ca6a564e8bc5d5fa2",
+        )
+
+    if "python_3_interpreter" not in native.existing_rules():
+        http_archive(
+            name = "python_3_interpreter",
+            urls = ["https://www.python.org/ftp/python/3.8.3/Python-3.8.3.tar.xz"],
+            sha256 = "dfab5ec723c218082fe3d5d7ae17ecbdebffa9a1aea4d64aa3a2ecdd2e795864",
+            strip_prefix = "Python-3.8.3",
+            patch_cmds = [
+                "mkdir $(pwd)/bazel_install",
+                "./configure --prefix=$(pwd)/bazel_install",
+                "make -j",
+                "make install",
+                "ln -s bazel_install/bin/python3 python_bin",
+            ],
+            build_file_content = """
+exports_files(["python_bin"])
+filegroup(
+    name = "files",
+    srcs = glob(["bazel_install/**"], exclude = ["**/* *"]),
+    visibility = ["//visibility:public"],
+)
+""",
         )
 
     RULES_PYTHON_EXTERNAL_VERSION = "3aacabb928a710b10bff13d0bde49ceaade58f15"
