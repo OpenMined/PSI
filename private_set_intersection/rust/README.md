@@ -4,6 +4,13 @@ Private Set Intersection protocol based on ECDH and Bloom Filters.
 
 This crate provides Rust bindings to the core C++ PSI library, by wrapping the C interface.
 
+## Requirements
+
+For developing with rust, you need `Cargo` which is used to update dependencies.
+
+- [Cargo](https://doc.rust-lang.org/cargo/getting-started/installation.html)
+- `Raze` install with `cargo install cargo-raze`
+
 ## Build and test
 
 Build libraries and documentation with or without optimizations:
@@ -19,7 +26,7 @@ bazel build -c opt //private_set_intersection/rust/...
 Build and run tests:
 
 ```
-bazel test //private_set_intersection/rust/...
+bazel test -c opt //private_set_intersection/rust/...
 ```
 
 ## Use in other projects
@@ -27,7 +34,7 @@ bazel test //private_set_intersection/rust/...
 Add `deps = ["@org_openmined_psi//private_set_intersection/rust:rust_psi"]` to your Bazel rule
 in your project's `BUILD` file.
 
-## Updating crate dependencies
+## Developing
 
 Typically, Rust projects are built using Cargo, which reads the `Cargo.toml` file to pull
 necessary dependencies. In this project, Bazel is used, so a dummy `Cargo.toml` is created
