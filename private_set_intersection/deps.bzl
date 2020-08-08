@@ -24,6 +24,10 @@ load("@pybind11_bazel//:python_configure.bzl", "python_configure")
 load("@rules_python//python:repositories.bzl", "py_repositories")
 load("@rules_python_external//:repositories.bzl", "rules_python_external_dependencies")
 load("@rules_python_external//:defs.bzl", "pip_install")
+load("@io_bazel_rules_rust//rust:repositories.bzl", "rust_repositories")
+load("@io_bazel_rules_rust//proto:repositories.bzl", "rust_proto_repositories")
+load("@io_bazel_rules_rust//:workspace.bzl", "bazel_version")
+load("//third_party/cargo:crates.bzl", "raze_fetch_remote_crates")
 
 def psi_deps():
     # General dependencies.
@@ -118,3 +122,12 @@ def psi_deps():
     rules_pkg_dependencies()
 
     gazelle_dependencies()
+
+    # Rust.
+    raze_fetch_remote_crates()
+
+    rust_repositories()
+
+    rust_proto_repositories()
+
+    bazel_version(name = "bazel_version")

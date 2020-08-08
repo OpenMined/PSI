@@ -9,3 +9,5 @@
 [Phillipp Schoppmann](https://github.com/schoppmp)
 
 [Rutuja Surve](https://github.com/rutujasurve94)
+
+[Daniel Liu](https://github.com/Daniel-Liu-c0deb0t)

@@ -95,3 +95,22 @@ def psi_preload():
             strip_prefix = "rules_python_external-{version}".format(version = RULES_PYTHON_EXTERNAL_VERSION),
             url = "https://github.com/dillon-giacoppo/rules_python_external/archive/{version}.zip".format(version = RULES_PYTHON_EXTERNAL_VERSION),
         )
+
+    if "io_bazel_rules_rust" not in native.existing_rules():
+        http_archive(
+            name = "io_bazel_rules_rust",
+            sha256 = "75b29ba47ff4ef81f48574d1109bb6612788212524afe99e21467c71c980baa5",
+            strip_prefix = "rules_rust-8cfa049d478ad33e407d572e260e912bdb31796a",
+            urls = [
+                # Master branch as of 25/07/2020
+                "https://github.com/bazelbuild/rules_rust/archive/8cfa049d478ad33e407d572e260e912bdb31796a.tar.gz",
+            ],
+        )
+
+    if "bazel_skylib" not in native.existing_rules():
+        http_archive(
+            name = "bazel_skylib",
+            sha256 = "e5d90f0ec952883d56747b7604e2a15ee36e288bb556c3d0ed33e818a4d971f2",
+            strip_prefix = "bazel-skylib-1.0.2",
+            url = "https://github.com/bazelbuild/bazel-skylib/archive/1.0.2.tar.gz",
+        )

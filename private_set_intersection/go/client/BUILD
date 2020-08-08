@@ -3,7 +3,7 @@ load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
 go_library(
     name = "client",
     srcs = ["client.go"],
-    cdeps = ["//private_set_intersection/c:psi_client"],
+    cdeps = ["//private_set_intersection/c:c_psi_client"],
     cgo = True,
     importpath = "github.com/openmined/psi/client",
     visibility = ["//visibility:public"],
