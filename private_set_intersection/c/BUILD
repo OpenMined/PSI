@@ -29,7 +29,7 @@ cc_test(
     name = "c_package_test",
     srcs = ["package_test.cpp"],
     deps = [
-        ":package",
+        ":c_package",
         "@com_google_googletest//:gtest_main",
     ],
 )
