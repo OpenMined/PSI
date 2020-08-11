@@ -14,6 +14,7 @@ rust_library(
     deps = [
         "//private_set_intersection/c:c_psi_server",
         "//private_set_intersection/c:c_psi_client",
+        "//private_set_intersection/c:c_package",
         "//third_party/cargo:libc",
         "//third_party/cargo:protobuf",
         "//private_set_intersection/proto:psi_rust_proto"
@@ -22,7 +23,8 @@ rust_library(
 
 rust_test(
     name = "rust_psi_unit_test",
-    crate = ":rust_psi"
+    crate = ":rust_psi",
+    deps = ["//third_party/cargo:semver"]
 )
 
 rust_test(

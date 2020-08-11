@@ -17,7 +17,7 @@
 package(default_visibility = ["//visibility:public"])
 
 cc_library(
-    name = "package",
+    name = "c_package",
     srcs = ["package.cpp"],
     hdrs = ["package.h"],
     deps = [
@@ -26,7 +26,7 @@ cc_library(
 )
 
 cc_test(
-    name = "package_test",
+    name = "c_package_test",
     srcs = ["package_test.cpp"],
     deps = [
         ":package",
