@@ -32,3 +32,19 @@ def raze_fetch_remote_crates():
         build_file = Label("//third_party/cargo/remote:protobuf-2.8.2.BUILD"),
     )
 
+    _new_http_archive(
+        name = "raze__semver__0_10_0",
+        url = "https://crates-io.s3-us-west-1.amazonaws.com/crates/semver/semver-0.10.0.crate",
+        type = "tar.gz",
+        strip_prefix = "semver-0.10.0",
+        build_file = Label("//third_party/cargo/remote:semver-0.10.0.BUILD"),
+    )
+
+    _new_http_archive(
+        name = "raze__semver_parser__0_7_0",
+        url = "https://crates-io.s3-us-west-1.amazonaws.com/crates/semver-parser/semver-parser-0.7.0.crate",
+        type = "tar.gz",
+        strip_prefix = "semver-parser-0.7.0",
+        build_file = Label("//third_party/cargo/remote:semver-parser-0.7.0.BUILD"),
+    )
+

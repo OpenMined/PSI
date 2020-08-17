@@ -18,3 +18,8 @@ alias(
     actual = "@raze__protobuf__2_8_2//:protobuf",
     tags = ["cargo-raze"],
 )
+alias(
+    name = "semver",
+    actual = "@raze__semver__0_10_0//:semver",
+    tags = ["cargo-raze"],
+)
