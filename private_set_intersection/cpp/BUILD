@@ -53,11 +53,19 @@ cc_test(
 )
 
 cc_library(
+    name = "golomb",
+    srcs = ["golomb.cpp"],
+    hdrs = ["golomb.h"],
+    visibility = ["//visibility:private"],
+)
+
+cc_library(
     name = "bloom_filter",
     srcs = ["bloom_filter.cpp"],
     hdrs = ["bloom_filter.h"],
     visibility = ["//visibility:private"],
     deps = [
+        ":golomb",
         "//private_set_intersection/proto:psi_cc_proto",
         "@com_google_absl//absl/memory",
         "@com_google_absl//absl/strings",

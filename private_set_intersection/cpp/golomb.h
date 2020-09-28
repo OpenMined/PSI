@@ -17,6 +17,8 @@
 #ifndef PRIVATE_SET_INTERSECTION_CPP_GOLOMB_H_
 #define PRIVATE_SET_INTERSECTION_CPP_GOLOMB_H_
 
+#include <string>
+
 namespace private_set_intersection {
 
 std::string golomb_compress(const std::string& bloom_filter);

@@ -19,9 +19,11 @@
 #include <cmath>
 #include <vector>
 #include <algorithm>
-#include <stddef>
+#include <cstddef>
 
 // TODO: make intrinsics portable across compilers
+
+#define DIV_CEIL(a, b) (((a) + (b) - 1) / (b))
 
 namespace private_set_intersection {
 
@@ -73,20 +75,27 @@ std::string golomb_compress(
             auto curr_idx = __builtin_ctz(curr) + (it - bloom_filter.begin()) * CHUNK_SIZE;
 
             auto delta = curr_idx - prev_idx;
-            auto quotient = delta >> div;
-            auto remainder = delta & ((1 << div) - 1);
-            auto len = quotient + 1 + div;
+            auto quotient = delta >> (size_t)div;
+            auto remainder = delta & ((1 << (size_t)div) - 1);
+            auto len = quotient + 1 + (size_t)div;
 
-            auto res_end = (res_idx + CHUNK_SIZE) / CHUNK_SIZE;
-            auto unary_end = res_idx + len;
-            auto extend_end = (unary_end + CHUNK_SIZE) / CHUNK_SIZE;
+            res.resize(DIV_CEIL(res_idx + len, CHUNK_SIZE), 0);
 
-            for (size_t i = res_end; i < extend_end; ++i) {
-                res.push_back('\0');
+            auto unary_end = res_idx + quotient;
+            res[unary_end / CHUNK_SIZE] |= 1 << (unary_end % CHUNK_SIZE);
+
+            auto binary_start = (unary_end + 1) % 8;
+            size_t binary_idx = 0;
+            size_t i = (unary_end + 1) / CHUNK_SIZE;
+
+            while (binary_idx < div) {
+                res[i] |= (char)((remainder >> binary_idx) << binary_start);
+                binary_idx += CHUNK_SIZE - binary_start;
+                binary_start = 0;
+                i++;
             }
 
-            res[unary_end / 8] |= 1 << (unary_end % 8);
-
+            res_idx += len;
             curr &= (curr - 1);
             prev_idx = curr_idx;
         }
@@ -99,7 +108,8 @@ std::string golomb_compress(
 
 std::string golomb_decompress(
         std::string& golomb_compressed) {
-
+    std::string res;
+    return res;
 }
 
 }  // namespace private_set_intersection
