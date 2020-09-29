@@ -22,6 +22,7 @@
 #include "absl/strings/escaping.h"
 #include "absl/strings/str_cat.h"
 #include "private_set_intersection/proto/psi.pb.h"
+#include "private_set_intersection/cpp/golomb.h"
 #include "util/canonical_errors.h"
 
 namespace private_set_intersection {
@@ -61,7 +62,7 @@ StatusOr<std::unique_ptr<BloomFilter>> BloomFilter::CreateFromProtobuf(
 
   auto context = absl::make_unique<::private_join_and_compute::Context>();
   return absl::WrapUnique(new BloomFilter(encoded_filter.num_hash_functions(),
-                                          std::move(encoded_filter.bits()),
+                                          golomb_decompress(encoded_filter.bits()),
                                           std::move(context)));
 }
 
@@ -88,7 +89,7 @@ bool BloomFilter::Check(const std::string& input) const {
 psi_proto::ServerSetup BloomFilter::ToProtobuf() const {
   psi_proto::ServerSetup server_setup;
   server_setup.set_num_hash_functions(NumHashFunctions());
-  server_setup.set_bits(bits_);
+  server_setup.set_bits(golomb_compress(bits_));
   return server_setup;
 }
 

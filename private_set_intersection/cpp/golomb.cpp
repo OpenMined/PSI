@@ -21,16 +21,10 @@
 #include <algorithm>
 #include <cstddef>
 
-// TODO: make intrinsics portable across compilers
-
-#define DIV_CEIL(a, b) (((a) + (b) - 1) / (b))
-
 namespace private_set_intersection {
 
-const size_t CHUNK_SIZE = sizeof(char) * 8;
-
 std::string golomb_compress(
-        std::string& bloom_filter) {
+        const std::string& bloom_filter) {
     auto it = bloom_filter.begin();
     size_t prev_idx = 0;
     double avg = 0.0;
@@ -40,9 +34,9 @@ std::string golomb_compress(
         auto curr = *it;
 
         while (curr != 0) {
-            auto curr_idx = __builtin_ctz(curr) + (it - bloom_filter.begin()) * CHUNK_SIZE;
+            auto curr_idx = static_cast<size_t>(CTZ(static_cast<unsigned int>(curr))) + (it - bloom_filter.begin()) * CHAR_SIZE;
 
-            avg += (double)(curr_idx - prev_idx);
+            avg += static_cast<double>(curr_idx - prev_idx);
             ++count;
 
             curr &= (curr - 1);
@@ -58,11 +52,12 @@ std::string golomb_compress(
         return res;
     }
 
-    avg /= (double)count;
+    avg /= static_cast<double>(count);
     auto prob = 1 / avg; // assume geometric distribution
-    auto div = (char)std::max(0.0, std::round(-std::log2(-std::log2(1.0 - prob))));
+    auto div = static_cast<size_t>(std::max(0.0, std::round(-std::log2(-std::log2(1.0 - prob)))));
 
-    res.push_back(div);
+    res.push_back(static_cast<char>(div));
+    static size_t RES_OFFSET = 1;
 
     size_t res_idx = 0;
     it = bloom_filter.begin();
@@ -72,25 +67,25 @@ std::string golomb_compress(
         auto curr = *it;
 
         while (curr != 0) {
-            auto curr_idx = __builtin_ctz(curr) + (it - bloom_filter.begin()) * CHUNK_SIZE;
+            auto curr_idx = static_cast<size_t>(CTZ(static_cast<unsigned int>(curr))) + (it - bloom_filter.begin()) * CHAR_SIZE;
 
             auto delta = curr_idx - prev_idx;
-            auto quotient = delta >> (size_t)div;
-            auto remainder = delta & ((1 << (size_t)div) - 1);
-            auto len = quotient + 1 + (size_t)div;
+            auto quotient = delta >> div;
+            auto remainder = delta & ((1 << div) - 1);
+            auto len = quotient + 1 + div;
 
-            res.resize(DIV_CEIL(res_idx + len, CHUNK_SIZE), 0);
+            res.resize(RES_OFFSET + DIV_CEIL(res_idx + len, CHAR_SIZE), 0);
 
             auto unary_end = res_idx + quotient;
-            res[unary_end / CHUNK_SIZE] |= 1 << (unary_end % CHUNK_SIZE);
+            res[RES_OFFSET + unary_end / CHAR_SIZE] |= static_cast<char>(1 << (unary_end % CHAR_SIZE));
 
             auto binary_start = (unary_end + 1) % 8;
             size_t binary_idx = 0;
-            size_t i = (unary_end + 1) / CHUNK_SIZE;
+            size_t i = (unary_end + 1) / CHAR_SIZE;
 
             while (binary_idx < div) {
-                res[i] |= (char)((remainder >> binary_idx) << binary_start);
-                binary_idx += CHUNK_SIZE - binary_start;
+                res[RES_OFFSET + i] |= static_cast<char>((remainder >> binary_idx) << binary_start);
+                binary_idx += CHAR_SIZE - binary_start;
                 binary_start = 0;
                 i++;
             }
@@ -107,8 +102,58 @@ std::string golomb_compress(
 }
 
 std::string golomb_decompress(
-        std::string& golomb_compressed) {
+        const std::string& golomb_compressed) {
+    if (golomb_compressed.empty()) {
+        return "";
+    }
+
+    auto it = golomb_compressed.begin();
+    auto div = static_cast<size_t>(*it);
+    ++it;
+
     std::string res;
+    size_t prefix_sum = 0;
+
+    size_t offset = 0;
+
+    while (true) {
+        size_t quotient = 0;
+
+        while (it != golomb_compressed.end() && (static_cast<unsigned char>(*it) >> offset) == 0) {
+            quotient += CHAR_SIZE - offset;
+            offset = 0;
+            ++it;
+        }
+
+        if (it == golomb_compressed.end()) {
+            break;
+        }
+
+        auto ctz = static_cast<size_t>(CTZ(static_cast<unsigned int>(static_cast<unsigned char>(*it >> offset))));
+        quotient += ctz;
+        auto one_idx = ctz + offset;
+        auto binary_start = (one_idx + 1) % CHAR_SIZE;
+        it += static_cast<size_t>(binary_start == 0);
+        size_t binary_idx = 0;
+        size_t remainder = 0;
+
+        while (binary_idx < div) {
+            auto num_bits = std::min(CHAR_SIZE - binary_start, div - binary_idx);
+            remainder |= (static_cast<size_t>(static_cast<unsigned char>(*it) >> binary_start) & ((1 << num_bits) - 1)) << binary_idx;
+            binary_idx += num_bits;
+            binary_start = 0;
+            ++it;
+        }
+
+        offset = (one_idx + 1 + div) % CHAR_SIZE;
+        it -= static_cast<size_t>(offset != 0);
+
+        auto delta = (quotient << div) | remainder;
+        prefix_sum += delta;
+        res.resize(prefix_sum / CHAR_SIZE + 1, 0);
+        res[prefix_sum / CHAR_SIZE] |= static_cast<char>(1 << (prefix_sum % CHAR_SIZE));
+    }
+
     return res;
 }
 

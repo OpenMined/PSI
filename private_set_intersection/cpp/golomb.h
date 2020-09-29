@@ -21,6 +21,23 @@
 
 namespace private_set_intersection {
 
+const size_t CHAR_SIZE = sizeof(char) * 8;
+
+#if defined(_MSC_VER) // MSVC
+    #include <intrin.h>
+    #pragma intrinsic(_BitScanForward)
+    __forceinline static int bsf(unsigned int x) {
+        unsigned long i;
+        _BitScanForward(&i, (unsigned long)x);
+        return i;
+    }
+    #define CTZ(x) bsf(x)
+#else // GCC, Clang, etc.
+    #define CTZ(x) __builtin_ctz(x)
+#endif
+
+#define DIV_CEIL(a, b) (((a) + (b) - 1) / (b))
+
 std::string golomb_compress(const std::string& bloom_filter);
 
 std::string golomb_decompress(const std::string& golomb_compressed);

@@ -59,6 +59,17 @@ cc_library(
     visibility = ["//visibility:private"],
 )
 
+cc_test(
+    name = "golomb_test",
+    srcs = ["golomb_test.cpp"],
+    linkopts = PSI_LINKOPTS,
+    deps = [
+        ":golomb",
+        "@com_google_googletest//:gtest",
+        "@com_google_googletest//:gtest_main",
+    ],
+)
+
 cc_library(
     name = "bloom_filter",
     srcs = ["bloom_filter.cpp"],
