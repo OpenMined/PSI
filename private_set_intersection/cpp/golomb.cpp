@@ -19,12 +19,12 @@
 #include <cmath>
 #include <vector>
 #include <algorithm>
-#include <cstddef>
 
 namespace private_set_intersection {
 
-std::string golomb_compress(
-        const std::string& bloom_filter) {
+GolombCompressed golomb_compress(
+        const std::string& bloom_filter,
+        int div_param) {
     auto it = bloom_filter.begin();
     size_t prev_idx = 0;
     double avg = 0.0;
@@ -39,25 +39,25 @@ std::string golomb_compress(
             avg += static_cast<double>(curr_idx - prev_idx);
             ++count;
 
-            curr &= (curr - 1);
+            curr &= curr - 1;
             prev_idx = curr_idx;
         }
 
         ++it;
     }
 
-    std::string res;
-
     if (count == 0) {
+        struct GolombCompressed res;
+        res.div = 0;
+        res.compressed = "";
         return res;
     }
 
+    std::string compressed;
+
     avg /= static_cast<double>(count);
     auto prob = 1 / avg; // assume geometric distribution
-    auto div = static_cast<size_t>(std::max(0.0, std::round(-std::log2(-std::log2(1.0 - prob)))));
-
-    res.push_back(static_cast<char>(div));
-    static size_t RES_OFFSET = 1;
+    size_t div = div_param >= 0 ? static_cast<size_t>(div_param) : static_cast<size_t>(std::max(0.0, std::round(-std::log2(-std::log2(1.0 - prob)))));
 
     size_t res_idx = 0;
     it = bloom_filter.begin();
@@ -74,44 +74,47 @@ std::string golomb_compress(
             auto remainder = delta & ((1 << div) - 1);
             auto len = quotient + 1 + div;
 
-            res.resize(RES_OFFSET + DIV_CEIL(res_idx + len, CHAR_SIZE), 0);
+            compressed.resize(DIV_CEIL(res_idx + len, CHAR_SIZE), 0);
 
             auto unary_end = res_idx + quotient;
-            res[RES_OFFSET + unary_end / CHAR_SIZE] |= static_cast<char>(1 << (unary_end % CHAR_SIZE));
+            compressed[unary_end / CHAR_SIZE] |= static_cast<char>(1 << (unary_end % CHAR_SIZE));
 
-            auto binary_start = (unary_end + 1) % 8;
+            auto binary_start = (unary_end + 1) % CHAR_SIZE;
             size_t binary_idx = 0;
             size_t i = (unary_end + 1) / CHAR_SIZE;
 
             while (binary_idx < div) {
-                res[RES_OFFSET + i] |= static_cast<char>((remainder >> binary_idx) << binary_start);
+                compressed[i] |= static_cast<char>((remainder >> binary_idx) << binary_start);
                 binary_idx += CHAR_SIZE - binary_start;
                 binary_start = 0;
                 i++;
             }
 
             res_idx += len;
-            curr &= (curr - 1);
+            curr &= curr - 1;
             prev_idx = curr_idx;
         }
 
         ++it;
     }
 
+    struct GolombCompressed res;
+    res.div = div;
+    res.compressed = compressed;
     return res;
 }
 
 std::string golomb_decompress(
-        const std::string& golomb_compressed) {
+        const std::string& golomb_compressed,
+        size_t div,
+        size_t filter_length) {
     if (golomb_compressed.empty()) {
         return "";
     }
 
     auto it = golomb_compressed.begin();
-    auto div = static_cast<size_t>(*it);
-    ++it;
 
-    std::string res;
+    std::string res(filter_length, 0);
     size_t prefix_sum = 0;
 
     size_t offset = 0;
@@ -146,11 +149,10 @@ std::string golomb_decompress(
         }
 
         offset = (one_idx + 1 + div) % CHAR_SIZE;
-        it -= static_cast<size_t>(offset != 0);
+        it -= static_cast<size_t>((div > 0) & (offset != 0));
 
         auto delta = (quotient << div) | remainder;
         prefix_sum += delta;
-        res.resize(prefix_sum / CHAR_SIZE + 1, 0);
         res[prefix_sum / CHAR_SIZE] |= static_cast<char>(1 << (prefix_sum % CHAR_SIZE));
     }
 

@@ -35,7 +35,7 @@ BloomFilter::BloomFilter(
       context_(std::move(context)) {}
 
 StatusOr<std::unique_ptr<BloomFilter>> BloomFilter::Create(
-    double fpr, int64_t max_elements) {
+    double fpr, int64_t max_elements, bool golomb) {
   if (fpr <= 0 || fpr >= 1) {
     return ::private_join_and_compute::InvalidArgumentError(
         "`fpr` must be in (0,1)");
@@ -44,9 +44,16 @@ StatusOr<std::unique_ptr<BloomFilter>> BloomFilter::Create(
     return ::private_join_and_compute::InvalidArgumentError(
         "`max_elements` must be positive");
   }
-  int num_hash_functions = static_cast<int>(std::ceil(-std::log2(fpr)));
-  int64_t num_bytes = static_cast<int64_t>(
-      std::ceil(-max_elements * std::log2(fpr) / std::log(2) / 8));
+  int num_hash_functions;
+  int64_t num_bytes;
+  if (golomb) {
+    num_hash_functions = 1;
+    num_bytes = static_cast<int64_t>(max_elements / fpr / 8);
+  } else {
+    num_hash_functions = static_cast<int>(std::ceil(-std::log2(fpr)));
+    num_bytes = static_cast<int64_t>(
+        std::ceil(-max_elements * std::log2(fpr) / std::log(2) / 8));
+  }
   std::string bits(num_bytes, '\0');
   auto context = absl::make_unique<::private_join_and_compute::Context>();
   return absl::WrapUnique(
@@ -61,8 +68,11 @@ StatusOr<std::unique_ptr<BloomFilter>> BloomFilter::CreateFromProtobuf(
   }
 
   auto context = absl::make_unique<::private_join_and_compute::Context>();
+  auto filter_bits = golomb_decompress(encoded_filter.bits(),
+                                       static_cast<size_t>(encoded_filter.div()),
+                                       static_cast<size_t>(encoded_filter.filter_length()));
   return absl::WrapUnique(new BloomFilter(encoded_filter.num_hash_functions(),
-                                          golomb_decompress(encoded_filter.bits()),
+                                          std::move(filter_bits),
                                           std::move(context)));
 }
 
@@ -89,7 +99,10 @@ bool BloomFilter::Check(const std::string& input) const {
 psi_proto::ServerSetup BloomFilter::ToProtobuf() const {
   psi_proto::ServerSetup server_setup;
   server_setup.set_num_hash_functions(NumHashFunctions());
-  server_setup.set_bits(golomb_compress(bits_));
+  auto golomb_compressed = golomb_compress(bits_);
+  server_setup.set_div(static_cast<int32_t>(golomb_compressed.div));
+  server_setup.set_filter_length(static_cast<int32_t>(bits_.length()));
+  server_setup.set_bits(golomb_compressed.compressed);
   return server_setup;
 }
 

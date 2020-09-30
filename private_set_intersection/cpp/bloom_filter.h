@@ -51,7 +51,8 @@ class BloomFilter {
   // Returns INVALID_ARGUMENT if fpr is not in (0,1) or max_elements is not
   // positive.
   static StatusOr<std::unique_ptr<BloomFilter>> Create(double fpr,
-                                                       int64_t max_elements);
+                                                       int64_t max_elements,
+                                                       bool golomb = false);
 
   // Creates a Bloom filter containing the bits of the passed protobuf, and the
   // given number of hash functions.

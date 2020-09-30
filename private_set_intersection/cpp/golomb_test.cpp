@@ -24,27 +24,25 @@ namespace {
 TEST(GolombTest, TestEncode) {
     char elements[] = { static_cast<char>(0b10000000) };
     std::string bloom_filter(elements, sizeof(elements) / sizeof(char));
-    std::string encoded = golomb_compress(bloom_filter);
-    char golomb[] = {2, static_cast<char>(0b00001110)}; // 7 / 4 = 1, 7 % 4 = 3
+    auto encoded = golomb_compress(bloom_filter);
+    char golomb[] = { static_cast<char>(0b00001110) }; // 7 / 4 = 1, 7 % 4 = 3
     std::string golomb_str(golomb, sizeof(golomb) / sizeof(char));
-    EXPECT_EQ(encoded, golomb_str);
+    EXPECT_EQ(encoded.compressed, golomb_str);
 }
 
 TEST(GolombTest, TestEncodeDecodeShort) {
-    char elements[] = { static_cast<char>(0b10000000) };
-    auto length = sizeof(elements) / sizeof(char);
-    std::string bloom_filter(elements, length);
-    std::string encoded = golomb_compress(bloom_filter);
-    std::string decoded = golomb_decompress(encoded);
+    char elements[] = { static_cast<char>(0b01000000) };
+    std::string bloom_filter(elements, sizeof(elements) / sizeof(char));
+    auto encoded = golomb_compress(bloom_filter);
+    std::string decoded = golomb_decompress(encoded.compressed, encoded.div, bloom_filter.length());
     EXPECT_EQ(bloom_filter, decoded);
 }
 
 TEST(GolombTest, TestEncodeDecodeLong) {
     char elements[] = { static_cast<char>(0b01001000), static_cast<char>(0b00100010), static_cast<char>(0b10000000) };
-    auto length = sizeof(elements) / sizeof(char);
-    std::string bloom_filter(elements, length);
-    std::string encoded = golomb_compress(bloom_filter);
-    std::string decoded = golomb_decompress(encoded);
+    std::string bloom_filter(elements, sizeof(elements) / sizeof(char));
+    auto encoded = golomb_compress(bloom_filter);
+    std::string decoded = golomb_decompress(encoded.compressed, encoded.div, bloom_filter.length());
     EXPECT_EQ(bloom_filter, decoded);
 }
 

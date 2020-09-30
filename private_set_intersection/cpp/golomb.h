@@ -38,9 +38,14 @@ const size_t CHAR_SIZE = sizeof(char) * 8;
 
 #define DIV_CEIL(a, b) (((a) + (b) - 1) / (b))
 
-std::string golomb_compress(const std::string& bloom_filter);
+struct GolombCompressed {
+    size_t div;
+    std::string compressed;
+};
 
-std::string golomb_decompress(const std::string& golomb_compressed);
+GolombCompressed golomb_compress(const std::string& bloom_filter, int div_param = -1);
+
+std::string golomb_decompress(const std::string& golomb_compressed, size_t filter_length, size_t div);
 
 }  // namespace private_set_intersection
 

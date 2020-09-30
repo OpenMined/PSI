@@ -20,7 +20,9 @@
 #include "absl/strings/str_cat.h"
 #include "gtest/gtest.h"
 #include "private_set_intersection/proto/psi.pb.h"
+#include "private_set_intersection/cpp/golomb.h"
 #include "util/status_matchers.h"
+#include <iostream>
 
 namespace private_set_intersection {
 namespace {
@@ -28,8 +30,8 @@ namespace {
 class BloomFilterTest : public ::testing::Test {
  protected:
   void SetUp() { return SetUp(0.001, 1 << 10); }
-  void SetUp(double fpr, int max_elements) {
-    PSI_ASSERT_OK_AND_ASSIGN(filter_, BloomFilter::Create(fpr, max_elements));
+  void SetUp(double fpr, int max_elements, bool golomb = false) {
+    PSI_ASSERT_OK_AND_ASSIGN(filter_, BloomFilter::Create(fpr, max_elements, golomb));
   }
 
   std::unique_ptr<BloomFilter> filter_;
@@ -85,13 +87,10 @@ TEST_F(BloomFilterTest, TestToProtobuf) {
   psi_proto::ServerSetup encoded_filter = filter_->ToProtobuf();
   EXPECT_EQ(encoded_filter.num_hash_functions(), filter_->NumHashFunctions());
   EXPECT_EQ(encoded_filter.num_hash_functions(), 7);
-//  EXPECT_EQ(encoded_filter.bits(), filter_->Bits());
-//  EXPECT_EQ(
-//      absl::Base64Escape(encoded_filter.bits()),
-//      "VN3/"
-//      "BXfUjEDvJLcxCTepUCTXGQwlTax0xHiMohCNb45uShFsznK099RH0CFVIMn91Bdc7jLkXHXr"
-//      "Xp1NimmZSDrYSj5sd/"
-//      "500nroNOdXbtd53u8cejPMGxbx7kR1E1zyO19mSkYLXq4xf7au5dFN0qhxqfLnjaCE");
+  EXPECT_EQ(encoded_filter.bits(), golomb_compress(filter_->Bits()).compressed);
+  EXPECT_EQ(
+      absl::Base64Escape(encoded_filter.bits()),
+      "JEmlqqoSqFRIikJAqlREVEqhiKBSRBIkRFRSUaAgESlCSaRCKFShkJAgpFCVokIqRSIhUIqKEhVSqlSRVIVAKogkARFRqSqSqgQqUalEQVRUklRKKlWSilJEQpESRYhIBUpJRFVQSqWiqiIVkZIqSEWKiqqSqJRKKqqoUlUqKkiVoqCoUlBCqFKpCEkqRaASUVUqqhJFkYhCSqBKVFIoqipKSSUlqpBKEZFCUqhEkqiqqFIIJII=");
 }
 
 TEST_F(BloomFilterTest, TestCreateFromProtobuf) {
@@ -104,6 +103,31 @@ TEST_F(BloomFilterTest, TestCreateFromProtobuf) {
     EXPECT_TRUE(filter2->Check(element));
   }
   EXPECT_FALSE(filter2->Check("not present"));
+}
+
+TEST_F(BloomFilterTest, TestGolombSmall) {
+  std::vector<std::string> elements = {"a", "b", "c", "d"};
+  filter_->Add(elements);
+  auto encoded = golomb_compress(filter_->Bits());
+  auto decoded = golomb_decompress(encoded.compressed, encoded.div, filter_->Bits().length());
+  EXPECT_EQ(filter_->Bits(), decoded);
+}
+
+TEST_F(BloomFilterTest, TestGolombLarge) {
+  double target_fpr = 0.000001;
+  size_t max_elements = 1000;
+  SetUp(target_fpr, max_elements, false);
+
+  for (int i = 0; i < max_elements; i++) {
+    filter_->Add(absl::StrCat("Element ", i));
+  }
+
+  std::cout << "Naive length (8 bytes per element): " << (max_elements * 8) << "\n";
+  std::cout << "Bloom filter length: " << filter_->Bits().length() << "\n";
+  auto encoded = golomb_compress(filter_->Bits(), -1);
+  std::cout << "Compressed bloom filter length: " << encoded.compressed.length() << "\n";
+  auto decoded = golomb_decompress(encoded.compressed, encoded.div, filter_->Bits().length());
+  EXPECT_EQ(filter_->Bits(), decoded);
 }
 
 }  // namespace
