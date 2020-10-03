@@ -17,33 +17,37 @@
 #include "private_set_intersection/cpp/golomb.h"
 
 #include "gtest/gtest.h"
+#include <vector>
+#include <utility>
 
 namespace private_set_intersection {
 namespace {
 
 TEST(GolombTest, TestEncode) {
-    char elements[] = { static_cast<char>(0b10000000) };
-    std::string bloom_filter(elements, sizeof(elements) / sizeof(char));
-    auto encoded = golomb_compress(bloom_filter);
+    std::vector<int64_t> elements = { 7 };
+    auto encoded = golomb_compress(elements);
     char golomb[] = { static_cast<char>(0b00001110) }; // 7 / 4 = 1, 7 % 4 = 3
     std::string golomb_str(golomb, sizeof(golomb) / sizeof(char));
     EXPECT_EQ(encoded.compressed, golomb_str);
+    EXPECT_EQ(encoded.div, 2);
 }
 
-TEST(GolombTest, TestEncodeDecodeShort) {
-    char elements[] = { static_cast<char>(0b01000000) };
-    std::string bloom_filter(elements, sizeof(elements) / sizeof(char));
-    auto encoded = golomb_compress(bloom_filter);
-    std::string decoded = golomb_decompress(encoded.compressed, encoded.div, bloom_filter.length());
-    EXPECT_EQ(bloom_filter, decoded);
+TEST(GolombTest, TestIntersectShort) {
+    std::vector<int64_t> elements = { 6 };
+    auto encoded = golomb_compress(elements);
+    std::vector<std::pair<int64_t, int64_t>> elements2 = { std::make_pair(5, 5), std::make_pair(6, 6) };
+    std::vector<int64_t> decoded = golomb_intersect(encoded.compressed, encoded.div, elements2);
+    std::vector<int64_t> intersect = { 6 };
+    EXPECT_EQ(intersect, decoded);
 }
 
 TEST(GolombTest, TestEncodeDecodeLong) {
-    char elements[] = { static_cast<char>(0b01001000), static_cast<char>(0b00100010), static_cast<char>(0b10000000) };
-    std::string bloom_filter(elements, sizeof(elements) / sizeof(char));
-    auto encoded = golomb_compress(bloom_filter);
-    std::string decoded = golomb_decompress(encoded.compressed, encoded.div, bloom_filter.length());
-    EXPECT_EQ(bloom_filter, decoded);
+    std::vector<int64_t> elements = { 0, 1, 10, 100};
+    auto encoded = golomb_compress(elements);
+    std::vector<std::pair<int64_t, int64_t>> elements2 = { std::make_pair(0, 0), std::make_pair(100, 100), std::make_pair(1000, 1000) };
+    std::vector<int64_t> decoded = golomb_intersect(encoded.compressed, encoded.div, elements2);
+    std::vector<int64_t> intersect = { 0, 100 };
+    EXPECT_EQ(intersect, decoded);
 }
 
 }  // namespace

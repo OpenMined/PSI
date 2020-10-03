@@ -18,10 +18,12 @@
 #define PRIVATE_SET_INTERSECTION_CPP_GOLOMB_H_
 
 #include <string>
+#include <vector>
+#include <utility>
 
 namespace private_set_intersection {
 
-const size_t CHAR_SIZE = sizeof(char) * 8;
+const int64_t CHAR_SIZE = sizeof(char) * 8;
 
 #if defined(_MSC_VER) // MSVC
     #include <intrin.h>
@@ -39,13 +41,13 @@ const size_t CHAR_SIZE = sizeof(char) * 8;
 #define DIV_CEIL(a, b) (((a) + (b) - 1) / (b))
 
 struct GolombCompressed {
-    size_t div;
+    int64_t div;
     std::string compressed;
 };
 
-GolombCompressed golomb_compress(const std::string& bloom_filter, int div_param = -1);
+GolombCompressed golomb_compress(const std::vector<int64_t>& sorted_arr, int div_param = -1);
 
-std::string golomb_decompress(const std::string& golomb_compressed, size_t filter_length, size_t div);
+std::vector<int64_t> golomb_intersect(const std::string& golomb_compressed, int64_t div, const std::vector<std::pair<int64_t, int64_t>>& sorted_arr);
 
 }  // namespace private_set_intersection
 
