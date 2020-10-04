@@ -19,10 +19,9 @@ package psi_proto;
 
 // Setup phase message for server.
 message ServerSetup {
-  int32 num_hash_functions = 1;
-  int32 div = 2;
-  int32 filter_length = 3;
-  bytes bits = 4;
+  int32 div = 1;
+  int64 hash_range = 2;
+  bytes golomb = 3;
 }
 
 // Client request with encoded elements sent to the server as an array of
