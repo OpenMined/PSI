@@ -1,12 +1,11 @@
-import combinedWasmLibrary from 'psi_combined_wasm'
+import serverJsLibrary from 'psi_server_js_node'
 
 import { NestedLibrary, createLoader } from './loader'
 import { PSILibrary, PSIConstructor } from './implementation/psi'
 import { PackageWrapperConstructor } from './implementation/package'
-import { ClientWrapperConstructor } from './implementation/client'
 import { ServerWrapperConstructor } from './implementation/server'
 
-const Loader = (): Promise<NestedLibrary> => createLoader(combinedWasmLibrary)
+const Loader = (): Promise<NestedLibrary> => createLoader(serverJsLibrary)
 
 /**
  * Main export for the library
@@ -17,9 +16,6 @@ export default async (): Promise<PSILibrary> =>
       loader: await Loader()
     }),
     serverWrapper: ServerWrapperConstructor({
-      loader: await Loader()
-    }),
-    clientWrapper: ClientWrapperConstructor({
       loader: await Loader()
     })
   })
