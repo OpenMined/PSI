@@ -1,3 +1,13 @@
+# Version 0.2.2
+
+Feat:
+
+- Added support for React Native with WebAssembly
+
+Minor breaking:
+
+- Deep import links have changed to include another level specifying the environment, `node`, `web`, or `worker`.
+
 # Version 0.2.1
 
 ## JS

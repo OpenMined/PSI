@@ -18,6 +18,18 @@ DEFAULT_EMSCRIPTEN_LINKOPTS = [
     "-s NODEJS_CATCH_EXIT=0",  # We don't have a 'main' so disable exit() catching
 ]
 
+NODE_LINKOPTS = [
+    "-s ENVIRONMENT=node",
+]
+
+WEB_LINKOPTS = [
+    "-s ENVIRONMENT=web,webview",
+]
+
+WORKER_LINKOPTS = [
+    "-s ENVIRONMENT=worker",
+]
+
 BENCHMARK_LINKOPTS = [
     "-s ERROR_ON_UNDEFINED_SYMBOLS=0",  # Ignore POSIX popen
 ]
@@ -49,15 +61,13 @@ cc_library(
 )
 
 cc_binary(
-    name = "psi_combined_wasm.js",
+    name = "psi_combined_wasm_node.js",
     srcs = [
         "bindings/client.cpp",
         "bindings/package.cpp",
         "bindings/server.cpp",
     ],
-    linkopts = DEFAULT_EMSCRIPTEN_LINKOPTS + [
-        "-s WASM=1",
-    ],
+    linkopts = DEFAULT_EMSCRIPTEN_LINKOPTS + WASM_LINKOPTS + NODE_LINKOPTS,
     deps = [
         ":package",
         ":utils",
@@ -67,13 +77,13 @@ cc_binary(
 )
 
 cc_binary(
-    name = "psi_combined_js.js",
+    name = "psi_combined_wasm_web.js",
     srcs = [
         "bindings/client.cpp",
         "bindings/package.cpp",
         "bindings/server.cpp",
     ],
-    linkopts = DEFAULT_EMSCRIPTEN_LINKOPTS + ASMJS_LINKOPTS,
+    linkopts = DEFAULT_EMSCRIPTEN_LINKOPTS + WASM_LINKOPTS + WEB_LINKOPTS,
     deps = [
         ":package",
         ":utils",
@@ -83,12 +93,76 @@ cc_binary(
 )
 
 cc_binary(
-    name = "psi_client_wasm.js",
+    name = "psi_combined_wasm_worker.js",
+    srcs = [
+        "bindings/client.cpp",
+        "bindings/package.cpp",
+        "bindings/server.cpp",
+    ],
+    linkopts = DEFAULT_EMSCRIPTEN_LINKOPTS + WASM_LINKOPTS + WORKER_LINKOPTS,
+    deps = [
+        ":package",
+        ":utils",
+        "//private_set_intersection/cpp:psi_client",
+        "//private_set_intersection/cpp:psi_server",
+    ],
+)
+
+cc_binary(
+    name = "psi_combined_js_node.js",
+    srcs = [
+        "bindings/client.cpp",
+        "bindings/package.cpp",
+        "bindings/server.cpp",
+    ],
+    linkopts = DEFAULT_EMSCRIPTEN_LINKOPTS + ASMJS_LINKOPTS + NODE_LINKOPTS,
+    deps = [
+        ":package",
+        ":utils",
+        "//private_set_intersection/cpp:psi_client",
+        "//private_set_intersection/cpp:psi_server",
+    ],
+)
+
+cc_binary(
+    name = "psi_combined_js_web.js",
+    srcs = [
+        "bindings/client.cpp",
+        "bindings/package.cpp",
+        "bindings/server.cpp",
+    ],
+    linkopts = DEFAULT_EMSCRIPTEN_LINKOPTS + ASMJS_LINKOPTS + WEB_LINKOPTS,
+    deps = [
+        ":package",
+        ":utils",
+        "//private_set_intersection/cpp:psi_client",
+        "//private_set_intersection/cpp:psi_server",
+    ],
+)
+
+cc_binary(
+    name = "psi_combined_js_worker.js",
+    srcs = [
+        "bindings/client.cpp",
+        "bindings/package.cpp",
+        "bindings/server.cpp",
+    ],
+    linkopts = DEFAULT_EMSCRIPTEN_LINKOPTS + ASMJS_LINKOPTS + WORKER_LINKOPTS,
+    deps = [
+        ":package",
+        ":utils",
+        "//private_set_intersection/cpp:psi_client",
+        "//private_set_intersection/cpp:psi_server",
+    ],
+)
+
+cc_binary(
+    name = "psi_client_wasm_node.js",
     srcs = [
         "bindings/client.cpp",
         "bindings/package.cpp",
     ],
-    linkopts = DEFAULT_EMSCRIPTEN_LINKOPTS + WASM_LINKOPTS,
+    linkopts = DEFAULT_EMSCRIPTEN_LINKOPTS + WASM_LINKOPTS + NODE_LINKOPTS,
     deps = [
         ":package",
         ":utils",
@@ -97,12 +171,12 @@ cc_binary(
 )
 
 cc_binary(
-    name = "psi_client_js.js",
+    name = "psi_client_wasm_web.js",
     srcs = [
         "bindings/client.cpp",
         "bindings/package.cpp",
     ],
-    linkopts = DEFAULT_EMSCRIPTEN_LINKOPTS + ASMJS_LINKOPTS,
+    linkopts = DEFAULT_EMSCRIPTEN_LINKOPTS + WASM_LINKOPTS + WEB_LINKOPTS,
     deps = [
         ":package",
         ":utils",
@@ -111,12 +185,68 @@ cc_binary(
 )
 
 cc_binary(
-    name = "psi_server_wasm.js",
+    name = "psi_client_wasm_worker.js",
+    srcs = [
+        "bindings/client.cpp",
+        "bindings/package.cpp",
+    ],
+    linkopts = DEFAULT_EMSCRIPTEN_LINKOPTS + WASM_LINKOPTS + WORKER_LINKOPTS,
+    deps = [
+        ":package",
+        ":utils",
+        "//private_set_intersection/cpp:psi_client",
+    ],
+)
+
+cc_binary(
+    name = "psi_client_js_node.js",
+    srcs = [
+        "bindings/client.cpp",
+        "bindings/package.cpp",
+    ],
+    linkopts = DEFAULT_EMSCRIPTEN_LINKOPTS + ASMJS_LINKOPTS + NODE_LINKOPTS,
+    deps = [
+        ":package",
+        ":utils",
+        "//private_set_intersection/cpp:psi_client",
+    ],
+)
+
+cc_binary(
+    name = "psi_client_js_web.js",
+    srcs = [
+        "bindings/client.cpp",
+        "bindings/package.cpp",
+    ],
+    linkopts = DEFAULT_EMSCRIPTEN_LINKOPTS + ASMJS_LINKOPTS + WEB_LINKOPTS,
+    deps = [
+        ":package",
+        ":utils",
+        "//private_set_intersection/cpp:psi_client",
+    ],
+)
+
+cc_binary(
+    name = "psi_client_js_worker.js",
+    srcs = [
+        "bindings/client.cpp",
+        "bindings/package.cpp",
+    ],
+    linkopts = DEFAULT_EMSCRIPTEN_LINKOPTS + ASMJS_LINKOPTS + WORKER_LINKOPTS,
+    deps = [
+        ":package",
+        ":utils",
+        "//private_set_intersection/cpp:psi_client",
+    ],
+)
+
+cc_binary(
+    name = "psi_server_wasm_node.js",
     srcs = [
         "bindings/package.cpp",
         "bindings/server.cpp",
     ],
-    linkopts = DEFAULT_EMSCRIPTEN_LINKOPTS + WASM_LINKOPTS,
+    linkopts = DEFAULT_EMSCRIPTEN_LINKOPTS + WASM_LINKOPTS + NODE_LINKOPTS,
     deps = [
         ":package",
         ":utils",
@@ -125,12 +255,68 @@ cc_binary(
 )
 
 cc_binary(
-    name = "psi_server_js.js",
+    name = "psi_server_wasm_web.js",
     srcs = [
         "bindings/package.cpp",
         "bindings/server.cpp",
     ],
-    linkopts = DEFAULT_EMSCRIPTEN_LINKOPTS + ASMJS_LINKOPTS,
+    linkopts = DEFAULT_EMSCRIPTEN_LINKOPTS + WASM_LINKOPTS + WEB_LINKOPTS,
+    deps = [
+        ":package",
+        ":utils",
+        "//private_set_intersection/cpp:psi_server",
+    ],
+)
+
+cc_binary(
+    name = "psi_server_wasm_worker.js",
+    srcs = [
+        "bindings/package.cpp",
+        "bindings/server.cpp",
+    ],
+    linkopts = DEFAULT_EMSCRIPTEN_LINKOPTS + WASM_LINKOPTS + WORKER_LINKOPTS,
+    deps = [
+        ":package",
+        ":utils",
+        "//private_set_intersection/cpp:psi_server",
+    ],
+)
+
+cc_binary(
+    name = "psi_server_js_node.js",
+    srcs = [
+        "bindings/package.cpp",
+        "bindings/server.cpp",
+    ],
+    linkopts = DEFAULT_EMSCRIPTEN_LINKOPTS + ASMJS_LINKOPTS + NODE_LINKOPTS,
+    deps = [
+        ":package",
+        ":utils",
+        "//private_set_intersection/cpp:psi_server",
+    ],
+)
+
+cc_binary(
+    name = "psi_server_js_web.js",
+    srcs = [
+        "bindings/package.cpp",
+        "bindings/server.cpp",
+    ],
+    linkopts = DEFAULT_EMSCRIPTEN_LINKOPTS + ASMJS_LINKOPTS + WEB_LINKOPTS,
+    deps = [
+        ":package",
+        ":utils",
+        "//private_set_intersection/cpp:psi_server",
+    ],
+)
+
+cc_binary(
+    name = "psi_server_js_worker.js",
+    srcs = [
+        "bindings/package.cpp",
+        "bindings/server.cpp",
+    ],
+    linkopts = DEFAULT_EMSCRIPTEN_LINKOPTS + ASMJS_LINKOPTS + WORKER_LINKOPTS,
     deps = [
         ":package",
         ":utils",
@@ -141,7 +327,7 @@ cc_binary(
 cc_binary(
     name = "psi_benchmark_wasm.js",
     srcs = ["//private_set_intersection/cpp:psi_benchmark.cpp"],
-    linkopts = DEFAULT_EMSCRIPTEN_LINKOPTS + WASM_LINKOPTS + BENCHMARK_LINKOPTS,
+    linkopts = DEFAULT_EMSCRIPTEN_LINKOPTS + WASM_LINKOPTS + BENCHMARK_LINKOPTS + NODE_LINKOPTS,
     deps = [
         "//private_set_intersection/cpp:psi_client",
         "//private_set_intersection/cpp:psi_server",
@@ -153,7 +339,7 @@ cc_binary(
 cc_binary(
     name = "psi_benchmark_js.js",
     srcs = ["//private_set_intersection/cpp:psi_benchmark.cpp"],
-    linkopts = DEFAULT_EMSCRIPTEN_LINKOPTS + ASMJS_LINKOPTS + BENCHMARK_LINKOPTS,
+    linkopts = DEFAULT_EMSCRIPTEN_LINKOPTS + ASMJS_LINKOPTS + BENCHMARK_LINKOPTS + NODE_LINKOPTS,
     deps = [
         "//private_set_intersection/cpp:psi_client",
         "//private_set_intersection/cpp:psi_server",
