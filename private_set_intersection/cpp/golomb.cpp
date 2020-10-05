@@ -37,14 +37,16 @@ GolombCompressed golomb_compress(
     int64_t prev = 0;
     double avg = 0.0;
     int64_t count = 0;
+    bool start = true;
 
     while (it != sorted_arr.end()) {
         auto curr = *it;
 
-        if ((prev == 0) | (curr > prev)) { // & instead of && to save a branch
+        if (start | (curr > prev)) { // | instead of || to save a branch
             avg += static_cast<double>(curr - prev);
             ++count;
             prev = curr;
+            start = false;
         }
 
         ++it;
@@ -59,27 +61,28 @@ GolombCompressed golomb_compress(
     int64_t res_idx = 0;
     it = sorted_arr.begin();
     prev = 0;
+    start = true;
 
     while (it != sorted_arr.end()) {
         auto curr = *it;
 
-        if ((prev == 0) | (curr > prev)) {
+        if (start | (curr > prev)) {
             auto delta = curr - prev;
             auto quotient = delta >> div;
-            auto remainder = delta & ((1 << div) - 1);
+            auto remainder = delta & ((static_cast<int64_t>(1) << div) - 1);
             auto len = quotient + 1 + div;
 
-            compressed.resize(static_cast<size_t>(DIV_CEIL(res_idx + len, CHAR_SIZE)), 0);
+            compressed.resize(DIV_CEIL(res_idx + len, CHAR_SIZE), 0);
 
             auto unary_end = res_idx + quotient;
-            compressed[static_cast<size_t>(unary_end / CHAR_SIZE)] |= static_cast<char>(1 << (unary_end % CHAR_SIZE));
+            compressed[unary_end / CHAR_SIZE] |= static_cast<char>(static_cast<int64_t>(1) << (unary_end % CHAR_SIZE));
 
             auto binary_start = (unary_end + 1) % CHAR_SIZE;
             int64_t binary_idx = 0;
             int64_t i = (unary_end + 1) / CHAR_SIZE;
 
             while (binary_idx < div) {
-                compressed[static_cast<size_t>(i)] |= static_cast<char>((static_cast<uint64_t>(remainder) >> binary_idx) << binary_start);
+                compressed[i] |= static_cast<char>((static_cast<uint64_t>(remainder) >> binary_idx) << binary_start);
                 binary_idx += CHAR_SIZE - binary_start;
                 binary_start = 0;
                 ++i;
@@ -87,6 +90,7 @@ GolombCompressed golomb_compress(
 
             res_idx += len;
             prev = curr;
+            start = false;
         }
 
         ++it;
@@ -127,7 +131,7 @@ std::vector<int64_t> golomb_intersect(
             break;
         }
 
-        auto ctz = static_cast<int64_t>(CTZ(static_cast<unsigned int>(static_cast<unsigned char>(*it >> offset))));
+        auto ctz = static_cast<int64_t>(CTZ(static_cast<unsigned int>(static_cast<unsigned char>(*it) >> offset)));
         quotient += ctz;
         auto one_idx = ctz + offset;
         auto binary_start = (one_idx + 1) % CHAR_SIZE;
@@ -137,7 +141,8 @@ std::vector<int64_t> golomb_intersect(
 
         while (binary_idx < div) {
             auto num_bits = std::min(CHAR_SIZE - binary_start, div - binary_idx);
-            remainder |= (static_cast<int64_t>(static_cast<unsigned char>(*it) >> binary_start) & ((1 << num_bits) - 1)) << binary_idx;
+            remainder |= (static_cast<int64_t>(static_cast<unsigned char>(*it) >> binary_start)
+                    & ((static_cast<int64_t>(1) << num_bits) - 1)) << binary_idx;
             binary_idx += num_bits;
             binary_start = 0;
             ++it;

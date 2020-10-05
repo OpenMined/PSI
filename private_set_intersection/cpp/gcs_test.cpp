@@ -109,7 +109,7 @@ TEST(GCSTest, TestCreateFromProtobuf) {
 }
 
 TEST(GCSTest, TestGolombSize) {
-  double fpr[] = {0.01, 0.001, 0.0001, 0.00001, 1e-6, 1e-7, 1e-8};
+  double fpr[] = {0.01, 0.001, 0.0001, 0.00001, 1e-6, 1e-7, 1e-8, 1e-9, 1e-10, 1e-11, 1e-12};
   int max_elements = 10000;
   std::vector<std::string> elements;
   elements.reserve(max_elements);
