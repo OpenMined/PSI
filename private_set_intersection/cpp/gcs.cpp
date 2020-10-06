@@ -69,9 +69,9 @@ StatusOr<std::unique_ptr<GCS>> GCS::CreateFromProtobuf(
   }
 
   auto context = absl::make_unique<::private_join_and_compute::Context>();
-  return absl::WrapUnique(new GCS(std::move(encoded_set.golomb()),
-                                          static_cast<int64_t>(encoded_set.div()),
-                                          encoded_set.hash_range(),
+  return absl::WrapUnique(new GCS(std::move(encoded_set.bits()),
+                                          static_cast<int64_t>(encoded_set.gcs().div()),
+                                          encoded_set.gcs().hash_range(),
                                           std::move(context)));
 }
 
@@ -98,9 +98,9 @@ std::vector<int64_t> GCS::Intersect(absl::Span<const std::string> elements, bool
 
 psi_proto::ServerSetup GCS::ToProtobuf() const {
   psi_proto::ServerSetup server_setup;
-  server_setup.set_golomb(golomb_);
-  server_setup.set_div(static_cast<int32_t>(div_));
-  server_setup.set_hash_range(hash_range_);
+  server_setup.set_bits(golomb_);
+  server_setup.gcs_mutable()->set_div(static_cast<int32_t>(div_));
+  server_setup.gcs_mutable()->set_hash_range(hash_range_);
   return server_setup;
 }
 

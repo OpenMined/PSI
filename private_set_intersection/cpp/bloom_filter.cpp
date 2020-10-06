@@ -34,6 +34,13 @@ BloomFilter::BloomFilter(
       context_(std::move(context)) {}
 
 StatusOr<std::unique_ptr<BloomFilter>> BloomFilter::Create(
+    double fpr, absl::Span<const std::string> elements) {
+  auto filter = CreateEmpty(fpr, elements.size());
+  filter->Add(elements);
+  return filter;
+}
+
+StatusOr<std::unique_ptr<BloomFilter>> BloomFilter::CreateEmpty(
     double fpr, int64_t max_elements) {
   if (fpr <= 0 || fpr >= 1) {
     return ::private_join_and_compute::InvalidArgumentError(
@@ -60,7 +67,7 @@ StatusOr<std::unique_ptr<BloomFilter>> BloomFilter::CreateFromProtobuf(
   }
 
   auto context = absl::make_unique<::private_join_and_compute::Context>();
-  return absl::WrapUnique(new BloomFilter(encoded_filter.num_hash_functions(),
+  return absl::WrapUnique(new BloomFilter(encoded_filter.bloom_filter().num_hash_functions(),
                                           std::move(encoded_filter.bits()),
                                           std::move(context)));
 }
@@ -85,9 +92,21 @@ bool BloomFilter::Check(const std::string& input) const {
   return result;
 }
 
+std::vector<int64_t> Intersect(absl::Span<const std::string> elements) const {
+  std::vector<int64_t> res;
+
+  for (int64_t i = 0; i < elements.size(); i++) {
+    if (Check(elements[i])) {
+      res.push_back(i);
+    }
+  }
+
+  return res;
+}
+
 psi_proto::ServerSetup BloomFilter::ToProtobuf() const {
   psi_proto::ServerSetup server_setup;
-  server_setup.set_num_hash_functions(NumHashFunctions());
+  server_setup.bloom_filter_mutable().set_num_hash_functions(NumHashFunctions());
   server_setup.set_bits(bits_);
   return server_setup;
 }
