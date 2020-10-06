@@ -26,6 +26,8 @@ namespace private_set_intersection {
 
 using ::private_join_and_compute::StatusOr;
 
+enum class DataStructure { GCS, BloomFilter };
+
 // The server side of a Private Set Intersection protocol.
 // See the documentation in PsiClient for a full description of the
 // protocol.
@@ -67,7 +69,7 @@ class PsiServer {
   // Returns INTERNAL if encryption fails.
   StatusOr<psi_proto::ServerSetup> CreateSetupMessage(
       double fpr, int64_t num_client_inputs,
-      absl::Span<const std::string> inputs) const;
+      absl::Span<const std::string> inputs, DataStructure ds = DataStructure::GCS) const;
 
   // Processes a client query and returns the corresponding server response to
   // be sent to the client. For each encrytped element H(x)^c in the decoded

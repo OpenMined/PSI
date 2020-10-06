@@ -38,7 +38,7 @@ class GCS {
   static StatusOr<std::unique_ptr<GCS>> CreateFromProtobuf(
       const psi_proto::ServerSetup& encoded_set);
 
-  std::vector<int64_t> Intersect(absl::Span<const std::string> elements, bool sort_idx = true) const;
+  std::vector<int64_t> Intersect(absl::Span<const std::string> elements) const;
 
   psi_proto::ServerSetup ToProtobuf() const;
 

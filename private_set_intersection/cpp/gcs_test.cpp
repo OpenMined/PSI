@@ -18,9 +18,11 @@
 
 #include "absl/strings/escaping.h"
 #include "absl/strings/str_cat.h"
+#include "absl/container/flat_hash_set.h"
 #include "gtest/gtest.h"
 #include "private_set_intersection/proto/psi.pb.h"
 #include "util/status_matchers.h"
+
 #include <iostream>
 
 namespace private_set_intersection {
@@ -36,8 +38,13 @@ TEST(GCSTest, TestIntersect) {
   std::vector<int64_t> intersect = {0, 1, 2};
 
   auto res = gcs->Intersect(absl::MakeConstSpan(&elements2[0], elements2.size()));
+  absl::flat_hash_set<int64_t> set(res.begin(), res.end());
 
-  EXPECT_EQ(res, intersect);
+  EXPECT_EQ(res.size(), intersect.size());
+
+  for (int64_t i : intersect) {
+      EXPECT_TRUE(set.contains(i));
+  }
 }
 
 TEST(GCSTest, TestFPR) {
@@ -87,9 +94,9 @@ TEST(GCSTest, TestToProtobuf) {
 
   // Create the protobuf from the GCS and check if it matches.
   psi_proto::ServerSetup encoded_gcs = gcs->ToProtobuf();
-  EXPECT_EQ(encoded_gcs.div(), gcs->Div());
-  EXPECT_EQ(encoded_gcs.hash_range(), gcs->HashRange());
-  EXPECT_EQ(encoded_gcs.golomb(), gcs->Golomb());
+  EXPECT_EQ(encoded_gcs.gcs().div(), gcs->Div());
+  EXPECT_EQ(encoded_gcs.gcs().hash_range(), gcs->HashRange());
+  EXPECT_EQ(encoded_gcs.bits(), gcs->Golomb());
 }
 
 TEST(GCSTest, TestCreateFromProtobuf) {
@@ -105,11 +112,17 @@ TEST(GCSTest, TestCreateFromProtobuf) {
   std::vector<std::string> elements2 = {"a", "b", "c", "d", "not present"};
   auto res = gcs2->Intersect(absl::MakeConstSpan(&elements2[0], elements2.size()));
   std::vector<int64_t> intersect = {0, 1, 2, 3};
-  EXPECT_EQ(res, intersect);
+  absl::flat_hash_set<int64_t> set(res.begin(), res.end());
+
+  EXPECT_EQ(res.size(), intersect.size());
+
+  for (int64_t i : intersect) {
+      EXPECT_TRUE(set.contains(i));
+  }
 }
 
 TEST(GCSTest, TestGolombSize) {
-  double fpr[] = {0.01, 0.001, 0.0001, 0.00001, 1e-6, 1e-7, 1e-8, 1e-9, 1e-10, 1e-11, 1e-12};
+  double fpr[] = {1e-6, 1e-7, 1e-8, 1e-9, 1e-10, 1e-11, 1e-12};
   int max_elements = 10000;
   std::vector<std::string> elements;
   elements.reserve(max_elements);
@@ -125,7 +138,13 @@ TEST(GCSTest, TestGolombSize) {
     std::unique_ptr<GCS> gcs;
     PSI_ASSERT_OK_AND_ASSIGN(gcs, GCS::Create(fpr[i], absl::MakeConstSpan(&elements[0], elements.size())));
     auto res = gcs->Intersect(absl::MakeConstSpan(&elements[0], elements.size()));
-    EXPECT_EQ(res, idx);
+    absl::flat_hash_set<int64_t> set(res.begin(), res.end());
+
+    EXPECT_EQ(res.size(), idx.size());
+
+    for (int64_t j : idx) {
+      EXPECT_TRUE(set.contains(j));
+    }
 
     std::cout << "Max elements: " << max_elements << ", FPR: " << fpr[i] << "\n";
     std::cout << "Naive length (8 bytes per element): " << (max_elements * 8) << "\n";

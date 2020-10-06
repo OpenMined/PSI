@@ -29,7 +29,7 @@ class BloomFilterTest : public ::testing::Test {
  protected:
   void SetUp() { return SetUp(0.001, 1 << 10); }
   void SetUp(double fpr, int max_elements) {
-    PSI_ASSERT_OK_AND_ASSIGN(filter_, BloomFilter::Create(fpr, max_elements));
+    PSI_ASSERT_OK_AND_ASSIGN(filter_, BloomFilter::CreateEmpty(fpr, max_elements));
   }
 
   std::unique_ptr<BloomFilter> filter_;
@@ -83,8 +83,8 @@ TEST_F(BloomFilterTest, TestToProtobuf) {
 
   // Create the protobuf from the Bloom filter and check if it matches.
   psi_proto::ServerSetup encoded_filter = filter_->ToProtobuf();
-  EXPECT_EQ(encoded_filter.num_hash_functions(), filter_->NumHashFunctions());
-  EXPECT_EQ(encoded_filter.num_hash_functions(), 7);
+  EXPECT_EQ(encoded_filter.bloom_filter().num_hash_functions(), filter_->NumHashFunctions());
+  EXPECT_EQ(encoded_filter.bloom_filter().num_hash_functions(), 7);
   EXPECT_EQ(encoded_filter.bits(), filter_->Bits());
   EXPECT_EQ(
       absl::Base64Escape(encoded_filter.bits()),

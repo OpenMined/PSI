@@ -75,7 +75,7 @@ StatusOr<std::unique_ptr<GCS>> GCS::CreateFromProtobuf(
                                           std::move(context)));
 }
 
-std::vector<int64_t> GCS::Intersect(absl::Span<const std::string> elements, bool sort_idx) const {
+std::vector<int64_t> GCS::Intersect(absl::Span<const std::string> elements) const {
   std::vector<std::pair<int64_t, int64_t>> hashes;
   hashes.reserve(elements.size());
 
@@ -89,18 +89,14 @@ std::vector<int64_t> GCS::Intersect(absl::Span<const std::string> elements, bool
             });
   auto res = golomb_intersect(golomb_, div_, hashes);
 
-  if (sort_idx) {
-      std::sort(res.begin(), res.end());
-  }
-
   return res;
 }
 
 psi_proto::ServerSetup GCS::ToProtobuf() const {
   psi_proto::ServerSetup server_setup;
   server_setup.set_bits(golomb_);
-  server_setup.gcs_mutable()->set_div(static_cast<int32_t>(div_));
-  server_setup.gcs_mutable()->set_hash_range(hash_range_);
+  server_setup.mutable_gcs()->set_div(static_cast<int32_t>(div_));
+  server_setup.mutable_gcs()->set_hash_range(hash_range_);
   return server_setup;
 }
 

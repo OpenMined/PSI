@@ -23,6 +23,7 @@
 #include "absl/strings/str_cat.h"
 #include "private_set_intersection/proto/psi.pb.h"
 #include "util/canonical_errors.h"
+#include "util/status_macros.h"
 
 namespace private_set_intersection {
 
@@ -35,7 +36,7 @@ BloomFilter::BloomFilter(
 
 StatusOr<std::unique_ptr<BloomFilter>> BloomFilter::Create(
     double fpr, absl::Span<const std::string> elements) {
-  auto filter = CreateEmpty(fpr, elements.size());
+  ASSIGN_OR_RETURN(auto filter, CreateEmpty(fpr, elements.size()));
   filter->Add(elements);
   return filter;
 }
@@ -92,7 +93,7 @@ bool BloomFilter::Check(const std::string& input) const {
   return result;
 }
 
-std::vector<int64_t> Intersect(absl::Span<const std::string> elements) const {
+std::vector<int64_t> BloomFilter::Intersect(absl::Span<const std::string> elements) const {
   std::vector<int64_t> res;
 
   for (int64_t i = 0; i < elements.size(); i++) {
@@ -106,7 +107,7 @@ std::vector<int64_t> Intersect(absl::Span<const std::string> elements) const {
 
 psi_proto::ServerSetup BloomFilter::ToProtobuf() const {
   psi_proto::ServerSetup server_setup;
-  server_setup.bloom_filter_mutable().set_num_hash_functions(NumHashFunctions());
+  server_setup.mutable_bloom_filter()->set_num_hash_functions(NumHashFunctions());
   server_setup.set_bits(bits_);
   return server_setup;
 }

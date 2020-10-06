@@ -184,9 +184,9 @@ TEST_F(PsiServerTest, TestCreatingFromKey) {
       server->CreateSetupMessage(fpr, num_client_elements, server_elements));
 
   // Both setup messages should be the same
-  EXPECT_EQ(server_setup.div(), server_setup1.div());
-  EXPECT_EQ(server_setup.hash_range(), server_setup1.hash_range());
-  EXPECT_EQ(server_setup.golomb(), server_setup1.golomb());
+  EXPECT_EQ(server_setup.gcs().div(), server_setup1.gcs().div());
+  EXPECT_EQ(server_setup.gcs().hash_range(), server_setup1.gcs().hash_range());
+  EXPECT_EQ(server_setup.bits(), server_setup1.bits());
 
   // Create a 31-byte key that should be equivalent to a 32-byte null-inserted
   // key.
@@ -205,9 +205,9 @@ TEST_F(PsiServerTest, TestCreatingFromKey) {
   PSI_ASSERT_OK_AND_ASSIGN(
       auto server_setup3,
       server3->CreateSetupMessage(fpr, num_client_elements, server_elements));
-  EXPECT_EQ(server_setup2.div(), server_setup3.div());
-  EXPECT_EQ(server_setup2.hash_range(), server_setup3.hash_range());
-  EXPECT_EQ(server_setup2.golomb(), server_setup3.golomb());
+  EXPECT_EQ(server_setup2.gcs().div(), server_setup3.gcs().div());
+  EXPECT_EQ(server_setup2.gcs().hash_range(), server_setup3.gcs().hash_range());
+  EXPECT_EQ(server_setup2.bits(), server_setup3.bits());
 }
 
 TEST_F(PsiServerTest, FailIfRevealIntersectionDoesntMatch) {
