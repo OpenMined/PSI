@@ -146,7 +146,7 @@ TEST(GCSTest, TestGolombSize) {
       EXPECT_TRUE(set.contains(j));
     }
 
-    std::cout << "Max elements: " << max_elements << ", FPR: " << fpr[i] << "\n";
+    std::cout << "Max elements: " << max_elements << ", FPR: " << fpr[i] << ", div: " << gcs->Div() << "\n";
     std::cout << "Naive length (8 bytes per element): " << (max_elements * 8) << "\n";
     auto filter_length = static_cast<int64_t>(std::ceil(-max_elements * std::log2(fpr[i]) / std::log(2) / 8));
     std::cout << "Bloom filter length: " << filter_length << "\n";

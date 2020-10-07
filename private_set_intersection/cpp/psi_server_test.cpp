@@ -61,14 +61,21 @@ TEST_F(PsiServerTest, TestCorrectnessIntersection) {
   PSI_ASSERT_OK_AND_ASSIGN(
       auto server_setup,
       server_->CreateSetupMessage(fpr, num_client_elements, server_elements));
+  PSI_ASSERT_OK_AND_ASSIGN(
+      auto server_setup2,
+      server_->CreateSetupMessage(fpr, num_client_elements, server_elements, DataStructure::BloomFilter));
 
   // Create Client request.
   PSI_ASSERT_OK_AND_ASSIGN(auto client_request,
+                           client->CreateRequest(client_elements));
+  PSI_ASSERT_OK_AND_ASSIGN(auto client_request2,
                            client->CreateRequest(client_elements));
 
   // Create Server response.
   PSI_ASSERT_OK_AND_ASSIGN(auto server_response,
                            server_->ProcessRequest(client_request));
+  PSI_ASSERT_OK_AND_ASSIGN(auto server_response2,
+                           server_->ProcessRequest(client_request2));
 
   // Compute intersection.
   PSI_ASSERT_OK_AND_ASSIGN(
@@ -76,13 +83,20 @@ TEST_F(PsiServerTest, TestCorrectnessIntersection) {
       client->GetIntersection(server_setup, server_response));
   absl::flat_hash_set<int64_t> intersection_set(intersection.begin(),
                                                 intersection.end());
+  PSI_ASSERT_OK_AND_ASSIGN(
+      std::vector<int64_t> intersection2,
+      client->GetIntersection(server_setup2, server_response2));
+  absl::flat_hash_set<int64_t> intersection_set2(intersection2.begin(),
+                                                 intersection2.end());
 
   // Test if all even elements are present.
   for (int i = 0; i < num_client_elements; i++) {
     if (i % 2) {
       EXPECT_FALSE(intersection_set.contains(i));
+      EXPECT_FALSE(intersection_set2.contains(i));
     } else {
       EXPECT_TRUE(intersection_set.contains(i));
+      EXPECT_TRUE(intersection_set2.contains(i));
     }
   }
 }
