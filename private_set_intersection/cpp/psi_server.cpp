@@ -22,8 +22,8 @@
 #include "absl/strings/escaping.h"
 #include "absl/strings/str_cat.h"
 #include "openssl/obj_mac.h"
-#include "private_set_intersection/cpp/gcs.h"
 #include "private_set_intersection/cpp/bloom_filter.h"
+#include "private_set_intersection/cpp/gcs.h"
 #include "private_set_intersection/proto/psi.pb.h"
 #include "util/canonical_errors.h"
 #include "util/status_macros.h"
@@ -61,8 +61,8 @@ StatusOr<std::unique_ptr<PsiServer>> PsiServer::CreateFromKey(
 }
 
 StatusOr<psi_proto::ServerSetup> PsiServer::CreateSetupMessage(
-    double fpr, int64_t num_client_inputs,
-    absl::Span<const std::string> inputs, DataStructure ds) const {
+    double fpr, int64_t num_client_inputs, absl::Span<const std::string> inputs,
+    DataStructure ds) const {
   auto num_inputs = static_cast<int64_t>(inputs.size());
   // Correct fpr to account for multiple client queries.
   double corrected_fpr = fpr / num_client_inputs;
@@ -76,21 +76,25 @@ StatusOr<psi_proto::ServerSetup> PsiServer::CreateSetupMessage(
   }
 
   if (ds == DataStructure::GCS) {
-      // Create a GCS and insert elements into it.
-      ASSIGN_OR_RETURN(auto gcs,
-                       GCS::Create(corrected_fpr, absl::MakeConstSpan(&encrypted[0], encrypted.size())));
-      
-      // Return the GCS as a Protobuf
-      return gcs->ToProtobuf();
+    // Create a GCS and insert elements into it.
+    ASSIGN_OR_RETURN(
+        auto gcs,
+        GCS::Create(corrected_fpr,
+                    absl::MakeConstSpan(&encrypted[0], encrypted.size())));
+
+    // Return the GCS as a Protobuf
+    return gcs->ToProtobuf();
   } else if (ds == DataStructure::BloomFilter) {
-      // Create a Bloom Filter and insert elements into it.
-      ASSIGN_OR_RETURN(auto filter,
-                       BloomFilter::Create(corrected_fpr, absl::MakeConstSpan(&encrypted[0], encrypted.size())));
-      
-      // Return the Bloom Filter as a Protobuf
-      return filter->ToProtobuf();
+    // Create a Bloom Filter and insert elements into it.
+    ASSIGN_OR_RETURN(auto filter,
+                     BloomFilter::Create(
+                         corrected_fpr,
+                         absl::MakeConstSpan(&encrypted[0], encrypted.size())));
+
+    // Return the Bloom Filter as a Protobuf
+    return filter->ToProtobuf();
   } else {
-      return ::private_join_and_compute::InvalidArgumentError("Impossible");
+    return ::private_join_and_compute::InvalidArgumentError("Impossible");
   }
 }
 

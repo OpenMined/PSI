@@ -63,7 +63,8 @@ TEST_F(PsiServerTest, TestCorrectnessIntersection) {
       server_->CreateSetupMessage(fpr, num_client_elements, server_elements));
   PSI_ASSERT_OK_AND_ASSIGN(
       auto server_setup2,
-      server_->CreateSetupMessage(fpr, num_client_elements, server_elements, DataStructure::BloomFilter));
+      server_->CreateSetupMessage(fpr, num_client_elements, server_elements,
+                                  DataStructure::BloomFilter));
 
   // Create Client request.
   PSI_ASSERT_OK_AND_ASSIGN(auto client_request,

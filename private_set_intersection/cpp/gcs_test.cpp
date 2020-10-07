@@ -16,14 +16,14 @@
 
 #include "private_set_intersection/cpp/gcs.h"
 
+#include <iostream>
+
+#include "absl/container/flat_hash_set.h"
 #include "absl/strings/escaping.h"
 #include "absl/strings/str_cat.h"
-#include "absl/container/flat_hash_set.h"
 #include "gtest/gtest.h"
 #include "private_set_intersection/proto/psi.pb.h"
 #include "util/status_matchers.h"
-
-#include <iostream>
 
 namespace private_set_intersection {
 namespace {
@@ -32,18 +32,21 @@ TEST(GCSTest, TestIntersect) {
   std::vector<std::string> elements = {"a", "b", "c", "d"};
 
   std::unique_ptr<GCS> gcs;
-  PSI_ASSERT_OK_AND_ASSIGN(gcs, GCS::Create(0.001, absl::MakeConstSpan(&elements[0], elements.size())));
+  PSI_ASSERT_OK_AND_ASSIGN(
+      gcs,
+      GCS::Create(0.001, absl::MakeConstSpan(&elements[0], elements.size())));
 
   std::vector<std::string> elements2 = {"a", "b", "d", "e"};
   std::vector<int64_t> intersect = {0, 1, 2};
 
-  auto res = gcs->Intersect(absl::MakeConstSpan(&elements2[0], elements2.size()));
+  auto res =
+      gcs->Intersect(absl::MakeConstSpan(&elements2[0], elements2.size()));
   absl::flat_hash_set<int64_t> set(res.begin(), res.end());
 
   EXPECT_EQ(res.size(), intersect.size());
 
   for (int64_t i : intersect) {
-      EXPECT_TRUE(set.contains(i));
+    EXPECT_TRUE(set.contains(i));
   }
 }
 
@@ -59,7 +62,9 @@ TEST(GCSTest, TestFPR) {
     }
 
     std::unique_ptr<GCS> gcs;
-    PSI_ASSERT_OK_AND_ASSIGN(gcs, GCS::Create(target_fpr, absl::MakeConstSpan(&elements[0], elements.size())));
+    PSI_ASSERT_OK_AND_ASSIGN(
+        gcs, GCS::Create(target_fpr,
+                         absl::MakeConstSpan(&elements[0], elements.size())));
 
     // Test 10k elements to measure FPR.
     int num_tests = 10000;
@@ -70,7 +75,9 @@ TEST(GCSTest, TestFPR) {
       elements2.push_back(absl::StrCat("Test ", i));
     }
 
-    auto count = gcs->Intersect(absl::MakeConstSpan(&elements2[0], elements2.size())).size();
+    auto count =
+        gcs->Intersect(absl::MakeConstSpan(&elements2[0], elements2.size()))
+            .size();
 
     // Check if actual FPR matches the target FPR, allowing for 20% error.
     double actual_fpr = count / num_tests;
@@ -90,7 +97,9 @@ TEST(GCSTest, TestToProtobuf) {
   }
 
   std::unique_ptr<GCS> gcs;
-  PSI_ASSERT_OK_AND_ASSIGN(gcs, GCS::Create(fpr, absl::MakeConstSpan(&elements[0], elements.size())));
+  PSI_ASSERT_OK_AND_ASSIGN(
+      gcs,
+      GCS::Create(fpr, absl::MakeConstSpan(&elements[0], elements.size())));
 
   // Create the protobuf from the GCS and check if it matches.
   psi_proto::ServerSetup encoded_gcs = gcs->ToProtobuf();
@@ -103,21 +112,24 @@ TEST(GCSTest, TestCreateFromProtobuf) {
   std::vector<std::string> elements = {"a", "b", "c", "d"};
 
   std::unique_ptr<GCS> gcs;
-  PSI_ASSERT_OK_AND_ASSIGN(gcs, GCS::Create(0.001, absl::MakeConstSpan(&elements[0], elements.size())));
+  PSI_ASSERT_OK_AND_ASSIGN(
+      gcs,
+      GCS::Create(0.001, absl::MakeConstSpan(&elements[0], elements.size())));
 
   psi_proto::ServerSetup encoded_gcs = gcs->ToProtobuf();
   std::unique_ptr<GCS> gcs2;
   PSI_ASSERT_OK_AND_ASSIGN(gcs2, GCS::CreateFromProtobuf(encoded_gcs));
 
   std::vector<std::string> elements2 = {"a", "b", "c", "d", "not present"};
-  auto res = gcs2->Intersect(absl::MakeConstSpan(&elements2[0], elements2.size()));
+  auto res =
+      gcs2->Intersect(absl::MakeConstSpan(&elements2[0], elements2.size()));
   std::vector<int64_t> intersect = {0, 1, 2, 3};
   absl::flat_hash_set<int64_t> set(res.begin(), res.end());
 
   EXPECT_EQ(res.size(), intersect.size());
 
   for (int64_t i : intersect) {
-      EXPECT_TRUE(set.contains(i));
+    EXPECT_TRUE(set.contains(i));
   }
 }
 
@@ -136,8 +148,11 @@ TEST(GCSTest, TestGolombSize) {
 
   for (int i = 0; i < sizeof(fpr) / sizeof(double); i++) {
     std::unique_ptr<GCS> gcs;
-    PSI_ASSERT_OK_AND_ASSIGN(gcs, GCS::Create(fpr[i], absl::MakeConstSpan(&elements[0], elements.size())));
-    auto res = gcs->Intersect(absl::MakeConstSpan(&elements[0], elements.size()));
+    PSI_ASSERT_OK_AND_ASSIGN(
+        gcs, GCS::Create(fpr[i],
+                         absl::MakeConstSpan(&elements[0], elements.size())));
+    auto res =
+        gcs->Intersect(absl::MakeConstSpan(&elements[0], elements.size()));
     absl::flat_hash_set<int64_t> set(res.begin(), res.end());
 
     EXPECT_EQ(res.size(), idx.size());
@@ -146,9 +161,12 @@ TEST(GCSTest, TestGolombSize) {
       EXPECT_TRUE(set.contains(j));
     }
 
-    std::cout << "Max elements: " << max_elements << ", FPR: " << fpr[i] << ", div: " << gcs->Div() << "\n";
-    std::cout << "Naive length (8 bytes per element): " << (max_elements * 8) << "\n";
-    auto filter_length = static_cast<int64_t>(std::ceil(-max_elements * std::log2(fpr[i]) / std::log(2) / 8));
+    std::cout << "Max elements: " << max_elements << ", FPR: " << fpr[i]
+              << ", div: " << gcs->Div() << "\n";
+    std::cout << "Naive length (8 bytes per element): " << (max_elements * 8)
+              << "\n";
+    auto filter_length = static_cast<int64_t>(
+        std::ceil(-max_elements * std::log2(fpr[i]) / std::log(2) / 8));
     std::cout << "Bloom filter length: " << filter_length << "\n";
     std::cout << "GCS length: " << gcs->Golomb().length() << "\n";
   }

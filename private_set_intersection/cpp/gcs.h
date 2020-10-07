@@ -32,8 +32,8 @@ class GCS {
  public:
   GCS() = delete;
 
-  static StatusOr<std::unique_ptr<GCS>> Create(double fpr,
-                                               absl::Span<const std::string> elements);
+  static StatusOr<std::unique_ptr<GCS>> Create(
+      double fpr, absl::Span<const std::string> elements);
 
   static StatusOr<std::unique_ptr<GCS>> CreateFromProtobuf(
       const psi_proto::ServerSetup& encoded_set);
@@ -52,7 +52,8 @@ class GCS {
   GCS(std::string golomb, int64_t div, int64_t hash_range,
       std::unique_ptr<::private_join_and_compute::Context> context);
 
-  static int64_t Hash(const std::string& input, int64_t hash_range, ::private_join_and_compute::Context& context);
+  static int64_t Hash(const std::string& input, int64_t hash_range,
+                      ::private_join_and_compute::Context& context);
 
   std::string golomb_;
 

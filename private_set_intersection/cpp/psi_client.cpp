@@ -22,8 +22,8 @@
 #include "absl/strings/escaping.h"
 #include "absl/strings/str_cat.h"
 #include "openssl/obj_mac.h"
-#include "private_set_intersection/cpp/gcs.h"
 #include "private_set_intersection/cpp/bloom_filter.h"
+#include "private_set_intersection/cpp/gcs.h"
 #include "private_set_intersection/proto/psi.pb.h"
 #include "util/canonical_errors.h"
 #include "util/status_macros.h"
@@ -131,18 +131,20 @@ StatusOr<std::vector<int64_t>> PsiClient::ProcessResponse(
     decrypted.push_back(element);
   }
 
-  if (server_setup.data_structure_case() == psi_proto::ServerSetup::DataStructureCase::kGcs) {
+  if (server_setup.data_structure_case() ==
+      psi_proto::ServerSetup::DataStructureCase::kGcs) {
     // Decode GCS from the server setup.
-    ASSIGN_OR_RETURN(auto gcs,
-                     GCS::CreateFromProtobuf(server_setup));
+    ASSIGN_OR_RETURN(auto gcs, GCS::CreateFromProtobuf(server_setup));
     return gcs->Intersect(absl::MakeConstSpan(&decrypted[0], decrypted.size()));
-  } else if (server_setup.data_structure_case() == psi_proto::ServerSetup::DataStructureCase::kBloomFilter) {
+  } else if (server_setup.data_structure_case() ==
+             psi_proto::ServerSetup::DataStructureCase::kBloomFilter) {
     // Decode Bloom Filter from the server setup.
     ASSIGN_OR_RETURN(auto filter,
                      BloomFilter::CreateFromProtobuf(server_setup));
-    return filter->Intersect(absl::MakeConstSpan(&decrypted[0], decrypted.size()));
+    return filter->Intersect(
+        absl::MakeConstSpan(&decrypted[0], decrypted.size()));
   } else {
-      return ::private_join_and_compute::InvalidArgumentError("Impossible");
+    return ::private_join_and_compute::InvalidArgumentError("Impossible");
   }
 }
 

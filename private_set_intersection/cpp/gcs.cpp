@@ -16,21 +16,20 @@
 
 #include "private_set_intersection/cpp/gcs.h"
 
+#include <algorithm>
 #include <cmath>
 #include <utility>
-#include <algorithm>
 
 #include "absl/memory/memory.h"
 #include "absl/strings/escaping.h"
-#include "private_set_intersection/proto/psi.pb.h"
 #include "private_set_intersection/cpp/golomb.h"
+#include "private_set_intersection/proto/psi.pb.h"
 #include "util/canonical_errors.h"
 
 namespace private_set_intersection {
 
-GCS::GCS(
-    std::string golomb, int64_t div, int64_t hash_range,
-    std::unique_ptr<::private_join_and_compute::Context> context)
+GCS::GCS(std::string golomb, int64_t div, int64_t hash_range,
+         std::unique_ptr<::private_join_and_compute::Context> context)
     : golomb_(std::move(golomb)),
       div_(div),
       hash_range_(hash_range),
@@ -55,10 +54,8 @@ StatusOr<std::unique_ptr<GCS>> GCS::Create(
   std::sort(hashes.begin(), hashes.end());
   auto compressed = golomb_compress(hashes);
   auto div = compressed.div;
-  return absl::WrapUnique(new GCS(std::move(compressed.compressed),
-                                  div,
-                                  hash_range,
-                                  std::move(context)));
+  return absl::WrapUnique(new GCS(std::move(compressed.compressed), div,
+                                  hash_range, std::move(context)));
 }
 
 StatusOr<std::unique_ptr<GCS>> GCS::CreateFromProtobuf(
@@ -70,12 +67,13 @@ StatusOr<std::unique_ptr<GCS>> GCS::CreateFromProtobuf(
 
   auto context = absl::make_unique<::private_join_and_compute::Context>();
   return absl::WrapUnique(new GCS(std::move(encoded_set.bits()),
-                                          static_cast<int64_t>(encoded_set.gcs().div()),
-                                          encoded_set.gcs().hash_range(),
-                                          std::move(context)));
+                                  static_cast<int64_t>(encoded_set.gcs().div()),
+                                  encoded_set.gcs().hash_range(),
+                                  std::move(context)));
 }
 
-std::vector<int64_t> GCS::Intersect(absl::Span<const std::string> elements) const {
+std::vector<int64_t> GCS::Intersect(
+    absl::Span<const std::string> elements) const {
   std::vector<std::pair<int64_t, int64_t>> hashes;
   hashes.reserve(elements.size());
 
@@ -83,10 +81,10 @@ std::vector<int64_t> GCS::Intersect(absl::Span<const std::string> elements) cons
     hashes.emplace_back(Hash(elements[i], hash_range_, *context_), i);
   }
 
-  std::sort(hashes.begin(), hashes.end(),
-            [](const std::pair<int64_t, int64_t>& a, const std::pair<int64_t, int64_t>& b) {
-              return a.first < b.first;
-            });
+  std::sort(
+      hashes.begin(), hashes.end(),
+      [](const std::pair<int64_t, int64_t>& a,
+         const std::pair<int64_t, int64_t>& b) { return a.first < b.first; });
   auto res = golomb_intersect(golomb_, div_, hashes);
 
   return res;
@@ -106,15 +104,15 @@ int64_t GCS::HashRange() const { return hash_range_; }
 
 std::string GCS::Golomb() const { return golomb_; }
 
-int64_t GCS::Hash(const std::string& input, int64_t hash_range, ::private_join_and_compute::Context& context) {
+int64_t GCS::Hash(const std::string& input, int64_t hash_range,
+                  ::private_join_and_compute::Context& context) {
   const auto bn_num_bits = context.CreateBigNum(hash_range);
 
-  const int64_t h =
-      context.CreateBigNum(context.Sha256String(input))
-          .Mod(bn_num_bits)
-          .ToIntValue()
-          .ValueOrDie();  // ValueOrDie is safe here since bn_num_bits fits in
-                          // an int64.
+  const int64_t h = context.CreateBigNum(context.Sha256String(input))
+                        .Mod(bn_num_bits)
+                        .ToIntValue()
+                        .ValueOrDie();  // ValueOrDie is safe here since
+                                        // bn_num_bits fits in an int64.
   return h;
 }
 

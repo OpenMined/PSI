@@ -18,8 +18,8 @@ void BM_ServerSetup(benchmark::State& state, double fpr,
   psi_proto::ServerSetup setup;
   int64_t elements_processed = 0;
   for (auto _ : state) {
-    setup =
-        server->CreateSetupMessage(fpr, num_client_inputs, inputs, ds).ValueOrDie();
+    setup = server->CreateSetupMessage(fpr, num_client_inputs, inputs, ds)
+                .ValueOrDie();
     ::benchmark::DoNotOptimize(setup);
     elements_processed += num_inputs;
   }
@@ -31,28 +31,36 @@ void BM_ServerSetup(benchmark::State& state, double fpr,
 }
 // Range is for the number of inputs, and the captured argument is the false
 // positive rate for 10k client queries.
-BENCHMARK_CAPTURE(BM_ServerSetup, 0.001 size gcs, 0.001, false, DataStructure::GCS)
+BENCHMARK_CAPTURE(BM_ServerSetup, 0.001 size gcs, 0.001, false,
+                  DataStructure::GCS)
     ->RangeMultiplier(10)
     ->Range(1, 100000);
-BENCHMARK_CAPTURE(BM_ServerSetup, 0.000001 size gcs, 0.000001, false, DataStructure::GCS)
+BENCHMARK_CAPTURE(BM_ServerSetup, 0.000001 size gcs, 0.000001, false,
+                  DataStructure::GCS)
     ->RangeMultiplier(10)
     ->Range(1, 100000);
-BENCHMARK_CAPTURE(BM_ServerSetup, 0.001 intersection gcs, 0.001, true, DataStructure::GCS)
+BENCHMARK_CAPTURE(BM_ServerSetup, 0.001 intersection gcs, 0.001, true,
+                  DataStructure::GCS)
     ->RangeMultiplier(10)
     ->Range(1, 100000);
-BENCHMARK_CAPTURE(BM_ServerSetup, 0.000001 intersection gcs, 0.000001, true, DataStructure::GCS)
+BENCHMARK_CAPTURE(BM_ServerSetup, 0.000001 intersection gcs, 0.000001, true,
+                  DataStructure::GCS)
     ->RangeMultiplier(10)
     ->Range(1, 100000);
-BENCHMARK_CAPTURE(BM_ServerSetup, 0.001 size bloom, 0.001, false, DataStructure::BloomFilter)
+BENCHMARK_CAPTURE(BM_ServerSetup, 0.001 size bloom, 0.001, false,
+                  DataStructure::BloomFilter)
     ->RangeMultiplier(10)
     ->Range(1, 100000);
-BENCHMARK_CAPTURE(BM_ServerSetup, 0.000001 size bloom, 0.000001, false, DataStructure::BloomFilter)
+BENCHMARK_CAPTURE(BM_ServerSetup, 0.000001 size bloom, 0.000001, false,
+                  DataStructure::BloomFilter)
     ->RangeMultiplier(10)
     ->Range(1, 100000);
-BENCHMARK_CAPTURE(BM_ServerSetup, 0.001 intersection bloom, 0.001, true, DataStructure::BloomFilter)
+BENCHMARK_CAPTURE(BM_ServerSetup, 0.001 intersection bloom, 0.001, true,
+                  DataStructure::BloomFilter)
     ->RangeMultiplier(10)
     ->Range(1, 100000);
-BENCHMARK_CAPTURE(BM_ServerSetup, 0.000001 intersection bloom, 0.000001, true, DataStructure::BloomFilter)
+BENCHMARK_CAPTURE(BM_ServerSetup, 0.000001 intersection bloom, 0.000001, true,
+                  DataStructure::BloomFilter)
     ->RangeMultiplier(10)
     ->Range(1, 100000);
 
@@ -115,8 +123,8 @@ BENCHMARK_CAPTURE(BM_ServerProcessRequest, intersection, true)
     ->RangeMultiplier(10)
     ->Range(1, 10000);
 
-void BM_ClientProcessResponse(benchmark::State& state,
-                              bool reveal_intersection, DataStructure ds) {
+void BM_ClientProcessResponse(benchmark::State& state, bool reveal_intersection,
+                              DataStructure ds) {
   auto client = PsiClient::CreateWithNewKey(reveal_intersection).ValueOrDie();
   auto server = PsiServer::CreateWithNewKey(reveal_intersection).ValueOrDie();
   int num_inputs = state.range(0);
@@ -147,13 +155,16 @@ void BM_ClientProcessResponse(benchmark::State& state,
 BENCHMARK_CAPTURE(BM_ClientProcessResponse, size gcs, false, DataStructure::GCS)
     ->RangeMultiplier(10)
     ->Range(1, 10000);
-BENCHMARK_CAPTURE(BM_ClientProcessResponse, intersection gcs, true, DataStructure::GCS)
+BENCHMARK_CAPTURE(BM_ClientProcessResponse, intersection gcs, true,
+                  DataStructure::GCS)
     ->RangeMultiplier(10)
     ->Range(1, 10000);
-BENCHMARK_CAPTURE(BM_ClientProcessResponse, size bloom, false, DataStructure::BloomFilter)
+BENCHMARK_CAPTURE(BM_ClientProcessResponse, size bloom, false,
+                  DataStructure::BloomFilter)
     ->RangeMultiplier(10)
     ->Range(1, 10000);
-BENCHMARK_CAPTURE(BM_ClientProcessResponse, intersection bloom, true, DataStructure::BloomFilter)
+BENCHMARK_CAPTURE(BM_ClientProcessResponse, intersection bloom, true,
+                  DataStructure::BloomFilter)
     ->RangeMultiplier(10)
     ->Range(1, 10000);
 

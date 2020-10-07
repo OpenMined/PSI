@@ -44,8 +44,8 @@ class BloomFilter {
  public:
   BloomFilter() = delete;
 
-  static StatusOr<std::unique_ptr<BloomFilter>> Create(double fpr,
-                                                       absl::Span<const std::string> elements);
+  static StatusOr<std::unique_ptr<BloomFilter>> Create(
+      double fpr, absl::Span<const std::string> elements);
 
   // Creates a new Bloom filter. As long as less than `max_elements` are
   // inserted, the probability of false positives when performing checks
@@ -53,8 +53,8 @@ class BloomFilter {
   //
   // Returns INVALID_ARGUMENT if fpr is not in (0,1) or max_elements is not
   // positive.
-  static StatusOr<std::unique_ptr<BloomFilter>> CreateEmpty(double fpr,
-                                                            int64_t max_elements);
+  static StatusOr<std::unique_ptr<BloomFilter>> CreateEmpty(
+      double fpr, int64_t max_elements);
 
   // Creates a Bloom filter containing the bits of the passed protobuf, and the
   // given number of hash functions.
