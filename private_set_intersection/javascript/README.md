@@ -10,7 +10,7 @@ Private Set Intersection protocol based on ECDH and Bloom Filters. The goal of t
 
 - 💾 Low memory footprint
 - 🚀 Fastest implementation using WebAssembly
-- 🔥 Works in any client / server configuration
+- 🔥 Works in any client / server configuration, even [React Native](https://reactnative.dev/)!
 - 😎 Privacy preserving
 
 ## Installation
@@ -33,72 +33,96 @@ import PSI from '@openmined/psi.js'
 const PSI = require('@openmined/psi.js')
 ```
 
-By **default**, the package will use the `combined` build with the `wasm` target using the `cjs` variant. This includes both `client` and `server` implementations, but often only one is used. We offer deep import
-links to only load what is needed for your specific environment.
+By **default**, the package will use the `combined` build with the `wasm` targeting the `node` environment using `cjs`. This includes both `client` and `server` implementations, but often only one is used. We offer deep import links to only load what is needed for your specific environment.
 
 The deep import structure is as follows:
-`<package name> / <client|server|combined> / <wasm|js> / <cjs|iife|es>`
+`<package name> / <client|server|combined> / <wasm|js> / <node|web|worker> / <cjs|iife|es>`
+
+Example, you only need one from the following:
+
+```javascript
+import PSI from '@openmined/psi.js/combined/wasm/node/cjs'
+import PSI from '@openmined/psi.js/combined/wasm/node/iife'
+import PSI from '@openmined/psi.js/combined/wasm/node/es'
+import PSI from '@openmined/psi.js/combined/wasm/web/cjs'
+import PSI from '@openmined/psi.js/combined/wasm/web/iife'
+import PSI from '@openmined/psi.js/combined/wasm/web/es'
+import PSI from '@openmined/psi.js/combined/wasm/worker/cjs'
+import PSI from '@openmined/psi.js/combined/wasm/worker/iife'
+import PSI from '@openmined/psi.js/combined/wasm/worker/es'
+import PSI from '@openmined/psi.js/combined/js/node/cjs'
+import PSI from '@openmined/psi.js/combined/js/node/iife'
+import PSI from '@openmined/psi.js/combined/js/node/es'
+import PSI from '@openmined/psi.js/combined/js/web/cjs'
+import PSI from '@openmined/psi.js/combined/js/web/iife'
+import PSI from '@openmined/psi.js/combined/js/web/es'
+import PSI from '@openmined/psi.js/combined/js/worker/cjs'
+import PSI from '@openmined/psi.js/combined/js/worker/iife'
+import PSI from '@openmined/psi.js/combined/js/worker/es'
+```
 
 To only load the `client`:
 
 ```javascript
-// Loads only the client, supporting WebAssembly or asm.js
-// with either `cjs` (NodeJS), `iife` (Browser) or `es` (ES6 modules)
-// Pick one of the following:
-import PSI from '@openmined/psi.js/client/wasm/cjs'
-import PSI from '@openmined/psi.js/client/wasm/iife'
-import PSI from '@openmined/psi.js/client/wasm/es'
-import PSI from '@openmined/psi.js/client/js/cjs'
-import PSI from '@openmined/psi.js/client/js/iife'
-import PSI from '@openmined/psi.js/client/js/es'
+// Using a deep import link for wasm/node/es
+import PSI from '@openmined/psi.js/client/wasm/node/es'
 ;(async () => {
   // Wait for the library to initialize
   const psi = await PSI()
 
   const client = psi.client.createWithNewKey()
   // psi.server is not implemented
+  //...
 })()
 ```
 
 To only load the `server`:
 
 ```javascript
-// Loads only the server, supporting WebAssembly or asm.js
-// with either `cjs` (NodeJS), `iife` (Browser) or `es` (ES6 modules)
-// Pick one of the following:
-import PSI from '@openmined/psi.js/server/wasm/cjs'
-import PSI from '@openmined/psi.js/server/wasm/iife'
-import PSI from '@openmined/psi.js/server/wasm/es'
-import PSI from '@openmined/psi.js/server/js/cjs'
-import PSI from '@openmined/psi.js/server/js/iife'
-import PSI from '@openmined/psi.js/server/js/es'
+// Using a deep import link for wasm/node/es
+import PSI from '@openmined/psi.js/server/wasm/node/es'
 ;(async () => {
   // Wait for the library to initialize
   const psi = await PSI()
 
   const server = psi.server.createWithNewKey()
   // psi.client is not implemented
+  //...
 })()
 ```
 
 To **manually** override the `combined` default import:
 
 ```javascript
-// Loads the combined server and client, supporting WebAssembly or asm.js
-// with either `cjs` (NodeJS), `iife` (Browser) or `es` (ES6 modules)
-// Pick one of the following:
-import PSI from '@openmined/psi.js/combined/wasm/cjs' // Default
-import PSI from '@openmined/psi.js/combined/wasm/iife'
-import PSI from '@openmined/psi.js/combined/wasm/es'
-import PSI from '@openmined/psi.js/combined/js/cjs'
-import PSI from '@openmined/psi.js/combined/js/iife'
-import PSI from '@openmined/psi.js/combined/js/es'
+// Using a deep import link for wasm/node/es
+import PSI from '@openmined/psi.js/combined/wasm/node/es'
 ;(async () => {
   // Wait for the library to initialize
   const psi = await PSI()
 
   const client = psi.client.createWithNewKey()
   const server = psi.server.createWithNewKey()
+  //...
+})()
+```
+
+## React-Native
+
+The bundle needs a bit of extra work. Specifically, it expects the browser `crypto.getRandomValues` which it will not find by default as react-native doesn't support the crypto builtin. It can be fixed by `npm install react-native-get-random-values` which provides access to this global while supporting a CSPRNG. The library also needs to have the browser `document` which is an artifact from the build system. Simply provide `global.document = {}`. Finally, it requires the following deep import structure:
+
+```javascript
+// Provide a CSPRNG mapping to crypto.getRandomValues()
+import 'react-native-get-random-values'
+import PSI from '@openmined/psi.js/combined/wasm/web/es'
+;(async () => {
+  // Spoof the browser document
+  global.document = {}
+  // Wait for the library to initialize
+  const psi = await PSI()
+
+  const client = psi.client.createWithNewKey()
+  const server = psi.server.createWithNewKey()
+  //...
 })()
 ```
 
@@ -224,11 +248,11 @@ const PSI = require('@openmined/psi.js')
   // intsersectionSize 5
 
   // Reveal the intersection (only if `revealIntersection` was set to true)
-  const intersection = client.getIntersection(
-    deserializedServerSetup,
-    deserializedServerResponse
-  )
-  console.log('intersection', intersection)
+  // const intersection = client.getIntersection(
+  //   deserializedServerSetup,
+  //   deserializedServerResponse
+  // )
+  // console.log('intersection', intersection)
   // intersection [ 0, 2, 4, 6, 8 ]
 })()
 ```
