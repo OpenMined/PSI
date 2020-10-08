@@ -38,9 +38,11 @@ GolombCompressed golomb_compress(const std::vector<int64_t>& sorted_arr,
   int64_t count = 0;
   bool start = true;
 
+  // one pass to collect statistics
   while (it != sorted_arr.end()) {
     auto curr = *it;
 
+    // skip duplicates
     if (start | (curr > prev)) {  // | instead of || to save a branch
       avg += static_cast<double>(curr - prev);
       ++count;
@@ -53,6 +55,7 @@ GolombCompressed golomb_compress(const std::vector<int64_t>& sorted_arr,
 
   std::string compressed;
 
+  // estimate median through calculated mean
   avg /= static_cast<double>(count);
   auto prob = 1 / avg;  // assume geometric distribution
   int64_t div = div_param >= 0
@@ -68,14 +71,18 @@ GolombCompressed golomb_compress(const std::vector<int64_t>& sorted_arr,
   while (it != sorted_arr.end()) {
     auto curr = *it;
 
+    // skip duplicates
     if (start | (curr > prev)) {
       auto delta = curr - prev;
+      // decompose difference into quotient and remainder
+      // divide by 2^div
       auto quotient = delta >> div;
       auto remainder = delta & ((static_cast<int64_t>(1) << div) - 1);
       auto len = quotient + 1 + div;
 
       compressed.resize(DIV_CEIL(res_idx + len, CHAR_SIZE), 0);
 
+      // unary representation is a sequence of 0s, followed by 1
       auto unary_end = res_idx + quotient;
       compressed[unary_end / CHAR_SIZE] |=
           static_cast<char>(static_cast<int64_t>(1) << (unary_end % CHAR_SIZE));
@@ -84,6 +91,8 @@ GolombCompressed golomb_compress(const std::vector<int64_t>& sorted_arr,
       int64_t binary_idx = 0;
       int64_t i = (unary_end + 1) / CHAR_SIZE;
 
+      // copy each byte of the remainder to the resulting string
+      // this is represented in binary
       while (binary_idx < div) {
         compressed[i] |= static_cast<char>(
             (static_cast<uint64_t>(remainder) >> binary_idx) << binary_start);
@@ -124,6 +133,7 @@ std::vector<int64_t> golomb_intersect(
   while (true) {
     int64_t quotient = 0;
 
+    // skip empty bytes in the string, which contain the unary quotient
     while (it != golomb_compressed.end() &&
            (static_cast<unsigned char>(*it) >> offset) == 0) {
       quotient += CHAR_SIZE - offset;
@@ -135,15 +145,18 @@ std::vector<int64_t> golomb_intersect(
       break;
     }
 
+    // get the position of the first 1 bit, which is the end of the unary portion
     auto ctz = static_cast<int64_t>(CTZ(
         static_cast<unsigned int>(static_cast<unsigned char>(*it) >> offset)));
     quotient += ctz;
     auto one_idx = ctz + offset;
+    // skip the 1 bit that signals the end of the unary quotient
     auto binary_start = (one_idx + 1) % CHAR_SIZE;
     it += static_cast<size_t>(binary_start == 0);
     int64_t binary_idx = 0;
     int64_t remainder = 0;
 
+    // copy the bytes from the string to the remainder (represented with binary)
     while (binary_idx < div) {
       auto num_bits = std::min(CHAR_SIZE - binary_start, div - binary_idx);
       remainder |= (static_cast<int64_t>(static_cast<unsigned char>(*it) >>
@@ -155,17 +168,22 @@ std::vector<int64_t> golomb_intersect(
       ++it;
     }
 
+    // if the while loop is executed, then we may have erroneously skipped a byte
     offset = (one_idx + 1 + div) % CHAR_SIZE;
     it -= static_cast<size_t>((div > 0) & (offset != 0));
 
+    // reconstruct the delta
     auto delta = (quotient << div) | remainder;
     prefix_sum += delta;
+
+    // now, check if the current the other (sorted) set contains the current prefix_sum
 
     while (arr_it != sorted_arr.end() && (*arr_it).first < prefix_sum) {
       ++arr_it;
     }
 
     while (arr_it != sorted_arr.end() && (*arr_it).first == prefix_sum) {
+      // the other set should contain a mapping to the indexes before sorting
       res.push_back((*arr_it).second);
       ++arr_it;
     }
