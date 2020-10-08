@@ -1,3 +1,15 @@
+# Version 0.3.0
+
+Feat:
+
+- Added support for Golomb Compressed Sets as a memory-efficient alternative to Bloom Filters.
+
+Breaking:
+
+- The Bloom Filter implementation now has a slightly different API to support bulk insertion or intersection.
+
+- The format of the ServerSetup protocol buffer has been changed to support serializing both Bloom Filters and Golomb Compressed Sets.
+
 # Version 0.2.2
 
 Feat:
@@ -14,7 +26,7 @@ Minor breaking:
 
 Fix:
 
-- There was a misconfiguration in rollup which did not properly bundle protocol buffers for the brower.
+- There was a misconfiguration in rollup which did not properly bundle protocol buffers for the browser.
 
 Breaking:
 

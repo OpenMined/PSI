@@ -6,7 +6,7 @@
 
 # PSI
 
-Private Set Intersection protocol based on ECDH and Bloom Filters.
+Private Set Intersection protocol based on ECDH, Bloom Filters, and Golomb Compressed Sets.
 
 ## Requirements
 
