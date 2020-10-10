@@ -194,12 +194,12 @@ func benchmarkServerSetup(cnt int, fpr float64, revealIntersection bool, b *test
 const fpr3 = 0.001
 const fpr6 = 0.000001
 
-func BenchmarkServerSetup1fpr3(b *testing.B)                { benchmarkServerSetup(10, fpr3, false, b) }
+func BenchmarkServerSetup1fpr3(b *testing.B)                { benchmarkServerSetup(1, fpr3, false, b) }
 func BenchmarkServerSetup10fpr3(b *testing.B)               { benchmarkServerSetup(10, fpr3, false, b) }
 func BenchmarkServerSetup100fpr3(b *testing.B)              { benchmarkServerSetup(100, fpr3, false, b) }
 func BenchmarkServerSetup1000fpr3(b *testing.B)             { benchmarkServerSetup(1000, fpr3, false, b) }
 func BenchmarkServerSetup10000fpr3(b *testing.B)            { benchmarkServerSetup(10000, fpr3, false, b) }
-func BenchmarkServerSetupIntersection1fpr3(b *testing.B)    { benchmarkServerSetup(10, fpr3, true, b) }
+func BenchmarkServerSetupIntersection1fpr3(b *testing.B)    { benchmarkServerSetup(1, fpr3, true, b) }
 func BenchmarkServerSetupIntersection10fpr3(b *testing.B)   { benchmarkServerSetup(10, fpr3, true, b) }
 func BenchmarkServerSetupIntersection100fpr3(b *testing.B)  { benchmarkServerSetup(100, fpr3, true, b) }
 func BenchmarkServerSetupIntersection1000fpr3(b *testing.B) { benchmarkServerSetup(1000, fpr3, true, b) }
@@ -207,12 +207,12 @@ func BenchmarkServerSetupIntersection10000fpr3(b *testing.B) {
 	benchmarkServerSetup(10000, fpr3, true, b)
 }
 
-func BenchmarkServerSetup1fpr6(b *testing.B)                { benchmarkServerSetup(10, fpr6, false, b) }
+func BenchmarkServerSetup1fpr6(b *testing.B)                { benchmarkServerSetup(1, fpr6, false, b) }
 func BenchmarkServerSetup10fpr6(b *testing.B)               { benchmarkServerSetup(10, fpr6, false, b) }
 func BenchmarkServerSetup100fpr6(b *testing.B)              { benchmarkServerSetup(100, fpr6, false, b) }
 func BenchmarkServerSetup1000fpr6(b *testing.B)             { benchmarkServerSetup(1000, fpr6, false, b) }
 func BenchmarkServerSetup10000fpr6(b *testing.B)            { benchmarkServerSetup(10000, fpr6, false, b) }
-func BenchmarkServerSetupIntersection1fpr6(b *testing.B)    { benchmarkServerSetup(10, fpr6, true, b) }
+func BenchmarkServerSetupIntersection1fpr6(b *testing.B)    { benchmarkServerSetup(1, fpr6, true, b) }
 func BenchmarkServerSetupIntersection10fpr6(b *testing.B)   { benchmarkServerSetup(10, fpr6, true, b) }
 func BenchmarkServerSetupIntersection100fpr6(b *testing.B)  { benchmarkServerSetup(100, fpr6, true, b) }
 func BenchmarkServerSetupIntersection1000fpr6(b *testing.B) { benchmarkServerSetup(1000, fpr6, true, b) }

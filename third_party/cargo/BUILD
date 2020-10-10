@@ -9,6 +9,11 @@ licenses([
   "notice" # See individual crates for specific licenses
 ])
 alias(
+    name = "bencher",
+    actual = "@raze__bencher__0_1_5//:bencher",
+    tags = ["cargo-raze"],
+)
+alias(
     name = "libc",
     actual = "@raze__libc__0_2_74//:libc",
     tags = ["cargo-raze"],
