@@ -1,3 +1,14 @@
+# Version 0.2.3
+
+Feat:
+
+- Include TypeScript declarations inside the bundle to support TS environments
+- Reduce the numbed of JS bundles by using `umd` in rollup. No more `cjs`, `iife` or `es` as it is not necessary.
+
+Breaking:
+
+- Deep import links now use a single file structure instead of nested folders
+
 # Version 0.2.2
 
 Feat:

@@ -4,31 +4,32 @@ import commonjs from '@rollup/plugin-commonjs'
 import resolve from '@rollup/plugin-node-resolve'
 import globals from 'rollup-plugin-node-globals'
 import builtins from 'rollup-plugin-node-builtins'
+import typescript from 'rollup-plugin-typescript2'
+const formats = ['umd']
 const targets = ['client', 'server', 'combined']
 const variants = ['wasm', 'js']
 const environments = ['node', 'web', 'worker']
-const formats = ['cjs', 'iife', 'es']
-const outputs = targets.reduce(
-  (acc, target) => [
+const outputs = formats.reduce(
+  (acc, format) => [
     ...acc,
-    ...variants.reduce(
-      (acc, variant) => [
+    ...targets.reduce(
+      (acc, target) => [
         ...acc,
-        ...environments.reduce(
-          (acc, environment) => [
+        ...variants.reduce(
+          (acc, variant) => [
             ...acc,
-            ...formats.reduce(
-              (acc, format) => [
+            ...environments.reduce(
+              (acc, environment) => [
                 ...acc,
                 {
-                  input: `private_set_intersection/javascript/tsc-out/index_${target}_${variant}_${environment}.js`,
+                  input: `private_set_intersection/javascript/src/${target}_${variant}_${environment}.ts`,
                   onwarn(warning, warn) {
                     // suppress eval warnings from google-protobuf
                     if (warning.code === 'EVAL') return
                     warn(warning)
                   },
                   output: {
-                    file: `private_set_intersection/javascript/dist/${target}/${variant}/${environment}/${format}/index.js`,
+                    file: `private_set_intersection/javascript/dist/${target}_${variant}_${environment}.js`,
                     sourcemap: true,
                     format,
                     name: 'PSI',
@@ -59,6 +60,9 @@ const outputs = targets.reduce(
                             './private_set_intersection/javascript/bin/psi_$1.js'
                         }
                       ]
+                    }),
+                    typescript({
+                      verbosity: 2
                     })
                   ].filter(Boolean)
                 }

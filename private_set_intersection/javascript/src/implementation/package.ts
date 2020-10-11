@@ -1,5 +1,5 @@
 import * as psi from 'psi_'
-import { Loader } from '../loader'
+import { Loader } from '../main/loader'
 
 export type Package = {
   readonly version: string

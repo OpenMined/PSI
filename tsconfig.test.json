@@ -30,5 +30,5 @@
     ]
   },
   "include": ["./private_set_intersection/javascript/src/**/*"],
-  "exclude": ["./node_modules/**/*", "./private_set_intersection/javascript/tsc-out/**/*", "./private_set_intersection/javascript/src/__tests__/**/*"]
+  "exclude": ["node_modules", "**/tsc-out"]
 }
