@@ -1,4 +1,4 @@
-import PSI from '../index_combined_wasm_node'
+import PSI from '../combined_wasm_node'
 import { ERROR_INSTANCE_DELETED } from '../implementation/constants'
 import { PSILibrary } from 'src/implementation/psi'
 import { Request, Response } from '../implementation/proto/psi_pb'

@@ -1,6 +1,6 @@
 {
   "name": "@openmined/psi.js",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "Private Set Intersection for JavaScript",
   "repository": {
     "type": "git",
@@ -13,11 +13,11 @@
     "private set intersection",
     "private join and compute"
   ],
-  "main": "combined/wasm/node/cjs/index.js",
-  "browser": "combined/wasm/web/iife/index.js",
-  "module": "combined/wasm/web/es/index.js",
+  "main": "combined_wasm_node.js",
+  "browser": "combined_wasm_web.js",
+  "module": "combined_wasm_web.js",
   "files": [
-    "**/*.js"
+    "**/*"
   ],
   "scripts": {
     "benchmark:js": "RUN_DEMO=js node -r esm private_set_intersection/javascript/benchmark.js",
@@ -80,6 +80,7 @@
     "rollup-plugin-node-builtins": "^2.1.2",
     "rollup-plugin-node-globals": "^1.4.0",
     "rollup-plugin-terser": "^7.0.2",
+    "rollup-plugin-typescript2": "^0.27.3",
     "ts-jest": "^26.4.1",
     "ts-protoc-gen": "^0.13.0",
     "typescript": "^4.0.3"
