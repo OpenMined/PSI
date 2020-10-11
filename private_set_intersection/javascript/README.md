@@ -297,8 +297,8 @@ npm run compile
 Run the tests or generate coverage reports. **Note** tests are run using the WASM variant.
 
 ```
-npm run test     # runs tests on TypeScript tests
-npm run coverage # to check code coverage
+npm run test
+npm run coverage
 ```
 
 ### Benchmarks
@@ -306,6 +306,7 @@ npm run coverage # to check code coverage
 Build the benchmark for WebAssembly and pure JS
 
 ```
+npm run compile
 npm run build:benchmark
 ```
 
@@ -330,7 +331,7 @@ Build protobufs
 
 `npm run build:proto`
 
-Compile typescript
+Compile typescript (sanity check)
 
 `npm run compile`
 
@@ -339,9 +340,6 @@ Test your changes and check code coverage
 ```bash
 # Test TS
 npm run test
-
-# Test compiled JS
-npm run test:js
 
 # Generate coverage report
 npm run coverage
