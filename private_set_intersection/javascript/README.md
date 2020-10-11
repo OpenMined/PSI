@@ -288,7 +288,7 @@ Now, build the JS protobufs for TypeScript.
 npm run build:proto
 ```
 
-Compile TypeScript to JS
+Compile TypeScript to JS (sanity checking)
 
 ```
 npm run compile
@@ -297,10 +297,8 @@ npm run compile
 Run the tests or generate coverage reports. **Note** tests are run using the WASM variant.
 
 ```
-npm run test
-
-# or to test and see coverage
-npm run coverage
+npm run test     # runs tests on TypeScript tests
+npm run coverage # to check code coverage
 ```
 
 ### Benchmarks
