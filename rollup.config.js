@@ -5,10 +5,10 @@ import resolve from '@rollup/plugin-node-resolve'
 import globals from 'rollup-plugin-node-globals'
 import builtins from 'rollup-plugin-node-builtins'
 import typescript from 'rollup-plugin-typescript2'
+const formats = ['umd']
 const targets = ['client', 'server', 'combined']
 const variants = ['wasm', 'js']
 const environments = ['node', 'web', 'worker']
-const formats = ['umd']
 const outputs = formats.reduce(
   (acc, format) => [
     ...acc,

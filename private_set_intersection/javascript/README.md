@@ -77,7 +77,7 @@ import PSI from '@openmined/psi.js/server_wasm_node'
 To **manually** override the `combined` default import:
 
 ```javascript
-// Using a deep import link for wasm/node/es
+// Using a deep import link for combined_wasm_node
 import PSI from '@openmined/psi.js/combined_wasm_node'
 ;(async () => {
   // Wait for the library to initialize

@@ -1,6 +1,6 @@
 import * as psi from 'psi_'
 
-export type Loader = { 
+export type Loader = {
   readonly library: psi.Library
 }
 
