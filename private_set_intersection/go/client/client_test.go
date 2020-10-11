@@ -155,15 +155,17 @@ var result *psi_proto.Request
 func benchmarkClientCreateRequest(cnt int, revealIntersection bool, b *testing.B) {
 	b.ReportAllocs()
 	total := 0
+
+    client, err := CreateWithNewKey(revealIntersection)
+    if err != nil || client == nil {
+        b.Errorf("failed to get client")
+    }
+    inputs := []string{}
+    for i := 0; i < cnt; i++ {
+        inputs = append(inputs, "Element "+string(i))
+    }
+
 	for n := 0; n < b.N; n++ {
-		client, err := CreateWithNewKey(revealIntersection)
-		if err != nil || client == nil {
-			b.Errorf("failed to get client")
-		}
-		inputs := []string{}
-		for i := 0; i < cnt; i++ {
-			inputs = append(inputs, "Element "+string(i))
-		}
 		request, err := client.CreateRequest(inputs)
 		if err != nil {
 			b.Errorf("failed to generate request")
@@ -204,48 +206,43 @@ var dummyInt64 int64
 func benchmarkClientProcessResponse(cnt int, revealIntersection bool, b *testing.B) {
 	b.ReportAllocs()
 	total := 0
+
+    client, err := CreateWithNewKey(revealIntersection)
+    if err != nil || client == nil {
+        b.Errorf("failed to get client")
+    }
+    server, err := server.CreateWithNewKey(revealIntersection)
+    if err != nil || server == nil {
+        b.Errorf("failed to get server")
+    }
+
+    fpr := 1. / (1000000)
+
+    inputs := []string{}
+    for i := 0; i < cnt; i++ {
+        inputs = append(inputs, "Element "+string(i))
+    }
+
+    setup, err := server.CreateSetupMessage(fpr, int64(cnt), inputs)
+    if err != nil {
+        b.Errorf("failed to create setup msg %v", err)
+    }
+    request, err := client.CreateRequest(inputs)
+    if err != nil {
+        b.Errorf("failed to create request %v", err)
+    }
+    serverResp, err := server.ProcessRequest(request)
+    if err != nil {
+        b.Errorf("failed to process request %v", err)
+    }
+
 	for n := 0; n < b.N; n++ {
-		client, err := CreateWithNewKey(revealIntersection)
-		if err != nil || client == nil {
-			b.Errorf("failed to get client")
-		}
-		server, err := server.CreateWithNewKey(revealIntersection)
-		if err != nil || server == nil {
-			b.Errorf("failed to get server")
-		}
-
-		fpr := 1. / (1000000)
-
-		inputs := []string{}
-		for i := 0; i < cnt; i++ {
-			inputs = append(inputs, "Element "+string(i))
-		}
-
-		setup, err := server.CreateSetupMessage(fpr, int64(cnt), inputs)
-		if err != nil {
-			b.Errorf("failed to create setup msg %v", err)
-		}
-		request, err := client.CreateRequest(inputs)
-		if err != nil {
-			b.Errorf("failed to create request %v", err)
-		}
-		serverResp, err := server.ProcessRequest(request)
-		if err != nil {
-			b.Errorf("failed to process request %v", err)
-		}
-
 		if revealIntersection {
 			intersection, err := client.GetIntersection(setup, serverResp)
 			if err != nil {
 				b.Errorf("failed to compute intersection %v", err)
 			}
-			intersectionSet := generateSet(intersection)
-			for idx := 0; idx < cnt; idx++ {
-				_, ok := intersectionSet[idx]
-				if !ok {
-					b.Errorf("Invalid intersection for item %v", idx)
-				}
-			}
+			dummyInt64 = int64(len(intersection))
 		} else {
 			intersectionCnt, err := client.GetIntersectionSize(setup, serverResp)
 			if err != nil {

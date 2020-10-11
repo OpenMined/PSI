@@ -168,18 +168,20 @@ var dummyString *psi_proto.ServerSetup
 func benchmarkServerSetup(cnt int, fpr float64, revealIntersection bool, b *testing.B) {
 	b.ReportAllocs()
 	total := 0
+
+    server, err := CreateWithNewKey(revealIntersection)
+    if err != nil || server == nil {
+        b.Errorf("failed to get server")
+    }
+
+    inputs := []string{}
+    for i := 0; i < cnt; i++ {
+        inputs = append(inputs, "Element "+string(i))
+    }
+
+    numClientInputs := 10000
+
 	for n := 0; n < b.N; n++ {
-		server, err := CreateWithNewKey(revealIntersection)
-		if err != nil || server == nil {
-			b.Errorf("failed to get server")
-		}
-
-		inputs := []string{}
-		for i := 0; i < cnt; i++ {
-			inputs = append(inputs, "Element "+string(i))
-		}
-
-		numClientInputs := 10000
 		setup, err := server.CreateSetupMessage(fpr, int64(numClientInputs), inputs)
 		if err != nil {
 			b.Errorf("failed to create setup msg %v", err)
@@ -225,25 +227,27 @@ var dummyResponse *psi_proto.Response
 func benchmarkServerProcessRequest(cnt int, revealIntersection bool, b *testing.B) {
 	b.ReportAllocs()
 	total := 0
+
+    client, err := client.CreateWithNewKey(revealIntersection)
+    if err != nil || client == nil {
+        b.Errorf("failed to get client")
+    }
+    server, err := CreateWithNewKey(revealIntersection)
+    if err != nil || server == nil {
+        b.Errorf("failed to get server")
+    }
+
+    inputs := []string{}
+    for i := 0; i < cnt; i++ {
+        inputs = append(inputs, "Element "+string(i))
+    }
+
+    request, err := client.CreateRequest(inputs)
+    if err != nil {
+        b.Errorf("failed to create request %v", err)
+    }
+
 	for n := 0; n < b.N; n++ {
-		client, err := client.CreateWithNewKey(revealIntersection)
-		if err != nil || client == nil {
-			b.Errorf("failed to get client")
-		}
-		server, err := CreateWithNewKey(revealIntersection)
-		if err != nil || server == nil {
-			b.Errorf("failed to get server")
-		}
-
-		inputs := []string{}
-		for i := 0; i < cnt; i++ {
-			inputs = append(inputs, "Element "+string(i))
-		}
-
-		request, err := client.CreateRequest(inputs)
-		if err != nil {
-			b.Errorf("failed to create request %v", err)
-		}
 		serverResp, err := server.ProcessRequest(request)
 		if err != nil {
 			b.Errorf("failed to process request %v", err)
