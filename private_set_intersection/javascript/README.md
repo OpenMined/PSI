@@ -150,12 +150,24 @@ const PSI = require('@openmined/psi.js')
   )
 
   // Create the setup message that will later
-  // be used to compute the intersection.
+  // be used to compute the intersection. By default,
+  // this function will use Golomb Compressed Sets (GCS).
+  // You may pass in an extra argument at the end to pick
+  // the bloom filter option.
   const serverSetup = server.createSetupMessage(
     fpr,
     numClientElements,
     serverInputs
+    // psi.dataStructure.GCS // This is the default and can omitted
   )
+
+  // Example with regular bloom filter
+  // const serverSetup = server.createSetupMessage(
+  //   fpr,
+  //   numClientElements,
+  //   serverInputs,
+  //   psi.dataStructure.BloomFilter
+  // )
 
   /******************
    *** 2. Client ****
