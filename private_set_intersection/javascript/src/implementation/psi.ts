@@ -127,7 +127,13 @@ export const PSIConstructor = ({
      * @example
      * import PSI from '@openmined/psi.js'
      * const psi = await PSI()
-     * const { gcs, bloomFilter } = psi.dataStructure
+     * ...
+     * const setup = server.createSetupMessage(
+     *   fpr,
+     *   numClientElements,
+     *   serverInputs,
+     *   psi.dataStructure.BloomFilter // GCS is the default
+     * )
      */
     ...{ dataStructure: dataStructureWrapper },
 
