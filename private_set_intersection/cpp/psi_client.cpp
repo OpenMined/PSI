@@ -23,6 +23,7 @@
 #include "absl/strings/str_cat.h"
 #include "openssl/obj_mac.h"
 #include "private_set_intersection/cpp/bloom_filter.h"
+#include "private_set_intersection/cpp/gcs.h"
 #include "private_set_intersection/proto/psi.pb.h"
 #include "util/canonical_errors.h"
 #include "util/status_macros.h"
@@ -118,26 +119,33 @@ StatusOr<std::vector<int64_t>> PsiClient::ProcessResponse(
         "`server_response` is corrupt!");
   }
 
-  // Decode Bloom filter from the server setup.
-  ASSIGN_OR_RETURN(auto bloom_filter,
-                   BloomFilter::CreateFromProtobuf(server_setup));
-
   const auto& response_array = server_response.encrypted_elements();
   const std::int64_t response_size =
       static_cast<std::int64_t>(response_array.size());
-  std::vector<int64_t> result(0);
-  result.reserve(response_size);
+  std::vector<std::string> decrypted;
+  decrypted.reserve(response_size);
 
-  // Decrypt and check if the element is in our filter
   for (int64_t i = 0; i < response_size; i++) {
     ASSIGN_OR_RETURN(std::string element,
                      ec_cipher_->Decrypt(response_array[i]));
-    // Increase intersection size if element is found in the bloom filter.
-    if (bloom_filter->Check(element)) {
-      result.push_back(i);
-    }
+    decrypted.push_back(element);
   }
-  return result;
+
+  if (server_setup.data_structure_case() ==
+      psi_proto::ServerSetup::DataStructureCase::kGcs) {
+    // Decode GCS from the server setup.
+    ASSIGN_OR_RETURN(auto gcs, GCS::CreateFromProtobuf(server_setup));
+    return gcs->Intersect(absl::MakeConstSpan(&decrypted[0], decrypted.size()));
+  } else if (server_setup.data_structure_case() ==
+             psi_proto::ServerSetup::DataStructureCase::kBloomFilter) {
+    // Decode Bloom Filter from the server setup.
+    ASSIGN_OR_RETURN(auto filter,
+                     BloomFilter::CreateFromProtobuf(server_setup));
+    return filter->Intersect(
+        absl::MakeConstSpan(&decrypted[0], decrypted.size()));
+  } else {
+    return ::private_join_and_compute::InvalidArgumentError("Impossible");
+  }
 }
 
 std::string PsiClient::GetPrivateKeyBytes() const {

@@ -61,14 +61,22 @@ TEST_F(PsiServerTest, TestCorrectnessIntersection) {
   PSI_ASSERT_OK_AND_ASSIGN(
       auto server_setup,
       server_->CreateSetupMessage(fpr, num_client_elements, server_elements));
+  PSI_ASSERT_OK_AND_ASSIGN(
+      auto server_setup2,
+      server_->CreateSetupMessage(fpr, num_client_elements, server_elements,
+                                  DataStructure::BloomFilter));
 
   // Create Client request.
   PSI_ASSERT_OK_AND_ASSIGN(auto client_request,
+                           client->CreateRequest(client_elements));
+  PSI_ASSERT_OK_AND_ASSIGN(auto client_request2,
                            client->CreateRequest(client_elements));
 
   // Create Server response.
   PSI_ASSERT_OK_AND_ASSIGN(auto server_response,
                            server_->ProcessRequest(client_request));
+  PSI_ASSERT_OK_AND_ASSIGN(auto server_response2,
+                           server_->ProcessRequest(client_request2));
 
   // Compute intersection.
   PSI_ASSERT_OK_AND_ASSIGN(
@@ -76,13 +84,20 @@ TEST_F(PsiServerTest, TestCorrectnessIntersection) {
       client->GetIntersection(server_setup, server_response));
   absl::flat_hash_set<int64_t> intersection_set(intersection.begin(),
                                                 intersection.end());
+  PSI_ASSERT_OK_AND_ASSIGN(
+      std::vector<int64_t> intersection2,
+      client->GetIntersection(server_setup2, server_response2));
+  absl::flat_hash_set<int64_t> intersection_set2(intersection2.begin(),
+                                                 intersection2.end());
 
   // Test if all even elements are present.
   for (int i = 0; i < num_client_elements; i++) {
     if (i % 2) {
       EXPECT_FALSE(intersection_set.contains(i));
+      EXPECT_FALSE(intersection_set2.contains(i));
     } else {
       EXPECT_TRUE(intersection_set.contains(i));
+      EXPECT_TRUE(intersection_set2.contains(i));
     }
   }
 }
@@ -184,8 +199,8 @@ TEST_F(PsiServerTest, TestCreatingFromKey) {
       server->CreateSetupMessage(fpr, num_client_elements, server_elements));
 
   // Both setup messages should be the same
-  EXPECT_EQ(server_setup.num_hash_functions(),
-            server_setup1.num_hash_functions());
+  EXPECT_EQ(server_setup.gcs().div(), server_setup1.gcs().div());
+  EXPECT_EQ(server_setup.gcs().hash_range(), server_setup1.gcs().hash_range());
   EXPECT_EQ(server_setup.bits(), server_setup1.bits());
 
   // Create a 31-byte key that should be equivalent to a 32-byte null-inserted
@@ -205,8 +220,8 @@ TEST_F(PsiServerTest, TestCreatingFromKey) {
   PSI_ASSERT_OK_AND_ASSIGN(
       auto server_setup3,
       server3->CreateSetupMessage(fpr, num_client_elements, server_elements));
-  EXPECT_EQ(server_setup2.num_hash_functions(),
-            server_setup3.num_hash_functions());
+  EXPECT_EQ(server_setup2.gcs().div(), server_setup3.gcs().div());
+  EXPECT_EQ(server_setup2.gcs().hash_range(), server_setup3.gcs().hash_range());
   EXPECT_EQ(server_setup2.bits(), server_setup3.bits());
 }
 

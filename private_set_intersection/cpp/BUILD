@@ -53,6 +53,55 @@ cc_test(
 )
 
 cc_library(
+    name = "golomb",
+    srcs = ["golomb.cpp"],
+    hdrs = ["golomb.h"],
+    visibility = ["//visibility:private"],
+)
+
+cc_test(
+    name = "golomb_test",
+    srcs = ["golomb_test.cpp"],
+    linkopts = PSI_LINKOPTS,
+    deps = [
+        ":golomb",
+        "@com_google_googletest//:gtest",
+        "@com_google_googletest//:gtest_main",
+    ],
+)
+
+cc_library(
+    name = "gcs",
+    srcs = ["gcs.cpp"],
+    hdrs = ["gcs.h"],
+    visibility = ["//visibility:private"],
+    deps = [
+        ":golomb",
+        "//private_set_intersection/proto:psi_cc_proto",
+        "@com_google_absl//absl/memory",
+        "@com_google_absl//absl/strings",
+        "@com_google_absl//absl/types:span",
+        "@private_join_and_compute//crypto:bn_util",
+        "@private_join_and_compute//util:status",
+    ],
+)
+
+cc_test(
+    name = "gcs_test",
+    srcs = ["gcs_test.cpp"],
+    linkopts = PSI_LINKOPTS,
+    deps = [
+        ":gcs",
+        "//private_set_intersection/cpp/util:status_matchers",
+        "//private_set_intersection/proto:psi_cc_proto",
+        "@com_google_absl//absl/container:flat_hash_set",
+        "@com_google_absl//absl/strings",
+        "@com_google_googletest//:gtest",
+        "@com_google_googletest//:gtest_main",
+    ],
+)
+
+cc_library(
     name = "bloom_filter",
     srcs = ["bloom_filter.cpp"],
     hdrs = ["bloom_filter.h"],
@@ -87,6 +136,7 @@ cc_library(
     hdrs = ["psi_client.h"],
     includes = ["."],
     deps = [
+        ":gcs",
         ":bloom_filter",
         "//private_set_intersection/proto:psi_cc_proto",
         "@boringssl//:crypto",
@@ -119,6 +169,7 @@ cc_library(
     hdrs = ["psi_server.h"],
     includes = ["."],
     deps = [
+        ":gcs",
         ":bloom_filter",
         "//private_set_intersection/proto:psi_cc_proto",
         "@boringssl//:crypto",

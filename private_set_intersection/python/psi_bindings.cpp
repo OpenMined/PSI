@@ -36,12 +36,7 @@ PYBIND11_MODULE(_psi_bindings, m) {
            py::overload_cast<const char*>(&psi_proto::ServerSetup::set_bits))
       .def("set_bits", py::overload_cast<const void*, size_t>(
                            &psi_proto::ServerSetup::set_bits))
-      .def("clear_bits", &psi_proto::ServerSetup::clear_bits)
-      .def("num_hash_functions", &psi_proto::ServerSetup::num_hash_functions)
-      .def("set_num_hash_functions",
-           &psi_proto::ServerSetup::set_num_hash_functions)
-      .def("clear_num_hash_functions",
-           &psi_proto::ServerSetup::clear_num_hash_functions);
+      .def("clear_bits", &psi_proto::ServerSetup::clear_bits);
   py::class_<psi_proto::Request>(m, "PsiProtoRequest")
       .def("encrypted_elements_size",
            &psi_proto::Request::encrypted_elements_size)

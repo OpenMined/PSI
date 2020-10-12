@@ -21,7 +21,7 @@
 #include "absl/strings/str_cat.h"
 #include "crypto/ec_commutative_cipher.h"
 #include "gtest/gtest.h"
-#include "private_set_intersection/cpp/bloom_filter.h"
+#include "private_set_intersection/cpp/gcs.h"
 #include "util/status_matchers.h"
 
 namespace private_set_intersection {
@@ -43,15 +43,20 @@ class PsiClientTest : public ::testing::Test {
                                double fpr,
                                psi_proto::ServerSetup* server_setup) {
     auto num_server_elements = static_cast<int64_t>(server_elements.size());
-    // Insert server elements into Bloom filter.
-    PSI_ASSERT_OK_AND_ASSIGN(auto bloom_filter,
-                             BloomFilter::Create(fpr, num_server_elements));
+    std::vector<std::string> elements;
+    elements.reserve(num_server_elements);
+
     for (int i = 0; i < num_server_elements; i++) {
       PSI_ASSERT_OK_AND_ASSIGN(std::string encrypted_element,
                                server_ec_cipher_->Encrypt(server_elements[i]));
-      bloom_filter->Add(encrypted_element);
+      elements.push_back(encrypted_element);
     }
-    *server_setup = bloom_filter->ToProtobuf();
+
+    // Insert server elements into GCS.
+    PSI_ASSERT_OK_AND_ASSIGN(
+        auto gcs,
+        GCS::Create(fpr, absl::MakeConstSpan(&elements[0], elements.size())));
+    *server_setup = gcs->ToProtobuf();
   }
 
   void CreateDummyResponse(const psi_proto::Request& client_request,

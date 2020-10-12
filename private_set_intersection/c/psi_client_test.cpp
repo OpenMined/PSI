@@ -61,7 +61,7 @@ void test_corectness(bool reveal_intersection) {
   // Insert server elements into Bloom filter.
   PSI_ASSERT_OK_AND_ASSIGN(
       auto bloom_filter,
-      BloomFilter::Create(fpr / num_client_elements, num_server_elements));
+      BloomFilter::CreateEmpty(fpr / num_client_elements, num_server_elements));
 
   PSI_ASSERT_OK_AND_ASSIGN(
       auto server_ec_cipher,

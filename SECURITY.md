@@ -18,8 +18,7 @@ There are two configurations for instantiating a new client/server pair by passi
 In the case of #1, coordinated clients could get the actual intersection. However, server set items not
 in any of the client sets will never be uncovered.
 Situations where it’s feasible for clients to send one request per element in the domain -
-there is a possbility that coordinated clients could uncover server set. A larger set means
-more bits turned on in bloom filter.
+there is a possbility that coordinated clients could uncover server set.
 
 Presence of new client set members or absence of former client set members can be
 detected by server/eavesdroppers if client secret is reused.
@@ -38,6 +37,9 @@ A potential limitation with the PSI approach is the communication complexity,
 which scales linearly with the size of the larger set. This is of particular concern
 when performing PSI between a constrained device (cellphone) holding a small set, and a
 large service provider (e.g. WhatsApp), such as in the Private Contact Discovery application.
-The Client set size affects the algorithmic complexity in linear time O(n).
-The bloom filter has linear size in the server's set, hence the algorithmic complexity
-of our protocol is O(n).
+Assuming a bloom filter is used, the Client set size affects the algorithmic complexity in
+linear time O(n), with a constant number of lookups. The bloom filter has linear size
+in the server's set, hence the algorithmic complexity of our protocol is O(n). However,
+a bloom filter requires a large number of lookups on each query, if the false positive rate
+is low. An alternative is the Golomb Compressed Set, which requires O(n log n) time due to sorting
+operations, but in practice takes around 25-30% less space than a bloom filter.
