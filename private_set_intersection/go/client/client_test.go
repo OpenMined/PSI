@@ -156,14 +156,14 @@ func benchmarkClientCreateRequest(cnt int, revealIntersection bool, b *testing.B
 	b.ReportAllocs()
 	total := 0
 
-    client, err := CreateWithNewKey(revealIntersection)
-    if err != nil || client == nil {
-        b.Errorf("failed to get client")
-    }
-    inputs := []string{}
-    for i := 0; i < cnt; i++ {
-        inputs = append(inputs, "Element "+string(i))
-    }
+	client, err := CreateWithNewKey(revealIntersection)
+	if err != nil || client == nil {
+		b.Errorf("failed to get client")
+	}
+	inputs := []string{}
+	for i := 0; i < cnt; i++ {
+		inputs = append(inputs, "Element "+string(i))
+	}
 
 	for n := 0; n < b.N; n++ {
 		request, err := client.CreateRequest(inputs)
@@ -187,7 +187,9 @@ func BenchmarkClientCreateRequest100(b *testing.B)   { benchmarkClientCreateRequ
 func BenchmarkClientCreateRequest1000(b *testing.B)  { benchmarkClientCreateRequest(1000, false, b) }
 func BenchmarkClientCreateRequest10000(b *testing.B) { benchmarkClientCreateRequest(10000, false, b) }
 
-func BenchmarkClientCreateRequestIntersection1(b *testing.B) { benchmarkClientCreateRequest(1, true, b) }
+func BenchmarkClientCreateRequestIntersection1(b *testing.B) {
+	benchmarkClientCreateRequest(1, true, b)
+}
 func BenchmarkClientCreateRequestIntersection10(b *testing.B) {
 	benchmarkClientCreateRequest(10, true, b)
 }
@@ -207,34 +209,34 @@ func benchmarkClientProcessResponse(cnt int, revealIntersection bool, b *testing
 	b.ReportAllocs()
 	total := 0
 
-    client, err := CreateWithNewKey(revealIntersection)
-    if err != nil || client == nil {
-        b.Errorf("failed to get client")
-    }
-    server, err := server.CreateWithNewKey(revealIntersection)
-    if err != nil || server == nil {
-        b.Errorf("failed to get server")
-    }
+	client, err := CreateWithNewKey(revealIntersection)
+	if err != nil || client == nil {
+		b.Errorf("failed to get client")
+	}
+	server, err := server.CreateWithNewKey(revealIntersection)
+	if err != nil || server == nil {
+		b.Errorf("failed to get server")
+	}
 
-    fpr := 1. / (1000000)
+	fpr := 1. / (1000000)
 
-    inputs := []string{}
-    for i := 0; i < cnt; i++ {
-        inputs = append(inputs, "Element "+string(i))
-    }
+	inputs := []string{}
+	for i := 0; i < cnt; i++ {
+		inputs = append(inputs, "Element "+string(i))
+	}
 
-    setup, err := server.CreateSetupMessage(fpr, int64(cnt), inputs)
-    if err != nil {
-        b.Errorf("failed to create setup msg %v", err)
-    }
-    request, err := client.CreateRequest(inputs)
-    if err != nil {
-        b.Errorf("failed to create request %v", err)
-    }
-    serverResp, err := server.ProcessRequest(request)
-    if err != nil {
-        b.Errorf("failed to process request %v", err)
-    }
+	setup, err := server.CreateSetupMessage(fpr, int64(cnt), inputs)
+	if err != nil {
+		b.Errorf("failed to create setup msg %v", err)
+	}
+	request, err := client.CreateRequest(inputs)
+	if err != nil {
+		b.Errorf("failed to create request %v", err)
+	}
+	serverResp, err := server.ProcessRequest(request)
+	if err != nil {
+		b.Errorf("failed to process request %v", err)
+	}
 
 	for n := 0; n < b.N; n++ {
 		if revealIntersection {
