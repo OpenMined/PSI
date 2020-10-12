@@ -2,18 +2,21 @@ import { PackageWrapper } from './package'
 import { ClientWrapper } from './client'
 import { ServerWrapper } from './server'
 import { ServerSetup, Request, Response } from './proto/psi_pb'
+import { DataStructureWrapper } from './dataStructure'
 
 export type PSILibrary = {
   readonly serverSetup: typeof ServerSetup
   readonly request: typeof Request
   readonly response: typeof Response
   readonly package: PackageWrapper
+  readonly dataStructure: DataStructureWrapper
   readonly server?: ServerWrapper
   readonly client?: ClientWrapper
 }
 
 type PSIConstructorOptions = {
   readonly packageWrapper: PackageWrapper
+  readonly dataStructureWrapper: DataStructureWrapper
   readonly serverWrapper?: ServerWrapper
   readonly clientWrapper?: ClientWrapper
 }
@@ -23,6 +26,7 @@ type PSIConstructorOptions = {
  */
 export const PSIConstructor = ({
   packageWrapper,
+  dataStructureWrapper,
   serverWrapper,
   clientWrapper
 }: PSIConstructorOptions): PSILibrary => {
@@ -112,6 +116,26 @@ export const PSIConstructor = ({
      * const { version } = psi.package
      */
     ...{ package: packageWrapper },
+
+    /**
+     * @description
+     * Supported data structures for the server
+     *
+     * @readonly
+     * @name PSI.dataStructure
+     * @type {Object}
+     * @example
+     * import PSI from '@openmined/psi.js'
+     * const psi = await PSI()
+     * ...
+     * const setup = server.createSetupMessage(
+     *   fpr,
+     *   numClientElements,
+     *   serverInputs,
+     *   psi.dataStructure.BloomFilter // GCS is the default
+     * )
+     */
+    ...{ dataStructure: dataStructureWrapper },
 
     /**
      * @description

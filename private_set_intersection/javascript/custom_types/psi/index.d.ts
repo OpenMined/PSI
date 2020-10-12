@@ -36,7 +36,8 @@ declare module 'psi_*' {
     readonly CreateSetupMessage: (
       fpr: number,
       numClientInputs: number,
-      inputs: readonly string[]
+      inputs: readonly string[],
+      dataStructure: DataStructure
     ) => CreateSetupMessageResult
     readonly ProcessRequest: (clientRequest: Uint8Array) => ProcessRequestResult
     readonly GetPrivateKeyBytes: () => Uint8Array
@@ -62,13 +63,20 @@ declare module 'psi_*' {
     readonly version: () => string
   }
 
+  export type DataStructure = {
+    readonly BloomFilter: any
+    readonly GCS: any
+  }
+
   export type Library = {
     readonly delete: () => void
     readonly Package: Package
+    readonly DataStructure: DataStructure
     readonly CreateSetupMessage: (
       fpr: number,
       numClientInputs: number,
-      inputs: readonly string[]
+      inputs: readonly string[],
+      dataStructure: DataStructure
     ) => CreateSetupMessageResult
     readonly CreateRequest: (inputs: readonly string[]) => CreateRequestResult
     readonly ProcessRequest: (clientRequest: string) => ProcessRequestResult

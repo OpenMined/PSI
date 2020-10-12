@@ -1,6 +1,7 @@
 import * as psi from 'psi_'
 import { Loader } from '../main/loader'
 import { ERROR_INSTANCE_DELETED } from './constants'
+import { DataStructure } from './dataStructure'
 import { Request, Response, ServerSetup } from './proto/psi_pb'
 
 export type Server = {
@@ -8,7 +9,8 @@ export type Server = {
   readonly createSetupMessage: (
     fpr: number,
     numClientInputs: number,
-    inputs: readonly string[]
+    inputs: readonly string[],
+    dataStructure?: DataStructure
   ) => ServerSetup
   readonly processRequest: (clientRequest: Request) => Response
   readonly getPrivateKeyBytes: () => Uint8Array
@@ -29,7 +31,7 @@ type ServerWrapperOptions = {
 /**
  * @implements Server
  */
-const ServerConstructor = (instance: psi.Server): Server => {
+const ServerConstructor = ({ DataStructure }: { DataStructure: DataStructure}, instance: psi.Server): Server => {
   let _instance: psi.Server | null = instance
 
   /**
@@ -65,12 +67,14 @@ const ServerConstructor = (instance: psi.Server): Server => {
      * @param {Number} fpr False positive rate
      * @param {Number} numClientInputs The number of expected client inputs
      * @param {Array<String>} inputs The server's dataset
+     * @param {DataStructure} [dataStructure=DataStructure.gcs] The server's underlying data structure to use
      * @returns {ServerSetup} The ServerSetup protobuf
      */
     createSetupMessage(
       fpr: number,
       numClientInputs: number,
-      inputs: readonly string[]
+      inputs: readonly string[],
+      dataStructure: DataStructure = DataStructure.GCS
     ): ServerSetup {
       if (!_instance) {
         throw new Error(ERROR_INSTANCE_DELETED)
@@ -78,7 +82,8 @@ const ServerConstructor = (instance: psi.Server): Server => {
       const { Value, Status } = _instance.CreateSetupMessage(
         fpr,
         numClientInputs,
-        inputs
+        inputs,
+        dataStructure
       )
       if (Status) {
         throw new Error(Status.Message)
@@ -131,9 +136,15 @@ const ServerConstructor = (instance: psi.Server): Server => {
   }
 }
 
+export type ServerConstructorDependencies = {
+  ({ DataStructure }: {
+    DataStructure: DataStructure
+  }): ServerWrapper
+}
+
 export const ServerWrapperConstructor = ({
   loader
-}: ServerWrapperOptions): ServerWrapper => {
+}: ServerWrapperOptions): ServerConstructorDependencies => ({ DataStructure }): ServerWrapper => {
   const library: psi.Library = loader.library
 
   return {
@@ -145,7 +156,7 @@ export const ServerWrapperConstructor = ({
      * @param {boolean} [revealIntersection=false] - If true, reveals the actual intersection instead of the cardinality.
      * @returns {Server} A Server instance
      */
-    createWithNewKey(revealIntersection = false): Server {
+    createWithNewKey(revealIntersection: boolean = false): Server {
       const { Value, Status } = library.PsiServer.CreateWithNewKey(
         revealIntersection
       )
@@ -153,7 +164,7 @@ export const ServerWrapperConstructor = ({
         throw new Error(Status.Message)
       }
 
-      return ServerConstructor(Value)
+      return ServerConstructor({ DataStructure }, Value)
     },
     /**
      * Create a new PSI server from a key
@@ -164,7 +175,7 @@ export const ServerWrapperConstructor = ({
      * @param {boolean} [revealIntersection=false] - If true, reveals the actual intersection instead of the cardinality.
      * @returns {Server} A Server instance
      */
-    createFromKey(key: Uint8Array, revealIntersection = false): Server {
+    createFromKey(key: Uint8Array, revealIntersection: boolean = false): Server {
       const { Value, Status } = library.PsiServer.CreateFromKey(
         key,
         revealIntersection
@@ -173,7 +184,7 @@ export const ServerWrapperConstructor = ({
         throw new Error(Status.Message)
       }
 
-      return ServerConstructor(Value)
+      return ServerConstructor({ DataStructure }, Value)
     }
   }
 }

@@ -6,6 +6,7 @@
 EMSCRIPTEN_BINDINGS(PSI_Server) {
   using emscripten::optional_override;
   using private_join_and_compute::StatusOr;
+  using private_set_intersection::DataStructure;
   using private_set_intersection::PsiServer;
   using private_set_intersection::ToJSObject;
   using private_set_intersection::ToSerializedJSObject;
@@ -35,7 +36,8 @@ EMSCRIPTEN_BINDINGS(PSI_Server) {
       .function("CreateSetupMessage",
                 optional_override([](const PsiServer &self, const double fpr,
                                      const std::size_t num_client_inputs,
-                                     const emscripten::val &byte_array) {
+                                     const emscripten::val &byte_array,
+                                     const DataStructure ds) {
                   std::vector<std::string> string_vector;
                   const std::size_t l = byte_array["length"].as<std::size_t>();
                   string_vector.reserve(l);
@@ -46,7 +48,7 @@ EMSCRIPTEN_BINDINGS(PSI_Server) {
 
                   StatusOr<psi_proto::ServerSetup> server_setup;
                   const auto status = self.CreateSetupMessage(
-                      fpr, num_client_inputs, string_vector);
+                      fpr, num_client_inputs, string_vector, ds);
                   if (status.ok()) {
                     server_setup = status.ValueOrDie();
                   } else {
