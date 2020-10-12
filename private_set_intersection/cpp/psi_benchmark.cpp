@@ -138,7 +138,7 @@ void BM_ClientProcessResponse(benchmark::State& state, bool reveal_intersection,
   }
   std::vector<std::string> client_inputs(num_client_inputs);
   for (int i = 0; i < num_client_inputs; i++) {
-    client_inputs[i] = absl::StrCat("Missing", i);
+    client_inputs[i] = absl::StrCat("Element", i);
   }
   psi_proto::ServerSetup setup =
       server->CreateSetupMessage(fpr, num_inputs, inputs, ds).ValueOrDie();
