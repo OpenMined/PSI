@@ -145,7 +145,8 @@ std::vector<int64_t> golomb_intersect(
       break;
     }
 
-    // get the position of the first 1 bit, which is the end of the unary portion
+    // get the position of the first 1 bit, which is the end of the unary
+    // portion
     auto ctz = static_cast<int64_t>(CTZ(
         static_cast<unsigned int>(static_cast<unsigned char>(*it) >> offset)));
     quotient += ctz;
@@ -168,7 +169,8 @@ std::vector<int64_t> golomb_intersect(
       ++it;
     }
 
-    // if the while loop is executed, then we may have erroneously skipped a byte
+    // if the while loop is executed, then we may have erroneously skipped a
+    // byte
     offset = (one_idx + 1 + div) % CHAR_SIZE;
     it -= static_cast<size_t>((div > 0) & (offset != 0));
 
@@ -176,7 +178,8 @@ std::vector<int64_t> golomb_intersect(
     auto delta = (quotient << div) | remainder;
     prefix_sum += delta;
 
-    // now, check if the current the other (sorted) set contains the current prefix_sum
+    // now, check if the current the other (sorted) set contains the current
+    // prefix_sum
 
     while (arr_it != sorted_arr.end() && (*arr_it).first < prefix_sum) {
       ++arr_it;
