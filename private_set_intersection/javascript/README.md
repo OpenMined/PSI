@@ -33,39 +33,22 @@ import PSI from '@openmined/psi.js'
 const PSI = require('@openmined/psi.js')
 ```
 
-By **default**, the package will use the `combined` build with the `wasm` targeting the `node` environment using `cjs`. This includes both `client` and `server` implementations, but often only one is used. We offer deep import links to only load what is needed for your specific environment.
+By **default**, the package will use the `combined` build with the `wasm` targeting the `node` environment. This includes both `client` and `server` implementations, but often only one is used. We offer deep import links to only load what is needed for your specific environment.
 
 The deep import structure is as follows:
-`<package name> / <client|server|combined> / <wasm|js> / <node|web|worker> / <cjs|iife|es>`
+`<package name> / <client|server|combined>_<wasm|js>_<node|web|worker>`
 
-Example, you only need one from the following:
+Example:
 
 ```javascript
-import PSI from '@openmined/psi.js/combined/wasm/node/cjs'
-import PSI from '@openmined/psi.js/combined/wasm/node/iife'
-import PSI from '@openmined/psi.js/combined/wasm/node/es'
-import PSI from '@openmined/psi.js/combined/wasm/web/cjs'
-import PSI from '@openmined/psi.js/combined/wasm/web/iife'
-import PSI from '@openmined/psi.js/combined/wasm/web/es'
-import PSI from '@openmined/psi.js/combined/wasm/worker/cjs'
-import PSI from '@openmined/psi.js/combined/wasm/worker/iife'
-import PSI from '@openmined/psi.js/combined/wasm/worker/es'
-import PSI from '@openmined/psi.js/combined/js/node/cjs'
-import PSI from '@openmined/psi.js/combined/js/node/iife'
-import PSI from '@openmined/psi.js/combined/js/node/es'
-import PSI from '@openmined/psi.js/combined/js/web/cjs'
-import PSI from '@openmined/psi.js/combined/js/web/iife'
-import PSI from '@openmined/psi.js/combined/js/web/es'
-import PSI from '@openmined/psi.js/combined/js/worker/cjs'
-import PSI from '@openmined/psi.js/combined/js/worker/iife'
-import PSI from '@openmined/psi.js/combined/js/worker/es'
+import PSI from '@openmined/psi.js/combined_wasm_node'
 ```
 
 To only load the `client`:
 
 ```javascript
-// Using a deep import link for wasm/node/es
-import PSI from '@openmined/psi.js/client/wasm/node/es'
+// Using a deep import link for client_wasm_node
+import PSI from '@openmined/psi.js/client_wasm_node'
 ;(async () => {
   // Wait for the library to initialize
   const psi = await PSI()
@@ -79,8 +62,8 @@ import PSI from '@openmined/psi.js/client/wasm/node/es'
 To only load the `server`:
 
 ```javascript
-// Using a deep import link for wasm/node/es
-import PSI from '@openmined/psi.js/server/wasm/node/es'
+// Using a deep import link for server_wasm_node
+import PSI from '@openmined/psi.js/server_wasm_node'
 ;(async () => {
   // Wait for the library to initialize
   const psi = await PSI()
@@ -94,8 +77,8 @@ import PSI from '@openmined/psi.js/server/wasm/node/es'
 To **manually** override the `combined` default import:
 
 ```javascript
-// Using a deep import link for wasm/node/es
-import PSI from '@openmined/psi.js/combined/wasm/node/es'
+// Using a deep import link for combined_wasm_node
+import PSI from '@openmined/psi.js/combined_wasm_node'
 ;(async () => {
   // Wait for the library to initialize
   const psi = await PSI()
@@ -113,7 +96,7 @@ The bundle needs a bit of extra work. Specifically, it expects the browser `cryp
 ```javascript
 // Provide a CSPRNG mapping to crypto.getRandomValues()
 import 'react-native-get-random-values'
-import PSI from '@openmined/psi.js/combined/wasm/web/es'
+import PSI from '@openmined/psi.js/combined_wasm_node'
 ;(async () => {
   // Spoof the browser document
   global.document = {}
@@ -305,7 +288,7 @@ Now, build the JS protobufs for TypeScript.
 npm run build:proto
 ```
 
-Compile TypeScript to JS
+Compile TypeScript to JS (sanity checking)
 
 ```
 npm run compile
@@ -315,8 +298,6 @@ Run the tests or generate coverage reports. **Note** tests are run using the WAS
 
 ```
 npm run test
-
-# or to test and see coverage
 npm run coverage
 ```
 
@@ -325,6 +306,7 @@ npm run coverage
 Build the benchmark for WebAssembly and pure JS
 
 ```
+npm run compile
 npm run build:benchmark
 ```
 
@@ -349,7 +331,7 @@ Build protobufs
 
 `npm run build:proto`
 
-Compile typescript
+Compile typescript (sanity check)
 
 `npm run compile`
 
@@ -358,9 +340,6 @@ Test your changes and check code coverage
 ```bash
 # Test TS
 npm run test
-
-# Test compiled JS
-npm run test:js
 
 # Generate coverage report
 npm run coverage

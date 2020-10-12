@@ -7,8 +7,18 @@ Feat:
 Breaking:
 
 - The Bloom Filter implementation now has a slightly different API to support bulk insertion or intersection.
-
 - The format of the ServerSetup protocol buffer has been changed to support serializing both Bloom Filters and Golomb Compressed Sets.
+
+# Version 0.2.3
+
+Feat:
+
+- Include TypeScript declarations inside the bundle to support TS environments
+- Reduce the numbed of JS bundles by using `umd` in rollup. No more `cjs`, `iife` or `es` as it is not necessary.
+
+Breaking:
+
+- Deep import links now use a single file structure instead of nested folders
 
 # Version 0.2.2
 

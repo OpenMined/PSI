@@ -1,5 +1,5 @@
 import * as psi from 'psi_'
-import { Loader } from '../loader'
+import { Loader } from '../main/loader'
 import { ERROR_INSTANCE_DELETED } from './constants'
 import { Request, Response, ServerSetup } from './proto/psi_pb'
 

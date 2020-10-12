@@ -2,7 +2,7 @@
 import benchmarkWasmLibrary from './bin/psi_benchmark_wasm.js'
 import benchmarkJsLibrary from './bin/psi_benchmark_js.js'
 
-import { createLoader } from './tsc-out/loader'
+import { createLoader } from './tsc-out/main/loader'
 
 /**
  * Detect which source to run, defaults to wasm

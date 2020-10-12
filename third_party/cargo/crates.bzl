@@ -17,6 +17,14 @@ def _new_git_repository(name, **kwargs):
 def raze_fetch_remote_crates():
 
     _new_http_archive(
+        name = "raze__bencher__0_1_5",
+        url = "https://crates-io.s3-us-west-1.amazonaws.com/crates/bencher/bencher-0.1.5.crate",
+        type = "tar.gz",
+        strip_prefix = "bencher-0.1.5",
+        build_file = Label("//third_party/cargo/remote:bencher-0.1.5.BUILD"),
+    )
+
+    _new_http_archive(
         name = "raze__libc__0_2_74",
         url = "https://crates-io.s3-us-west-1.amazonaws.com/crates/libc/libc-0.2.74.crate",
         type = "tar.gz",

@@ -9,6 +9,7 @@ path = "fake_lib.rs"
 libc = "=0.2.74"
 protobuf = "=2.8.2"
 semver = "=0.10.0"
+bencher = "=0.1.5"
 
 [raze]
 workspace_path = "//third_party/cargo"
