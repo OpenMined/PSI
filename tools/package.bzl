@@ -1,2 +1,2 @@
 """ Version of the current release """
-VERSION_LABEL = "0.2.3"
+VERSION_LABEL = "0.3.0"
