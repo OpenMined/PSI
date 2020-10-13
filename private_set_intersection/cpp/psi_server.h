@@ -52,7 +52,7 @@ class PsiServer {
       const std::string& key_bytes, bool reveal_intersection);
 
   // Creates a setup message from the server's dataset to be sent to the
-  // client. The setup message is a Bloom filter containing
+  // client. The setup message is a set containing
   // H(x)^s for each element x in `inputs`, where s is the server's secret
   // key. The setup is sent to the client as a serialized protobuf with
   // the following form:
@@ -65,6 +65,12 @@ class PsiServer {
   // `bits` is a binary string.
   // The false-positive rate `fpr` is the probability that any query of size
   // `num_client_inputs` will result in a false positive.
+  //
+  // By default, Golomb Compressed Sets are used as the underlying set data
+  // structure. If the number of client elements is expected to be orders
+  // of magnitude lower than the number of server elements, then Bloom
+  // Filters may be faster. Otherwise, Golomb Compressed Sets can achieve
+  // better compression, so it is better for network transfer.
   //
   // Returns INTERNAL if encryption fails.
   StatusOr<psi_proto::ServerSetup> CreateSetupMessage(

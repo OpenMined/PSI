@@ -130,6 +130,8 @@ class PsiClient {
   // response received from the server after sending the result of
   // `CreateRequest`.
   //
+  // Note that the intersections are returned in arbitrary order.
+  //
   // Returns INVALID_ARGUMENT if any input messages are malformed, or INTERNAL
   // if decryption fails.
   StatusOr<std::vector<int64_t>> GetIntersection(

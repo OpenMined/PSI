@@ -44,7 +44,7 @@ TEST_F(PsiServerTest, TestCorrectnessIntersection) {
   // on its own in psi_client_test.cpp.
   PSI_ASSERT_OK_AND_ASSIGN(auto client, PsiClient::CreateWithNewKey(true));
   int num_client_elements = 1000, num_server_elements = 10000;
-  double fpr = 0.01;
+  double fpr = 0.0001;
   std::vector<std::string> client_elements(num_client_elements);
   std::vector<std::string> server_elements(num_server_elements);
 
