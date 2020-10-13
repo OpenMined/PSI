@@ -1,6 +1,6 @@
 {
   "name": "@openmined/psi.js",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "Private Set Intersection for JavaScript",
   "repository": {
     "type": "git",
