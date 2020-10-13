@@ -1,3 +1,9 @@
+# Version 0.3.1
+
+Fix:
+
+- Adds protobuf TypeScript definitions to the bundle.
+
 # Version 0.3.0
 
 Feat:
