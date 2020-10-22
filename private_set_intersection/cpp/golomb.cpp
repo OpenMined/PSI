@@ -32,41 +32,22 @@ GolombCompressed golomb_compress(const std::vector<int64_t>& sorted_arr,
     return res;
   }
 
-  auto it = sorted_arr.begin();
-  int64_t prev = 0;
-  double avg = 0.0;
-  int64_t count = 0;
-  bool start = true;
-
-  // one pass to collect statistics
-  while (it != sorted_arr.end()) {
-    auto curr = *it;
-
-    // skip duplicates
-    if (start | (curr > prev)) {  // | instead of || to save a branch
-      avg += static_cast<double>(curr - prev);
-      ++count;
-      prev = curr;
-      start = false;
-    }
-
-    ++it;
-  }
-
-  std::string compressed;
-
-  // estimate median through calculated mean
-  avg /= static_cast<double>(count);
-  auto prob = 1 / avg;  // assume geometric distribution
+  // estimate median through calculated average
+  // calculate the average delta, assuming that the false positive rate is very
+  // low
+  auto avg = static_cast<double>(sorted_arr[sorted_arr.size() - 1] + 1) /
+             sorted_arr.size();
+  auto prob = 1 / avg;  // assume geometric distribution of deltas
   int64_t div = div_param >= 0
                     ? static_cast<int64_t>(div_param)
                     : static_cast<int64_t>(std::max(
                           0.0, std::round(-std::log2(-std::log2(1.0 - prob)))));
 
+  std::string compressed;
   int64_t res_idx = 0;
-  it = sorted_arr.begin();
-  prev = 0;
-  start = true;
+  auto it = sorted_arr.begin();
+  int64_t prev = 0;
+  bool start = true;
 
   while (it != sorted_arr.end()) {
     auto curr = *it;
