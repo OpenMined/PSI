@@ -96,7 +96,7 @@ The bundle needs a bit of extra work. Specifically, it expects the browser `cryp
 ```javascript
 // Provide a CSPRNG mapping to crypto.getRandomValues()
 import 'react-native-get-random-values'
-import PSI from '@openmined/psi.js/combined_wasm_node'
+import PSI from '@openmined/psi.js/combined_wasm_web'
 ;(async () => {
   // Spoof the browser document
   global.document = {}
