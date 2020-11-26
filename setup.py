@@ -71,8 +71,6 @@ class BuildBazelExtension(build_ext.build_ext):
 
         shared_lib = "_psi_bindings.so"
         ext_bazel_bin_path = os.path.join(self.build_temp, "bazel-bin", ext.relpath, shared_lib)
-        # _psi_bindings.so
-        print("Build ", ext_bazel_bin_path)
 
         ext_dest_path = self.get_ext_fullpath(ext.name)
         ext_dest_dir = os.path.dirname(ext_dest_path)
