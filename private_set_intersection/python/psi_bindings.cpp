@@ -22,7 +22,7 @@ T throwOrReturn(const private_join_and_compute::StatusOr<T>& in) {
   return in.ValueOrDie();
 }
 
-PYBIND11_MODULE(private_set_intersection_ext, m) {
+void bind(pybind11::module& m) {
   m.doc() =
       "Private Set Intersection protocol based on ECDH and Bloom "
       "Filters";
@@ -159,3 +159,7 @@ PYBIND11_MODULE(private_set_intersection_ext, m) {
           },
           py::call_guard<py::gil_scoped_release>());
 }
+
+PYBIND11_MODULE(private_set_intersection_ext, m) { bind(m); }
+
+PYBIND11_MODULE(_private_set_intersection_ext, m) { bind(m); }

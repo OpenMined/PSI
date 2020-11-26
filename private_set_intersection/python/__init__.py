@@ -2,7 +2,9 @@
 Filters.
 """
 try:
-    from private_set_intersection.python import private_set_intersection_ext
+    from private_set_intersection.python import (
+        _private_set_intersection_ext as private_set_intersection_ext,
+    )
 except ImportError:
     import private_set_intersection_ext
 
