@@ -2,8 +2,10 @@
 Filters.
 """
 try:
+    # Used in Bazel envs
     from private_set_intersection.python import _openmined_psi as psi
 except ImportError:
+    # Default package
     import openmined_psi as psi
 
 client = psi.client
