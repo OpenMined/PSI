@@ -2,7 +2,7 @@ load("@pybind11_bazel//:build_defs.bzl", "pybind_extension")
 load("@org_openmined_psi_python_deps//:requirements.bzl", "requirement")
 
 pybind_extension(
-    name = "_private_set_intersection_ext",
+    name = "_openmined_psi",
     srcs = ["psi_bindings.cpp"],
     copts = [
         "--std=c++17",
@@ -19,9 +19,9 @@ pybind_extension(
 )
 
 py_library(
-    name = "private_set_intersection_ext",
+    name = "openmined_psi",
     srcs = ["__init__.py"],
-    data = ["//private_set_intersection/python:_private_set_intersection_ext.so"],
+    data = ["//private_set_intersection/python:_openmined_psi.so"],
     srcs_version = "PY3",
     visibility = ["//visibility:public"],
 )
@@ -33,7 +33,7 @@ py_test(
     python_version = "PY3",
     srcs_version = "PY3",
     deps = [
-        "//private_set_intersection/python:private_set_intersection_ext",
+        "//private_set_intersection/python:openmined_psi",
         requirement("pytest"),
     ],
 )
@@ -45,7 +45,7 @@ py_binary(
     python_version = "PY3",
     srcs_version = "PY3",
     deps = [
-        "//private_set_intersection/python:private_set_intersection_ext",
+        "//private_set_intersection/python:openmined_psi",
         requirement("pytest"),
         requirement("pytest-benchmark"),
     ],

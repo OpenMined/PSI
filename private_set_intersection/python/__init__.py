@@ -2,14 +2,12 @@
 Filters.
 """
 try:
-    from private_set_intersection.python import (
-        _private_set_intersection_ext as private_set_intersection_ext,
-    )
+    from private_set_intersection.python import _openmined_psi as psi
 except ImportError:
-    import private_set_intersection_ext
+    import openmined_psi as psi
 
-client = private_set_intersection_ext.client
-server = private_set_intersection_ext.server
-__version__ = private_set_intersection_ext.__version__
+client = psi.client
+server = psi.server
+__version__ = psi.__version__
 
 __all__ = ["client", "server", "__version__"]

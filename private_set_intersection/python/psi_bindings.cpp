@@ -160,6 +160,6 @@ void bind(pybind11::module& m) {
           py::call_guard<py::gil_scoped_release>());
 }
 
-PYBIND11_MODULE(private_set_intersection_ext, m) { bind(m); }
+PYBIND11_MODULE(openmined_psi, m) { bind(m); }
 
-PYBIND11_MODULE(_private_set_intersection_ext, m) { bind(m); }
+PYBIND11_MODULE(_openmined_psi, m) { bind(m); }

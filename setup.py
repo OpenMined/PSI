@@ -71,7 +71,7 @@ class BuildBazelExtension(build_ext.build_ext):
         self.spawn(bazel_argv)
 
         shared_lib_ext = ".dll" if IS_WINDOWS else ".so"
-        shared_lib = "_private_set_intersection_ext" + shared_lib_ext
+        shared_lib = "_openmined_psi" + shared_lib_ext
         ext_bazel_bin_path = os.path.join(self.build_temp, "bazel-bin", ext.relpath, shared_lib)
 
         ext_dest_path = self.get_ext_fullpath(ext.name)
@@ -82,7 +82,7 @@ class BuildBazelExtension(build_ext.build_ext):
 
 
 setuptools.setup(
-    name="private_set_intersection",
+    name="openmined.psi",
     version=_get_version(),
     description="Private Set Intersection protocol based on ECDH and Bloom Filters.",
     keywords="privacy cryptography",
@@ -92,10 +92,7 @@ setuptools.setup(
     packages=setuptools.find_packages("private_set_intersection/python"),
     cmdclass=dict(build_ext=BuildBazelExtension),
     ext_modules=[
-        BazelExtension(
-            "private_set_intersection_ext",
-            "//private_set_intersection/python:private_set_intersection_ext",
-        )
+        BazelExtension("openmined_psi", "//private_set_intersection/python:openmined_psi",)
     ],
     zip_safe=False,
     classifiers=[

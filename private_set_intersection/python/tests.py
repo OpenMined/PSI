@@ -5,7 +5,7 @@ import re
 try:
     import private_set_intersection.python as psi
 except ImportError:
-    import private_set_intersection_ext as psi
+    import openmined_psi as psi
 
 
 @pytest.mark.parametrize("reveal_intersection", [False, True])
