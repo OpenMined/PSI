@@ -10,15 +10,20 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [macos-latest, ubuntu-latest]
+        os: [macos-latest, ubuntu-latest, windows-latest]
     steps:
       - uses: actions/checkout@v2
-      - name: Run tests
+      - name: Run tests Linux/OSX
         timeout-minutes: 30
         run: .github/workflows/scripts/run_tests_core.sh
+        if: ${{ matrix.os != 'windows-latest' }}
+      - name: Run tests Windows
+        timeout-minutes: 30
+        run: .github/workflows/scripts/run_tests_core.bat
+        if: ${{ matrix.os == 'windows-latest' }}
       - name: Linters
         run: .github/workflows/scripts/lint_cpp.sh
-        if: ${{ matrix.os == 'ubuntu-18.04' }}
+        if: ${{ matrix.os == 'ubuntu-latest' }}
 
   JS:
     runs-on: ${{ matrix.os }}
