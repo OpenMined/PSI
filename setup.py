@@ -9,12 +9,13 @@ import setuptools
 from setuptools.command import build_ext
 
 
-here = os.path.dirname(os.path.abspath(__file__))
+HERE = os.path.dirname(os.path.abspath(__file__))
+IS_WINDOWS = sys.platform.startswith("win")
 
 
 def _get_version():
     """Parse the version string from __init__.py."""
-    with open(os.path.join(here, "tools", "package.bzl")) as f:
+    with open(os.path.join(HERE, "tools", "package.bzl")) as f:
         key = "VERSION_LABEL"
         try:
             version_line = next(line for line in f if line.startswith(key))
@@ -69,7 +70,8 @@ class BuildBazelExtension(build_ext.build_ext):
 
         self.spawn(bazel_argv)
 
-        shared_lib = "_psi_bindings.so"
+        shared_lib_ext = ".dll" if IS_WINDOWS else ".so"
+        shared_lib = "_private_set_intersection_ext" + shared_lib_ext
         ext_bazel_bin_path = os.path.join(self.build_temp, "bazel-bin", ext.relpath, shared_lib)
 
         ext_dest_path = self.get_ext_fullpath(ext.name)
@@ -91,7 +93,8 @@ setuptools.setup(
     cmdclass=dict(build_ext=BuildBazelExtension),
     ext_modules=[
         BazelExtension(
-            "private_set_intersection", "//private_set_intersection/python:private_set_intersection"
+            "private_set_intersection_ext",
+            "//private_set_intersection/python:private_set_intersection_ext",
         )
     ],
     zip_safe=False,

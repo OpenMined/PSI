@@ -22,13 +22,13 @@ T throwOrReturn(const private_join_and_compute::StatusOr<T>& in) {
   return in.ValueOrDie();
 }
 
-PYBIND11_MODULE(_psi_bindings, m) {
+PYBIND11_MODULE(private_set_intersection_ext, m) {
   m.doc() =
       "Private Set Intersection protocol based on ECDH and Bloom "
       "Filters";
 
   m.attr("__version__") = ::private_set_intersection::Package::kVersion;
-  py::class_<psi_proto::ServerSetup>(m, "PsiProtoServerSetup")
+  py::class_<psi_proto::ServerSetup>(m, "proto_server_setup")
       .def("bits", &psi_proto::ServerSetup::bits)
       .def("set_bits", py::overload_cast<const std::string&>(
                            &psi_proto::ServerSetup::set_bits))
@@ -37,7 +37,7 @@ PYBIND11_MODULE(_psi_bindings, m) {
       .def("set_bits", py::overload_cast<const void*, size_t>(
                            &psi_proto::ServerSetup::set_bits))
       .def("clear_bits", &psi_proto::ServerSetup::clear_bits);
-  py::class_<psi_proto::Request>(m, "PsiProtoRequest")
+  py::class_<psi_proto::Request>(m, "proto_request")
       .def("encrypted_elements_size",
            &psi_proto::Request::encrypted_elements_size)
       .def("encrypted_elements",
@@ -53,7 +53,7 @@ PYBIND11_MODULE(_psi_bindings, m) {
            &psi_proto::Request::set_reveal_intersection)
       .def("clear_reveal_intersection",
            &psi_proto::Request::clear_reveal_intersection);
-  py::class_<psi_proto::Response>(m, "PsiProtoResponse")
+  py::class_<psi_proto::Response>(m, "proto_response")
       .def("encrypted_elements_size",
            &psi_proto::Response::encrypted_elements_size)
       .def("encrypted_elements",
@@ -65,7 +65,7 @@ PYBIND11_MODULE(_psi_bindings, m) {
       .def("clear_encrypted_elements",
            &psi_proto::Response::clear_encrypted_elements);
 
-  py::class_<psi::PsiClient>(m, "PsiClient")
+  py::class_<psi::PsiClient>(m, "client")
       .def_static(
           "CreateWithNewKey",
           [](bool reveal_intersection) {
@@ -117,7 +117,7 @@ PYBIND11_MODULE(_psi_bindings, m) {
           },
           py::call_guard<py::gil_scoped_release>());
 
-  py::class_<psi::PsiServer>(m, "PsiServer")
+  py::class_<psi::PsiServer>(m, "server")
       .def_static(
           "CreateWithNewKey",
           [](bool reveal_intersection) {

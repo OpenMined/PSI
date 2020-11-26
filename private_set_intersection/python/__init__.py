@@ -1,10 +1,13 @@
 """Private Set Intersection protocol based on ECDH and Bloom
 Filters.
 """
-from private_set_intersection.python import _psi_bindings
+try:
+    from private_set_intersection.python import private_set_intersection_ext
+except ImportError:
+    import private_set_intersection_ext
 
-client = _psi_bindings.PsiClient
-server = _psi_bindings.PsiServer
-__version__ = _psi_bindings.__version__
+client = private_set_intersection_ext.client
+server = private_set_intersection_ext.server
+__version__ = private_set_intersection_ext.__version__
 
 __all__ = ["client", "server", "__version__"]
