@@ -1,7 +1,13 @@
 import pytest
 import sys
 import re
-import private_set_intersection.python as psi
+
+try:
+    # Used in Bazel envs
+    import private_set_intersection.python as psi
+except ImportError:
+    # Default package
+    import openmined_psi as psi
 
 
 @pytest.mark.parametrize("reveal_intersection", [False, True])

@@ -97,7 +97,7 @@ std::vector<int64_t> BloomFilter::Intersect(
     absl::Span<const std::string> elements) const {
   std::vector<int64_t> res;
 
-  for (int64_t i = 0; i < elements.size(); i++) {
+  for (size_t i = 0; i < elements.size(); i++) {
     if (Check(elements[i])) {
       res.push_back(i);
     }

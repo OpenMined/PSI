@@ -77,7 +77,7 @@ std::vector<int64_t> GCS::Intersect(
   std::vector<std::pair<int64_t, int64_t>> hashes;
   hashes.reserve(elements.size());
 
-  for (int64_t i = 0; i < elements.size(); i++) {
+  for (size_t i = 0; i < elements.size(); i++) {
     hashes.emplace_back(Hash(elements[i], hash_range_, *context_), i);
   }
 
