@@ -51,6 +51,7 @@ jobs:
             echo "/opt/python/${{ matrix.python-version }}/bin" >> $GITHUB_PATH
       - name: Install dependencies
         run: |
+            yum install bazel3
             python -m pip install --upgrade pip
             pip install -r private_set_intersection/python/requirements_dev.txt
       - name: Run tests
