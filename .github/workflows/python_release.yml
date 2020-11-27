@@ -49,10 +49,14 @@ jobs:
       - name: Set target Python version PATH
         run: |
             echo "/opt/python/${{ matrix.python-version }}/bin" >> $GITHUB_PATH
+      - name: Install repo
+        become: yes
+        get_url:
+            url: https://copr.fedorainfracloud.org/coprs/vbatts/bazel/repo/epel-7/vbatts-bazel-epel-7.repo
+            dest: /etc/yum.repos.d/
+            mode: 0755
       - name: Install dependencies
         run: |
-            curl https://copr.fedorainfracloud.org/coprs/vbatts/bazel/repo/epel-7/vbatts-bazel-epel-7.repo
-            cp vbatts-bazel-epel-7.repo /etc/yum.repos.d/
             yum install bazel3
             python -m pip install --upgrade pip
             pip install -r private_set_intersection/python/requirements_dev.txt
