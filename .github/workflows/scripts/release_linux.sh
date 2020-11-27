@@ -2,11 +2,12 @@
 
 # Bazel
 repofile="vbatts-bazel-epel-7.repo"
-wget https://copr.fedorainfracloud.org/coprs/vbatts/bazel/repo/epel-7/$repofile
+curl -O https://copr.fedorainfracloud.org/coprs/vbatts/bazel/repo/epel-7/$repofile
 if [ ! -f $repofile ] ;  then
     echo "Download error"
-    exit
+    exit 1
 fi
+
 /bin/cp $repofile /etc/yum.repos.d/
 yum --enablerepo=vbatts-bazel list bazel
 yumdownloader --enablerepo=vbatts-bazel  bazel
