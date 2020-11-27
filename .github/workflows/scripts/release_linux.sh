@@ -1,17 +1,14 @@
-#!/bin/sh
+#!/bin/bassh
 
-# Bazel
-repofile="vbatts-bazel-epel-7.repo"
-curl -O https://copr.fedorainfracloud.org/coprs/vbatts/bazel/repo/epel-7/$repofile
-if [ ! -f $repofile ] ;  then
-    echo "Download error"
-    exit 1
-fi
+set -e
 
-/bin/cp $repofile /etc/yum.repos.d/
-yum --enablerepo=vbatts-bazel list bazel
-yumdownloader --enablerepo=vbatts-bazel  bazel
-yum install bazel3
+bazel_version="3.7.1"
+# Install gcc/g++, git, unzip/which (for bazel), and python3
+yum install -y python3 python3-devel gcc gcc-c++ git unzip which
+
+# Install Bazel version specified in .bazelversion
+curl -sSOL https://github.com/bazelbuild/bazel/releases/download/${bazel_version}/bazel-${bazel_version}-installer-linux-x86_64.sh
+bash -x -e bazel-${bazel_version}-installer-linux-x86_64.sh
 
 # Python
 python -m pip install --upgrade pip
