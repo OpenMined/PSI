@@ -49,20 +49,6 @@ jobs:
       - name: Set target Python version PATH
         run: |
             echo "/opt/python/${{ matrix.python-version }}/bin" >> $GITHUB_PATH
-      - name: Install repo
-        become: yes
-        get_url:
-            url: https://copr.fedorainfracloud.org/coprs/vbatts/bazel/repo/epel-7/vbatts-bazel-epel-7.repo
-            dest: /etc/yum.repos.d/
-            mode: 0755
-      - name: Install dependencies
-        run: |
-            yum install bazel3
-            python -m pip install --upgrade pip
-            pip install -r private_set_intersection/python/requirements_dev.txt
-      - name: Run tests
-        timeout-minutes: 30
-        run: .github/workflows/scripts/run_tests_python.sh
       - name: Build and publish
         env:
           TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
