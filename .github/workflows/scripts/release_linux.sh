@@ -2,8 +2,8 @@
 
 set -e
 
-ARG GCC_VERSION=8.3.0
-ARG GCC_PATH=/usr/local/gcc-$GCC_VERSION
+GCC_VERSION=8.3.0
+GCC_PATH=/usr/local/gcc-$GCC_VERSION
 
 yum -y update && yum -y install \
     curl \
