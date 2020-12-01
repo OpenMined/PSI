@@ -2,11 +2,16 @@
 
 set -e
 
-yum -y update && yum -y install \
-    curl \
-    bison \
-    flex \
-    python3 python3-devel python3-pip \
+yum -y update
+yum -y install epel-release
+yum --disablerepo="*" --enablerepo="epel" list python3*
+yum --disablerepo="*" --enablerepo="epel" install python3 python3-devel
+curl -O https://bootstrap.pypa.io/get-pip.py
+/usr/bin/python3 get-pip.py
+
+yum -y install \
+    curl bison flex \
+    epel-release python python-devel python-pip \
     git unzip which \
     && yum clean all
 
