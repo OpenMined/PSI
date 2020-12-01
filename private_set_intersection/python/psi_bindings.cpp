@@ -24,17 +24,12 @@ T throwOrReturn(const private_join_and_compute::StatusOr<T>& in) {
 
 template <class T>
 auto saveProto(const T& obj) {
-  char* output = (char*)malloc(obj.ByteSizeLong() * sizeof(char));
-  if (output == nullptr) throw std::runtime_error("out of memory");
-
-  if (!obj.SerializeToArray(output, obj.ByteSizeLong()))
-    throw std::invalid_argument("failed to serialize proto");
-  return py::bytes(output, obj.ByteSizeLong());
+  return py::bytes(obj.SerializeAsString());
 }
 
 template <class T>
-auto loadProto(T& obj, const std::string& data) {
-  if (!obj.ParseFromArray(data.c_str(), data.size())) {
+auto loadProto(T& obj, const py::bytes& data) {
+  if (!obj.ParseFromString(data)) {
     throw std::invalid_argument("failed to parse proto data");
   }
 }
@@ -61,10 +56,10 @@ void bind(pybind11::module& m) {
                            &psi_proto::ServerSetup::set_bits))
       .def("clear_bits", &psi_proto::ServerSetup::clear_bits)
       .def("load", [](psi_proto::ServerSetup& obj,
-                      const std::string& data) { return loadProto(obj, data); })
+                      const py::bytes& data) { return loadProto(obj, data); })
       .def("save",
            [](const psi_proto::ServerSetup& obj) { return saveProto(obj); })
-      .def_static("Load", [](const std::string& data) {
+      .def_static("Load", [](const py::bytes& data) {
         psi_proto::ServerSetup obj;
         loadProto(obj, data);
         return obj;
@@ -77,10 +72,7 @@ void bind(pybind11::module& m) {
           "encrypted_elements",
           [](const psi_proto::Request& obj) {
             auto elements = obj.encrypted_elements();
-            std::vector<py::bytes> result;
-            for (auto& e : elements) result.push_back(e);
-
-            return result;
+            return std::vector<py::bytes>(elements.begin(), elements.end());
           },
           py::call_guard<py::gil_scoped_release>())
       .def(
@@ -100,9 +92,9 @@ void bind(pybind11::module& m) {
       .def("clear_reveal_intersection",
            &psi_proto::Request::clear_reveal_intersection)
       .def("load", [](psi_proto::Request& obj,
-                      const std::string& data) { return loadProto(obj, data); })
+                      const py::bytes& data) { return loadProto(obj, data); })
       .def("save", [](const psi_proto::Request& obj) { return saveProto(obj); })
-      .def_static("Load", [](const std::string& data) {
+      .def_static("Load", [](const py::bytes& data) {
         psi_proto::Request obj;
         loadProto(obj, data);
         return obj;
@@ -115,10 +107,7 @@ void bind(pybind11::module& m) {
           "encrypted_elements",
           [](const psi_proto::Response& obj) {
             auto elements = obj.encrypted_elements();
-            std::vector<py::bytes> result;
-            for (auto& e : elements) result.push_back(e);
-
-            return result;
+            return std::vector<py::bytes>(elements.begin(), elements.end());
           },
           py::call_guard<py::gil_scoped_release>())
       .def(
@@ -133,10 +122,10 @@ void bind(pybind11::module& m) {
       .def("clear_encrypted_elements",
            &psi_proto::Response::clear_encrypted_elements)
       .def("load", [](psi_proto::Response& obj,
-                      const std::string& data) { return loadProto(obj, data); })
+                      const py::bytes& data) { return loadProto(obj, data); })
       .def("save",
            [](const psi_proto::Response& obj) { return saveProto(obj); })
-      .def_static("Load", [](const std::string& data) {
+      .def_static("Load", [](const py::bytes& data) {
         psi_proto::Response obj;
         loadProto(obj, data);
         return obj;
