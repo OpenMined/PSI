@@ -192,9 +192,7 @@ void bind(pybind11::module& m) {
           [](const psi::PsiClient& obj) {
             return py::bytes(obj.GetPrivateKeyBytes());
           },
-          py::call_guard<py::gil_scoped_release>())
-
-      ;
+          py::call_guard<py::gil_scoped_release>());
 
   py::class_<psi::PsiServer>(m, "server")
       .def_static(
