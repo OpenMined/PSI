@@ -42,7 +42,7 @@ jobs:
           - cp38-cp38
 
     runs-on: ubuntu-latest
-    container: tktechdocker/manylinux
+    container: tktechdocker/manylinux:gcc8.3.0
     steps:
       - uses: actions/checkout@v1
         with:
