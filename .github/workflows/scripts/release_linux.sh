@@ -6,7 +6,7 @@ yum -y update && yum -y install \
     curl \
     bison \
     flex \
-    python3 python3-devel \
+    python3 python3-devel python3-pip \
     git unzip which \
     && yum clean all
 
