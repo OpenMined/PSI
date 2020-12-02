@@ -16,7 +16,10 @@
 
 package(default_visibility = ["//visibility:public"])
 
-COPTS = ["-DGRPC_BAZEL_BUILD", "-std=c++14"]
+COPTS = [
+    "-DGRPC_BAZEL_BUILD",
+    "-std=c++14",
+]
 
 cc_library(
     name = "c_package",
