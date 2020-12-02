@@ -20,6 +20,7 @@ cc_library(
     name = "c_package",
     srcs = ["package.cpp"],
     hdrs = ["package.h"],
+    copts = ["-std=c++14"],
     deps = [
         "//private_set_intersection/cpp:package",
     ],
@@ -28,6 +29,7 @@ cc_library(
 cc_test(
     name = "c_package_test",
     srcs = ["package_test.cpp"],
+    copts = ["-std=c++14"],
     deps = [
         ":c_package",
         "@com_google_googletest//:gtest_main",
@@ -38,6 +40,7 @@ cc_library(
     name = "internal_utils",
     srcs = ["internal_utils.cpp"],
     hdrs = ["internal_utils.h"],
+    copts = ["-std=c++14"],
     visibility = ["//visibility:private"],
     deps = [
         "@com_google_absl//absl/status:statusor",
@@ -48,6 +51,7 @@ cc_library(
     name = "c_psi_client",
     srcs = ["psi_client.cpp"],
     hdrs = ["psi_client.h"],
+    copts = ["-std=c++14"],
     deps = [
         "//private_set_intersection/c:internal_utils",
         "//private_set_intersection/cpp:psi_client",
@@ -57,6 +61,7 @@ cc_library(
 cc_test(
     name = "c_psi_client_test",
     srcs = ["psi_client_test.cpp"],
+    copts = ["-std=c++14"],
     deps = [
         ":c_psi_client",
         "//private_set_intersection/cpp/util:status_matchers",
@@ -72,6 +77,7 @@ cc_library(
     name = "c_psi_server",
     srcs = ["psi_server.cpp"],
     hdrs = ["psi_server.h"],
+    copts = ["-std=c++14"],
     deps = [
         "//private_set_intersection/c:internal_utils",
         "//private_set_intersection/cpp:psi_server",
@@ -81,6 +87,7 @@ cc_library(
 cc_test(
     name = "c_psi_server_test",
     srcs = ["psi_server_test.cpp"],
+    copts = ["-std=c++14"],
     deps = [
         ":c_psi_client",
         ":c_psi_server",
@@ -95,6 +102,7 @@ cc_test(
 cc_binary(
     name = "c_psi_benchmark",
     srcs = ["psi_benchmark.cpp"],
+    copts = ["-std=c++14"],
     deps = [
         ":c_psi_client",
         ":c_psi_server",
