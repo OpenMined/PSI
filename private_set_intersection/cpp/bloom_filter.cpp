@@ -36,7 +36,10 @@ StatusOr<std::unique_ptr<BloomFilter>> BloomFilter::Create(
     double fpr, absl::Span<const std::string> elements) {
   ASSIGN_OR_RETURN(auto filter, CreateEmpty(fpr, elements.size()));
   filter->Add(elements);
-  return std::move(filter);
+  // This move seems to be needed for some versions of GCC. See for example this failing build:
+  // https://github.com/OpenMined/PSI/pull/109/checks?check_run_id=1487034145#step:3:61
+  // TODO: Remove the std::move once it's not needed any more.
+  return std::move(filter);  
 }
 
 StatusOr<std::unique_ptr<BloomFilter>> BloomFilter::CreateEmpty(
