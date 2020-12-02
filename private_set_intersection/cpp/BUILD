@@ -18,7 +18,7 @@ load("//tools:common.bzl", "template_rule")
 
 package(default_visibility = ["//visibility:public"])
 
-COPTS = ["-DGRPC_BAZEL_BUILD", "-std=c++14"]
+PSI_DEFAULT_COPTS = ["-std=c++14"]
 
 PSI_LINKOPTS = select({
     "@bazel_tools//src/conditions:darwin": [],
@@ -43,13 +43,13 @@ cc_library(
     name = "package",
     srcs = ["package.cpp"],
     hdrs = [":package_h"],
-    copts = COPTS,
+    copts = ["-std=c++14"],
 )
 
 cc_test(
     name = "package_test",
     srcs = ["package_test.cpp"],
-    copts = COPTS,
+    copts = ["-std=c++14"],
     deps = [
         ":package",
         "@com_google_googletest//:gtest_main",
@@ -60,14 +60,14 @@ cc_library(
     name = "golomb",
     srcs = ["golomb.cpp"],
     hdrs = ["golomb.h"],
-    copts = COPTS,
+    copts = ["-std=c++14"],
     visibility = ["//visibility:private"],
 )
 
 cc_test(
     name = "golomb_test",
     srcs = ["golomb_test.cpp"],
-    copts = COPTS,
+    copts = ["-std=c++14"],
     linkopts = PSI_LINKOPTS,
     deps = [
         ":golomb",
@@ -80,7 +80,7 @@ cc_library(
     name = "gcs",
     srcs = ["gcs.cpp"],
     hdrs = ["gcs.h"],
-    copts = COPTS,
+    copts = ["-std=c++14"],
     visibility = ["//visibility:private"],
     deps = [
         ":golomb",
@@ -96,7 +96,7 @@ cc_library(
 cc_test(
     name = "gcs_test",
     srcs = ["gcs_test.cpp"],
-    copts = COPTS,
+    copts = ["-std=c++14"],
     linkopts = PSI_LINKOPTS,
     deps = [
         ":gcs",
@@ -113,7 +113,7 @@ cc_library(
     name = "bloom_filter",
     srcs = ["bloom_filter.cpp"],
     hdrs = ["bloom_filter.h"],
-    copts = COPTS,
+    copts = ["-std=c++14"],
     visibility = ["//visibility:private"],
     deps = [
         "//private_set_intersection/proto:psi_cc_proto",
@@ -128,7 +128,7 @@ cc_library(
 cc_test(
     name = "bloom_filter_test",
     srcs = ["bloom_filter_test.cpp"],
-    copts = COPTS,
+    copts = ["-std=c++14"],
     linkopts = PSI_LINKOPTS,
     deps = [
         ":bloom_filter",
@@ -144,7 +144,7 @@ cc_library(
     name = "psi_client",
     srcs = ["psi_client.cpp"],
     hdrs = ["psi_client.h"],
-    copts = COPTS,
+    copts = ["-std=c++14"],
     includes = ["."],
     deps = [
         ":bloom_filter",
@@ -162,7 +162,7 @@ cc_library(
 cc_test(
     name = "psi_client_test",
     srcs = ["psi_client_test.cpp"],
-    copts = COPTS,
+    copts = ["-std=c++14"],
     linkopts = PSI_LINKOPTS,
     deps = [
         ":psi_client",
@@ -179,7 +179,7 @@ cc_library(
     name = "psi_server",
     srcs = ["psi_server.cpp"],
     hdrs = ["psi_server.h"],
-    copts = COPTS,
+    copts = ["-std=c++14"],
     includes = ["."],
     deps = [
         ":bloom_filter",
@@ -197,7 +197,7 @@ cc_library(
 cc_test(
     name = "psi_server_test",
     srcs = ["psi_server_test.cpp"],
-    copts = COPTS,
+    copts = ["-std=c++14"],
     linkopts = PSI_LINKOPTS,
     deps = [
         ":psi_client",
@@ -213,7 +213,7 @@ cc_test(
 cc_binary(
     name = "psi_benchmark",
     srcs = ["psi_benchmark.cpp"],
-    copts = COPTS,
+    copts = ["-std=c++14"],
     linkopts = PSI_LINKOPTS,
     deps = [
         ":psi_client",

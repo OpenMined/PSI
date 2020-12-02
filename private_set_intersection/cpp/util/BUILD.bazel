@@ -14,14 +14,12 @@
 # limitations under the License.
 #
 
-COPTS = ["-DGRPC_BAZEL_BUILD", "-std=c++14"]
-
 cc_library(
     name = "status_matchers",
     testonly = 1,
     hdrs = ["status_matchers.h"],
     visibility = ["//visibility:public"],
-    copts = COPTS,
+    copts = ["-std=c++14"],
     deps = [
         "@com_google_absl//absl/strings",
         "@com_google_absl//absl/types:optional",
