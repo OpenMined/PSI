@@ -119,10 +119,10 @@ def psi_preload():
     if "com_github_grpc_grpc" not in native.existing_rules():
         http_archive(
             name = "com_github_grpc_grpc",
-            #sha256 = "2060769f2d4b0d3535ba594b2ab614d7f68a492f786ab94b4318788d45e3278a",
-            strip_prefix = "grpc-1.34.0",
+            sha256 = "2060769f2d4b0d3535ba594b2ab614d7f68a492f786ab94b4318788d45e3278a",
+            strip_prefix = "grpc-1.33.2",
             urls = [
-                "https://github.com/grpc/grpc/archive/v1.34.0.tar.gz",
+                "https://github.com/grpc/grpc/archive/v1.33.2.tar.gz",
             ],
         )
 

@@ -18,10 +18,7 @@ load("//tools:common.bzl", "template_rule")
 
 package(default_visibility = ["//visibility:public"])
 
-COPTS = [
-    "-DGRPC_BAZEL_BUILD",
-    "-std=c++14",
-]
+COPTS = ["-DGRPC_BAZEL_BUILD", "-std=c++14"]
 
 PSI_LINKOPTS = select({
     "@bazel_tools//src/conditions:darwin": [],
