@@ -34,9 +34,9 @@ def psi_deps():
     if "private_join_and_compute" not in native.existing_rules():
         http_archive(
             name = "private_join_and_compute",
-            sha256 = "64be17ff362ff0338be49fe28658df73cc539c1b0f1d84b957d4a567097929ca",
-            strip_prefix = "private-join-and-compute-eaec47fa64619e9a6467630663c7af70a4eadfcc",
-            url = "https://github.com/google/private-join-and-compute/archive/eaec47fa64619e9a6467630663c7af70a4eadfcc.zip",
+            #sha256 = "64be17ff362ff0338be49fe28658df73cc539c1b0f1d84b957d4a567097929ca",
+            strip_prefix = "private-join-and-compute-7c63dc60f3b209d5c3568b2c52421682a3b3d53f",
+            url = "https://github.com/bcebere/private-join-and-compute/archive/7c63dc60f3b209d5c3568b2c52421682a3b3d53f.zip",
         )
 
     if "com_google_absl" not in native.existing_rules():
