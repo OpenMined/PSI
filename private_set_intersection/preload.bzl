@@ -15,8 +15,39 @@
 #
 
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
+load("@bazel_tools//tools/build_defs/repo:git.bzl", "git_repository")
+load("@com_github_grpc_grpc//bazel:grpc_deps.bzl", "grpc_deps")
 
 def psi_preload():
+    if "com_github_glog_glog" not in native.existing_rules():
+        http_archive(
+            name = "com_github_glog_glog",
+            sha256 = "f28359aeba12f30d73d9e4711ef356dc842886968112162bc73002645139c39c",
+            strip_prefix = "glog-0.4.0",
+            urls = ["https://github.com/google/glog/archive/v0.4.0.tar.gz"],
+        )
+
+    if "com_github_gflags_gflags" not in native.existing_rules():
+        http_archive(
+            name = "com_github_gflags_gflags",
+            sha256 = "34af2f15cf7367513b352bdcd2493ab14ce43692d2dcd9dfc499492966c64dcf",
+            strip_prefix = "gflags-2.2.2",
+            urls = [
+                "https://mirror.bazel.build/github.com/gflags/gflags/archive/v2.2.2.tar.gz",
+                "https://github.com/gflags/gflags/archive/v2.2.2.tar.gz",
+            ],
+        )
+
+    if "com_google_absl" not in native.existing_rules():
+        # Abseil C++ libraries
+        git_repository(
+            name = "com_google_absl",
+            remote = "https://github.com/abseil/abseil-cpp.git",
+            commit = "0f3bb466b868b523cf1dc9b2aaaed65c77b28862",
+            shallow_since = "1603283562 -0400",
+        )
+
+
     if "rules_proto" not in native.existing_rules():
         http_archive(
             name = "rules_proto",
@@ -114,3 +145,5 @@ def psi_preload():
             strip_prefix = "bazel-skylib-1.0.2",
             url = "https://github.com/bazelbuild/bazel-skylib/archive/1.0.2.tar.gz",
         )
+
+    grpc_deps()

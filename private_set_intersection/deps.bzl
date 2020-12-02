@@ -28,15 +28,16 @@ load("@io_bazel_rules_rust//rust:repositories.bzl", "rust_repositories")
 load("@io_bazel_rules_rust//proto:repositories.bzl", "rust_proto_repositories")
 load("@io_bazel_rules_rust//:workspace.bzl", "bazel_version")
 load("//third_party/cargo:crates.bzl", "raze_fetch_remote_crates")
+load("@com_github_grpc_grpc//bazel:grpc_extra_deps.bzl", "grpc_extra_deps")
 
 def psi_deps():
     # General dependencies.
     if "private_join_and_compute" not in native.existing_rules():
         http_archive(
             name = "private_join_and_compute",
-            sha256 = "64be17ff362ff0338be49fe28658df73cc539c1b0f1d84b957d4a567097929ca",
-            strip_prefix = "private-join-and-compute-eaec47fa64619e9a6467630663c7af70a4eadfcc",
-            url = "https://github.com/google/private-join-and-compute/archive/eaec47fa64619e9a6467630663c7af70a4eadfcc.zip",
+            sha256 = "1edb55f17c1dbad61906f4dc5f43fe019b7e6c67a1cf9c1adbbaf1efc5807162",
+            strip_prefix = "private-join-and-compute-master",
+            url = "https://github.com/bcebere/private-join-and-compute/archive/master.zip",
         )
 
     if "com_google_absl" not in native.existing_rules():
@@ -89,6 +90,7 @@ def psi_deps():
             ],
         )
 
+    grpc_extra_deps()
     # Language-specific dependencies.
 
     # Javascript
