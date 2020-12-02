@@ -10,7 +10,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [macos-latest, ubuntu-latest]
+        os: [macos-11.0, ubuntu-20.04]
     steps:
       - uses: actions/checkout@v2
       - name: Run tests
@@ -18,13 +18,13 @@ jobs:
         run: .github/workflows/scripts/run_tests_core.sh
       - name: Linters
         run: .github/workflows/scripts/lint_cpp.sh
-        if: ${{ matrix.os == 'ubuntu-latest' }}
+        if: ${{ matrix.os == 'ubuntu-20.04' }}
 
   JS:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [macos-latest, ubuntu-latest]
+        os: [macos-11.0, ubuntu-20.04]
     steps:
       - uses: actions/checkout@v2
       - name: Run tests
@@ -35,7 +35,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [macos-latest, ubuntu-latest]
+        os: [macos-11.0, ubuntu-20.04]
         python-version: [3.6, 3.7, 3.8]
     steps:
       - uses: actions/checkout@v2
@@ -57,7 +57,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [macos-latest, ubuntu-latest]
+        os: [macos-11.0, ubuntu-20.04]
     steps:
       - name: Install toolchains
         uses: actions/setup-go@v2
@@ -77,7 +77,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [macos-latest, ubuntu-latest]
+        os: [macos-11.0, ubuntu-20.04]
     steps:
       - name: Install toolchains
         uses: actions-rs/toolchain@v1
