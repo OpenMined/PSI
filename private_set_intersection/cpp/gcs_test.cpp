@@ -146,7 +146,7 @@ TEST(GCSTest, TestGolombSize) {
     idx.push_back(static_cast<int64_t>(i));
   }
 
-  for (int i = 0; i < sizeof(fpr) / sizeof(double); i++) {
+  for (size_t i = 0; i < sizeof(fpr) / sizeof(double); i++) {
     std::unique_ptr<GCS> gcs;
     PSI_ASSERT_OK_AND_ASSIGN(
         gcs, GCS::Create(fpr[i],

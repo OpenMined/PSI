@@ -136,8 +136,8 @@ cc_library(
     hdrs = ["psi_client.h"],
     includes = ["."],
     deps = [
-        ":gcs",
         ":bloom_filter",
+        ":gcs",
         "//private_set_intersection/proto:psi_cc_proto",
         "@boringssl//:crypto",
         "@com_google_absl//absl/memory",
@@ -169,8 +169,8 @@ cc_library(
     hdrs = ["psi_server.h"],
     includes = ["."],
     deps = [
-        ":gcs",
         ":bloom_filter",
+        ":gcs",
         "//private_set_intersection/proto:psi_cc_proto",
         "@boringssl//:crypto",
         "@com_google_absl//absl/memory",
