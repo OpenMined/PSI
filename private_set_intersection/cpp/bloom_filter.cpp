@@ -36,7 +36,7 @@ StatusOr<std::unique_ptr<BloomFilter>> BloomFilter::Create(
     double fpr, absl::Span<const std::string> elements) {
   ASSIGN_OR_RETURN(auto filter, CreateEmpty(fpr, elements.size()));
   filter->Add(elements);
-  return filter;
+  return std::move(filter);
 }
 
 StatusOr<std::unique_ptr<BloomFilter>> BloomFilter::CreateEmpty(
