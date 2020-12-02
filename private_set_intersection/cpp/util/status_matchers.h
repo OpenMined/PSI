@@ -57,7 +57,7 @@ class StatusIsMatcher {
   StatusIsMatcher(const StatusIsMatcher&) = default;
   StatusIsMatcher& operator=(const StatusIsMatcher&) = default;
 
-  StatusIsMatcher(private_join_and_compute::StatusCode code,
+  StatusIsMatcher(absl::StatusCode code,
                   absl::optional<absl::string_view> message)
       : code_(code), message_(message) {}
 
@@ -106,7 +106,7 @@ class StatusIsMatcher {
     return status_or.status();
   }
 
-  const private_join_and_compute::StatusCode code_;
+  const absl::StatusCode code_;
   const absl::optional<std::string> message_;
 };
 
@@ -117,7 +117,7 @@ inline ::testing::PolymorphicMatcher<internal::IsOkMatcher> IsOk() {
 }
 
 inline ::testing::PolymorphicMatcher<internal::StatusIsMatcher> StatusIs(
-    private_join_and_compute::StatusCode code,
+    absl::StatusCode code,
     absl::optional<absl::string_view> message = absl::nullopt) {
   return ::testing::MakePolymorphicMatcher(
       internal::StatusIsMatcher(code, message));

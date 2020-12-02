@@ -4,8 +4,8 @@
 #include "private_set_intersection/proto/psi.pb.h"
 
 EMSCRIPTEN_BINDINGS(PSI_Server) {
+  using absl::StatusOr;
   using emscripten::optional_override;
-  using private_join_and_compute::StatusOr;
   using private_set_intersection::DataStructure;
   using private_set_intersection::PsiServer;
   using private_set_intersection::ToJSObject;

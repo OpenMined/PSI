@@ -4,8 +4,8 @@
 #include "psi_client.h"
 
 EMSCRIPTEN_BINDINGS(PSI_Client) {
+  using absl::StatusOr;
   using emscripten::optional_override;
-  using private_join_and_compute::StatusOr;
   using private_set_intersection::PsiClient;
   using private_set_intersection::ToJSObject;
   using private_set_intersection::ToSerializedJSObject;

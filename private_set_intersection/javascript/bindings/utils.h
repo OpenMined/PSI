@@ -19,7 +19,7 @@ namespace private_set_intersection {
 //
 // Exactly one of `Value` or `Status` is NULL.
 template <typename T>
-emscripten::val ToJSObject(private_join_and_compute::StatusOr<T> statusor) {
+emscripten::val ToJSObject(absl::StatusOr<T> statusor) {
   auto result = emscripten::val::object();
   if (statusor.ok()) {
     result.set("Value", *statusor);
@@ -35,8 +35,7 @@ emscripten::val ToJSObject(private_join_and_compute::StatusOr<T> statusor) {
 }
 
 template <typename T>
-emscripten::val ToSerializedJSObject(
-    private_join_and_compute::StatusOr<T> statusor) {
+emscripten::val ToSerializedJSObject(absl::StatusOr<T> statusor) {
   auto result = emscripten::val::object();
   if (statusor.ok()) {
     const T protobuf = *statusor;
@@ -59,8 +58,8 @@ emscripten::val ToSerializedJSObject(
 // Converts a StatusOr<std::unique_ptr<T>> to a StatusOr<std::shared_ptr<T>>,
 // taking ownership of the object pointed to.
 template <typename T>
-private_join_and_compute::StatusOr<std::shared_ptr<T>> ToShared(
-    private_join_and_compute::StatusOr<std::unique_ptr<T>> statusor) {
+absl::StatusOr<std::shared_ptr<T>> ToShared(
+    absl::StatusOr<std::unique_ptr<T>> statusor) {
   if (!statusor.ok()) {
     return statusor.status();
   }
