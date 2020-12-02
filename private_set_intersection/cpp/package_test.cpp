@@ -14,6 +14,8 @@
 // limitations under the License.
 //
 
+#include <regex>
+
 #include "private_set_intersection/cpp/package.h"
 
 #include "gmock/gmock.h"
@@ -31,7 +33,11 @@ TEST(PackageTest, TestVersionFormat) {
   //   1.2.3-beta
   //   1.2.3-RC1
   std::string version_regex = "[0-9]+[.][0-9]+[.][0-9]+(-[A-Za-z0-9]+)?";
+#ifdef GTEST_USES_POSIX_RE
   EXPECT_THAT(Package::kVersion, testing::MatchesRegex(version_regex));
+#else
+  EXPECT_TRUE(std::regex_match(Package::kVersion, std::regex(version_regex)));
+#endif
 }
 
 }  // namespace

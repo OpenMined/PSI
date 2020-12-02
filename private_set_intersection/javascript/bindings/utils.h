@@ -4,7 +4,7 @@
 #include <vector>
 
 #include "emscripten/val.h"
-#include "util/statusor.h"
+#include "util/status.inc"
 
 namespace private_set_intersection {
 
