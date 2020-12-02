@@ -37,3 +37,5 @@ build:js --cxxopt="-fno-exceptions"
 # Disable sandbox environment because emsdk caches files by writing to
 # home directory.
 build:js --spawn_strategy=local
+
+build --copt -DGRPC_BAZEL_BUILD
