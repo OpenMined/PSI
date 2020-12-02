@@ -24,7 +24,7 @@
 
 namespace private_set_intersection {
 
-using ::private_join_and_compute::StatusOr;
+using absl::StatusOr;
 
 enum class DataStructure { GCS, BloomFilter };
 

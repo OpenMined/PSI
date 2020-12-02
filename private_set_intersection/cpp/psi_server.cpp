@@ -92,19 +92,19 @@ StatusOr<psi_proto::ServerSetup> PsiServer::CreateSetupMessage(
     // Return the Bloom Filter as a Protobuf
     return filter->ToProtobuf();
   } else {
-    return ::private_join_and_compute::InvalidArgumentError("Impossible");
+    return absl::InvalidArgumentError("Impossible");
   }
 }
 
 StatusOr<psi_proto::Response> PsiServer::ProcessRequest(
     const psi_proto::Request& client_request) const {
   if (!client_request.IsInitialized()) {
-    return ::private_join_and_compute::InvalidArgumentError(
+    return absl::InvalidArgumentError(
         "`client_request` is corrupt!");
   }
 
   if (client_request.reveal_intersection() != reveal_intersection) {
-    return ::private_join_and_compute::InvalidArgumentError(
+    return absl::InvalidArgumentError(
         absl::StrCat("Client expects `reveal_intersection` = ",
                      client_request.reveal_intersection(),
                      ", but it is actually ", reveal_intersection));

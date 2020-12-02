@@ -37,7 +37,7 @@ GCS::GCS(std::string golomb, int64_t div, int64_t hash_range,
 StatusOr<std::unique_ptr<GCS>> GCS::Create(
     double fpr, absl::Span<const std::string> elements) {
   if (fpr <= 0 || fpr >= 1) {
-    return ::private_join_and_compute::InvalidArgumentError(
+    return absl::InvalidArgumentError(
         "`fpr` must be in (0,1)");
   }
 
@@ -60,7 +60,7 @@ StatusOr<std::unique_ptr<GCS>> GCS::Create(
 StatusOr<std::unique_ptr<GCS>> GCS::CreateFromProtobuf(
     const psi_proto::ServerSetup& encoded_set) {
   if (!encoded_set.IsInitialized()) {
-    return ::private_join_and_compute::InvalidArgumentError(
+    return absl::InvalidArgumentError(
         "`ServerSetup` is corrupt!");
   }
 

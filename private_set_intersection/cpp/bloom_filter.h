@@ -26,7 +26,7 @@
 
 namespace private_set_intersection {
 
-using ::private_join_and_compute::StatusOr;
+using absl::StatusOr;
 
 // A Bloom filter succinctly encodes a set as an array of bits and can be used
 // for approximate membership tests. For a given number of hash functions h_1,

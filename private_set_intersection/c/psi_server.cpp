@@ -49,7 +49,7 @@ int psi_server_create_setup_message(psi_server_ctx ctx, double fpr,
                                     size_t *output_len, char **error_out) {
   auto server = static_cast<PsiServer *>(ctx);
   if (server == nullptr) {
-    return generate_error(::private_join_and_compute::InvalidArgumentError(
+    return generate_error(absl::InvalidArgumentError(
                               "invalid server context"),
                           error_out);
   }
@@ -68,13 +68,13 @@ int psi_server_create_setup_message(psi_server_ctx ctx, double fpr,
 
   *output = (char *)malloc(proto.ByteSizeLong() * sizeof(char));
   if (*output == nullptr) {
-    return generate_error(::private_join_and_compute::InvalidArgumentError(
+    return generate_error(absl::InvalidArgumentError(
                               "failed to allocate memory"),
                           error_out);
   }
 
   if (!proto.SerializeToArray(*output, proto.ByteSizeLong())) {
-    return generate_error(::private_join_and_compute::InvalidArgumentError(
+    return generate_error(absl::InvalidArgumentError(
                               "failed to serialize setup message"),
                           error_out);
   }
@@ -89,7 +89,7 @@ int psi_server_process_request(psi_server_ctx ctx,
                                char **error_out) {
   auto server = static_cast<PsiServer *>(ctx);
   if (server == nullptr) {
-    return generate_error(::private_join_and_compute::InvalidArgumentError(
+    return generate_error(absl::InvalidArgumentError(
                               "invalid server context"),
                           error_out);
   }
@@ -97,7 +97,7 @@ int psi_server_process_request(psi_server_ctx ctx,
   psi_proto::Request request_proto;
   if (!request_proto.ParseFromArray(client_request.buff,
                                     client_request.buff_len)) {
-    return generate_error(::private_join_and_compute::InvalidArgumentError(
+    return generate_error(absl::InvalidArgumentError(
                               "failed to parse client request"),
                           error_out);
   }
@@ -109,13 +109,13 @@ int psi_server_process_request(psi_server_ctx ctx,
   auto proto = std::move(*result);
   *output = (char *)malloc(proto.ByteSizeLong() * sizeof(char));
   if (*output == nullptr) {
-    return generate_error(::private_join_and_compute::InvalidArgumentError(
+    return generate_error(absl::InvalidArgumentError(
                               "failed to allocate memory"),
                           error_out);
   }
 
   if (!proto.SerializeToArray(*output, proto.ByteSizeLong())) {
-    return generate_error(::private_join_and_compute::InvalidArgumentError(
+    return generate_error(absl::InvalidArgumentError(
                               "failed to serialize server response"),
                           error_out);
   }
@@ -128,7 +128,7 @@ int psi_server_get_private_key_bytes(psi_server_ctx ctx, char **output,
                                      size_t *output_len, char **error_out) {
   auto server = static_cast<PsiServer *>(ctx);
   if (server == nullptr) {
-    return generate_error(::private_join_and_compute::InvalidArgumentError(
+    return generate_error(absl::InvalidArgumentError(
                               "invalid server context"),
                           error_out);
   }

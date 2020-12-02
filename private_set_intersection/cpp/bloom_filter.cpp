@@ -42,11 +42,11 @@ StatusOr<std::unique_ptr<BloomFilter>> BloomFilter::Create(
 StatusOr<std::unique_ptr<BloomFilter>> BloomFilter::CreateEmpty(
     double fpr, int64_t max_elements) {
   if (fpr <= 0 || fpr >= 1) {
-    return ::private_join_and_compute::InvalidArgumentError(
+    return absl::InvalidArgumentError(
         "`fpr` must be in (0,1)");
   }
   if (max_elements < 0) {
-    return ::private_join_and_compute::InvalidArgumentError(
+    return absl::InvalidArgumentError(
         "`max_elements` must be positive");
   }
   int num_hash_functions = static_cast<int>(std::ceil(-std::log2(fpr)));
@@ -61,7 +61,7 @@ StatusOr<std::unique_ptr<BloomFilter>> BloomFilter::CreateEmpty(
 StatusOr<std::unique_ptr<BloomFilter>> BloomFilter::CreateFromProtobuf(
     const psi_proto::ServerSetup& encoded_filter) {
   if (!encoded_filter.IsInitialized()) {
-    return ::private_join_and_compute::InvalidArgumentError(
+    return absl::InvalidArgumentError(
         "`ServerSetup` is corrupt!");
   }
 

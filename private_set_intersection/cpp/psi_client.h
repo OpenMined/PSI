@@ -24,7 +24,7 @@
 
 namespace private_set_intersection {
 
-using ::private_join_and_compute::StatusOr;
+using absl::StatusOr;
 
 // Client side of a Private Set Intersection protocol. In
 // PSI, two parties (client and server) each hold a dataset, and at

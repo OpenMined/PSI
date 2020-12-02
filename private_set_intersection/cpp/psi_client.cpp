@@ -85,7 +85,7 @@ StatusOr<std::vector<int64_t>> PsiClient::GetIntersection(
     const psi_proto::ServerSetup& server_setup,
     const psi_proto::Response& server_response) const {
   if (!reveal_intersection) {
-    return ::private_join_and_compute::InvalidArgumentError(
+    return absl::InvalidArgumentError(
         "GetIntersection called on PsiClient with reveal_intersection == "
         "false");
   }
@@ -108,12 +108,12 @@ StatusOr<std::vector<int64_t>> PsiClient::ProcessResponse(
     const psi_proto::Response& server_response) const {
   // Ensure both items are valid
   if (!server_setup.IsInitialized()) {
-    return ::private_join_and_compute::InvalidArgumentError(
+    return absl::InvalidArgumentError(
         "`server_setup` is corrupt!");
   }
 
   if (!server_response.IsInitialized()) {
-    return ::private_join_and_compute::InvalidArgumentError(
+    return absl::InvalidArgumentError(
         "`server_response` is corrupt!");
   }
 
@@ -142,7 +142,7 @@ StatusOr<std::vector<int64_t>> PsiClient::ProcessResponse(
     return filter->Intersect(
         absl::MakeConstSpan(&decrypted[0], decrypted.size()));
   } else {
-    return ::private_join_and_compute::InvalidArgumentError("Impossible");
+    return absl::InvalidArgumentError("Impossible");
   }
 }
 
