@@ -104,7 +104,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [windows-latest]
+        os: [ubuntu-latest, macos-latest]
     steps:
       - name: Install toolchains
         uses: actions-rs/toolchain@v1
