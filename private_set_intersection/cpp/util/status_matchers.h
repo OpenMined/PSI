@@ -20,7 +20,7 @@
 #include "absl/strings/string_view.h"
 #include "absl/types/optional.h"
 #include "gmock/gmock.h"
-#include "util/status.inc"
+#include "absl/status/statusor.h"
 
 #define PSI_ASSERT_OK_AND_ASSIGN(lhs, rexpr)                                \
   PSI_ASSERT_OK_AND_ASSIGN_IMPL(                                            \

@@ -17,7 +17,7 @@
 #ifndef PRIVATE_SET_INTERSECTION_C_INTERNAL_UTILS_H_
 #define PRIVATE_SET_INTERSECTION_C_INTERNAL_UTILS_H_
 
-#include "util/status.inc"
+#include "absl/status/statusor.h"
 
 namespace private_set_intersection {
 

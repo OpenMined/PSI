@@ -22,7 +22,7 @@
 #include "absl/types/span.h"
 #include "crypto/context.h"
 #include "private_set_intersection/proto/psi.pb.h"
-#include "util/status.inc"
+#include "absl/status/statusor.h"
 
 namespace private_set_intersection {
 
