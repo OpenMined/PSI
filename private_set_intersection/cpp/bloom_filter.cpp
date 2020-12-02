@@ -36,21 +36,20 @@ StatusOr<std::unique_ptr<BloomFilter>> BloomFilter::Create(
     double fpr, absl::Span<const std::string> elements) {
   ASSIGN_OR_RETURN(auto filter, CreateEmpty(fpr, elements.size()));
   filter->Add(elements);
-  // This move seems to be needed for some versions of GCC. See for example this failing build:
+  // This move seems to be needed for some versions of GCC. See for example this
+  // failing build:
   // https://github.com/OpenMined/PSI/pull/109/checks?check_run_id=1487034145#step:3:61
   // TODO: Remove the std::move once it's not needed any more.
-  return std::move(filter);  
+  return std::move(filter);
 }
 
 StatusOr<std::unique_ptr<BloomFilter>> BloomFilter::CreateEmpty(
     double fpr, int64_t max_elements) {
   if (fpr <= 0 || fpr >= 1) {
-    return absl::InvalidArgumentError(
-        "`fpr` must be in (0,1)");
+    return absl::InvalidArgumentError("`fpr` must be in (0,1)");
   }
   if (max_elements < 0) {
-    return absl::InvalidArgumentError(
-        "`max_elements` must be positive");
+    return absl::InvalidArgumentError("`max_elements` must be positive");
   }
   int num_hash_functions = static_cast<int>(std::ceil(-std::log2(fpr)));
   int64_t num_bytes = static_cast<int64_t>(
@@ -64,8 +63,7 @@ StatusOr<std::unique_ptr<BloomFilter>> BloomFilter::CreateEmpty(
 StatusOr<std::unique_ptr<BloomFilter>> BloomFilter::CreateFromProtobuf(
     const psi_proto::ServerSetup& encoded_filter) {
   if (!encoded_filter.IsInitialized()) {
-    return absl::InvalidArgumentError(
-        "`ServerSetup` is corrupt!");
+    return absl::InvalidArgumentError("`ServerSetup` is corrupt!");
   }
 
   auto context = absl::make_unique<::private_join_and_compute::Context>();

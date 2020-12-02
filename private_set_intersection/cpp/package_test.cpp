@@ -14,9 +14,9 @@
 // limitations under the License.
 //
 
-#include <regex>
-
 #include "private_set_intersection/cpp/package.h"
+
+#include <regex>
 
 #include "gmock/gmock.h"
 #include "gtest/gtest.h"

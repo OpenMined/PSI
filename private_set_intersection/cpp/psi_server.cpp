@@ -99,8 +99,7 @@ StatusOr<psi_proto::ServerSetup> PsiServer::CreateSetupMessage(
 StatusOr<psi_proto::Response> PsiServer::ProcessRequest(
     const psi_proto::Request& client_request) const {
   if (!client_request.IsInitialized()) {
-    return absl::InvalidArgumentError(
-        "`client_request` is corrupt!");
+    return absl::InvalidArgumentError("`client_request` is corrupt!");
   }
 
   if (client_request.reveal_intersection() != reveal_intersection) {

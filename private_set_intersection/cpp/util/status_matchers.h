@@ -17,10 +17,10 @@
 
 #include <type_traits>
 
+#include "absl/status/statusor.h"
 #include "absl/strings/string_view.h"
 #include "absl/types/optional.h"
 #include "gmock/gmock.h"
-#include "absl/status/statusor.h"
 
 #define PSI_ASSERT_OK_AND_ASSIGN(lhs, rexpr)                                \
   PSI_ASSERT_OK_AND_ASSIGN_IMPL(                                            \

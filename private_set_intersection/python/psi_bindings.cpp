@@ -4,11 +4,11 @@
 #include <memory>
 #include <vector>
 
+#include "absl/status/statusor.h"
 #include "private_set_intersection/cpp/package.h"
 #include "private_set_intersection/cpp/psi_client.h"
 #include "private_set_intersection/cpp/psi_server.h"
 #include "private_set_intersection/proto/psi.pb.h"
-#include "absl/status/statusor.h"
 
 namespace {
 namespace psi = private_set_intersection;

@@ -84,8 +84,7 @@ EMSCRIPTEN_BINDINGS(PSI_Client) {
                 self.GetIntersection(server_setup, server_response);
             if (status.ok()) {
               // Convert int64_t to int32_t for JS
-              const std::vector<std::int64_t> unsupported_result =
-                  *status;
+              const std::vector<std::int64_t> unsupported_result = *status;
               const std::vector<std::int32_t> supported_result(
                   unsupported_result.begin(), unsupported_result.end());
               // Convert vector to JS array

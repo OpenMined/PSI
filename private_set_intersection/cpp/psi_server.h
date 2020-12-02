@@ -17,10 +17,10 @@
 #ifndef PRIVATE_SET_INTERSECTION_CPP_PSI_SERVER_H_
 #define PRIVATE_SET_INTERSECTION_CPP_PSI_SERVER_H_
 
+#include "absl/status/statusor.h"
 #include "absl/types/span.h"
 #include "crypto/ec_commutative_cipher.h"
 #include "private_set_intersection/proto/psi.pb.h"
-#include "absl/status/statusor.h"
 
 namespace private_set_intersection {
 

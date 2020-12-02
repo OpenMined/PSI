@@ -108,13 +108,11 @@ StatusOr<std::vector<int64_t>> PsiClient::ProcessResponse(
     const psi_proto::Response& server_response) const {
   // Ensure both items are valid
   if (!server_setup.IsInitialized()) {
-    return absl::InvalidArgumentError(
-        "`server_setup` is corrupt!");
+    return absl::InvalidArgumentError("`server_setup` is corrupt!");
   }
 
   if (!server_response.IsInitialized()) {
-    return absl::InvalidArgumentError(
-        "`server_response` is corrupt!");
+    return absl::InvalidArgumentError("`server_response` is corrupt!");
   }
 
   const auto& response_array = server_response.encrypted_elements();

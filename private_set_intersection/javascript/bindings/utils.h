@@ -3,8 +3,8 @@
 
 #include <vector>
 
-#include "emscripten/val.h"
 #include "absl/status/statusor.h"
+#include "emscripten/val.h"
 
 namespace private_set_intersection {
 
