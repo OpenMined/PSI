@@ -5,7 +5,7 @@ pybind_extension(
     name = "_openmined_psi",
     srcs = ["psi_bindings.cpp"],
     copts = [
-        "--std=c++17",
+        "--std=c++14",
     ],
     features = ["-use_header_modules"],
     linkstatic = True,
@@ -15,6 +15,7 @@ pybind_extension(
         "//private_set_intersection/cpp:psi_client",
         "//private_set_intersection/cpp:psi_server",
         "//private_set_intersection/proto:psi_cc_proto",
+        "@com_google_absl//absl/status:statusor",
     ],
 )
 
