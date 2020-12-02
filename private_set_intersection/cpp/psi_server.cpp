@@ -25,8 +25,6 @@
 #include "private_set_intersection/cpp/bloom_filter.h"
 #include "private_set_intersection/cpp/gcs.h"
 #include "private_set_intersection/proto/psi.pb.h"
-#include "util/canonical_errors.h"
-#include "util/status_macros.h"
 
 namespace private_set_intersection {
 

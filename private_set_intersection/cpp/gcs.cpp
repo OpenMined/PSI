@@ -24,7 +24,6 @@
 #include "absl/strings/escaping.h"
 #include "private_set_intersection/cpp/golomb.h"
 #include "private_set_intersection/proto/psi.pb.h"
-#include "util/canonical_errors.h"
 
 namespace private_set_intersection {
 
@@ -108,11 +107,11 @@ int64_t GCS::Hash(const std::string& input, int64_t hash_range,
                   ::private_join_and_compute::Context& context) {
   const auto bn_num_bits = context.CreateBigNum(hash_range);
 
-  const int64_t h = context.CreateBigNum(context.Sha256String(input))
-                        .Mod(bn_num_bits)
-                        .ToIntValue()
-                        .ValueOrDie();  // ValueOrDie is safe here since
-                                        // bn_num_bits fits in an int64.
+  const int64_t h =
+      context.CreateBigNum(context.Sha256String(input))
+          .Mod(bn_num_bits)
+          .ToIntValue()
+          .value();  // value() is safe here since bn_num_bits fits in an int64.
   return h;
 }
 

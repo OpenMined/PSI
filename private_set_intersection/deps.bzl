@@ -27,24 +27,24 @@ load("@rules_python_external//:defs.bzl", "pip_install")
 load("@io_bazel_rules_rust//rust:repositories.bzl", "rust_repositories")
 load("@io_bazel_rules_rust//proto:repositories.bzl", "rust_proto_repositories")
 load("@io_bazel_rules_rust//:workspace.bzl", "bazel_version")
+load("@com_github_grpc_grpc//bazel:grpc_deps.bzl", "grpc_deps")
+load("@build_bazel_rules_apple//apple:repositories.bzl", "apple_rules_dependencies")
 load("//third_party/cargo:crates.bzl", "raze_fetch_remote_crates")
-
 def psi_deps():
     # General dependencies.
     if "private_join_and_compute" not in native.existing_rules():
         http_archive(
             name = "private_join_and_compute",
-            sha256 = "64be17ff362ff0338be49fe28658df73cc539c1b0f1d84b957d4a567097929ca",
-            strip_prefix = "private-join-and-compute-eaec47fa64619e9a6467630663c7af70a4eadfcc",
-            url = "https://github.com/google/private-join-and-compute/archive/eaec47fa64619e9a6467630663c7af70a4eadfcc.zip",
+            strip_prefix = "private-join-and-compute-ee2c581454fd895d9928fe27b7ba0d0ebfd8fda2",
+            url = "https://github.com/schoppmp/private-join-and-compute/archive/ee2c581454fd895d9928fe27b7ba0d0ebfd8fda2.zip",
         )
 
     if "com_google_absl" not in native.existing_rules():
         http_archive(
             name = "com_google_absl",
-            sha256 = "9ab2dbebf6f209d6680bd3088a837c07f0788852ab81700aef6e2f2a746a7acb",
-            strip_prefix = "abseil-cpp-b35973e3e35cb1eccb086d6a549c253c49579474",
-            url = "https://github.com/abseil/abseil-cpp/archive/b35973e3e35cb1eccb086d6a549c253c49579474.zip",
+            sha256 = "d29785bb94deaba45946d40bde5b356c66a4eb76505de0181ea9a23c46bc5ed4",
+            strip_prefix = "abseil-cpp-592924480acf034aec0454160492a20bccdbdf3e",
+            url = "https://github.com/abseil/abseil-cpp/archive/592924480acf034aec0454160492a20bccdbdf3e.zip",
         )
 
     if "com_google_googletest" not in native.existing_rules():
@@ -88,6 +88,10 @@ def psi_deps():
                 "https://github.com/gflags/gflags/archive/v2.2.2.tar.gz",
             ],
         )
+
+    # gRPC for PJC.
+    grpc_deps()
+    apple_rules_dependencies()
 
     # Language-specific dependencies.
 

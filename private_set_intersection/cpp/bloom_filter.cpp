@@ -22,8 +22,6 @@
 #include "absl/strings/escaping.h"
 #include "absl/strings/str_cat.h"
 #include "private_set_intersection/proto/psi.pb.h"
-#include "util/canonical_errors.h"
-#include "util/status_macros.h"
 
 namespace private_set_intersection {
 
@@ -131,13 +129,12 @@ std::vector<int64_t> BloomFilter::Hash(const std::string& x) const {
       context_->CreateBigNum(context_->Sha256String(absl::StrCat(1, x)))
           .Mod(bn_num_bits)
           .ToIntValue()
-          .ValueOrDie();  // ValueOrDie is safe here since bn_num_bits fits in
-                          // an int64.
+          .value();  // value() is safe here since bn_num_bits fits in an int64.
   const int64_t h2 =
       context_->CreateBigNum(context_->Sha256String(absl::StrCat(2, x)))
           .Mod(bn_num_bits)
           .ToIntValue()
-          .ValueOrDie();
+          .value();
   for (int i = 0; i < num_hash_functions_; i++) {
     result[i] = (h1 + i * h2) % num_bits;
   }

@@ -231,7 +231,7 @@ TEST_F(PsiClientTest, FailIfRevealIntersectionDoesntMatch) {
   EXPECT_THAT(
       client_->GetIntersection(server_setup, response),
       StatusIs(
-          private_join_and_compute::kInvalidArgument,
+          absl::StatusCode::kInvalidArgument,
           "GetIntersection called on PsiClient with reveal_intersection == "
           "false"));
 }

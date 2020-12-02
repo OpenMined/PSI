@@ -20,7 +20,7 @@
 #include "absl/types/span.h"
 #include "crypto/ec_commutative_cipher.h"
 #include "private_set_intersection/proto/psi.pb.h"
-#include "util/statusor.h"
+#include "util/status.inc"
 
 namespace private_set_intersection {
 
