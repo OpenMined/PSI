@@ -7,4 +7,3 @@ bazel test --test_output=all --cache_test_results=no //private_set_intersection/
 # Python package
 pip install .
 python private_set_intersection/python/tests.py
-
