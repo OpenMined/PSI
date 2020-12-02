@@ -18,6 +18,8 @@ load("//tools:common.bzl", "template_rule")
 
 package(default_visibility = ["//visibility:public"])
 
+PSI_DEFAULT_COPTS = ["-std=c++14"]
+
 PSI_LINKOPTS = select({
     "@bazel_tools//src/conditions:darwin": [],
     "//conditions:default": [
@@ -41,11 +43,13 @@ cc_library(
     name = "package",
     srcs = ["package.cpp"],
     hdrs = [":package_h"],
+    copts = ["-std=c++14"],
 )
 
 cc_test(
     name = "package_test",
     srcs = ["package_test.cpp"],
+    copts = ["-std=c++14"],
     deps = [
         ":package",
         "@com_google_googletest//:gtest_main",
@@ -56,12 +60,14 @@ cc_library(
     name = "golomb",
     srcs = ["golomb.cpp"],
     hdrs = ["golomb.h"],
+    copts = ["-std=c++14"],
     visibility = ["//visibility:private"],
 )
 
 cc_test(
     name = "golomb_test",
     srcs = ["golomb_test.cpp"],
+    copts = ["-std=c++14"],
     linkopts = PSI_LINKOPTS,
     deps = [
         ":golomb",
@@ -74,21 +80,23 @@ cc_library(
     name = "gcs",
     srcs = ["gcs.cpp"],
     hdrs = ["gcs.h"],
+    copts = ["-std=c++14"],
     visibility = ["//visibility:private"],
     deps = [
         ":golomb",
         "//private_set_intersection/proto:psi_cc_proto",
         "@com_google_absl//absl/memory",
+        "@com_google_absl//absl/status:statusor",
         "@com_google_absl//absl/strings",
         "@com_google_absl//absl/types:span",
         "@private_join_and_compute//crypto:bn_util",
-        "@com_google_absl//absl/status:statusor",
     ],
 )
 
 cc_test(
     name = "gcs_test",
     srcs = ["gcs_test.cpp"],
+    copts = ["-std=c++14"],
     linkopts = PSI_LINKOPTS,
     deps = [
         ":gcs",
@@ -105,20 +113,22 @@ cc_library(
     name = "bloom_filter",
     srcs = ["bloom_filter.cpp"],
     hdrs = ["bloom_filter.h"],
+    copts = ["-std=c++14"],
     visibility = ["//visibility:private"],
     deps = [
         "//private_set_intersection/proto:psi_cc_proto",
         "@com_google_absl//absl/memory",
+        "@com_google_absl//absl/status:statusor",
         "@com_google_absl//absl/strings",
         "@com_google_absl//absl/types:span",
         "@private_join_and_compute//crypto:bn_util",
-        "@com_google_absl//absl/status:statusor",
     ],
 )
 
 cc_test(
     name = "bloom_filter_test",
     srcs = ["bloom_filter_test.cpp"],
+    copts = ["-std=c++14"],
     linkopts = PSI_LINKOPTS,
     deps = [
         ":bloom_filter",
@@ -134,6 +144,7 @@ cc_library(
     name = "psi_client",
     srcs = ["psi_client.cpp"],
     hdrs = ["psi_client.h"],
+    copts = ["-std=c++14"],
     includes = ["."],
     deps = [
         ":bloom_filter",
@@ -141,16 +152,17 @@ cc_library(
         "//private_set_intersection/proto:psi_cc_proto",
         "@boringssl//:crypto",
         "@com_google_absl//absl/memory",
+        "@com_google_absl//absl/status:statusor",
         "@com_google_absl//absl/strings",
         "@com_google_absl//absl/types:span",
         "@private_join_and_compute//crypto:ec_commutative_cipher",
-        "@com_google_absl//absl/status:statusor",
     ],
 )
 
 cc_test(
     name = "psi_client_test",
     srcs = ["psi_client_test.cpp"],
+    copts = ["-std=c++14"],
     linkopts = PSI_LINKOPTS,
     deps = [
         ":psi_client",
@@ -167,6 +179,7 @@ cc_library(
     name = "psi_server",
     srcs = ["psi_server.cpp"],
     hdrs = ["psi_server.h"],
+    copts = ["-std=c++14"],
     includes = ["."],
     deps = [
         ":bloom_filter",
@@ -174,16 +187,17 @@ cc_library(
         "//private_set_intersection/proto:psi_cc_proto",
         "@boringssl//:crypto",
         "@com_google_absl//absl/memory",
+        "@com_google_absl//absl/status:statusor",
         "@com_google_absl//absl/strings",
         "@com_google_absl//absl/types:span",
         "@private_join_and_compute//crypto:ec_commutative_cipher",
-        "@com_google_absl//absl/status:statusor",
     ],
 )
 
 cc_test(
     name = "psi_server_test",
     srcs = ["psi_server_test.cpp"],
+    copts = ["-std=c++14"],
     linkopts = PSI_LINKOPTS,
     deps = [
         ":psi_client",
@@ -199,6 +213,7 @@ cc_test(
 cc_binary(
     name = "psi_benchmark",
     srcs = ["psi_benchmark.cpp"],
+    copts = ["-std=c++14"],
     linkopts = PSI_LINKOPTS,
     deps = [
         ":psi_client",

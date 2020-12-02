@@ -19,6 +19,7 @@ cc_library(
     testonly = 1,
     hdrs = ["status_matchers.h"],
     visibility = ["//visibility:public"],
+    copts = ["-std=c++14"],
     deps = [
         "@com_google_absl//absl/strings",
         "@com_google_absl//absl/types:optional",
