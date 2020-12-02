@@ -32,9 +32,14 @@ jobs:
         os: [windows-latest]
     steps:
       - uses: actions/checkout@v2
-      - name: Run tests
+      - name: Run tests nix
         timeout-minutes: 60
         run: .github/workflows/scripts/run_tests_js.sh
+        if: ${{ matrix.os != 'windows-latest' }}
+      - name: Run tests windows
+        timeout-minutes: 60
+        run: .github/workflows/scripts/run_tests_js.bat
+        if: ${{ matrix.os == 'windows-latest' }}
 
   Python:
     runs-on: ${{ matrix.os }}
@@ -44,6 +49,11 @@ jobs:
         python-version: [3.6, 3.7, 3.8]
     steps:
       - uses: actions/checkout@v2
+      - name: Setup Bazel
+        uses: abhinavsingh/setup-bazel@v3
+        with:
+            version: 3.1.0
+        if: ${{ matrix.os == 'windows-latest' }}
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v1
         with:
