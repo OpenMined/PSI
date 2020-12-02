@@ -15,7 +15,7 @@ int psi_client_create_with_new_key(bool reveal_intersection,
                                    psi_client_ctx *ctx, char **error_out) {
   auto result = PsiClient::CreateWithNewKey(reveal_intersection);
   if (result.ok()) {
-    *ctx = std::move(result).ValueOrDie().release();
+    *ctx = result->release();
     return 0;
   }
 
@@ -28,7 +28,7 @@ int psi_client_create_from_key(psi_client_buffer_t key_bytes,
   auto result = PsiClient::CreateFromKey(
       std::string(key_bytes.buff, key_bytes.buff_len), reveal_intersection);
   if (result.ok()) {
-    *ctx = std::move(result).ValueOrDie().release();
+    *ctx = result->release();
     return 0;
   }
 
@@ -62,7 +62,7 @@ int psi_client_create_request(psi_client_ctx ctx, psi_client_buffer_t *inputs,
   if (!result.ok()) {
     return generate_error(result.status(), error_out);
   }
-  auto proto = std::move(result).ValueOrDie();
+  auto proto = std::move(*result);
 
   std::string value;
 
@@ -116,7 +116,7 @@ int psi_client_get_intersection_size(psi_client_ctx ctx,
     return generate_error(result.status(), error_out);
   }
   if (out != nullptr) {
-    *out = result.ValueOrDie();
+    *out = *result;
   }
   return 0;
 }
@@ -148,16 +148,15 @@ int psi_client_get_intersection(psi_client_ctx ctx,
                           error_out);
   }
 
-  auto result_or =
+  auto result =
       client->GetIntersection(server_setup_proto, server_response_proto);
-  if (!result_or.ok()) {
-    return generate_error(result_or.status(), error_out);
+  if (!result.ok()) {
+    return generate_error(result.status(), error_out);
   }
   if (out != nullptr) {
-    auto result = result_or.ValueOrDie();
-    *outlen = result.size();
-    *out = (int64_t *)malloc(result.size() * sizeof(int64_t));
-    std::copy_n(result.begin(), result.size(), *out);
+    *outlen = result->size();
+    *out = (int64_t *)malloc(result->size() * sizeof(int64_t));
+    std::copy_n(result->begin(), result->size(), *out);
   }
   return 0;
 }

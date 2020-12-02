@@ -82,7 +82,7 @@ cc_library(
         "@com_google_absl//absl/strings",
         "@com_google_absl//absl/types:span",
         "@private_join_and_compute//crypto:bn_util",
-        "@private_join_and_compute//util:status",
+        "@private_join_and_compute//util:status_includes",
     ],
 )
 
@@ -112,7 +112,7 @@ cc_library(
         "@com_google_absl//absl/strings",
         "@com_google_absl//absl/types:span",
         "@private_join_and_compute//crypto:bn_util",
-        "@private_join_and_compute//util:status",
+        "@private_join_and_compute//util:status_includes",
     ],
 )
 
@@ -144,7 +144,7 @@ cc_library(
         "@com_google_absl//absl/strings",
         "@com_google_absl//absl/types:span",
         "@private_join_and_compute//crypto:ec_commutative_cipher",
-        "@private_join_and_compute//util:status",
+        "@private_join_and_compute//util:status_includes",
     ],
 )
 
@@ -177,7 +177,7 @@ cc_library(
         "@com_google_absl//absl/strings",
         "@com_google_absl//absl/types:span",
         "@private_join_and_compute//crypto:ec_commutative_cipher",
-        "@private_join_and_compute//util:status",
+        "@private_join_and_compute//util:status_includes",
     ],
 )
 

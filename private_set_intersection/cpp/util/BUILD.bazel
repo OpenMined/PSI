@@ -20,10 +20,9 @@ cc_library(
     hdrs = ["status_matchers.h"],
     visibility = ["//visibility:public"],
     deps = [
-        "@com_google_absl//absl/status",
         "@com_google_absl//absl/strings",
         "@com_google_absl//absl/types:optional",
         "@com_google_googletest//:gtest",
-        "@private_join_and_compute//util:status",
+        "@private_join_and_compute//util:status_includes",
     ],
 )

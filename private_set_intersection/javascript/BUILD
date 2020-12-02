@@ -47,7 +47,7 @@ cc_library(
     hdrs = ["bindings/utils.h"],
     visibility = ["//visibility:private"],
     deps = [
-        "@private_join_and_compute//util:status",
+        "@private_join_and_compute//util:status_includes",
     ],
 )
 

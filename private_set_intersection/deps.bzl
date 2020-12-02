@@ -35,6 +35,7 @@ def psi_deps():
     if "private_join_and_compute" not in native.existing_rules():
         http_archive(
             name = "private_join_and_compute",
+            sha256 = "219f7cff49841901f8d88a7f84c9c8a61e69b5eb308a8535835743093eb4b595",
             strip_prefix = "private-join-and-compute-ee2c581454fd895d9928fe27b7ba0d0ebfd8fda2",
             url = "https://github.com/schoppmp/private-join-and-compute/archive/ee2c581454fd895d9928fe27b7ba0d0ebfd8fda2.zip",
         )

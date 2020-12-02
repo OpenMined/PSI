@@ -14,7 +14,7 @@ int psi_server_create_with_new_key(bool reveal_intersection,
                                    psi_server_ctx *ctx, char **error_out) {
   auto result = PsiServer::CreateWithNewKey(reveal_intersection);
   if (result.ok()) {
-    *ctx = std::move(result).ValueOrDie().release();
+    *ctx = result->release();
     return 0;
   }
 
@@ -27,7 +27,7 @@ int psi_server_create_from_key(psi_server_buffer_t key_bytes,
   auto result = PsiServer::CreateFromKey(
       std::string(key_bytes.buff, key_bytes.buff_len), reveal_intersection);
   if (result.ok()) {
-    *ctx = std::move(result).ValueOrDie().release();
+    *ctx = result->release();
     return 0;
   }
   return generate_error(result.status(), error_out);
@@ -64,7 +64,7 @@ int psi_server_create_setup_message(psi_server_ctx ctx, double fpr,
     return generate_error(result.status(), error_out);
   }
 
-  auto proto = result.ValueOrDie();
+  auto proto = std::move(*result);
 
   *output = (char *)malloc(proto.ByteSizeLong() * sizeof(char));
   if (*output == nullptr) {
@@ -106,7 +106,7 @@ int psi_server_process_request(psi_server_ctx ctx,
     return generate_error(result.status(), error_out);
   }
 
-  auto proto = result.ValueOrDie();
+  auto proto = std::move(*result);
   *output = (char *)malloc(proto.ByteSizeLong() * sizeof(char));
   if (*output == nullptr) {
     return generate_error(::private_join_and_compute::InvalidArgumentError(
