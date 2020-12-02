@@ -52,11 +52,17 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r private_set_intersection/python/requirements_dev.txt
-      - name: Run tests
+      - name: Run tests nix
         timeout-minutes: 30
         run: .github/workflows/scripts/run_tests_python.sh
+        if: ${{ matrix.os != 'windows-latest' }}
+      - name: Run tests Windows
+        timeout-minutes: 30
+        run: .github/workflows/scripts/run_tests_python.bat
+        if: ${{ matrix.os == 'windows-latest' }}
       - name: Python linters
         run: .github/workflows/scripts/lint_python.sh
+        if: ${{ matrix.os != 'windows-latest' }}
 
   Go:
     runs-on: ${{ matrix.os }}
@@ -72,11 +78,17 @@ jobs:
       - name: Install Go dependencies
         run: go get -u golang.org/x/lint/golint
       - uses: actions/checkout@v2
-      - name: Run tests
+      - name: Run tests nix
         timeout-minutes: 30
         run: .github/workflows/scripts/run_tests_go.sh
+        if: ${{ matrix.os != 'windows-latest' }}
+      - name: Run tests windows
+        timeout-minutes: 30
+        run: .github/workflows/scripts/run_tests_go.bat
+        if: ${{ matrix.os == 'windows-latest' }}
       - name: Go linters
         run: .github/workflows/scripts/lint_go.sh
+        if: ${{ matrix.os != 'windows-latest' }}
 
   Rust:
     runs-on: ${{ matrix.os }}
@@ -90,6 +102,11 @@ jobs:
           toolchain: stable
           default: true
       - uses: actions/checkout@v2
-      - name: Run tests
+      - name: Run tests nix
         timeout-minutes: 30
         run: .github/workflows/scripts/run_tests_rust.sh
+        if: ${{ matrix.os != 'windows-latest' }}
+      - name: Run tests windows
+        timeout-minutes: 30
+        run: .github/workflows/scripts/run_tests_rust.bat
+        if: ${{ matrix.os == 'windows-latest' }}
