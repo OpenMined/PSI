@@ -19,7 +19,7 @@ namespace py = pybind11;
 template <class T>
 T throwOrReturn(const private_join_and_compute::StatusOr<T>& in) {
   if (!in.ok()) throw std::runtime_error(in.status().message());
-  return in.ValueOrDie();
+  return *in;
 }
 
 template <class T>
@@ -138,7 +138,7 @@ void bind(pybind11::module& m) {
             auto client = psi::PsiClient::CreateWithNewKey(reveal_intersection);
             if (!client.ok())
               throw std::runtime_error(client.status().message());
-            return std::move(client.ValueOrDie());
+            return std::move(*client);
           },
           py::call_guard<py::gil_scoped_release>())
       .def_static(
@@ -148,7 +148,7 @@ void bind(pybind11::module& m) {
                 psi::PsiClient::CreateFromKey(key_bytes, reveal_intersection);
             if (!client.ok())
               throw std::runtime_error(client.status().message());
-            return std::move(client.ValueOrDie());
+            return std::move(*client);
           },
           py::call_guard<py::gil_scoped_release>())
       .def(
@@ -190,7 +190,7 @@ void bind(pybind11::module& m) {
             auto server = psi::PsiServer::CreateWithNewKey(reveal_intersection);
             if (!server.ok())
               throw std::runtime_error(server.status().message());
-            return std::move(server.ValueOrDie());
+            return std::move(*server);
           },
           py::call_guard<py::gil_scoped_release>())
       .def_static(
@@ -200,7 +200,7 @@ void bind(pybind11::module& m) {
                 psi::PsiServer::CreateFromKey(key_bytes, reveal_intersection);
             if (!server.ok())
               throw std::runtime_error(server.status().message());
-            return std::move(server.ValueOrDie());
+            return std::move(*server);
           },
           py::call_guard<py::gil_scoped_release>())
       .def(
