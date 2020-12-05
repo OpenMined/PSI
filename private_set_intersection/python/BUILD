@@ -20,7 +20,10 @@ pybind_extension(
 
 cc_library(
     name = "pybind_wrapper",
-    data = ["//private_set_intersection/python:_openmined_psi.so"],
+    data = select({
+        "@bazel_tools//src/conditions:windows": ["//private_set_intersection/python:_openmined_psi.dll"],
+        "//conditions:default": ["//private_set_intersection/python:_openmined_psi.so"],
+    }),
 )
 
 py_library(
