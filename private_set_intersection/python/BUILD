@@ -18,6 +18,11 @@ pybind_extension(
     ],
 )
 
+cc_library(
+    name = "pybind_wrapper",
+    data = ["//private_set_intersection/python:_openmined_psi.so"],
+)
+
 py_library(
     name = "openmined_psi",
     srcs = ["__init__.py"],

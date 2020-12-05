@@ -76,14 +76,22 @@ class BuildBazelExtension(build_ext.build_ext):
         if not os.path.exists(self.build_temp):
             os.makedirs(self.build_temp)
 
-        bazel_argv = [
-            "bazel",
-            "build",
-            "--python_path=" + os.environ["PYTHON_BIN_PATH"],
-            ext.bazel_target,
-            "--symlink_prefix=" + os.path.join(self.build_temp, "bazel-"),
-            "--compilation_mode=" + ("dbg" if self.debug else "opt"),
-        ]
+        if IS_WINDOWS:
+            bazel_argv = [
+                "bazel",
+                "build",
+                ext.bazel_target,
+                "--symlink_prefix=" + os.path.join(self.build_temp, "bazel-"),
+                "--compilation_mode=" + ("dbg" if self.debug else "opt"),
+            ]
+        else:
+            bazel_argv = [
+                "bazel",
+                "build",
+                "//private_set_intersection/python:pybind_wrapper",
+                "--symlink_prefix=" + os.path.join(self.build_temp, "bazel-"),
+                "--compilation_mode=" + ("dbg" if self.debug else "opt"),
+            ]
 
         self.spawn(bazel_argv)
 
@@ -109,7 +117,7 @@ setuptools.setup(
     packages=setuptools.find_packages("private_set_intersection/python"),
     cmdclass=dict(build_ext=BuildBazelExtension),
     ext_modules=[
-        BazelExtension("openmined_psi", "//private_set_intersection/python:openmined_psi",)
+        BazelExtension("openmined_psi", "//private_set_intersection/python:_openmined_psi",)
     ],
     zip_safe=False,
     classifiers=[
