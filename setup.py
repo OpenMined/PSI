@@ -79,6 +79,7 @@ class BuildBazelExtension(build_ext.build_ext):
         bazel_argv = [
             "bazel",
             "build",
+            "--python_path=" + os.environ["PYTHON_BIN_PATH"],
             ext.bazel_target,
             "--symlink_prefix=" + os.path.join(self.build_temp, "bazel-"),
             "--compilation_mode=" + ("dbg" if self.debug else "opt"),
