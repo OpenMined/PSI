@@ -22,12 +22,20 @@ load("@rules_pkg//:deps.bzl", "rules_pkg_dependencies")
 load("@bazel_gazelle//:deps.bzl", "gazelle_dependencies")
 load("@pybind11_bazel//:python_configure.bzl", "python_configure")
 load("@rules_python//python:repositories.bzl", "py_repositories")
-load("@rules_python_external//:repositories.bzl", "rules_python_external_dependencies")
-load("@rules_python_external//:defs.bzl", "pip_install")
+load("@rules_python//python:pip.bzl", "pip_install")
+#load("@rules_python_external//:repositories.bzl", "rules_python_external_dependencies")
 load("@io_bazel_rules_rust//rust:repositories.bzl", "rust_repositories")
 load("@io_bazel_rules_rust//proto:repositories.bzl", "rust_proto_repositories")
 load("@io_bazel_rules_rust//:workspace.bzl", "bazel_version")
 load("//third_party/cargo:crates.bzl", "raze_fetch_remote_crates")
+
+_py_configure = """
+if [[ "$OSTYPE" == "darwin"* ]]; then
+    ./configure --prefix=$(pwd)/bazel_install --with-openssl=$(brew --prefix openssl)
+else
+    ./configure --prefix=$(pwd)/bazel_install
+fi
+"""
 
 def psi_deps():
     # General dependencies.
@@ -89,6 +97,29 @@ def psi_deps():
             ],
         )
 
+    if "python_interpreter" not in native.existing_rules():
+        http_archive(
+            name = "python_interpreter",
+            urls = ["https://www.python.org/ftp/python/3.8.3/Python-3.8.3.tar.xz"],
+            sha256 = "dfab5ec723c218082fe3d5d7ae17ecbdebffa9a1aea4d64aa3a2ecdd2e795864",
+            strip_prefix = "Python-3.8.3",
+            patch_cmds = [
+                "mkdir $(pwd)/bazel_install",
+                _py_configure,
+                "make",
+                "make install",
+                "ln -s bazel_install/bin/python3 python_bin",
+            ],
+            build_file_content = """
+                exports_files(["python_bin"])
+                filegroup(
+                    name = "files",
+                    srcs = glob(["bazel_install/**"], exclude = ["**/* *"]),
+                    visibility = ["//visibility:public"],
+                )
+                """,
+        )
+
     # Language-specific dependencies.
 
     # Javascript
@@ -103,7 +134,6 @@ def psi_deps():
     python_configure(name = "local_config_python", python_version = "3")
 
     # Install pip requirements for Python tests.
-    rules_python_external_dependencies()
     pip_install(
         name = "org_openmined_psi_python_deps",
         requirements = "@org_openmined_psi//private_set_intersection/python:requirements_dev.txt",
