@@ -97,12 +97,12 @@ def psi_deps():
             ],
         )
 
+    PYTHON_VERSION = "3.8.3"
     if "python_interpreter" not in native.existing_rules():
         http_archive(
             name = "python_interpreter",
-            urls = ["https://www.python.org/ftp/python/3.8.3/Python-3.8.3.tar.xz"],
-            sha256 = "dfab5ec723c218082fe3d5d7ae17ecbdebffa9a1aea4d64aa3a2ecdd2e795864",
-            strip_prefix = "Python-3.8.3",
+            urls = ["https://www.python.org/ftp/python/" + PYTHON_VERSION + "/Python-" + PYTHON_VERSION + ".tar.xz"],
+            strip_prefix = "Python-" + PYTHON_VERSION,
             patch_cmds = [
                 "mkdir $(pwd)/bazel_install",
                 _py_configure,
@@ -110,14 +110,7 @@ def psi_deps():
                 "make install",
                 "ln -s bazel_install/bin/python3 python_bin",
             ],
-            build_file_content = """
-                exports_files(["python_bin"])
-                filegroup(
-                    name = "files",
-                    srcs = glob(["bazel_install/**"], exclude = ["**/* *"]),
-                    visibility = ["//visibility:public"],
-                )
-                """,
+            build_file = "//third_party/python:BUILD",
         )
 
     # Language-specific dependencies.
@@ -131,12 +124,13 @@ def psi_deps():
     py_repositories()
 
     # Configure python3 for pybind11.
-    python_configure(name = "local_config_python", python_version = "3")
+    python_configure(name = "local_config_python")
 
     # Install pip requirements for Python tests.
     pip_install(
         name = "org_openmined_psi_python_deps",
         requirements = "@org_openmined_psi//private_set_intersection/python:requirements_dev.txt",
+        python_interpreter_target = "@python_interpreter//:python_bin",
     )
 
     # Protobuf.
