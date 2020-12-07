@@ -32,7 +32,7 @@ jobs:
         timeout-minutes: 30
         run: |
             bazel clean --expunge
-            bazel build --config ${{runner.os}} //private_set_intersection/python:openmined_psi_bin --verbose_failures
+            bazel build --config //private_set_intersection/python:openmined_psi_bin --verbose_failures
             ls bazel-bin\private_set_intersection\python\
         if: ${{ matrix.os == 'windows-2019' }}
       - name: Python linters
