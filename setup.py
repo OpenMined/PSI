@@ -76,23 +76,13 @@ class BuildBazelExtension(build_ext.build_ext):
         if not os.path.exists(self.build_temp):
             os.makedirs(self.build_temp)
 
-        if IS_WINDOWS:
-            bazel_argv = [
-                "bazel",
-                "build",
-                ext.bazel_target,
-                "--symlink_prefix=" + os.path.join(self.build_temp, "bazel-"),
-                "--compilation_mode=" + ("dbg" if self.debug else "opt"),
-            ]
-        else:
-            bazel_argv = [
-                "bazel",
-                "build",
-                "//private_set_intersection/python:pybind_wrapper",
-                "--symlink_prefix=" + os.path.join(self.build_temp, "bazel-"),
-                "--compilation_mode=" + ("dbg" if self.debug else "opt"),
-            ]
-
+        bazel_argv = [
+            "bazel",
+            "build",
+            ext.bazel_target,
+            "--symlink_prefix=" + os.path.join(self.build_temp, "bazel-"),
+            "--compilation_mode=" + ("dbg" if self.debug else "opt"),
+        ]
         self.spawn(bazel_argv)
 
         shared_lib_ext = ".dll" if IS_WINDOWS else ".so"
