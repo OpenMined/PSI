@@ -30,7 +30,10 @@ jobs:
         if: ${{ matrix.os != 'windows-latest' }}
       - name: Run tests Windows
         timeout-minutes: 30
-        run: .github/workflows/scripts/run_tests_python.bat
+        run: |
+            bazel build //private_set_intersection/python:openmined_psi_bin --verbose_failures
+            ls bazel-bin\private_set_intersection\python\
+            #.github/workflows/scripts/run_tests_python.bat
         if: ${{ matrix.os == 'windows-latest' }}
       - name: Python linters
         run: .github/workflows/scripts/lint_python.sh
