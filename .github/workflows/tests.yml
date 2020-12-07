@@ -10,7 +10,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest, windows-2019]
+        os: [ubuntu-latest, macos-latest, windows-latest]
         python-version: [3.6, 3.7, 3.8]
     steps:
       - uses: actions/checkout@v2
@@ -27,14 +27,11 @@ jobs:
       - name: Run tests nix
         timeout-minutes: 30
         run: .github/workflows/scripts/run_tests_python.sh
-        if: ${{ matrix.os != 'windows-2019' }}
+        if: ${{ matrix.os != 'windows-latest' }}
       - name: Run tests Windows
         timeout-minutes: 30
-        run: |
-            bazel clean --expunge
-            bazel build //private_set_intersection/python:openmined_psi_bin --verbose_failures
-            ls bazel-bin\private_set_intersection\python\
-        if: ${{ matrix.os == 'windows-2019' }}
+        run: .github/workflows/scripts/run_tests_python.bat
+        if: ${{ matrix.os == 'windows-latest' }}
       - name: Python linters
         run: .github/workflows/scripts/lint_python.sh
         if: ${{ matrix.os != 'windows-2019' }}
