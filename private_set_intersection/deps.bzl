@@ -23,6 +23,7 @@ load("@bazel_gazelle//:deps.bzl", "gazelle_dependencies")
 load("@pybind11_bazel//:python_configure.bzl", "python_configure")
 load("@rules_python//python:repositories.bzl", "py_repositories")
 load("@rules_python//python:pip.bzl", "pip_install")
+
 #load("@rules_python_external//:repositories.bzl", "rules_python_external_dependencies")
 load("@io_bazel_rules_rust//rust:repositories.bzl", "rust_repositories")
 load("@io_bazel_rules_rust//proto:repositories.bzl", "rust_proto_repositories")
@@ -110,14 +111,7 @@ def psi_deps():
                 "make install",
                 "ln -s bazel_install/bin/python3 python_bin",
             ],
-            build_file_content = """
-                exports_files(["python_bin"])
-                filegroup(
-                    name = "files",
-                    srcs = glob(["bazel_install/**"], exclude = ["**/* *"]),
-                    visibility = ["//visibility:public"],
-                )
-                """,
+            build_file = "//third_party/python:BUILD",
         )
 
     # Language-specific dependencies.
@@ -131,7 +125,11 @@ def psi_deps():
     py_repositories()
 
     # Configure python3 for pybind11.
-    python_configure(name = "local_config_python", python_version = "3")
+    python_configure(
+        name = "local_config_python",
+        python_version = "3",
+        python_interpreter_target = "@python_interpreter//:python_bin",
+    )
 
     # Install pip requirements for Python tests.
     pip_install(

@@ -65,18 +65,16 @@ def psi_preload():
     if "pybind11_bazel" not in native.existing_rules():
         http_archive(
             name = "pybind11_bazel",
-            strip_prefix = "pybind11_bazel-203508e14aab7309892a1c5f7dd05debda22d9a5",
-            urls = ["https://github.com/pybind/pybind11_bazel/archive/203508e14aab7309892a1c5f7dd05debda22d9a5.zip"],
-            sha256 = "75922da3a1bdb417d820398eb03d4e9bd067c4905a4246d35a44c01d62154d91",
+            strip_prefix = "pybind11_bazel-59e3b1afd3ffa5bf33a33c3bd74fc0cc0dde83b2",
+            urls = ["https://github.com/bcebere/pybind11_bazel/archive/59e3b1afd3ffa5bf33a33c3bd74fc0cc0dde83b2.zip"],
         )
 
     if "pybind11" not in native.existing_rules():
         http_archive(
             name = "pybind11",
             build_file = "@pybind11_bazel//:pybind11.BUILD",
-            strip_prefix = "pybind11-2.5.0",
-            urls = ["https://github.com/pybind/pybind11/archive/v2.5.0.zip"],
-            sha256 = "1859f121837f6c41b0c6223d617b85a63f2f72132bae3135a2aa290582d61520",
+            strip_prefix = "pybind11-2.6.0",
+            urls = ["https://github.com/pybind/pybind11/archive/v2.6.0.zip"],
         )
 
     if "rules_python" not in native.existing_rules():

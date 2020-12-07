@@ -1,6 +1,8 @@
+load("@rules_python//python:defs.bzl", "py_runtime", "py_runtime_pair")
+
 py_runtime(
     name = "python3_runtime",
-    files = ["@python_interpreter//:files"],
+    files = ["@python_interpreter//:py_src"],
     interpreter = "@python_interpreter//:python_bin",
     python_version = "PY3",
     visibility = ["//visibility:public"],

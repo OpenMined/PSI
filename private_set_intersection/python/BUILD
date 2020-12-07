@@ -29,8 +29,8 @@ py_library(
 py_binary(
     name = "openmined_psi_bin",
     srcs = ["__init__.py"],
-    main = "__init__.py",
     data = ["//private_set_intersection/python:_openmined_psi.so"],
+    main = "__init__.py",
     srcs_version = "PY3",
 )
 
