@@ -97,22 +97,6 @@ def psi_deps():
             ],
         )
 
-    PYTHON_VERSION = "3.8.3"
-    if "python_interpreter" not in native.existing_rules():
-        http_archive(
-            name = "python_interpreter",
-            urls = ["https://www.python.org/ftp/python/" + PYTHON_VERSION + "/Python-" + PYTHON_VERSION + ".tar.xz"],
-            strip_prefix = "Python-" + PYTHON_VERSION,
-            patch_cmds = [
-                "mkdir $(pwd)/bazel_install",
-                _py_configure,
-                "make",
-                "make install",
-                "ln -s bazel_install/bin/python3 python_bin",
-            ],
-            build_file = "//third_party/python:BUILD",
-        )
-
     # Language-specific dependencies.
 
     # Javascript
@@ -129,8 +113,7 @@ def psi_deps():
     # Install pip requirements for Python tests.
     pip_install(
         name = "org_openmined_psi_python_deps",
-        requirements = "@org_openmined_psi//private_set_intersection/python:requirements_dev.txt",
-        python_interpreter_target = "@python_interpreter//:python_bin",
+        requirements = "@org_openmined_psi//private_set_intersection/python:requirements_dev.txt"
     )
 
     # Protobuf.
