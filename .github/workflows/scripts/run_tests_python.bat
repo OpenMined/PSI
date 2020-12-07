@@ -1,11 +1,6 @@
 echo on
 
-python -c "import sys; print('\n'.join(sys.path))"
-echo %PYTHONPATH%
-echo %pythonLocation%
-set PATH=%PATH%;%pythonLocation%
-set PYTHONPATH=%pythonLocation%
-set PYTHON_BIN_PATH=%pythonLocation%\python.exe
+python -m pip install --upgrade pip
 
-pip install .
-python private_set_intersection/python/tests.py
+bazel build //private_set_intersection/python:openmined_psi_bin --verbose_failures
+dir bazel-bin\private_set_intersection\python\
