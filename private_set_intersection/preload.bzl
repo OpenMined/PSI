@@ -65,8 +65,9 @@ def psi_preload():
     if "pybind11_bazel" not in native.existing_rules():
         http_archive(
             name = "pybind11_bazel",
-            strip_prefix = "pybind11_bazel-59e3b1afd3ffa5bf33a33c3bd74fc0cc0dde83b2",
-            urls = ["https://github.com/bcebere/pybind11_bazel/archive/59e3b1afd3ffa5bf33a33c3bd74fc0cc0dde83b2.zip"],
+            strip_prefix = "pybind11_bazel-26973c0ff320cb4b39e45bc3e4297b82bc3a6c09",
+            sha256 = "a5666d950c3344a8b0d3892a88dc6b55c8e0c78764f9294e806d69213c03f19d",
+            urls = ["https://github.com/bcebere/pybind11_bazel/archive/26973c0ff320cb4b39e45bc3e4297b82bc3a6c09.zip"],
         )
 
     if "pybind11" not in native.existing_rules():
@@ -81,7 +82,6 @@ def psi_preload():
         http_archive(
             name = "rules_python",
             url = "https://github.com/bazelbuild/rules_python/releases/download/0.1.0/rules_python-0.1.0.tar.gz",
-            #strip_prefix = "rules_python-0.1.0",
             sha256 = "b6d46438523a3ec0f3cead544190ee13223a52f6a6765a29eae7b7cc24cc83a0",
         )
 

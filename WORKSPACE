@@ -7,5 +7,3 @@ psi_preload()
 load("@org_openmined_psi//private_set_intersection:deps.bzl", "psi_deps")
 
 psi_deps()
-
-register_toolchains("@org_openmined_psi//private_set_intersection/python/toolchain:local_py_toolchain")
