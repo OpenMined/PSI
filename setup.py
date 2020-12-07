@@ -107,7 +107,7 @@ setuptools.setup(
     packages=setuptools.find_packages("private_set_intersection/python"),
     cmdclass=dict(build_ext=BuildBazelExtension),
     ext_modules=[
-        BazelExtension("openmined_psi", "//private_set_intersection/python:_openmined_psi",)
+        BazelExtension("openmined_psi", "//private_set_intersection/python:openmined_psi",)
     ],
     zip_safe=False,
     classifiers=[
