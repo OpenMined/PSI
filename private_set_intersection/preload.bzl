@@ -66,8 +66,7 @@ def psi_preload():
         http_archive(
             name = "pybind11_bazel",
             strip_prefix = "pybind11_bazel-26973c0ff320cb4b39e45bc3e4297b82bc3a6c09",
-            sha256 = "a5666d950c3344a8b0d3892a88dc6b55c8e0c78764f9294e806d69213c03f19d",
-            urls = ["https://github.com/bcebere/pybind11_bazel/archive/26973c0ff320cb4b39e45bc3e4297b82bc3a6c09.zip"],
+            urls = ["https://github.com/pybind11/pybind11_bazel/archive/26973c0ff320cb4b39e45bc3e4297b82bc3a6c09.zip"],
         )
 
     if "pybind11" not in native.existing_rules():
