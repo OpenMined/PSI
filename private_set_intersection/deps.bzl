@@ -21,9 +21,6 @@ load("@io_bazel_rules_go//go:deps.bzl", "go_register_toolchains", "go_rules_depe
 load("@rules_pkg//:deps.bzl", "rules_pkg_dependencies")
 load("@bazel_gazelle//:deps.bzl", "gazelle_dependencies")
 load("@pybind11_bazel//:python_configure.bzl", "python_configure")
-load("@rules_python//python:repositories.bzl", "py_repositories")
-load("@rules_python_external//:repositories.bzl", "rules_python_external_dependencies")
-load("@rules_python_external//:defs.bzl", "pip_install")
 load("@io_bazel_rules_rust//rust:repositories.bzl", "rust_repositories")
 load("@io_bazel_rules_rust//proto:repositories.bzl", "rust_proto_repositories")
 load("@io_bazel_rules_rust//:workspace.bzl", "bazel_version")
@@ -32,11 +29,11 @@ load("//third_party/cargo:crates.bzl", "raze_fetch_remote_crates")
 def psi_deps():
     # General dependencies.
     if "private_join_and_compute" not in native.existing_rules():
+        #TODO revert to the upstream repository when the https://github.com/google/private-join-and-compute/pull/21 is merged
         http_archive(
             name = "private_join_and_compute",
-            sha256 = "64be17ff362ff0338be49fe28658df73cc539c1b0f1d84b957d4a567097929ca",
-            strip_prefix = "private-join-and-compute-eaec47fa64619e9a6467630663c7af70a4eadfcc",
-            url = "https://github.com/google/private-join-and-compute/archive/eaec47fa64619e9a6467630663c7af70a4eadfcc.zip",
+            strip_prefix = "private-join-and-compute-7c63dc60f3b209d5c3568b2c52421682a3b3d53f",
+            url = "https://github.com/bcebere/private-join-and-compute/archive/7c63dc60f3b209d5c3568b2c52421682a3b3d53f.zip",
         )
 
     if "com_google_absl" not in native.existing_rules():
@@ -97,17 +94,8 @@ def psi_deps():
     emsdk_configure(name = "emsdk")
 
     # Python.
-    py_repositories()
-
     # Configure python3 for pybind11.
-    python_configure(name = "local_config_python", python_version = "3")
-
-    # Install pip requirements for Python tests.
-    rules_python_external_dependencies()
-    pip_install(
-        name = "org_openmined_psi_python_deps",
-        requirements = "@org_openmined_psi//private_set_intersection/python:requirements_dev.txt",
-    )
+    python_configure(name = "local_config_python")
 
     # Protobuf.
     rules_proto_dependencies()

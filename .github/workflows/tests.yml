@@ -10,12 +10,20 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [macos-latest, ubuntu-latest]
+        os: [ubuntu-latest, macos-latest, windows-latest]
     steps:
       - uses: actions/checkout@v2
-      - name: Run tests
-        timeout-minutes: 30
+      - name: Cleanup
+        run: bazel clean --expunge
+        if: ${{ matrix.os == 'macos-latest' }}
+      - name: Run tests Linux/OSX
+        timeout-minutes: 60
         run: .github/workflows/scripts/run_tests_core.sh
+        if: ${{ matrix.os != 'windows-latest' }}
+      - name: Run tests Windows
+        timeout-minutes: 60
+        run: .github/workflows/scripts/run_tests_core.bat
+        if: ${{ matrix.os == 'windows-latest' }}
       - name: Linters
         run: .github/workflows/scripts/lint_cpp.sh
         if: ${{ matrix.os == 'ubuntu-latest' }}
@@ -24,18 +32,26 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [macos-latest, ubuntu-latest]
+        os: [ubuntu-latest, macos-latest, windows-latest]
     steps:
       - uses: actions/checkout@v2
-      - name: Run tests
+      - name: Cleanup
+        run: bazel clean --expunge
+        if: ${{ matrix.os == 'macos-latest' }}
+      - name: Run tests nix
         timeout-minutes: 60
         run: .github/workflows/scripts/run_tests_js.sh
+        if: ${{ matrix.os != 'windows-latest' }}
+      - name: Run tests windows
+        timeout-minutes: 60
+        run: .github/workflows/scripts/run_tests_js.bat
+        if: ${{ matrix.os == 'windows-latest' }}
 
   Python:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [macos-latest, ubuntu-latest]
+        os: [ubuntu-latest, macos-latest, windows-latest]
         python-version: [3.6, 3.7, 3.8]
     steps:
       - uses: actions/checkout@v2
@@ -43,21 +59,30 @@ jobs:
         uses: actions/setup-python@v1
         with:
           python-version: ${{ matrix.python-version }}
+      - name: Cleanup
+        run: bazel clean --expunge
+        if: ${{ matrix.os == 'macos-latest' }}
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r private_set_intersection/python/requirements_dev.txt
-      - name: Run tests
+      - name: Run tests nix
         timeout-minutes: 30
         run: .github/workflows/scripts/run_tests_python.sh
+        if: ${{ matrix.os != 'windows-latest' }}
+      - name: Run tests Windows
+        timeout-minutes: 30
+        run: .github/workflows/scripts/run_tests_python.bat
+        if: ${{ matrix.os == 'windows-latest' }}
       - name: Python linters
         run: .github/workflows/scripts/lint_python.sh
+        if: ${{ matrix.os != 'windows-latest' }}
 
   Go:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [macos-latest, ubuntu-latest]
+        os: [ubuntu-latest, macos-latest]
     steps:
       - name: Install toolchains
         uses: actions/setup-go@v2
@@ -67,17 +92,26 @@ jobs:
       - name: Install Go dependencies
         run: go get -u golang.org/x/lint/golint
       - uses: actions/checkout@v2
-      - name: Run tests
+      - name: Cleanup
+        run: bazel clean --expunge
+        if: ${{ matrix.os == 'macos-latest' }}
+      - name: Run tests nix
         timeout-minutes: 30
         run: .github/workflows/scripts/run_tests_go.sh
+        if: ${{ matrix.os != 'windows-latest' }}
+      - name: Run tests windows
+        timeout-minutes: 30
+        run: .github/workflows/scripts/run_tests_go.bat
+        if: ${{ matrix.os == 'windows-latest' }}
       - name: Go linters
         run: .github/workflows/scripts/lint_go.sh
+        if: ${{ matrix.os != 'windows-latest' }}
 
   Rust:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [macos-latest, ubuntu-latest]
+        os: [ubuntu-latest, macos-latest]
     steps:
       - name: Install toolchains
         uses: actions-rs/toolchain@v1
@@ -85,6 +119,14 @@ jobs:
           toolchain: stable
           default: true
       - uses: actions/checkout@v2
-      - name: Run tests
+      - name: Cleanup
+        run: bazel clean --expunge
+        if: ${{ matrix.os == 'macos-latest' }}
+      - name: Run tests nix
         timeout-minutes: 30
         run: .github/workflows/scripts/run_tests_rust.sh
+        if: ${{ matrix.os != 'windows-latest' }}
+      - name: Run tests windows
+        timeout-minutes: 30
+        run: .github/workflows/scripts/run_tests_rust.bat
+        if: ${{ matrix.os == 'windows-latest' }}

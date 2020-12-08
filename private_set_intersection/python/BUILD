@@ -1,5 +1,4 @@
 load("@pybind11_bazel//:build_defs.bzl", "pybind_extension")
-load("@org_openmined_psi_python_deps//:requirements.bzl", "requirement")
 
 pybind_extension(
     name = "_openmined_psi",
@@ -26,6 +25,14 @@ py_library(
     visibility = ["//visibility:public"],
 )
 
+py_binary(
+    name = "openmined_psi_bin",
+    srcs = ["__init__.py"],
+    data = ["//private_set_intersection/python:_openmined_psi.so"],
+    main = "__init__.py",
+    srcs_version = "PY3",
+)
+
 py_test(
     name = "tests",
     srcs = ["tests.py"],
@@ -34,7 +41,6 @@ py_test(
     srcs_version = "PY3",
     deps = [
         "//private_set_intersection/python:openmined_psi",
-        requirement("pytest"),
     ],
 )
 
@@ -46,7 +52,5 @@ py_binary(
     srcs_version = "PY3",
     deps = [
         "//private_set_intersection/python:openmined_psi",
-        requirement("pytest"),
-        requirement("pytest-benchmark"),
     ],
 )
