@@ -22,8 +22,6 @@ load("@rules_pkg//:deps.bzl", "rules_pkg_dependencies")
 load("@bazel_gazelle//:deps.bzl", "gazelle_dependencies")
 load("@pybind11_bazel//:python_configure.bzl", "python_configure")
 load("@rules_python//python:repositories.bzl", "py_repositories")
-load("@rules_python_external//:repositories.bzl", "rules_python_external_dependencies")
-load("@rules_python_external//:defs.bzl", "pip_install")
 load("@io_bazel_rules_rust//rust:repositories.bzl", "rust_repositories")
 load("@io_bazel_rules_rust//proto:repositories.bzl", "rust_proto_repositories")
 load("@io_bazel_rules_rust//:workspace.bzl", "bazel_version")
@@ -109,13 +107,6 @@ def psi_deps():
     # Configure python3 for pybind11.
     python_configure(
         name = "local_config_python",
-    )
-
-    # Install pip requirements for Python tests.
-    rules_python_external_dependencies()
-    pip_install(
-        name = "org_openmined_psi_python_deps",
-        requirements = "@org_openmined_psi//private_set_intersection/python:requirements_dev.txt",
     )
 
     # Protobuf.
