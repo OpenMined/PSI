@@ -65,8 +65,8 @@ def psi_preload():
     if "pybind11_bazel" not in native.existing_rules():
         http_archive(
             name = "pybind11_bazel",
-            strip_prefix = "pybind11_bazel-26973c0ff320cb4b39e45bc3e4297b82bc3a6c09",
-            urls = ["https://github.com/pybind11/pybind11_bazel/archive/26973c0ff320cb4b39e45bc3e4297b82bc3a6c09.zip"],
+            strip_prefix = "pybind11_bazel-master",
+            urls = ["https://github.com/pybind/pybind11_bazel/archive/master.zip"],
         )
 
     if "pybind11" not in native.existing_rules():
