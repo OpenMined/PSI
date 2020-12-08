@@ -77,14 +77,6 @@ def psi_preload():
             urls = ["https://github.com/pybind/pybind11/archive/v2.5.0.zip"],
         )
 
-    # bazel rules for python
-    http_archive(
-        name = "rules_python",
-        url = "https://github.com/bazelbuild/rules_python/releases/download/0.0.2/rules_python-0.0.2.tar.gz",
-        strip_prefix = "rules_python-0.0.2",
-        sha256 = "b5668cde8bb6e3515057ef465a35ad712214962f0b3a314e551204266c7be90c",
-    )
-
     #if "rules_python" not in native.existing_rules():
     #    http_archive(
     #        name = "rules_python",
@@ -99,15 +91,6 @@ def psi_preload():
             strip_prefix = "rules_python-cbbb853bd28974303f08ac6b68733fd47fed853f",
             #sha256 = "b6d46438523a3ec0f3cead544190ee13223a52f6a6765a29eae7b7cc24cc83a0",
         )
-
-    RULES_PYTHON_EXTERNAL_VERSION = "3aacabb928a710b10bff13d0bde49ceaade58f15"	
-    if "rules_python_external" not in native.existing_rules():	
-        http_archive(	
-            name = "rules_python_external",	
-            sha256 = "5a1d7e6e4bab49dcdd787694f0f5d52ac5debdfc1852981a89cc414e338d60dc",	
-            strip_prefix = "rules_python_external-{version}".format(version = RULES_PYTHON_EXTERNAL_VERSION),	
-            url = "https://github.com/dillon-giacoppo/rules_python_external/archive/{version}.zip".format(version = RULES_PYTHON_EXTERNAL_VERSION),
-                     )
 
     if "io_bazel_rules_rust" not in native.existing_rules():
         http_archive(
