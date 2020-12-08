@@ -100,6 +100,15 @@ def psi_preload():
             #sha256 = "b6d46438523a3ec0f3cead544190ee13223a52f6a6765a29eae7b7cc24cc83a0",
         )
 
+    RULES_PYTHON_EXTERNAL_VERSION = "3aacabb928a710b10bff13d0bde49ceaade58f15"	
+    if "rules_python_external" not in native.existing_rules():	
+        http_archive(	
+            name = "rules_python_external",	
+            sha256 = "5a1d7e6e4bab49dcdd787694f0f5d52ac5debdfc1852981a89cc414e338d60dc",	
+            strip_prefix = "rules_python_external-{version}".format(version = RULES_PYTHON_EXTERNAL_VERSION),	
+            url = "https://github.com/dillon-giacoppo/rules_python_external/archive/{version}.zip".format(version = RULES_PYTHON_EXTERNAL_VERSION),
+                     )
+
     if "io_bazel_rules_rust" not in native.existing_rules():
         http_archive(
             name = "io_bazel_rules_rust",
