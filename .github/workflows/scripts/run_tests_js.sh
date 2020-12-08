@@ -1,8 +1,6 @@
 #!/bin/sh
 set -e
 
-bazel clean --expunge
-
 # JavaScript
 npm run submodule:update
 npm run em:update
