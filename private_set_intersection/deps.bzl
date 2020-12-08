@@ -96,7 +96,6 @@ def psi_deps():
     # Configure python3 for pybind11.
     python_configure(
         name = "local_config_python",
-        python_version = "3",
     )
 
     # Protobuf.
