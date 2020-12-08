@@ -78,11 +78,19 @@ def psi_preload():
             urls = ["https://github.com/pybind/pybind11/archive/v2.6.0.zip"],
         )
 
+    #if "rules_python" not in native.existing_rules():
+    #    http_archive(
+    #        name = "rules_python",
+    #        url = "https://github.com/bazelbuild/rules_python/releases/download/0.1.0/rules_python-0.1.0.tar.gz",
+    #        sha256 = "b6d46438523a3ec0f3cead544190ee13223a52f6a6765a29eae7b7cc24cc83a0",
+    #    )
+
     if "rules_python" not in native.existing_rules():
         http_archive(
             name = "rules_python",
-            url = "https://github.com/bazelbuild/rules_python/releases/download/0.1.0/rules_python-0.1.0.tar.gz",
-            sha256 = "b6d46438523a3ec0f3cead544190ee13223a52f6a6765a29eae7b7cc24cc83a0",
+            url = "https://github.com/bcebere/rules_python/archive/cbbb853bd28974303f08ac6b68733fd47fed853f.zip",
+            strip_prefix = "rules_python-cbbb853bd28974303f08ac6b68733fd47fed853f",
+            #sha256 = "b6d46438523a3ec0f3cead544190ee13223a52f6a6765a29eae7b7cc24cc83a0",
         )
 
     if "io_bazel_rules_rust" not in native.existing_rules():
