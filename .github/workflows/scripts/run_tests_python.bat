@@ -3,7 +3,7 @@ echo on
 python -m pip install --upgrade pip
 
 echo %pythonLocation%
-dir %pythonLocation%/
+dir %pythonLocation%\
 
 set PATH=%PATH%;%pythonLocation%
 set PYTHONPATH=%pythonLocation%
