@@ -19,4 +19,4 @@ SET PYTHON_BIN_PATH=%PYTHON_EXECUTABLE%
 SET PYTHON_LIB_PATH=%PYTHON_PATH%\Lib\site-packages
 SET PATH=%PYTHON_PATH%;%PYTHON_PATH%\Scripts;%DP0%\CMake\Bin;%PATH%
 
-bazel.exe test --test_output=all --cache_test_results=no --test_timeout=900 //private_set_intersection/python:tests
+bazel.exe test --test_output=all --cache_test_results=no --test_timeout=900 --python_path=%pythonLocation% //private_set_intersection/python:tests
