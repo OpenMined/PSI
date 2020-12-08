@@ -16,6 +16,8 @@
 
 #include "private_set_intersection/c/package.h"
 
+#include <regex>
+
 #include "gmock/gmock.h"
 #include "gtest/gtest.h"
 
