@@ -2,8 +2,9 @@ echo on
 
 python -m pip install --upgrade pip
 
-echo %PYTHONPATH%
 echo %pythonLocation%
+dir %pythonLocation%/
+
 set PATH=%PATH%;%pythonLocation%
 set PYTHONPATH=%pythonLocation%
 set PYTHON_BIN_PATH=%pythonLocation%\python.exe
