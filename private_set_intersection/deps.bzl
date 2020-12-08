@@ -94,9 +94,7 @@ def psi_deps():
 
     # Python.
     # Configure python3 for pybind11.
-    python_configure(
-        name = "local_config_python",
-    )
+    python_configure(name = "local_config_python")
 
     # Protobuf.
     rules_proto_dependencies()
