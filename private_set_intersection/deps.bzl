@@ -29,6 +29,7 @@ load("//third_party/cargo:crates.bzl", "raze_fetch_remote_crates")
 def psi_deps():
     # General dependencies.
     if "private_join_and_compute" not in native.existing_rules():
+        #TODO revert to the upstream repository when the https://github.com/google/private-join-and-compute/pull/21 is merged
         http_archive(
             name = "private_join_and_compute",
             strip_prefix = "private-join-and-compute-7c63dc60f3b209d5c3568b2c52421682a3b3d53f",
