@@ -13,6 +13,9 @@ jobs:
         os: [ubuntu-latest, macos-latest, windows-latest]
     steps:
       - uses: actions/checkout@v2
+      - name: Cleanup
+        run: bazel clean --expunge
+        if: ${{ matrix.os == 'macos-latest' }}
       - name: Run tests Linux/OSX
         timeout-minutes: 60
         run: .github/workflows/scripts/run_tests_core.sh
@@ -32,6 +35,9 @@ jobs:
         os: [ubuntu-latest, macos-latest, windows-latest]
     steps:
       - uses: actions/checkout@v2
+      - name: Cleanup
+        run: bazel clean --expunge
+        if: ${{ matrix.os == 'macos-latest' }}
       - name: Run tests nix
         timeout-minutes: 60
         run: .github/workflows/scripts/run_tests_js.sh
@@ -55,6 +61,9 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - name: Setup Bazel
         uses: abhinavsingh/setup-bazel@v3
+      - name: Cleanup
+        run: bazel clean --expunge
+        if: ${{ matrix.os == 'macos-latest' }}
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
@@ -85,6 +94,9 @@ jobs:
       - name: Install Go dependencies
         run: go get -u golang.org/x/lint/golint
       - uses: actions/checkout@v2
+      - name: Cleanup
+        run: bazel clean --expunge
+        if: ${{ matrix.os == 'macos-latest' }}
       - name: Run tests nix
         timeout-minutes: 30
         run: .github/workflows/scripts/run_tests_go.sh
@@ -109,6 +121,9 @@ jobs:
           toolchain: stable
           default: true
       - uses: actions/checkout@v2
+      - name: Cleanup
+        run: bazel clean --expunge
+        if: ${{ matrix.os == 'macos-latest' }}
       - name: Run tests nix
         timeout-minutes: 30
         run: .github/workflows/scripts/run_tests_rust.sh
