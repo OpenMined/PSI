@@ -34,4 +34,4 @@ jobs:
         if: ${{ matrix.os == 'windows-latest' }}
       - name: Python linters
         run: .github/workflows/scripts/lint_python.sh
-        if: ${{ matrix.os != 'windows-2019' }}
+        if: ${{ matrix.os != 'windows-latest' }}
