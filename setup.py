@@ -26,7 +26,6 @@ from setuptools.command import build_ext
 
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-IS_WINDOWS = sys.platform.startswith("win")
 
 
 def _get_version():
@@ -85,7 +84,7 @@ class BuildBazelExtension(build_ext.build_ext):
         ]
         self.spawn(bazel_argv)
 
-        shared_lib_ext = ".dll" if IS_WINDOWS else ".so"
+        shared_lib_ext = ".so"
         shared_lib = "_" + ext.name + shared_lib_ext
         ext_bazel_bin_path = os.path.join(self.build_temp, "bazel-bin", ext.relpath, shared_lib)
 
