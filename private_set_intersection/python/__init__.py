@@ -14,12 +14,15 @@ __version__ = psi.__version__
 
 
 class proto_server_setup:
-    def __init__(self):
+    def __init__(self, data: psi.cpp_proto_server_setup = None):
         """Constructor method for the server_setup Protobuf object.
         Returns:
             proto_server_setup object.
         """
-        self.data = psi.cpp_proto_server_setup()
+        if data:
+            self.data = data
+        else:
+            self.data = psi.cpp_proto_server_setup()
 
     def bits(self) -> bytes:
         """Return the serialized setup message"""
@@ -44,16 +47,19 @@ class proto_server_setup:
     @classmethod
     def Load(cls, data: bytes) -> "proto_server_setup":
         """Load the protobuffer from wire format"""
-        return psi.cpp_proto_server_setup.Load(data)
+        return cls(data=psi.cpp_proto_server_setup.Load(data))
 
 
 class proto_request:
-    def __init__(self):
+    def __init__(self, data: psi.cpp_proto_request = None):
         """Constructor method for the request Protobuf object.
         Returns:
             proto_request object.
         """
-        self.data = psi.cpp_proto_request()
+        if data:
+            self.data = data
+        else:
+            self.data = psi.cpp_proto_request()
 
     def encrypted_elements_size(self) -> int:
         """Count of encrypted items in the request."""
@@ -103,16 +109,19 @@ class proto_request:
     @classmethod
     def Load(cls, data: bytes) -> "proto_request":
         """Load the protobuffer from wire format"""
-        return psi.cpp_proto_request.Load(data)
+        return cls(psi.cpp_proto_request.Load(data))
 
 
 class proto_response:
-    def __init__(self):
+    def __init__(self, data: psi.cpp_proto_response = None):
         """Constructor method for the response Protobuf object.
         Returns:
             proto_response object.
         """
-        self.data = psi.cpp_proto_response()
+        if data:
+            self.data = data
+        else:
+            self.data = psi.cpp_proto_response()
 
     def encrypted_elements_size(self) -> int:
         """Count of encrypted items in the response."""
