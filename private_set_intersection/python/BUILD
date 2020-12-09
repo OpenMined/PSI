@@ -19,18 +19,13 @@ pybind_extension(
 
 py_library(
     name = "openmined_psi",
-    srcs = ["__init__.py"],
+    srcs = [
+        "__init__.py",
+        "wrappers.py",
+    ],
     data = ["//private_set_intersection/python:_openmined_psi.so"],
     srcs_version = "PY3",
     visibility = ["//visibility:public"],
-)
-
-py_binary(
-    name = "openmined_psi_bin",
-    srcs = ["__init__.py"],
-    data = ["//private_set_intersection/python:_openmined_psi.so"],
-    main = "__init__.py",
-    srcs_version = "PY3",
 )
 
 py_test(
