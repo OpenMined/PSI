@@ -153,7 +153,7 @@ class client:
     ) -> int:
         return self.data.GetIntersectionSize(server_setup, server_response)
 
-    def GetPrivateKeyBytes() -> bytes:
+    def GetPrivateKeyBytes(self) -> bytes:
         return self.data.GetPrivateKeyBytes()
 
 
