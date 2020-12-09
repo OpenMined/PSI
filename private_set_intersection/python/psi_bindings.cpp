@@ -40,7 +40,7 @@ void bind(pybind11::module& m) {
       "Filters";
 
   m.attr("__version__") = ::private_set_intersection::Package::kVersion;
-  py::class_<psi_proto::ServerSetup>(m, "proto_server_setup")
+  py::class_<psi_proto::ServerSetup>(m, "cpp_proto_server_setup")
       .def(py::init<>())
       .def(
           "bits",
@@ -64,7 +64,7 @@ void bind(pybind11::module& m) {
         loadProto(obj, data);
         return obj;
       });
-  py::class_<psi_proto::Request>(m, "proto_request")
+  py::class_<psi_proto::Request>(m, "cpp_proto_request")
       .def(py::init<>())
       .def("encrypted_elements_size",
            &psi_proto::Request::encrypted_elements_size)
@@ -99,7 +99,7 @@ void bind(pybind11::module& m) {
         loadProto(obj, data);
         return obj;
       });
-  py::class_<psi_proto::Response>(m, "proto_response")
+  py::class_<psi_proto::Response>(m, "cpp_proto_response")
       .def(py::init<>())
       .def("encrypted_elements_size",
            &psi_proto::Response::encrypted_elements_size)
@@ -131,7 +131,7 @@ void bind(pybind11::module& m) {
         return obj;
       });
 
-  py::class_<psi::PsiClient>(m, "client")
+  py::class_<psi::PsiClient>(m, "cpp_client")
       .def_static(
           "CreateWithNewKey",
           [](bool reveal_intersection) {
@@ -183,7 +183,7 @@ void bind(pybind11::module& m) {
           },
           py::call_guard<py::gil_scoped_release>());
 
-  py::class_<psi::PsiServer>(m, "server")
+  py::class_<psi::PsiServer>(m, "cpp_server")
       .def_static(
           "CreateWithNewKey",
           [](bool reveal_intersection) {

@@ -84,15 +84,24 @@ class BuildBazelExtension(build_ext.build_ext):
         ]
         self.spawn(bazel_argv)
 
+        ext.name = "_" + ext.name
         shared_lib_ext = ".so"
-        shared_lib = "_" + ext.name + shared_lib_ext
+        shared_lib = ext.name + shared_lib_ext
         ext_bazel_bin_path = os.path.join(self.build_temp, "bazel-bin", ext.relpath, shared_lib)
 
         ext_dest_path = self.get_ext_fullpath(ext.name)
         ext_dest_dir = os.path.dirname(ext_dest_path)
+
         if not os.path.exists(ext_dest_dir):
             os.makedirs(ext_dest_dir)
         shutil.copyfile(ext_bazel_bin_path, ext_dest_path)
+
+        package_dir = os.path.join(ext_dest_dir, "openmined_psi")
+        if not os.path.exists(package_dir):
+            os.makedirs(package_dir)
+        shutil.copyfile(
+            "private_set_intersection/python/__init__.py", os.path.join(package_dir, "__init__.py")
+        )
 
 
 setuptools.setup(
@@ -103,7 +112,6 @@ setuptools.setup(
     url="https://github.com/OpenMined/PSI",
     python_requires=">=3.6",
     package_dir={"": "private_set_intersection/python"},
-    packages=setuptools.find_packages("private_set_intersection/python"),
     cmdclass=dict(build_ext=BuildBazelExtension),
     ext_modules=[
         BazelExtension("openmined_psi", "//private_set_intersection/python:openmined_psi",)

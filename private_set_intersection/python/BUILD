@@ -21,7 +21,6 @@ py_library(
     name = "openmined_psi",
     srcs = [
         "__init__.py",
-        "wrappers.py",
     ],
     data = ["//private_set_intersection/python:_openmined_psi.so"],
     srcs_version = "PY3",
