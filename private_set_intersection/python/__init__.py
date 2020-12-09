@@ -154,18 +154,14 @@ class proto_response:
 
 
 class client:
-    def __init__(self, reveal_intersection: bool, key_bytes: bytes = None):
+    def __init__(self, data: psi.cpp_client):
         """Constructor method for the client object.
         Args:
-            reveal_intersection: indicates whether the client wants to learn the elements in the intersection or only its size.
-            key_bytes: existing encryption key. If missing, a new key will be generated.
+            data: cpp_client object.
         Returns:
             client object.
         """
-        if key_bytes:
-            self.data = psi.cpp_client.CreateFromKey(key_bytes, reveal_intersection)
-        else:
-            self.data = psi.cpp_client.CreateWithNewKey(reveal_intersection)
+        self.data = data
 
     @classmethod
     def CreateWithNewKey(cls, reveal_intersection: bool):
@@ -175,7 +171,7 @@ class client:
         Returns:
             client object.
         """
-        return psi.cpp_client.CreateWithNewKey(reveal_intersection)
+        return cls(psi.cpp_client.CreateWithNewKey(reveal_intersection))
 
     @classmethod
     def CreateFromKey(cls, key_bytes: bytes, reveal_intersection: bool):
@@ -186,7 +182,7 @@ class client:
         Returns:
             client object.
         """
-        return psi.cpp_client.CreateFromKey(key_bytes, reveal_intersection)
+        return cls(psi.cpp_client.CreateFromKey(key_bytes, reveal_intersection))
 
     def CreateRequest(self, data: List[str]) -> proto_request:
         """Create a request protobuf to be serialized and sent to the server.
@@ -230,18 +226,14 @@ class client:
 
 
 class server:
-    def __init__(self, reveal_intersection: bool, key_bytes: bytes = None):
+    def __init__(self, data: psi.cpp_server):
         """Constructor method for the server object.
         Args:
-            reveal_intersection: indicates whether the server supports to return the elements in the intersection or only its size.
-            key_bytes: existing encryption key. If None, a new key is generated.
+            data: cpp_server object.
         Returns:
             server object.
         """
-        if key_bytes:
-            self.data = psi.cpp_server.CreateFromKey(key_bytes, reveal_intersection)
-        else:
-            self.data = psi.cpp_server.CreateWithNewKey(reveal_intersection)
+        self.data = data
 
     @classmethod
     def CreateWithNewKey(cls, reveal_intersection: bool):
@@ -251,7 +243,7 @@ class server:
         Returns:
             server object.
         """
-        return psi.cpp_server.CreateWithNewKey(reveal_intersection)
+        return cls(psi.cpp_server.CreateWithNewKey(reveal_intersection))
 
     @classmethod
     def CreateFromKey(cls, key_bytes: bytes, reveal_intersection: bool):
@@ -263,7 +255,7 @@ class server:
         Returns:
             server object.
         """
-        return psi.cpp_server.CreateFromKey(key_bytes, reveal_intersection)
+        return cls(psi.cpp_server.CreateFromKey(key_bytes, reveal_intersection))
 
     def CreateSetupMessage(
         self, fpr: float, num_client_inputs: int, inputs: List[str]

@@ -15,9 +15,6 @@ def test_sanity(reveal_intersection):
     c = psi.client.CreateWithNewKey(reveal_intersection)
     assert c != None
 
-    c = psi.client(reveal_intersection=reveal_intersection)
-    assert c != None
-
 
 @pytest.mark.parametrize("reveal_intersection", [False, True])
 def test_client_server(reveal_intersection):
@@ -63,9 +60,6 @@ def test_server_sanity(reveal_intersection):
     newkey = other.GetPrivateKeyBytes()
 
     assert key == newkey
-
-    s = psi.server(reveal_intersection=reveal_intersection)
-    assert s != None
 
 
 @pytest.mark.parametrize("reveal_intersection", [False, True])
