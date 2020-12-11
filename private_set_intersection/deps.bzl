@@ -25,7 +25,8 @@ load("@io_bazel_rules_rust//rust:repositories.bzl", "rust_repositories")
 load("@io_bazel_rules_rust//proto:repositories.bzl", "rust_proto_repositories")
 load("@io_bazel_rules_rust//:workspace.bzl", "bazel_version")
 load("//third_party/cargo:crates.bzl", "raze_fetch_remote_crates")
-load("@com_google_protobuf//:protobuf_deps.bzl", "protobuf_deps")
+load("@rules_proto_grpc//:repositories.bzl", "rules_proto_grpc_repos", "rules_proto_grpc_toolchains")
+load("@rules_proto_grpc//python:repositories.bzl", rules_proto_grpc_python_repos = "python_repos")
 
 def psi_deps():
     # General dependencies.
@@ -99,11 +100,12 @@ def psi_deps():
     python_configure(name = "local_config_python")
 
     # Protobuf.
+    rules_proto_grpc_repos()
+    rules_proto_grpc_toolchains()
+    rules_proto_grpc_python_repos()
+
     rules_proto_dependencies()
-
     rules_proto_toolchains()
-
-    protobuf_deps()
 
     # Golang.
     go_rules_dependencies()

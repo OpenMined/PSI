@@ -105,10 +105,10 @@ def psi_preload():
             url = "https://github.com/bazelbuild/bazel-skylib/archive/1.0.2.tar.gz",
         )
 
-    if "com_google_protobuf" not in native.existing_rules():
+    if "rules_proto_grpc" not in native.existing_rules():
         http_archive(
-            name = "com_google_protobuf",
-            url = "https://github.com/protocolbuffers/protobuf/releases/download/v3.14.0/protobuf-python-3.14.0.tar.gz",
-            strip_prefix = "protobuf-3.14.0",
+            name = "rules_proto_grpc",
+            urls = ["https://github.com/rules-proto-grpc/rules_proto_grpc/archive/2.0.0.tar.gz"],
+            sha256 = "d771584bbff98698e7cb3cb31c132ee206a972569f4dc8b65acbdd934d156b33",
+            strip_prefix = "rules_proto_grpc-2.0.0",
         )
-
