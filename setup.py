@@ -79,8 +79,9 @@ class BuildBazelExtension(build_ext.build_ext):
             osx_ver = "10.14"
             os.environ["MACOSX_DEPLOYMENT_TARGET"] = osx_ver
             os.environ["_PYTHON_HOST_PLATFORM"] = re.sub(
-                r"macosx-[0-9]+\.[0-9]+-(.+)", r"macosx-" + osx_ver + "-\1", util.get_platform()
+                r"macosx-[0-9]+\.[0-9]+-(.+)", r"macosx-" + osx_ver, util.get_platform()
             )
+            print("_PYTHON_HOST_PLATFORM ", os.environ["_PYTHON_HOST_PLATFORM"])
 
         bazel_argv = [
             "bazel",
