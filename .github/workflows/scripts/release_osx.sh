@@ -1,6 +1,6 @@
 #!/bin/sh
 
-export -u MACOSX_DEPLOYMENT_TARGET=10.14
+export MACOSX_DEPLOYMENT_TARGET=10.14
 
 python -m pip install --upgrade pip
 pip install -r private_set_intersection/python/requirements_dev.txt
