@@ -1,10 +1,11 @@
 #!/bin/sh
 set -e
 
-printenv
-
-bazel clean --expunge
-export MACOSX_DEPLOYMENT_TARGET=10.13
+if [ ${RUNNER_OS}=="macOS" ]:
+then
+    bazel clean --expunge
+    export MACOSX_DEPLOYMENT_TARGET=10.13
+fi
 
 # C++
 bazel test --test_output=all //private_set_intersection/cpp/...

@@ -1,6 +1,12 @@
 #!/bin/sh
 set -e
 
+if [ ${RUNNER_OS}=="macOS" ]:
+then
+    bazel clean --expunge
+    export MACOSX_DEPLOYMENT_TARGET=10.13
+fi
+
 # JavaScript
 npm run submodule:update
 npm run em:update
