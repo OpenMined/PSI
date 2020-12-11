@@ -1,11 +1,8 @@
 #!/bin/sh
 set -e
 
-if [ ${RUNNER_OS}=="macOS" ]:
-then
-    bazel clean --expunge
-    export MACOSX_DEPLOYMENT_TARGET=10.13
-fi
+bazel clean --expunge
+export -u MACOSX_DEPLOYMENT_TARGET=10.13
 
 # Python + Bazel
 bazel test --test_output=all --test_timeout=900 //private_set_intersection/python:tests
