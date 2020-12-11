@@ -4,7 +4,7 @@ set -e
 if [ "${RUNNER_OS}" -eq "macOS" ]:
 then
     bazel clean --expunge
-    export -u MACOSX_DEPLOYMENT_TARGET=10.13
+    export -u MACOSX_DEPLOYMENT_TARGET=10.14
 fi
 
 # C++
