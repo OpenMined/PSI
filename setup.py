@@ -76,7 +76,11 @@ class BuildBazelExtension(build_ext.build_ext):
             os.makedirs(self.build_temp)
 
         if "darwin" in sys.platform:
+            osx_ver = "10.13"
             os.environ["MACOSX_DEPLOYMENT_TARGET"] = "10.13"
+            os.environ["_PYTHON_HOST_PLATFORM"] = re.sub(
+                r"macosx-[0-9]+\.[0-9]+-(.+)", r"macosx-10.13-\1", util.get_platform()
+            )
 
         bazel_argv = [
             "bazel",
