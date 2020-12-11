@@ -26,7 +26,7 @@ py_library(
     srcs_version = "PY3",
     visibility = ["//visibility:public"],
     deps = [
-        #"//private_set_intersection/proto:psi_python_proto",
+        "//private_set_intersection/proto:psi_python_proto",
     ],
 )
 
