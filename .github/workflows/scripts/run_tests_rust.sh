@@ -4,7 +4,7 @@ set -e
 if [ ${RUNNER_OS}=="macOS" ]:
 then
     bazel clean --expunge
-    export MACOSX_DEPLOYMENT_TARGET=10.13
+    export -u MACOSX_DEPLOYMENT_TARGET=10.13
 fi
 
 # Rust
