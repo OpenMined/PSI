@@ -25,6 +25,7 @@ load("@io_bazel_rules_rust//rust:repositories.bzl", "rust_repositories")
 load("@io_bazel_rules_rust//proto:repositories.bzl", "rust_proto_repositories")
 load("@io_bazel_rules_rust//:workspace.bzl", "bazel_version")
 load("//third_party/cargo:crates.bzl", "raze_fetch_remote_crates")
+load("@com_google_protobuf//:protobuf_deps.bzl", "protobuf_deps")
 
 def psi_deps():
     # General dependencies.
@@ -101,6 +102,8 @@ def psi_deps():
     rules_proto_dependencies()
 
     rules_proto_toolchains()
+
+    protobuf_deps()
 
     # Golang.
     go_rules_dependencies()

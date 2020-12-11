@@ -104,3 +104,11 @@ def psi_preload():
             strip_prefix = "bazel-skylib-1.0.2",
             url = "https://github.com/bazelbuild/bazel-skylib/archive/1.0.2.tar.gz",
         )
+
+    if "com_google_protobuf" not in native.existing_rules():
+        http_archive(
+            name = "com_google_protobuf",
+            url = "https://github.com/protocolbuffers/protobuf/releases/download/v3.14.0/protobuf-python-3.14.0.tar.gz",
+            strip_prefix = "protobuf-3.14.0",
+        )
+
