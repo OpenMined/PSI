@@ -20,7 +20,7 @@ import re
 import shutil
 import sys
 
-from distutils import sysconfig
+from distutils import sysconfig, util
 import setuptools
 from setuptools.command import build_ext
 
