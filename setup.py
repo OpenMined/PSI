@@ -75,6 +75,9 @@ class BuildBazelExtension(build_ext.build_ext):
         if not os.path.exists(self.build_temp):
             os.makedirs(self.build_temp)
 
+        if "darwin" in sys.platform:
+            os.environ["MACOSX_DEPLOYMENT_TARGET"] = "10.13"
+
         bazel_argv = [
             "bazel",
             "build",
