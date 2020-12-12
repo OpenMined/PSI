@@ -4,5 +4,7 @@ python -m pip install --upgrade pip
 pip install -r private_set_intersection/python/requirements_dev.txt
 pip install setuptools wheel twine auditwheel
 
-pip wheel . -w wheel/
-twine upload --skip-existing wheel/*
+python setup.py bdist_wheel --plat-name=macosx_10_14_x86_64
+
+#pip wheel . -w wheel/
+#twine upload --skip-existing wheel/*
