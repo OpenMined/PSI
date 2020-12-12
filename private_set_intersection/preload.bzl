@@ -77,6 +77,7 @@ def psi_preload():
             build_file = "@pybind11_bazel//:pybind11.BUILD",
             strip_prefix = "pybind11-2.6.0",
             urls = ["https://github.com/pybind/pybind11/archive/v2.6.0.zip"],
+            sha256 = "c2ed3fc84db08f40a36ce1d03331624ed6977497b35dfed36a1423396928559a",
         )
 
     if "rules_python" not in native.existing_rules():
@@ -103,4 +104,12 @@ def psi_preload():
             sha256 = "e5d90f0ec952883d56747b7604e2a15ee36e288bb556c3d0ed33e818a4d971f2",
             strip_prefix = "bazel-skylib-1.0.2",
             url = "https://github.com/bazelbuild/bazel-skylib/archive/1.0.2.tar.gz",
+        )
+
+    if "rules_proto_grpc" not in native.existing_rules():
+        http_archive(
+            name = "rules_proto_grpc",
+            urls = ["https://github.com/rules-proto-grpc/rules_proto_grpc/archive/2.0.0.tar.gz"],
+            sha256 = "d771584bbff98698e7cb3cb31c132ee206a972569f4dc8b65acbdd934d156b33",
+            strip_prefix = "rules_proto_grpc-2.0.0",
         )
