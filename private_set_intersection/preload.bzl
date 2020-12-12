@@ -77,6 +77,7 @@ def psi_preload():
             build_file = "@pybind11_bazel//:pybind11.BUILD",
             strip_prefix = "pybind11-2.6.0",
             urls = ["https://github.com/pybind/pybind11/archive/v2.6.0.zip"],
+            sha256 = "c2ed3fc84db08f40a36ce1d03331624ed6977497b35dfed36a1423396928559a",
         )
 
     if "rules_python" not in native.existing_rules():

@@ -37,7 +37,7 @@ py_test(
     python_version = "PY3",
     srcs_version = "PY3",
     deps = [
-        "//private_set_intersection/python:openmined_psi",
+        ":openmined_psi",
     ],
 )
 
@@ -48,6 +48,6 @@ py_binary(
     python_version = "PY3",
     srcs_version = "PY3",
     deps = [
-        "//private_set_intersection/python:openmined_psi",
+        ":openmined_psi",
     ],
 )
