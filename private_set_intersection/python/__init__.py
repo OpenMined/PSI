@@ -6,16 +6,13 @@ from typing import List
 try:
     # Used in Bazel envs
     from private_set_intersection.python import _openmined_psi as psi
+    from private_set_intersection.python.psi_pb2 import ServerSetup, Request, Response
 except ImportError:
     # Default package
     import _openmined_psi as psi
+    from openmined_psi.psi_pb2 import ServerSetup, Request, Response
 
 __version__ = psi.__version__
-
-
-proto_server_setup = psi.cpp_proto_server_setup
-proto_request = psi.cpp_proto_request
-proto_response = psi.cpp_proto_response
 
 
 class client:
@@ -49,18 +46,21 @@ class client:
         """
         return cls(psi.cpp_client.CreateFromKey(key_bytes, reveal_intersection))
 
-    def CreateRequest(self, data: List[str]) -> proto_request:
+    def CreateRequest(self, data: List[str]) -> Request:
         """Create a request protobuf to be serialized and sent to the server.
         Args:
             data: client items.
         Returns:
             A Protobuffer with the request.
         """
-        return self.data.CreateRequest(data)
+        interm_req = self.data.CreateRequest(data).save()
 
-    def GetIntersection(
-        self, server_setup: proto_server_setup, server_response: proto_response
-    ) -> List[int]:
+        req = Request()
+        req.ParseFromString(interm_req)
+
+        return req
+
+    def GetIntersection(self, server_setup: ServerSetup, server_response: Response) -> List[int]:
         """Process the server's response and return the intersection of the client and server inputs.
         Args:
             server_setup: A protobuffer with the setup message.
@@ -68,11 +68,12 @@ class client:
         Returns:
             A list of indices in clients set.
         """
-        return self.data.GetIntersection(server_setup, server_response)
+        interm_server_setup = psi.cpp_proto_server_setup.Load(server_setup.SerializeToString())
+        interm_response = psi.cpp_proto_response.Load(server_response.SerializeToString())
 
-    def GetIntersectionSize(
-        self, server_setup: proto_server_setup, server_response: proto_response
-    ) -> int:
+        return self.data.GetIntersection(interm_server_setup, interm_response)
+
+    def GetIntersectionSize(self, server_setup: ServerSetup, server_response: Response) -> int:
         """Process the server's response and return the size of the intersection.
         Args:
             server_setup: A protobuffer with the setup message.
@@ -80,7 +81,10 @@ class client:
         Returns:
             The intersection size.
         """
-        return self.data.GetIntersectionSize(server_setup, server_response)
+        interm_server_setup = psi.cpp_proto_server_setup.Load(server_setup.SerializeToString())
+        interm_response = psi.cpp_proto_response.Load(server_response.SerializeToString())
+
+        return self.data.GetIntersectionSize(interm_server_setup, interm_response)
 
     def GetPrivateKeyBytes(self) -> bytes:
         """Returns this instance's private key. This key should only be used to create other client instances. DO NOT SEND THIS KEY TO ANY OTHER PARTY!
@@ -124,7 +128,7 @@ class server:
 
     def CreateSetupMessage(
         self, fpr: float, num_client_inputs: int, inputs: List[str]
-    ) -> proto_server_setup:
+    ) -> ServerSetup:
         """Create a setup message from the server's dataset to be sent to the client.
         Args:
             fpr: the probability that any query of size `num_client_inputs` will result in a false positive.
@@ -133,16 +137,25 @@ class server:
         Returns:
             A Protobuf with the setup message.
         """
-        return self.data.CreateSetupMessage(fpr, num_client_inputs, inputs)
+        interm_msg = self.data.CreateSetupMessage(fpr, num_client_inputs, inputs).save()
+        msg = ServerSetup()
+        msg.ParseFromString(interm_msg)
+        return msg
 
-    def ProcessRequest(self, client_request: proto_request) -> proto_response:
+    def ProcessRequest(self, client_request: Request) -> Response:
         """Process a client query and returns the corresponding server response to be sent to the client.
         Args:
             client_request: A Protobuf containing the client request
         Returns:
             A Protobuf with the server response.
         """
-        return self.data.ProcessRequest(client_request)
+        interm_req = psi.cpp_proto_request.Load(client_request.SerializeToString())
+        interm_resp = self.data.ProcessRequest(interm_req).save()
+
+        resp = Response()
+        resp.ParseFromString(interm_resp)
+
+        return resp
 
     def GetPrivateKeyBytes(self) -> bytes:
         """Return this instance's private key. This key should only be used to create other server instances. DO NOT SEND THIS KEY TO ANY OTHER PARTY!
@@ -155,8 +168,8 @@ class server:
 __all__ = [
     "client",
     "server",
-    "proto_server_setup",
-    "proto_request",
-    "proto_response",
+    "ServerSetup",
+    "Response",
+    "Request",
     "__version__",
 ]
