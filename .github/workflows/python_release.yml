@@ -3,9 +3,6 @@ name: Package release
 on:
   release:
     types: [created]
-  push:
-    branches: [master]
-  pull_request:
 
 jobs:
   deploy_osx:
@@ -23,11 +20,61 @@ jobs:
         uses: actions/setup-python@v1
         with:
           python-version: ${{ matrix.python-version }}
-          #- name: Run tests
-          #timeout-minutes: 30
-          #run: .github/workflows/scripts/run_tests_python.sh
+      - name: Run tests
+        timeout-minutes: 30
+        run: .github/workflows/scripts/run_tests_python.sh
       - name: Build and publish
         env:
           TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
           TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
         run: .github/workflows/scripts/release_osx.sh
+
+  deploy_linux:
+    strategy:
+      matrix:
+        python-version:
+          - cp36-cp36m
+          - cp37-cp37m
+          - cp38-cp38
+
+    runs-on: ubuntu-latest
+    container: bcebere/manylinux2014_gcc8:latest 
+    steps:
+      - uses: actions/checkout@v1
+        with:
+          submodules: true
+      - name: Set target Python version PATH
+        run: |
+            echo "/opt/python/${{ matrix.python-version }}/bin" >> $GITHUB_PATH
+      - name: Build and publish
+        env:
+          TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
+          TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
+        run: .github/workflows/scripts/release_linux.sh
+
+  deploy_windows:
+    runs-on: windows-latest
+    strategy:
+      matrix:
+        python-version: [3.6, 3.7, 3.8]
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v1
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r private_set_intersection/python/requirements_dev.txt
+      - name: Run tests Windows
+        timeout-minutes: 30
+        run: .github/workflows/scripts/run_tests_python.bat
+        if: ${{ matrix.os == 'windows-latest' }}
+      - name: Build and publish
+        env:
+          TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
+          TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
+        run: |
+          .github/workflows/scripts/release_windows.bat
