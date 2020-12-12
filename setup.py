@@ -99,9 +99,24 @@ class BuildBazelExtension(build_ext.build_ext):
         package_dir = os.path.join(ext_dest_dir, "openmined_psi")
         if not os.path.exists(package_dir):
             os.makedirs(package_dir)
+
         shutil.copyfile(
             "private_set_intersection/python/__init__.py", os.path.join(package_dir, "__init__.py")
         )
+
+        proto_file = "psi_pb2.py"
+        proto_bazel_bin_path = os.path.join(
+            self.build_temp,
+            "bazel-bin",
+            "private_set_intersection",
+            "proto",
+            "psi_python_proto_pb",
+            "private_set_intersection",
+            "proto",
+            proto_file,
+        )
+        print("proto path ", proto_bazel_bin_path)
+        shutil.copyfile(proto_bazel_bin_path, os.path.join(package_dir, proto_file))
 
 
 setuptools.setup(
@@ -122,5 +137,6 @@ setuptools.setup(
         "Operating System :: OS Independent",
         "Topic :: Security :: Cryptography",
     ],
+    install_requires=["protobuf",],
     license="Apache 2.0",
 )

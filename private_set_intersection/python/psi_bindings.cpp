@@ -42,19 +42,6 @@ void bind(pybind11::module& m) {
   m.attr("__version__") = ::private_set_intersection::Package::kVersion;
   py::class_<psi_proto::ServerSetup>(m, "cpp_proto_server_setup")
       .def(py::init<>())
-      .def(
-          "bits",
-          [](const psi_proto::ServerSetup& obj) {
-            return py::bytes(obj.bits());
-          },
-          py::call_guard<py::gil_scoped_release>())
-      .def("set_bits", py::overload_cast<const std::string&>(
-                           &psi_proto::ServerSetup::set_bits))
-      .def("set_bits",
-           py::overload_cast<const char*>(&psi_proto::ServerSetup::set_bits))
-      .def("set_bits", py::overload_cast<const void*, size_t>(
-                           &psi_proto::ServerSetup::set_bits))
-      .def("clear_bits", &psi_proto::ServerSetup::clear_bits)
       .def("load", [](psi_proto::ServerSetup& obj,
                       const py::bytes& data) { return loadProto(obj, data); })
       .def("save",
@@ -66,31 +53,6 @@ void bind(pybind11::module& m) {
       });
   py::class_<psi_proto::Request>(m, "cpp_proto_request")
       .def(py::init<>())
-      .def("encrypted_elements_size",
-           &psi_proto::Request::encrypted_elements_size)
-      .def(
-          "encrypted_elements",
-          [](const psi_proto::Request& obj) {
-            auto elements = obj.encrypted_elements();
-            return std::vector<py::bytes>(elements.begin(), elements.end());
-          },
-          py::call_guard<py::gil_scoped_release>())
-      .def(
-          "encrypted_elements",
-          [](const psi_proto::Request& obj, size_t idx) {
-            return py::bytes(obj.encrypted_elements()[idx]);
-          },
-          py::call_guard<py::gil_scoped_release>())
-      .def("add_encrypted_elements",
-           py::overload_cast<const std::string&>(
-               &psi_proto::Request::add_encrypted_elements))
-      .def("clear_encrypted_elements",
-           &psi_proto::Request::clear_encrypted_elements)
-      .def("reveal_intersection", &psi_proto::Request::reveal_intersection)
-      .def("set_reveal_intersection",
-           &psi_proto::Request::set_reveal_intersection)
-      .def("clear_reveal_intersection",
-           &psi_proto::Request::clear_reveal_intersection)
       .def("load", [](psi_proto::Request& obj,
                       const py::bytes& data) { return loadProto(obj, data); })
       .def("save", [](const psi_proto::Request& obj) { return saveProto(obj); })
@@ -101,26 +63,6 @@ void bind(pybind11::module& m) {
       });
   py::class_<psi_proto::Response>(m, "cpp_proto_response")
       .def(py::init<>())
-      .def("encrypted_elements_size",
-           &psi_proto::Response::encrypted_elements_size)
-      .def(
-          "encrypted_elements",
-          [](const psi_proto::Response& obj) {
-            auto elements = obj.encrypted_elements();
-            return std::vector<py::bytes>(elements.begin(), elements.end());
-          },
-          py::call_guard<py::gil_scoped_release>())
-      .def(
-          "encrypted_elements",
-          [](const psi_proto::Response& obj, size_t idx) {
-            return py::bytes(obj.encrypted_elements()[idx]);
-          },
-          py::call_guard<py::gil_scoped_release>())
-      .def("add_encrypted_elements",
-           py::overload_cast<const std::string&>(
-               &psi_proto::Response::add_encrypted_elements))
-      .def("clear_encrypted_elements",
-           &psi_proto::Response::clear_encrypted_elements)
       .def("load", [](psi_proto::Response& obj,
                       const py::bytes& data) { return loadProto(obj, data); })
       .def("save",
