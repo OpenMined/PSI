@@ -26,7 +26,6 @@ from setuptools.command import build_ext
 
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-IS_WINDOWS = sys.platform.startswith("win")
 
 
 def _get_version():
@@ -83,18 +82,41 @@ class BuildBazelExtension(build_ext.build_ext):
             "--symlink_prefix=" + os.path.join(self.build_temp, "bazel-"),
             "--compilation_mode=" + ("dbg" if self.debug else "opt"),
         ]
-
         self.spawn(bazel_argv)
 
-        shared_lib_ext = ".dll" if IS_WINDOWS else ".so"
-        shared_lib = "_" + ext.name + shared_lib_ext
+        ext.name = "_" + ext.name
+        shared_lib_ext = ".so"
+        shared_lib = ext.name + shared_lib_ext
         ext_bazel_bin_path = os.path.join(self.build_temp, "bazel-bin", ext.relpath, shared_lib)
 
         ext_dest_path = self.get_ext_fullpath(ext.name)
         ext_dest_dir = os.path.dirname(ext_dest_path)
+
         if not os.path.exists(ext_dest_dir):
             os.makedirs(ext_dest_dir)
         shutil.copyfile(ext_bazel_bin_path, ext_dest_path)
+
+        package_dir = os.path.join(ext_dest_dir, "openmined_psi")
+        if not os.path.exists(package_dir):
+            os.makedirs(package_dir)
+
+        shutil.copyfile(
+            "private_set_intersection/python/__init__.py", os.path.join(package_dir, "__init__.py")
+        )
+
+        proto_file = "psi_pb2.py"
+        proto_bazel_bin_path = os.path.join(
+            self.build_temp,
+            "bazel-bin",
+            "private_set_intersection",
+            "proto",
+            "psi_python_proto_pb",
+            "private_set_intersection",
+            "proto",
+            proto_file,
+        )
+        print("proto path ", proto_bazel_bin_path)
+        shutil.copyfile(proto_bazel_bin_path, os.path.join(package_dir, proto_file))
 
 
 setuptools.setup(
@@ -105,7 +127,6 @@ setuptools.setup(
     url="https://github.com/OpenMined/PSI",
     python_requires=">=3.6",
     package_dir={"": "private_set_intersection/python"},
-    packages=setuptools.find_packages("private_set_intersection/python"),
     cmdclass=dict(build_ext=BuildBazelExtension),
     ext_modules=[
         BazelExtension("openmined_psi", "//private_set_intersection/python:openmined_psi",)
@@ -116,5 +137,6 @@ setuptools.setup(
         "Operating System :: OS Independent",
         "Topic :: Security :: Cryptography",
     ],
+    install_requires=["protobuf",],
     license="Apache 2.0",
 )

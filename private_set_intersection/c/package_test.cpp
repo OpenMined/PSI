@@ -16,6 +16,8 @@
 
 #include "private_set_intersection/c/package.h"
 
+#include <regex>
+
 #include "gmock/gmock.h"
 #include "gtest/gtest.h"
 
@@ -31,7 +33,11 @@ TEST(PackageTest, testVersionFormat) {
   //   1.2.3-beta
   //   1.2.3-RC1
   std::string version_regex = "[0-9]+[.][0-9]+[.][0-9]+(-[A-Za-z0-9]+)?";
+#ifdef GTEST_USES_POSIX_RE
   EXPECT_THAT(psi_version(), testing::MatchesRegex(version_regex));
+#else
+  EXPECT_TRUE(std::regex_match(psi_version(), std::regex(version_regex)));
+#endif
 }
 
 }  // namespace

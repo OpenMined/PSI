@@ -63,37 +63,28 @@ def psi_preload():
         )
 
     if "pybind11_bazel" not in native.existing_rules():
+        pybind11_bazel_rev = "26973c0ff320cb4b39e45bc3e4297b82bc3a6c09"
         http_archive(
             name = "pybind11_bazel",
-            strip_prefix = "pybind11_bazel-203508e14aab7309892a1c5f7dd05debda22d9a5",
-            urls = ["https://github.com/pybind/pybind11_bazel/archive/203508e14aab7309892a1c5f7dd05debda22d9a5.zip"],
-            sha256 = "75922da3a1bdb417d820398eb03d4e9bd067c4905a4246d35a44c01d62154d91",
+            strip_prefix = "pybind11_bazel-" + pybind11_bazel_rev,
+            urls = ["https://github.com/pybind/pybind11_bazel/archive/" + pybind11_bazel_rev + ".zip"],
+            sha256 = "a5666d950c3344a8b0d3892a88dc6b55c8e0c78764f9294e806d69213c03f19d",
         )
 
     if "pybind11" not in native.existing_rules():
         http_archive(
             name = "pybind11",
             build_file = "@pybind11_bazel//:pybind11.BUILD",
-            strip_prefix = "pybind11-2.5.0",
-            urls = ["https://github.com/pybind/pybind11/archive/v2.5.0.zip"],
-            sha256 = "1859f121837f6c41b0c6223d617b85a63f2f72132bae3135a2aa290582d61520",
+            strip_prefix = "pybind11-2.6.0",
+            urls = ["https://github.com/pybind/pybind11/archive/v2.6.0.zip"],
+            sha256 = "c2ed3fc84db08f40a36ce1d03331624ed6977497b35dfed36a1423396928559a",
         )
 
     if "rules_python" not in native.existing_rules():
         http_archive(
             name = "rules_python",
-            url = "https://github.com/bazelbuild/rules_python/archive/a0fbf98d4e3a232144df4d0d80b577c7a693b570.zip",
-            strip_prefix = "rules_python-a0fbf98d4e3a232144df4d0d80b577c7a693b570",
-            sha256 = "98c9b903f6e8fe20b7e56d19c4822c8c49a11b475bd4ec0ca6a564e8bc5d5fa2",
-        )
-
-    RULES_PYTHON_EXTERNAL_VERSION = "3aacabb928a710b10bff13d0bde49ceaade58f15"
-    if "rules_python_external" not in native.existing_rules():
-        http_archive(
-            name = "rules_python_external",
-            sha256 = "5a1d7e6e4bab49dcdd787694f0f5d52ac5debdfc1852981a89cc414e338d60dc",
-            strip_prefix = "rules_python_external-{version}".format(version = RULES_PYTHON_EXTERNAL_VERSION),
-            url = "https://github.com/dillon-giacoppo/rules_python_external/archive/{version}.zip".format(version = RULES_PYTHON_EXTERNAL_VERSION),
+            url = "https://github.com/bazelbuild/rules_python/releases/download/0.1.0/rules_python-0.1.0.tar.gz",
+            sha256 = "b6d46438523a3ec0f3cead544190ee13223a52f6a6765a29eae7b7cc24cc83a0",
         )
 
     if "io_bazel_rules_rust" not in native.existing_rules():
@@ -137,7 +128,7 @@ def psi_preload():
                 "https://github.com/bazelbuild/rules_apple/archive/b869b0d3868d78a1d4ffd866ccb304fb68aa12c3.tar.gz",
             ],
         )
-        
+
     if "build_bazel_apple_support" not in native.existing_rules():
         http_archive(
             name = "build_bazel_apple_support",
@@ -147,7 +138,7 @@ def psi_preload():
             ],
             sha256 = "122ebf7fe7d1c8e938af6aeaee0efe788a3a2449ece5a8d6a428cb18d6f88033",
         )
-        
+
     if "upb" not in native.existing_rules():
         http_archive(
             name = "upb",
@@ -157,4 +148,11 @@ def psi_preload():
                 "https://storage.googleapis.com/grpc-bazel-mirror/github.com/protocolbuffers/upb/archive/382d5afc60e05470c23e8de19b19fc5ad231e732.tar.gz",
                 "https://github.com/protocolbuffers/upb/archive/382d5afc60e05470c23e8de19b19fc5ad231e732.tar.gz",
             ],
+        )
+    if "rules_proto_grpc" not in native.existing_rules():
+        http_archive(
+            name = "rules_proto_grpc",
+            urls = ["https://github.com/rules-proto-grpc/rules_proto_grpc/archive/2.0.0.tar.gz"],
+            sha256 = "d771584bbff98698e7cb3cb31c132ee206a972569f4dc8b65acbdd934d156b33",
+            strip_prefix = "rules_proto_grpc-2.0.0",
         )

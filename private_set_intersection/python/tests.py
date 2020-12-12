@@ -10,6 +10,14 @@ except ImportError:
     import openmined_psi as psi
 
 
+def dup(do, msg, dst):
+    if not do:
+        return msg
+    buff = msg.SerializeToString()
+    dst.ParseFromString(buff)
+    return dst
+
+
 @pytest.mark.parametrize("reveal_intersection", [False, True])
 def test_sanity(reveal_intersection):
     c = psi.client.CreateWithNewKey(reveal_intersection)
@@ -17,7 +25,8 @@ def test_sanity(reveal_intersection):
 
 
 @pytest.mark.parametrize("reveal_intersection", [False, True])
-def test_client_server(reveal_intersection):
+@pytest.mark.parametrize("duplicate", [False, True])
+def test_client_server(reveal_intersection, duplicate):
     c = psi.client.CreateWithNewKey(reveal_intersection)
     s = psi.server.CreateWithNewKey(reveal_intersection)
 
@@ -25,9 +34,11 @@ def test_client_server(reveal_intersection):
     server_items = ["Element " + str(2 * i) for i in range(10000)]
 
     fpr = 1.0 / (1000000000)
-    setup = s.CreateSetupMessage(fpr, len(client_items), server_items)
-    request = c.CreateRequest(client_items)
-    resp = s.ProcessRequest(request)
+    setup = dup(
+        duplicate, s.CreateSetupMessage(fpr, len(client_items), server_items), psi.ServerSetup()
+    )
+    request = dup(duplicate, c.CreateRequest(client_items), psi.Request())
+    resp = dup(duplicate, s.ProcessRequest(request), psi.Response())
 
     if reveal_intersection:
         intersection = c.GetIntersection(setup, resp)
@@ -112,14 +123,11 @@ def test_serialization_setup_msg(reveal_intersection):
     fpr = 1.0 / (1000000000)
     setup = s.CreateSetupMessage(fpr, 1000, server_items)
 
-    buff = setup.save()
-    recreated = psi.proto_server_setup.Load(buff)
+    buff = setup.SerializeToString()
+    recreated = psi.ServerSetup()
+    recreated.ParseFromString(buff)
     assert isinstance(buff, bytes)
-    assert setup.bits() == recreated.bits()
-
-    recreated_local = psi.proto_server_setup()
-    recreated_local.load(buff)
-    assert setup.bits() == recreated_local.bits()
+    assert setup.bits == recreated.bits
 
 
 @pytest.mark.parametrize("reveal_intersection", [False, True])
@@ -128,19 +136,12 @@ def test_serialization_request(reveal_intersection):
     client_items = ["Element " + str(i) for i in range(1000)]
     request = c.CreateRequest(client_items)
 
-    buff = request.save()
-    recreated = psi.proto_request.Load(buff)
+    buff = request.SerializeToString()
+    recreated = psi.Request()
+    recreated.ParseFromString(buff)
     assert isinstance(buff, bytes)
-    assert request.encrypted_elements_size() == recreated.encrypted_elements_size()
-    assert request.encrypted_elements() == recreated.encrypted_elements()
-    assert request.reveal_intersection() == recreated.reveal_intersection()
-
-    recreated_local = psi.proto_request()
-    recreated_local.load(buff)
-
-    assert request.encrypted_elements_size() == recreated_local.encrypted_elements_size()
-    assert request.encrypted_elements() == recreated_local.encrypted_elements()
-    assert request.reveal_intersection() == recreated_local.reveal_intersection()
+    assert request.encrypted_elements == recreated.encrypted_elements
+    assert request.reveal_intersection == recreated.reveal_intersection
 
 
 @pytest.mark.parametrize("reveal_intersection", [False, True])
@@ -156,17 +157,12 @@ def test_serialization_response(reveal_intersection):
     req = c.CreateRequest(client_items)
     resp = s.ProcessRequest(req)
 
-    buff = resp.save()
-    recreated = psi.proto_response.Load(buff)
+    buff = resp.SerializeToString()
+    recreated = psi.Response()
+    recreated.ParseFromString(buff)
+
     assert isinstance(buff, bytes)
-    assert resp.encrypted_elements_size() == recreated.encrypted_elements_size()
-    assert resp.encrypted_elements() == recreated.encrypted_elements()
-
-    recreated_local = psi.proto_response()
-    recreated_local.load(buff)
-
-    assert resp.encrypted_elements_size() == recreated_local.encrypted_elements_size()
-    assert resp.encrypted_elements() == recreated_local.encrypted_elements()
+    assert resp.encrypted_elements == recreated.encrypted_elements
 
 
 @pytest.mark.parametrize("reveal_intersection", [False, True])
