@@ -1,6 +1,11 @@
 #!/bin/sh
 set -e
 
+if [ "${RUNNER_OS}" -eq "macOS" ]:
+then
+    bazel clean --expunge
+fi
+
 # JavaScript
 npm run submodule:update
 npm run em:update
