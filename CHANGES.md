@@ -1,3 +1,21 @@
+# Version 0.3.4
+
+Feat:
+
+- Adds native Python protobuf definitions (`python_proto_library`) instead of referencing the protobufs from C++. The tradeoff is a more Pythonic library for a small performance penalty for serialization/deserialization across the Python <-> C++ boundary. However, the cryptographic operations still represent the majority of the work in the protocol and therefore the penalty introduced via the extra serialization should be negligible.
+
+# Version 0.3.3
+
+Feat:
+
+- Add better Python support for integration with PySyft by adding wrappers.
+
+# Version 0.3.2
+
+Chore:
+
+- Update build dependencies for TypeScript.
+
 # Version 0.3.1
 
 Fix:
