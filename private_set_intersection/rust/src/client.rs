@@ -3,7 +3,7 @@
 
 use libc::*;
 
-use std::{fmt, error, ptr, mem};
+use std::{fmt, error, ptr};
 use std::ffi::CStr;
 
 use protobuf::{self, Message};
@@ -64,7 +64,7 @@ impl PsiClient {
         let mut error_null_ptr: *mut c_char = ptr::null_mut();
         let error_ptr = &mut error_null_ptr;
         let key_bytes = PsiClientBuffer {
-            ptr: mem::ManuallyDrop::new(key.to_owned()).as_ptr() as *const c_char,
+            ptr: key.as_ptr() as *const c_char,
             len: key.len() as size_t
         };
 
@@ -220,12 +220,7 @@ impl PsiClient {
         // private key is 32 bytes long
         assert_eq!(out_len as usize, 32);
 
-        // do not free the private key bytes
-        let mut res = vec![0u8; out_len as usize];
-
-        unsafe {
-            ptr::copy_nonoverlapping(*out_ptr as *const u8, res.as_mut_ptr(), out_len as usize);
-        }
+        let res = unsafe { Vec::from_raw_parts(*out_ptr as *mut u8, out_len as usize, out_len as usize) };
 
         Ok(res)
     }
