@@ -197,7 +197,7 @@ impl PsiClient {
         // give ownership of the output to a vector, so it will be automatically freed
         let res = unsafe { Vec::from_raw_parts(*out_ptr as *mut i64, out_len as usize, out_len as usize) };
 
-        Ok(res.clone())
+        Ok(res)
     }
 
     /// Returns this `PsiClient` instance's private key. This key should only be used to create
