@@ -3,7 +3,7 @@
 
 use libc::*;
 
-use std::{fmt, error, ptr};
+use std::{fmt, error, ptr, slice};
 use std::ffi::CStr;
 
 use protobuf::{self, Message};
