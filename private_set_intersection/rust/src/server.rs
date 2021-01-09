@@ -3,7 +3,7 @@
 
 use libc::*;
 
-use std::{fmt, error, ptr, mem};
+use std::{fmt, error, ptr, slice};
 use std::ffi::CStr;
 
 use protobuf::{self, Message};
@@ -63,7 +63,7 @@ impl PsiServer {
         let error_ptr = &mut error_null_ptr;
 
         let key_bytes = PsiServerBuffer {
-            ptr: mem::ManuallyDrop::new(key.to_owned()).as_ptr() as *const c_char,
+            ptr: key.as_ptr() as *const c_char,
             len: key.len() as size_t
         };
 
@@ -104,8 +104,8 @@ impl PsiServer {
             return Err(get_error("Failed to create setup message", *error_ptr, res_code));
         }
 
-        // give ownership of the output to a vector, so it will be automatically freed
-        let res = unsafe { Vec::from_raw_parts(*out_ptr as *mut u8, out_len as usize, out_len as usize) };
+        let res = unsafe { slice::from_raw_parts(*out_ptr as *const u8, out_len as usize) }.to_owned();
+        unsafe { free(*out_ptr as *mut c_void) };
         let server_setup: ServerSetup = match protobuf::parse_from_bytes(&res) {
             Ok(s) => s,
             Err(e) => return Err(ServerError::new(e.to_string()))
@@ -145,8 +145,8 @@ impl PsiServer {
             return Err(get_error("Failed to process request", *error_ptr, res_code));
         }
 
-        // give ownership of the output to a vector, so it will be automatically freed
-        let res = unsafe { Vec::from_raw_parts(*out_ptr as *mut u8, out_len as usize, out_len as usize) };
+        let res = unsafe { slice::from_raw_parts(*out_ptr as *const u8, out_len as usize) }.to_owned();
+        unsafe { free(*out_ptr as *mut c_void) };
         let response: Response = match protobuf::parse_from_bytes(&res) {
             Ok(r) => r,
             Err(e) => return Err(ServerError::new(e.to_string()))
@@ -175,12 +175,8 @@ impl PsiServer {
         // private key is 32 bytes long
         assert_eq!(out_len as usize, 32);
 
-        // do not free the private key bytes
-        let mut res = vec![0u8; out_len as usize];
-
-        unsafe {
-            ptr::copy_nonoverlapping(*out_ptr as *const u8, res.as_mut_ptr(), out_len as usize);
-        }
+        let res = unsafe { slice::from_raw_parts(*out_ptr as *const u8, out_len as usize) }.to_owned();
+        unsafe { free(*out_ptr as *mut c_void) };
 
         Ok(res)
     }
