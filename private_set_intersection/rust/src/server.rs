@@ -105,7 +105,7 @@ impl PsiServer {
         }
 
         let res = unsafe { slice::from_raw_parts(*out_ptr as *const u8, out_len as usize) }.to_owned();
-        free(*out_ptr as *mut c_void);
+        unsafe { free(*out_ptr as *mut c_void) };
         let server_setup: ServerSetup = match protobuf::parse_from_bytes(&res) {
             Ok(s) => s,
             Err(e) => return Err(ServerError::new(e.to_string()))
@@ -146,7 +146,7 @@ impl PsiServer {
         }
 
         let res = unsafe { slice::from_raw_parts(*out_ptr as *const u8, out_len as usize) }.to_owned();
-        free(*out_ptr as *mut c_void);
+        unsafe { free(*out_ptr as *mut c_void) };
         let response: Response = match protobuf::parse_from_bytes(&res) {
             Ok(r) => r,
             Err(e) => return Err(ServerError::new(e.to_string()))
@@ -176,7 +176,7 @@ impl PsiServer {
         assert_eq!(out_len as usize, 32);
 
         let res = unsafe { slice::from_raw_parts(*out_ptr as *const u8, out_len as usize) }.to_owned();
-        free(*out_ptr as *mut c_void);
+        unsafe { free(*out_ptr as *mut c_void) };
 
         Ok(res)
     }

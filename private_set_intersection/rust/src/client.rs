@@ -104,7 +104,7 @@ impl PsiClient {
         }
 
         let res = unsafe { slice::from_raw_parts(*out_ptr as *const u8, out_len as usize) }.to_owned();
-        free(*out_ptr as *mut c_void);
+        unsafe { free(*out_ptr as *mut c_void) };
         let request: Request = match protobuf::parse_from_bytes(&res) {
             Ok(r) => r,
             Err(e) => return Err(ClientError::new(e.to_string()))
@@ -195,7 +195,7 @@ impl PsiClient {
         }
 
         let res = unsafe { slice::from_raw_parts(*out_ptr as *const i64, out_len as usize) }.to_owned();
-        free(*out_ptr as *mut c_void);
+        unsafe { free(*out_ptr as *mut c_void) };
 
         Ok(res)
     }
@@ -221,7 +221,7 @@ impl PsiClient {
         assert_eq!(out_len as usize, 32);
 
         let res = unsafe { slice::from_raw_parts(*out_ptr as *const u8, out_len as usize) }.to_owned();
-        free(*out_ptr as *mut c_void);
+        unsafe { free(*out_ptr as *mut c_void) };
 
         Ok(res)
     }
