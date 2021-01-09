@@ -104,7 +104,7 @@ impl PsiServer {
             return Err(get_error("Failed to create setup message", *error_ptr, res_code));
         }
 
-        let res = unsafe { slice::from_raw_parts(*out_ptr as *mut u8, out_len as usize) }.to_owned();
+        let res = unsafe { slice::from_raw_parts(*out_ptr as *const u8, out_len as usize) }.to_owned();
         free(*out_ptr as *mut c_void);
         let server_setup: ServerSetup = match protobuf::parse_from_bytes(&res) {
             Ok(s) => s,
@@ -145,7 +145,7 @@ impl PsiServer {
             return Err(get_error("Failed to process request", *error_ptr, res_code));
         }
 
-        let res = unsafe { slice::from_raw_parts(*out_ptr as *mut u8, out_len as usize) }.to_owned();
+        let res = unsafe { slice::from_raw_parts(*out_ptr as *const u8, out_len as usize) }.to_owned();
         free(*out_ptr as *mut c_void);
         let response: Response = match protobuf::parse_from_bytes(&res) {
             Ok(r) => r,
@@ -175,7 +175,7 @@ impl PsiServer {
         // private key is 32 bytes long
         assert_eq!(out_len as usize, 32);
 
-        let res = unsafe { slice::from_raw_parts(*out_ptr as *mut u8, out_len as usize) }.to_owned();
+        let res = unsafe { slice::from_raw_parts(*out_ptr as *const u8, out_len as usize) }.to_owned();
         free(*out_ptr as *mut c_void);
 
         Ok(res)
