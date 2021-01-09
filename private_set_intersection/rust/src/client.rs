@@ -3,7 +3,7 @@
 
 use libc::*;
 
-use std::{fmt, error, ptr};
+use std::{fmt, error, ptr, slice};
 use std::ffi::CStr;
 
 use protobuf::{self, Message};
@@ -103,8 +103,8 @@ impl PsiClient {
             return Err(get_error("Failed to create request", *error_ptr, res_code));
         }
 
-        // give ownership of the output to a vector, so it will be automatically freed
-        let res = unsafe { Vec::from_raw_parts(*out_ptr as *mut u8, out_len as usize, out_len as usize) };
+        let res = unsafe { slice::from_raw_parts(*out_ptr as *mut u8, out_len as usize) }.to_owned();
+        free(*out_ptr as *mut c_void);
         let request: Request = match protobuf::parse_from_bytes(&res) {
             Ok(r) => r,
             Err(e) => return Err(ClientError::new(e.to_string()))
@@ -194,8 +194,8 @@ impl PsiClient {
             return Err(get_error("Failed to get intersection", *error_ptr, res_code));
         }
 
-        // give ownership of the output to a vector, so it will be automatically freed
-        let res = unsafe { Vec::from_raw_parts(*out_ptr as *mut i64, out_len as usize, out_len as usize) };
+        let res = unsafe { slice::from_raw_parts(*out_ptr as *mut i64, out_len as usize) }.to_owned();
+        free(*out_ptr as *mut c_void);
 
         Ok(res)
     }
@@ -220,7 +220,8 @@ impl PsiClient {
         // private key is 32 bytes long
         assert_eq!(out_len as usize, 32);
 
-        let res = unsafe { Vec::from_raw_parts(*out_ptr as *mut u8, out_len as usize, out_len as usize) };
+        let res = unsafe { slice::from_raw_parts(*out_ptr as *mut u8, out_len as usize) }.to_owned();
+        free(*out_ptr as *mut c_void);
 
         Ok(res)
     }

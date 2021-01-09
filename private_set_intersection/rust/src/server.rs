@@ -104,8 +104,8 @@ impl PsiServer {
             return Err(get_error("Failed to create setup message", *error_ptr, res_code));
         }
 
-        // give ownership of the output to a vector, so it will be automatically freed
-        let res = unsafe { Vec::from_raw_parts(*out_ptr as *mut u8, out_len as usize, out_len as usize) };
+        let res = unsafe { slice::from_raw_parts(*out_ptr as *mut u8, out_len as usize) }.to_owned();
+        free(*out_ptr as *mut c_void);
         let server_setup: ServerSetup = match protobuf::parse_from_bytes(&res) {
             Ok(s) => s,
             Err(e) => return Err(ServerError::new(e.to_string()))
@@ -145,8 +145,8 @@ impl PsiServer {
             return Err(get_error("Failed to process request", *error_ptr, res_code));
         }
 
-        // give ownership of the output to a vector, so it will be automatically freed
-        let res = unsafe { Vec::from_raw_parts(*out_ptr as *mut u8, out_len as usize, out_len as usize) };
+        let res = unsafe { slice::from_raw_parts(*out_ptr as *mut u8, out_len as usize) }.to_owned();
+        free(*out_ptr as *mut c_void);
         let response: Response = match protobuf::parse_from_bytes(&res) {
             Ok(r) => r,
             Err(e) => return Err(ServerError::new(e.to_string()))
@@ -175,7 +175,8 @@ impl PsiServer {
         // private key is 32 bytes long
         assert_eq!(out_len as usize, 32);
 
-        let res = unsafe { Vec::from_raw_parts(*out_ptr as *mut u8, out_len as usize, out_len as usize) };
+        let res = unsafe { slice::from_raw_parts(*out_ptr as *mut u8, out_len as usize) }.to_owned();
+        free(*out_ptr as *mut c_void);
 
         Ok(res)
     }
