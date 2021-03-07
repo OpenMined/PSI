@@ -5,6 +5,23 @@ Feat:
 - Use an updated version of private_join_and_compute which uses the cleaner absl libraries. This also pulls in some new dependencies for PJC such as gRPC.
 - Allows the python variant to be built on Windows.
 - Emsdk has been bumped to the latest version (emscripten v2.0.15). The latest version required changes to the `cc_toolchain_config.bzl` file which addresses some work arounds to build successfully.
+# Version 0.3.4
+
+Feat:
+
+- Adds native Python protobuf definitions (`python_proto_library`) instead of referencing the protobufs from C++. The tradeoff is a more Pythonic library for a small performance penalty for serialization/deserialization across the Python <-> C++ boundary. However, the cryptographic operations still represent the majority of the work in the protocol and therefore the penalty introduced via the extra serialization should be negligible.
+
+# Version 0.3.3
+
+Feat:
+
+- Add better Python support for integration with PySyft by adding wrappers.
+
+# Version 0.3.2
+
+Chore:
+
+- Update build dependencies for TypeScript.
 
 # Version 0.3.1
 

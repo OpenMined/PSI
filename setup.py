@@ -84,7 +84,8 @@ class BuildBazelExtension(build_ext.build_ext):
         ]
         self.spawn(bazel_argv)
 
-        ext.name = "_" + ext.name
+        if not ext.name.startswith("_"):
+            ext.name = "_" + ext.name
         shared_lib_ext = ".so"
         shared_lib = ext.name + shared_lib_ext
         ext_bazel_bin_path = os.path.join(self.build_temp, "bazel-bin", ext.relpath, shared_lib)

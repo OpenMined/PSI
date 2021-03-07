@@ -3,7 +3,7 @@
 
 use libc::*;
 
-use std::{fmt, error, ptr, mem};
+use std::{fmt, error, ptr, slice};
 use std::ffi::CStr;
 
 use protobuf::{self, Message};
@@ -64,7 +64,7 @@ impl PsiClient {
         let mut error_null_ptr: *mut c_char = ptr::null_mut();
         let error_ptr = &mut error_null_ptr;
         let key_bytes = PsiClientBuffer {
-            ptr: mem::ManuallyDrop::new(key.to_owned()).as_ptr() as *const c_char,
+            ptr: key.as_ptr() as *const c_char,
             len: key.len() as size_t
         };
 
@@ -103,8 +103,8 @@ impl PsiClient {
             return Err(get_error("Failed to create request", *error_ptr, res_code));
         }
 
-        // give ownership of the output to a vector, so it will be automatically freed
-        let res = unsafe { Vec::from_raw_parts(*out_ptr as *mut u8, out_len as usize, out_len as usize) };
+        let res = unsafe { slice::from_raw_parts(*out_ptr as *const u8, out_len as usize) }.to_owned();
+        unsafe { free(*out_ptr as *mut c_void) };
         let request: Request = match protobuf::parse_from_bytes(&res) {
             Ok(r) => r,
             Err(e) => return Err(ClientError::new(e.to_string()))
@@ -194,10 +194,10 @@ impl PsiClient {
             return Err(get_error("Failed to get intersection", *error_ptr, res_code));
         }
 
-        // give ownership of the output to a vector, so it will be automatically freed
-        let res = unsafe { Vec::from_raw_parts(*out_ptr as *mut i64, out_len as usize, out_len as usize) };
+        let res = unsafe { slice::from_raw_parts(*out_ptr as *const i64, out_len as usize) }.to_owned();
+        unsafe { free(*out_ptr as *mut c_void) };
 
-        Ok(res.clone())
+        Ok(res)
     }
 
     /// Returns this `PsiClient` instance's private key. This key should only be used to create
@@ -220,12 +220,8 @@ impl PsiClient {
         // private key is 32 bytes long
         assert_eq!(out_len as usize, 32);
 
-        // do not free the private key bytes
-        let mut res = vec![0u8; out_len as usize];
-
-        unsafe {
-            ptr::copy_nonoverlapping(*out_ptr as *const u8, res.as_mut_ptr(), out_len as usize);
-        }
+        let res = unsafe { slice::from_raw_parts(*out_ptr as *const u8, out_len as usize) }.to_owned();
+        unsafe { free(*out_ptr as *mut c_void) };
 
         Ok(res)
     }
