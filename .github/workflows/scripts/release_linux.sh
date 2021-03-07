@@ -12,7 +12,7 @@ yum -y install \
     git unzip whichi protobuf-devel \
     && yum clean all
 
-bazel_version="3.7.1"
+bazel_version="4.0.0"
 # Install Bazel version specified in .bazelversion
 curl -sSOLv https://github.com/bazelbuild/bazel/releases/download/${bazel_version}/bazel-${bazel_version}-installer-linux-x86_64.sh
 bash -x -e bazel-${bazel_version}-installer-linux-x86_64.sh
@@ -26,7 +26,7 @@ export BAZEL_LINKLIBS=-l%:libstdc++.a
 export LD_LIBRARY_PATH=/usr/local/gcc-8.3.0/lib64/:$LD_LIBRARY_PATH
 
 # Testing
-bazel test //private_set_intersection/python/...
+bazel test --incompatible_require_linker_input_cc_api=false --features=-supports_dynamic_linker //private_set_intersection/python/...
 
 # Publish
 python3 -m pip wheel . -w dist/ --no-deps
