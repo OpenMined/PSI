@@ -15,12 +15,12 @@ import "github.com/openmined/psi/server"
 
 ## Tests
 ```
-bazel test //private_set_intersection/go/... --test_output=all
+bazel test --incompatible_require_linker_input_cc_api=false --features=-supports_dynamic_linker //private_set_intersection/go/... --test_output=all
 ```
 
 ## Benchmarks
 ```
-bazel test //private_set_intersection/go/... --test_arg=-test.bench=. --test_output=all
+bazel test --incompatible_require_linker_input_cc_api=false --features=-supports_dynamic_linker //private_set_intersection/go/... --test_arg=-test.bench=. --test_output=all
 ```
 
 ## Integration

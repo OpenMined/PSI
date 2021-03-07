@@ -26,7 +26,7 @@ export BAZEL_LINKLIBS=-l%:libstdc++.a
 export LD_LIBRARY_PATH=/usr/local/gcc-8.3.0/lib64/:$LD_LIBRARY_PATH
 
 # Testing
-bazel test --incompatible_require_linker_input_cc_api=false --features=-supports_dynamic_linker //private_set_intersection/python/...
+bazel test //private_set_intersection/python/...
 
 # Publish
 python3 -m pip wheel . -w dist/ --no-deps

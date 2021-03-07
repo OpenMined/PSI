@@ -11,7 +11,7 @@ OUT_DIR_TS="./private_set_intersection/javascript/src/implementation/proto"
 PROTO_DIR="./private_set_intersection/proto"
 
 # Build the protobuf compiler.
-bazel build -c opt --incompatible_require_linker_input_cc_api=false --features=-supports_dynamic_linker --platforms="@local_config_platform//:host" @com_google_protobuf//:protoc
+bazel build -c opt --platforms="@local_config_platform//:host" @com_google_protobuf//:protoc
 PROTOC_BINARY="./bazel-bin/external/com_google_protobuf/protoc"
 
 "$PROTOC_BINARY" \
