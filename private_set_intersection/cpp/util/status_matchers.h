@@ -17,12 +17,10 @@
 
 #include <type_traits>
 
+#include "absl/status/statusor.h"
 #include "absl/strings/string_view.h"
 #include "absl/types/optional.h"
 #include "gmock/gmock.h"
-#include "util/status.h"
-#include "util/status_macros.h"
-#include "util/statusor.h"
 
 #define PSI_ASSERT_OK_AND_ASSIGN(lhs, rexpr)                                \
   PSI_ASSERT_OK_AND_ASSIGN_IMPL(                                            \
@@ -32,7 +30,7 @@
 #define PSI_ASSERT_OK_AND_ASSIGN_IMPL(statusor, lhs, rexpr)           \
   auto statusor = (rexpr);                                            \
   ASSERT_THAT(statusor.status(), ::private_set_intersection::IsOk()); \
-  lhs = std::move(statusor).ValueOrDie();
+  lhs = std::move(statusor).value();
 
 namespace private_set_intersection {
 namespace internal {
@@ -59,7 +57,7 @@ class StatusIsMatcher {
   StatusIsMatcher(const StatusIsMatcher&) = default;
   StatusIsMatcher& operator=(const StatusIsMatcher&) = default;
 
-  StatusIsMatcher(private_join_and_compute::StatusCode code,
+  StatusIsMatcher(absl::StatusCode code,
                   absl::optional<absl::string_view> message)
       : code_(code), message_(message) {}
 
@@ -108,7 +106,7 @@ class StatusIsMatcher {
     return status_or.status();
   }
 
-  const private_join_and_compute::StatusCode code_;
+  const absl::StatusCode code_;
   const absl::optional<std::string> message_;
 };
 
@@ -119,7 +117,7 @@ inline ::testing::PolymorphicMatcher<internal::IsOkMatcher> IsOk() {
 }
 
 inline ::testing::PolymorphicMatcher<internal::StatusIsMatcher> StatusIs(
-    private_join_and_compute::StatusCode code,
+    absl::StatusCode code,
     absl::optional<absl::string_view> message = absl::nullopt) {
   return ::testing::MakePolymorphicMatcher(
       internal::StatusIsMatcher(code, message));

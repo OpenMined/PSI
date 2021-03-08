@@ -239,7 +239,7 @@ TEST_F(PsiServerTest, FailIfRevealIntersectionDoesntMatch) {
 
   SetUp(true);
   EXPECT_THAT(server_->ProcessRequest(client_request),
-              StatusIs(private_join_and_compute::kInvalidArgument,
+              StatusIs(absl::StatusCode::kInvalidArgument,
                        "Client expects `reveal_intersection` = 0, but it is "
                        "actually 1"));
 
@@ -248,7 +248,7 @@ TEST_F(PsiServerTest, FailIfRevealIntersectionDoesntMatch) {
 
   SetUp(false);
   EXPECT_THAT(server_->ProcessRequest(client_request),
-              StatusIs(private_join_and_compute::kInvalidArgument,
+              StatusIs(absl::StatusCode::kInvalidArgument,
                        "Client expects `reveal_intersection` = 1, but it is "
                        "actually 0"));
 }

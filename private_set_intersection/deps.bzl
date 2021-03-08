@@ -24,6 +24,8 @@ load("@pybind11_bazel//:python_configure.bzl", "python_configure")
 load("@io_bazel_rules_rust//rust:repositories.bzl", "rust_repositories")
 load("@io_bazel_rules_rust//proto:repositories.bzl", "rust_proto_repositories")
 load("@io_bazel_rules_rust//:workspace.bzl", "bazel_version")
+load("@com_github_grpc_grpc//bazel:grpc_deps.bzl", "grpc_deps")
+load("@build_bazel_rules_apple//apple:repositories.bzl", "apple_rules_dependencies")
 load("//third_party/cargo:crates.bzl", "raze_fetch_remote_crates")
 load("@rules_proto_grpc//:repositories.bzl", "rules_proto_grpc_repos", "rules_proto_grpc_toolchains")
 load("@rules_proto_grpc//python:repositories.bzl", rules_proto_grpc_python_repos = "python_repos")
@@ -34,17 +36,17 @@ def psi_deps():
         #TODO revert to the upstream repository when the https://github.com/google/private-join-and-compute/pull/21 is merged
         http_archive(
             name = "private_join_and_compute",
-            strip_prefix = "private-join-and-compute-7c63dc60f3b209d5c3568b2c52421682a3b3d53f",
-            url = "https://github.com/bcebere/private-join-and-compute/archive/7c63dc60f3b209d5c3568b2c52421682a3b3d53f.zip",
-            sha256 = "06124e2f981eb8a85d91f8a91325ed32c6e4d95cd9359480668020e813cc8047",
+            sha256 = "219f7cff49841901f8d88a7f84c9c8a61e69b5eb308a8535835743093eb4b595",
+            strip_prefix = "private-join-and-compute-ee2c581454fd895d9928fe27b7ba0d0ebfd8fda2",
+            url = "https://github.com/schoppmp/private-join-and-compute/archive/ee2c581454fd895d9928fe27b7ba0d0ebfd8fda2.zip",
         )
 
     if "com_google_absl" not in native.existing_rules():
         http_archive(
             name = "com_google_absl",
-            sha256 = "9ab2dbebf6f209d6680bd3088a837c07f0788852ab81700aef6e2f2a746a7acb",
-            strip_prefix = "abseil-cpp-b35973e3e35cb1eccb086d6a549c253c49579474",
-            url = "https://github.com/abseil/abseil-cpp/archive/b35973e3e35cb1eccb086d6a549c253c49579474.zip",
+            sha256 = "d29785bb94deaba45946d40bde5b356c66a4eb76505de0181ea9a23c46bc5ed4",
+            strip_prefix = "abseil-cpp-592924480acf034aec0454160492a20bccdbdf3e",
+            url = "https://github.com/abseil/abseil-cpp/archive/592924480acf034aec0454160492a20bccdbdf3e.zip",
         )
 
     if "com_google_googletest" not in native.existing_rules():
@@ -88,6 +90,10 @@ def psi_deps():
                 "https://github.com/gflags/gflags/archive/v2.2.2.tar.gz",
             ],
         )
+
+    # gRPC for PJC.
+    grpc_deps()
+    apple_rules_dependencies()
 
     # Language-specific dependencies.
 

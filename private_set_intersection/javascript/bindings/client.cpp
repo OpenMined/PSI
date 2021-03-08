@@ -4,8 +4,8 @@
 #include "psi_client.h"
 
 EMSCRIPTEN_BINDINGS(PSI_Client) {
+  using absl::StatusOr;
   using emscripten::optional_override;
-  using private_join_and_compute::StatusOr;
   using private_set_intersection::PsiClient;
   using private_set_intersection::ToJSObject;
   using private_set_intersection::ToSerializedJSObject;
@@ -46,7 +46,7 @@ EMSCRIPTEN_BINDINGS(PSI_Client) {
                   StatusOr<psi_proto::Request> request;
                   auto status = self.CreateRequest(string_vector);
                   if (status.ok()) {
-                    request = status.ValueOrDie();
+                    request = *status;
                   } else {
                     request = status.status();
                   }
@@ -84,8 +84,7 @@ EMSCRIPTEN_BINDINGS(PSI_Client) {
                 self.GetIntersection(server_setup, server_response);
             if (status.ok()) {
               // Convert int64_t to int32_t for JS
-              const std::vector<std::int64_t> unsupported_result =
-                  status.ValueOrDie();
+              const std::vector<std::int64_t> unsupported_result = *status;
               const std::vector<std::int32_t> supported_result(
                   unsupported_result.begin(), unsupported_result.end());
               // Convert vector to JS array
@@ -128,7 +127,7 @@ EMSCRIPTEN_BINDINGS(PSI_Client) {
             const auto status =
                 self.GetIntersectionSize(server_setup, server_response);
             if (status.ok()) {
-              result = status.ValueOrDie();
+              result = *status;
             } else {
               result = status.status();
             }

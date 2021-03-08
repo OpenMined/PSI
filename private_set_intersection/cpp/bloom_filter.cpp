@@ -22,8 +22,6 @@
 #include "absl/strings/escaping.h"
 #include "absl/strings/str_cat.h"
 #include "private_set_intersection/proto/psi.pb.h"
-#include "util/canonical_errors.h"
-#include "util/status_macros.h"
 
 namespace private_set_intersection {
 
@@ -38,18 +36,20 @@ StatusOr<std::unique_ptr<BloomFilter>> BloomFilter::Create(
     double fpr, absl::Span<const std::string> elements) {
   ASSIGN_OR_RETURN(auto filter, CreateEmpty(fpr, elements.size()));
   filter->Add(elements);
-  return filter;
+  // This move seems to be needed for some versions of GCC. See for example this
+  // failing build:
+  // https://github.com/OpenMined/PSI/pull/109/checks?check_run_id=1487034145#step:3:61
+  // TODO: Remove the std::move once it's not needed any more.
+  return std::move(filter);
 }
 
 StatusOr<std::unique_ptr<BloomFilter>> BloomFilter::CreateEmpty(
     double fpr, int64_t max_elements) {
   if (fpr <= 0 || fpr >= 1) {
-    return ::private_join_and_compute::InvalidArgumentError(
-        "`fpr` must be in (0,1)");
+    return absl::InvalidArgumentError("`fpr` must be in (0,1)");
   }
   if (max_elements < 0) {
-    return ::private_join_and_compute::InvalidArgumentError(
-        "`max_elements` must be positive");
+    return absl::InvalidArgumentError("`max_elements` must be positive");
   }
   int num_hash_functions = static_cast<int>(std::ceil(-std::log2(fpr)));
   int64_t num_bytes = static_cast<int64_t>(
@@ -63,8 +63,7 @@ StatusOr<std::unique_ptr<BloomFilter>> BloomFilter::CreateEmpty(
 StatusOr<std::unique_ptr<BloomFilter>> BloomFilter::CreateFromProtobuf(
     const psi_proto::ServerSetup& encoded_filter) {
   if (!encoded_filter.IsInitialized()) {
-    return ::private_join_and_compute::InvalidArgumentError(
-        "`ServerSetup` is corrupt!");
+    return absl::InvalidArgumentError("`ServerSetup` is corrupt!");
   }
 
   auto context = absl::make_unique<::private_join_and_compute::Context>();
@@ -131,13 +130,12 @@ std::vector<int64_t> BloomFilter::Hash(const std::string& x) const {
       context_->CreateBigNum(context_->Sha256String(absl::StrCat(1, x)))
           .Mod(bn_num_bits)
           .ToIntValue()
-          .ValueOrDie();  // ValueOrDie is safe here since bn_num_bits fits in
-                          // an int64.
+          .value();  // value() is safe here since bn_num_bits fits in an int64.
   const int64_t h2 =
       context_->CreateBigNum(context_->Sha256String(absl::StrCat(2, x)))
           .Mod(bn_num_bits)
           .ToIntValue()
-          .ValueOrDie();
+          .value();
   for (int i = 0; i < num_hash_functions_; i++) {
     result[i] = (h1 + i * h2) % num_bits;
   }

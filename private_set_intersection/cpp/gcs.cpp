@@ -24,7 +24,6 @@
 #include "absl/strings/escaping.h"
 #include "private_set_intersection/cpp/golomb.h"
 #include "private_set_intersection/proto/psi.pb.h"
-#include "util/canonical_errors.h"
 
 namespace private_set_intersection {
 
@@ -38,8 +37,7 @@ GCS::GCS(std::string golomb, int64_t div, int64_t hash_range,
 StatusOr<std::unique_ptr<GCS>> GCS::Create(
     double fpr, absl::Span<const std::string> elements) {
   if (fpr <= 0 || fpr >= 1) {
-    return ::private_join_and_compute::InvalidArgumentError(
-        "`fpr` must be in (0,1)");
+    return absl::InvalidArgumentError("`fpr` must be in (0,1)");
   }
 
   auto hash_range = static_cast<int64_t>(elements.size() / fpr);
@@ -61,8 +59,7 @@ StatusOr<std::unique_ptr<GCS>> GCS::Create(
 StatusOr<std::unique_ptr<GCS>> GCS::CreateFromProtobuf(
     const psi_proto::ServerSetup& encoded_set) {
   if (!encoded_set.IsInitialized()) {
-    return ::private_join_and_compute::InvalidArgumentError(
-        "`ServerSetup` is corrupt!");
+    return absl::InvalidArgumentError("`ServerSetup` is corrupt!");
   }
 
   auto context = absl::make_unique<::private_join_and_compute::Context>();
@@ -108,11 +105,11 @@ int64_t GCS::Hash(const std::string& input, int64_t hash_range,
                   ::private_join_and_compute::Context& context) {
   const auto bn_num_bits = context.CreateBigNum(hash_range);
 
-  const int64_t h = context.CreateBigNum(context.Sha256String(input))
-                        .Mod(bn_num_bits)
-                        .ToIntValue()
-                        .ValueOrDie();  // ValueOrDie is safe here since
-                                        // bn_num_bits fits in an int64.
+  const int64_t h =
+      context.CreateBigNum(context.Sha256String(input))
+          .Mod(bn_num_bits)
+          .ToIntValue()
+          .value();  // value() is safe here since bn_num_bits fits in an int64.
   return h;
 }
 

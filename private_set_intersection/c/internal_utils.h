@@ -17,12 +17,12 @@
 #ifndef PRIVATE_SET_INTERSECTION_C_INTERNAL_UTILS_H_
 #define PRIVATE_SET_INTERSECTION_C_INTERNAL_UTILS_H_
 
-#include "util/statusor.h"
+#include "absl/status/statusor.h"
 
 namespace private_set_intersection {
 
 namespace c_bindings_internal {
-int generate_error(private_join_and_compute::Status status, char** error_out);
+int generate_error(absl::Status status, char** error_out);
 
 }  // namespace c_bindings_internal
 

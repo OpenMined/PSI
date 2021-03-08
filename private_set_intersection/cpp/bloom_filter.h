@@ -19,14 +19,14 @@
 
 #include <vector>
 
+#include "absl/status/statusor.h"
 #include "absl/types/span.h"
 #include "crypto/context.h"
 #include "private_set_intersection/proto/psi.pb.h"
-#include "util/statusor.h"
 
 namespace private_set_intersection {
 
-using ::private_join_and_compute::StatusOr;
+using absl::StatusOr;
 
 // A Bloom filter succinctly encodes a set as an array of bits and can be used
 // for approximate membership tests. For a given number of hash functions h_1,

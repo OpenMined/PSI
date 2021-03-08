@@ -25,8 +25,6 @@
 #include "private_set_intersection/cpp/bloom_filter.h"
 #include "private_set_intersection/cpp/gcs.h"
 #include "private_set_intersection/proto/psi.pb.h"
-#include "util/canonical_errors.h"
-#include "util/status_macros.h"
 
 namespace private_set_intersection {
 
@@ -87,7 +85,7 @@ StatusOr<std::vector<int64_t>> PsiClient::GetIntersection(
     const psi_proto::ServerSetup& server_setup,
     const psi_proto::Response& server_response) const {
   if (!reveal_intersection) {
-    return ::private_join_and_compute::InvalidArgumentError(
+    return absl::InvalidArgumentError(
         "GetIntersection called on PsiClient with reveal_intersection == "
         "false");
   }
@@ -110,13 +108,11 @@ StatusOr<std::vector<int64_t>> PsiClient::ProcessResponse(
     const psi_proto::Response& server_response) const {
   // Ensure both items are valid
   if (!server_setup.IsInitialized()) {
-    return ::private_join_and_compute::InvalidArgumentError(
-        "`server_setup` is corrupt!");
+    return absl::InvalidArgumentError("`server_setup` is corrupt!");
   }
 
   if (!server_response.IsInitialized()) {
-    return ::private_join_and_compute::InvalidArgumentError(
-        "`server_response` is corrupt!");
+    return absl::InvalidArgumentError("`server_response` is corrupt!");
   }
 
   const auto& response_array = server_response.encrypted_elements();
@@ -144,7 +140,7 @@ StatusOr<std::vector<int64_t>> PsiClient::ProcessResponse(
     return filter->Intersect(
         absl::MakeConstSpan(&decrypted[0], decrypted.size()));
   } else {
-    return ::private_join_and_compute::InvalidArgumentError("Impossible");
+    return absl::InvalidArgumentError("Impossible");
   }
 }
 

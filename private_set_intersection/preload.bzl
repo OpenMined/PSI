@@ -106,6 +106,49 @@ def psi_preload():
             url = "https://github.com/bazelbuild/bazel-skylib/archive/1.0.2.tar.gz",
         )
 
+    # gRPC for PJC.
+    if "com_github_grpc_grpc" not in native.existing_rules():
+        http_archive(
+            name = "com_github_grpc_grpc",
+            sha256 = "2060769f2d4b0d3535ba594b2ab614d7f68a492f786ab94b4318788d45e3278a",
+            strip_prefix = "grpc-1.33.2",
+            urls = [
+                "https://github.com/grpc/grpc/archive/v1.33.2.tar.gz",
+            ],
+        )
+
+    # For gRPC.
+    if "build_bazel_rules_apple" not in native.existing_rules():
+        http_archive(
+            name = "build_bazel_rules_apple",
+            strip_prefix = "rules_apple-b869b0d3868d78a1d4ffd866ccb304fb68aa12c3",
+            sha256 = "bdc8e66e70b8a75da23b79f1f8c6207356df07d041d96d2189add7ee0780cf4e",
+            urls = [
+                "https://storage.googleapis.com/grpc-bazel-mirror/github.com/bazelbuild/rules_apple/archive/b869b0d3868d78a1d4ffd866ccb304fb68aa12c3.tar.gz",
+                "https://github.com/bazelbuild/rules_apple/archive/b869b0d3868d78a1d4ffd866ccb304fb68aa12c3.tar.gz",
+            ],
+        )
+
+    if "build_bazel_apple_support" not in native.existing_rules():
+        http_archive(
+            name = "build_bazel_apple_support",
+            urls = [
+                "https://storage.googleapis.com/grpc-bazel-mirror/github.com/bazelbuild/apple_support/releases/download/0.7.1/apple_support.0.7.1.tar.gz",
+                "https://github.com/bazelbuild/apple_support/releases/download/0.7.1/apple_support.0.7.1.tar.gz",
+            ],
+            sha256 = "122ebf7fe7d1c8e938af6aeaee0efe788a3a2449ece5a8d6a428cb18d6f88033",
+        )
+
+    if "upb" not in native.existing_rules():
+        http_archive(
+            name = "upb",
+            sha256 = "7992217989f3156f8109931c1fc6db3434b7414957cb82371552377beaeb9d6c",
+            strip_prefix = "upb-382d5afc60e05470c23e8de19b19fc5ad231e732",
+            urls = [
+                "https://storage.googleapis.com/grpc-bazel-mirror/github.com/protocolbuffers/upb/archive/382d5afc60e05470c23e8de19b19fc5ad231e732.tar.gz",
+                "https://github.com/protocolbuffers/upb/archive/382d5afc60e05470c23e8de19b19fc5ad231e732.tar.gz",
+            ],
+        )
     if "rules_proto_grpc" not in native.existing_rules():
         http_archive(
             name = "rules_proto_grpc",

@@ -4,8 +4,8 @@
 #include "private_set_intersection/proto/psi.pb.h"
 
 EMSCRIPTEN_BINDINGS(PSI_Server) {
+  using absl::StatusOr;
   using emscripten::optional_override;
-  using private_join_and_compute::StatusOr;
   using private_set_intersection::DataStructure;
   using private_set_intersection::PsiServer;
   using private_set_intersection::ToJSObject;
@@ -50,7 +50,7 @@ EMSCRIPTEN_BINDINGS(PSI_Server) {
                   const auto status = self.CreateSetupMessage(
                       fpr, num_client_inputs, string_vector, ds);
                   if (status.ok()) {
-                    server_setup = status.ValueOrDie();
+                    server_setup = *status;
                   } else {
                     server_setup = status.status();
                   }
@@ -72,7 +72,7 @@ EMSCRIPTEN_BINDINGS(PSI_Server) {
                   StatusOr<psi_proto::Response> response;
                   const auto status = self.ProcessRequest(client_request);
                   if (status.ok()) {
-                    response = status.ValueOrDie();
+                    response = *status;
                   } else {
                     response = status.status();
                   }

@@ -4,12 +4,11 @@
 #include <memory>
 #include <vector>
 
+#include "absl/status/statusor.h"
 #include "private_set_intersection/cpp/package.h"
 #include "private_set_intersection/cpp/psi_client.h"
 #include "private_set_intersection/cpp/psi_server.h"
 #include "private_set_intersection/proto/psi.pb.h"
-#include "util/canonical_errors.h"
-#include "util/status_macros.h"
 
 namespace {
 namespace psi = private_set_intersection;
@@ -17,9 +16,9 @@ namespace py = pybind11;
 }  // namespace
 
 template <class T>
-T throwOrReturn(const private_join_and_compute::StatusOr<T>& in) {
-  if (!in.ok()) throw std::runtime_error(in.status().message());
-  return in.ValueOrDie();
+T throwOrReturn(const absl::StatusOr<T>& in) {
+  if (!in.ok()) throw std::runtime_error(std::string(in.status().message()));
+  return *in;
 }
 
 template <class T>
@@ -79,8 +78,8 @@ void bind(pybind11::module& m) {
           [](bool reveal_intersection) {
             auto client = psi::PsiClient::CreateWithNewKey(reveal_intersection);
             if (!client.ok())
-              throw std::runtime_error(client.status().message());
-            return std::move(client.ValueOrDie());
+              throw std::runtime_error(std::string(client.status().message()));
+            return std::move(*client);
           },
           py::call_guard<py::gil_scoped_release>())
       .def_static(
@@ -89,8 +88,8 @@ void bind(pybind11::module& m) {
             auto client =
                 psi::PsiClient::CreateFromKey(key_bytes, reveal_intersection);
             if (!client.ok())
-              throw std::runtime_error(client.status().message());
-            return std::move(client.ValueOrDie());
+              throw std::runtime_error(std::string(client.status().message()));
+            return std::move(*client);
           },
           py::call_guard<py::gil_scoped_release>())
       .def(
@@ -131,8 +130,8 @@ void bind(pybind11::module& m) {
           [](bool reveal_intersection) {
             auto server = psi::PsiServer::CreateWithNewKey(reveal_intersection);
             if (!server.ok())
-              throw std::runtime_error(server.status().message());
-            return std::move(server.ValueOrDie());
+              throw std::runtime_error(std::string(server.status().message()));
+            return std::move(*server);
           },
           py::call_guard<py::gil_scoped_release>())
       .def_static(
@@ -141,8 +140,8 @@ void bind(pybind11::module& m) {
             auto server =
                 psi::PsiServer::CreateFromKey(key_bytes, reveal_intersection);
             if (!server.ok())
-              throw std::runtime_error(server.status().message());
-            return std::move(server.ValueOrDie());
+              throw std::runtime_error(std::string(server.status().message()));
+            return std::move(*server);
           },
           py::call_guard<py::gil_scoped_release>())
       .def(

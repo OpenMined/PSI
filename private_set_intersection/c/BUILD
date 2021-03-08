@@ -40,7 +40,7 @@ cc_library(
     hdrs = ["internal_utils.h"],
     visibility = ["//visibility:private"],
     deps = [
-        "@private_join_and_compute//util:status",
+        "@com_google_absl//absl/status:statusor",
     ],
 )
 
