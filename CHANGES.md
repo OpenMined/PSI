@@ -5,6 +5,7 @@ Feat:
 - Use an updated version of private_join_and_compute which uses the cleaner absl libraries. This also pulls in some new dependencies for PJC such as gRPC.
 - Allows the python variant to be built on Windows.
 - Emsdk has been bumped to the latest version (emscripten v2.0.15). The latest version required changes to the `cc_toolchain_config.bzl` file which addresses some work arounds to build successfully.
+
 # Version 0.3.4
 
 Feat:
