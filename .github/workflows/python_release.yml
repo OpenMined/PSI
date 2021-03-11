@@ -9,7 +9,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        python-version: [3.6, 3.7, 3.8]
+        python-version: [3.6, 3.7, 3.8, 3.9]
         os: [macos-latest]
 
     steps:
@@ -36,6 +36,7 @@ jobs:
           - cp36-cp36m
           - cp37-cp37m
           - cp38-cp38
+          - cp39-cp39
 
     runs-on: ubuntu-latest
     container: bcebere/manylinux2014_gcc8:latest 
@@ -56,7 +57,7 @@ jobs:
     runs-on: windows-latest
     strategy:
       matrix:
-        python-version: [3.6, 3.7, 3.8]
+        python-version: [3.6, 3.7, 3.8, 3.9]
 
     steps:
       - uses: actions/checkout@v2
