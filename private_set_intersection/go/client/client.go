@@ -166,7 +166,7 @@ func (c *PsiClient) CreateRequest(rawInput []string) (*psi_proto.Request, error)
 	bytes := c.loadBytes(&out, C.int(outlen))
 
 	var req psi_proto.Request
-	parseErr := req.XXX_Unmarshal(bytes)
+	parseErr := proto.Unmarshal(bytes, &req)
 	if parseErr != nil {
 		return nil, parseErr
 	}
