@@ -2,6 +2,7 @@ package server
 
 import (
 	"bytes"
+	"github.com/golang/protobuf/proto"
 	"github.com/openmined/psi/client"
 	"github.com/openmined/psi/pb"
 	"regexp"
@@ -257,7 +258,7 @@ func benchmarkServerProcessRequest(cnt int, revealIntersection bool, b *testing.
 			b.Errorf("failed to process request %v", err)
 		}
 		total += cnt
-		b.ReportMetric(float64(serverResp.XXX_Size()), "ResponseSize")
+		b.ReportMetric(float64(proto.Size(serverResp)), "ResponseSize")
 		//ugly hack for preventing compiler optimizations
 		dummyResponse = serverResp
 	}

@@ -2,6 +2,7 @@ package client
 
 import (
 	"bytes"
+	"github.com/golang/protobuf/proto"
 	"github.com/openmined/psi/pb"
 	"github.com/openmined/psi/server"
 	"regexp"
@@ -175,7 +176,7 @@ func benchmarkClientCreateRequest(cnt int, revealIntersection bool, b *testing.B
 		result = request
 
 		total += cnt
-		b.ReportMetric(float64(request.XXX_Size()), "RequestSize")
+		b.ReportMetric(float64(proto.Size(request)), "RequestSize")
 
 	}
 	b.ReportMetric(float64(total), "ElementsProcessed")
