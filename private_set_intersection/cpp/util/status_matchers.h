@@ -22,15 +22,19 @@
 #include "absl/types/optional.h"
 #include "gmock/gmock.h"
 
-#define PSI_ASSERT_OK_AND_ASSIGN(lhs, rexpr)                                \
-  PSI_ASSERT_OK_AND_ASSIGN_IMPL(                                            \
-      PRIVACY_BLINDERS_STATUS_MACROS_IMPL_CONCAT_(_psi_statusor, __LINE__), \
-      lhs, rexpr)
+#define PSI_ASSERT_OK_AND_ASSIGN(lhs, rexpr) \
+  PSI_ASSERT_OK_AND_ASSIGN_IMPL(             \
+      PSI_STATUS_MACROS_IMPL_CONCAT_(status_or_value, __LINE__), lhs, rexpr)
 
 #define PSI_ASSERT_OK_AND_ASSIGN_IMPL(statusor, lhs, rexpr)           \
   auto statusor = (rexpr);                                            \
   ASSERT_THAT(statusor.status(), ::private_set_intersection::IsOk()); \
   lhs = std::move(statusor).value();
+
+// Internal helper for concatenating macro values.
+#define PSI_STATUS_MACROS_IMPL_CONCAT_INNER_(x, y) x##y
+#define PSI_STATUS_MACROS_IMPL_CONCAT_(x, y) \
+  PSI_STATUS_MACROS_IMPL_CONCAT_INNER_(x, y)
 
 namespace private_set_intersection {
 namespace internal {

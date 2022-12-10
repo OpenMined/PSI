@@ -64,7 +64,7 @@ cc_test(
         "@com_google_absl//absl/strings",
         "@com_google_googletest//:gtest",
         "@com_google_googletest//:gtest_main",
-        "@private_join_and_compute//crypto:ec_commutative_cipher",
+        "@private_join_and_compute//private_join_and_compute/crypto:ec_commutative_cipher",
     ],
 )
 

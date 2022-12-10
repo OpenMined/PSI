@@ -81,7 +81,7 @@ cc_library(
         "@com_google_absl//absl/memory",
         "@com_google_absl//absl/strings",
         "@com_google_absl//absl/types:span",
-        "@private_join_and_compute//crypto:bn_util",
+        "@private_join_and_compute//private_join_and_compute/crypto:bn_util",
         "@com_google_absl//absl/status:statusor",
     ],
 )
@@ -111,7 +111,7 @@ cc_library(
         "@com_google_absl//absl/memory",
         "@com_google_absl//absl/strings",
         "@com_google_absl//absl/types:span",
-        "@private_join_and_compute//crypto:bn_util",
+        "@private_join_and_compute//private_join_and_compute/crypto:bn_util",
         "@com_google_absl//absl/status:statusor",
     ],
 )
@@ -143,7 +143,7 @@ cc_library(
         "@com_google_absl//absl/memory",
         "@com_google_absl//absl/strings",
         "@com_google_absl//absl/types:span",
-        "@private_join_and_compute//crypto:ec_commutative_cipher",
+        "@private_join_and_compute//private_join_and_compute/crypto:ec_commutative_cipher",
         "@com_google_absl//absl/status:statusor",
     ],
 )
@@ -159,7 +159,7 @@ cc_test(
         "@com_google_absl//absl/strings",
         "@com_google_googletest//:gtest",
         "@com_google_googletest//:gtest_main",
-        "@private_join_and_compute//crypto:ec_commutative_cipher",
+        "@private_join_and_compute//private_join_and_compute/crypto:ec_commutative_cipher",
     ],
 )
 
@@ -176,7 +176,7 @@ cc_library(
         "@com_google_absl//absl/memory",
         "@com_google_absl//absl/strings",
         "@com_google_absl//absl/types:span",
-        "@private_join_and_compute//crypto:ec_commutative_cipher",
+        "@private_join_and_compute//private_join_and_compute/crypto:ec_commutative_cipher",
         "@com_google_absl//absl/status:statusor",
     ],
 )

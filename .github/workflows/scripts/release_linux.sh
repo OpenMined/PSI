@@ -12,7 +12,7 @@ yum -y install \
     git unzip whichi protobuf-devel \
     && yum clean all
 
-bazel_version="4.0.0"
+bazel_version="5.3.2"
 # Install Bazel version specified in .bazelversion
 curl -sSOLv https://github.com/bazelbuild/bazel/releases/download/${bazel_version}/bazel-${bazel_version}-installer-linux-x86_64.sh
 bash -x -e bazel-${bazel_version}-installer-linux-x86_64.sh

@@ -1,7 +1,7 @@
 package(default_visibility = ["//visibility:public"])
 
-load("@io_bazel_rules_rust//rust:rust.bzl", "rust_binary", "rust_doc", "rust_library", "rust_test")
-load("@io_bazel_rules_rust//proto:toolchain.bzl", "PROTO_COMPILE_DEPS")
+load("@rules_rust//rust:defs.bzl", "rust_binary", "rust_doc", "rust_library", "rust_test")
+load("@rules_rust//proto:toolchain.bzl", "PROTO_COMPILE_DEPS")
 
 # This is a workaround for https://github.com/bazelbuild/rules_rust/issues/385.
 # The issue is that the rust linker only finds the first library with any given name.
@@ -36,7 +36,7 @@ rust_library(
         "//private_set_intersection/c:c_psi_server",
         "//private_set_intersection/c:c_psi_client",
         "//private_set_intersection/c:c_package",
-        "//third_party/cargo:libc",
+        "//third_party/cargo/cargo:libc",
         "//private_set_intersection/proto:psi_rust_proto",
         ":absl_status",
     ] + PROTO_COMPILE_DEPS,
@@ -46,7 +46,7 @@ rust_test(
     name = "rust_psi_unit_test",
     crate = ":rust_psi",
     deps = [
-        "//third_party/cargo:semver",
+        "//third_party/cargo/cargo:semver",
     ],
 )
 
@@ -63,11 +63,11 @@ rust_binary(
     srcs = ["benches/psi_bench.rs"],
     deps = [
         ":rust_psi",
-        "//third_party/cargo:bencher",
+        "//third_party/cargo/cargo:bencher",
     ],
 )
 
 rust_doc(
     name = "rust_psi_doc",
-    dep = ":rust_psi",
+    crate = ":rust_psi",
 )
