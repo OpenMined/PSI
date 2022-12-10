@@ -1,4 +1,4 @@
 black>=10.3b0
 flake8
-pytest>=5.4.1
+pytest>=7.2.0
 pytest-benchmark

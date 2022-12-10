@@ -46,5 +46,4 @@ rust_proto_library(
 python_proto_library(
     name = "psi_python_proto",
     protos = [":psi_proto"],
-    deps = [":psi_proto"],
 )
