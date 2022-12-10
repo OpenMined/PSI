@@ -10,7 +10,7 @@ python -m pip install --upgrade pip
 pip install -r private_set_intersection/python/requirements_dev.txt
 
 # Python + Bazel
-bazel test --test_output=all --test_timeout=900 //private_set_intersection/python:tests
+bazel test -c opt --test_output=all --test_timeout=900 //private_set_intersection/python:tests
 
 # Python package
 pip install .
