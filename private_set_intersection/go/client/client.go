@@ -74,8 +74,8 @@ import (
 	"runtime"
 	"unsafe"
 
-	//"github.com/golang/protobuf/proto"
-	"github.com/openmined/psi/pb"
+	"github.com/golang/protobuf/proto"
+	psi_proto "github.com/openmined/psi/pb"
 	"github.com/openmined/psi/version"
 )
 
