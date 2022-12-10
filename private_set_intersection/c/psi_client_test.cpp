@@ -20,7 +20,7 @@
 #include "absl/strings/escaping.h"
 #include "absl/strings/str_cat.h"
 #include "gtest/gtest.h"
-#include "private_join_and_compute/cryptoec_commutative_cipher.h"
+#include "private_join_and_compute/crypto/ec_commutative_cipher.h"
 #include "private_set_intersection/c/internal_utils.h"
 #include "private_set_intersection/cpp/bloom_filter.h"
 #include "util/status_matchers.h"
