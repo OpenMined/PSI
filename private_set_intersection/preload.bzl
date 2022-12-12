@@ -143,10 +143,37 @@ def psi_preload():
                 "https://github.com/protocolbuffers/upb/archive/9e8914228337f5e4e725d7071e517c45e6dea435.tar.gz",
             ],
         )
+
     if "rules_proto_grpc" not in native.existing_rules():
         http_archive(
             name = "rules_proto_grpc",
             urls = ["https://github.com/rules-proto-grpc/rules_proto_grpc/archive/4.3.0.tar.gz"],
             sha256 = "fb7fc7a3c19a92b2f15ed7c4ffb2983e956625c1436f57a3430b897ba9864059",
             strip_prefix = "rules_proto_grpc-4.3.0",
+        )
+
+    if "build_bazel_rules_nodejs" not in native.existing_rules():
+        http_archive(
+            name = "build_bazel_rules_nodejs",
+            sha256 = "5aae76dced38f784b58d9776e4ab12278bc156a9ed2b1d9fcd3e39921dc88fda",
+            urls = ["https://github.com/bazelbuild/rules_nodejs/releases/download/5.7.1/rules_nodejs-5.7.1.tar.gz"],
+        )
+
+    if "emsdk" not in native.existing_rules():
+        http_archive(
+            name = "emsdk",
+            # TODO: Remove repo_mapping when emsdk updates to rules_nodejs 5
+            repo_mapping = {"@nodejs": "@nodejs_host"},
+            sha256 = "a2609fd97580e4e332acbf49b6cc363714982f06cb6970d54c9789df8e91381c",
+            strip_prefix = "emsdk-3.1.23/bazel",
+            urls = ["https://github.com/emscripten-core/emsdk/archive/refs/tags/3.1.23.tar.gz"],
+        )
+
+    # Must use 3.20.1 because of https://github.com/protocolbuffers/protobuf-javascript/issues/127
+    if "com_google_protobuf" not in native.existing_rules():
+         http_archive(
+            name = "com_google_protobuf",
+            sha256 = "8b28fdd45bab62d15db232ec404248901842e5340299a57765e48abe8a80d930",
+            strip_prefix = "protobuf-3.20.1",
+            urls = ["https://github.com/protocolbuffers/protobuf/archive/refs/tags/v3.20.1.tar.gz"],
         )

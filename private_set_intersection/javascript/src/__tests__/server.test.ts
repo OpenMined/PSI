@@ -1,6 +1,6 @@
 import PSI from '../combined_wasm_node'
 import { ERROR_INSTANCE_DELETED } from '../implementation/constants'
-import { PSILibrary } from 'src/implementation/psi'
+import { PSILibrary } from '../implementation/psi'
 import { Request, Response } from '../implementation/proto/psi_pb'
 
 let psi: PSILibrary
@@ -103,7 +103,7 @@ describe('PSI Server', () => {
   test('It should fail to create a setup message', async () => {
     const server = psi.server!.createWithNewKey()
     const fpr = 0.001
-    const numClientElements = -10
+    const numClientElements = Infinity
     const serverInputs = Array.from({ length: 100 }, (_, i) => `Element ${i}`)
 
     expect(

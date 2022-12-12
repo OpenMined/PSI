@@ -1,6 +1,6 @@
 import PSI from '../combined_wasm_node'
 import { ERROR_INSTANCE_DELETED } from '../implementation/constants'
-import { PSILibrary } from 'src/implementation/psi'
+import { PSILibrary } from '../implementation/psi'
 import { Response, ServerSetup } from '../implementation/proto/psi_pb'
 
 let psi: PSILibrary

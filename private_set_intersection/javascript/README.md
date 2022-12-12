@@ -33,60 +33,17 @@ import PSI from '@openmined/psi.js'
 const PSI = require('@openmined/psi.js')
 ```
 
-By **default**, the package will use the `combined` build with the `wasm` targeting the `node` environment. This includes both `client` and `server` implementations, but often only one is used. We offer deep import links to only load what is needed for your specific environment.
+By **default**, the package will use the `combined` build with the `wasm` targeting the `node` environment.
 
 The deep import structure is as follows:
-`<package name> / <client|server|combined>_<wasm|js>_<node|web|worker>`
+`<package name> / <combined>_<wasm>_<node|web|worker>`
 
 Example:
 
 ```javascript
-import PSI from '@openmined/psi.js/combined_wasm_node'
-```
-
-To only load the `client`:
-
-```javascript
-// Using a deep import link for client_wasm_node
-import PSI from '@openmined/psi.js/client_wasm_node'
-;(async () => {
-  // Wait for the library to initialize
-  const psi = await PSI()
-
-  const client = psi.client.createWithNewKey()
-  // psi.server is not implemented
-  //...
-})()
-```
-
-To only load the `server`:
-
-```javascript
-// Using a deep import link for server_wasm_node
-import PSI from '@openmined/psi.js/server_wasm_node'
-;(async () => {
-  // Wait for the library to initialize
-  const psi = await PSI()
-
-  const server = psi.server.createWithNewKey()
-  // psi.client is not implemented
-  //...
-})()
-```
-
-To **manually** override the `combined` default import:
-
-```javascript
-// Using a deep import link for combined_wasm_node
-import PSI from '@openmined/psi.js/combined_wasm_node'
-;(async () => {
-  // Wait for the library to initialize
-  const psi = await PSI()
-
-  const client = psi.client.createWithNewKey()
-  const server = psi.server.createWithNewKey()
-  //...
-})()
+import PSI from '@openmined/psi.js/combined_wasm_node.js'
+import PSI from '@openmined/psi.js/combined_wasm_web.js'
+import PSI from '@openmined/psi.js/combined_wasm_worker.js'
 ```
 
 ## React-Native
@@ -268,19 +225,6 @@ Ensure your environment has the following global dependencies:
 
 - [Bazel](https://bazel.build)
 - [NodeJS](https://nodejs.org/en/)
-
-Next, ensure you have updated submodules
-
-```
-npm run submodule:update
-```
-
-Then, update and initialize `emsdk`
-
-```
-npm run em:update
-npm run em:init
-```
 
 Now, install the rest of the dev dependencies
 

@@ -15,7 +15,6 @@
 #
 
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
-load("//private_set_intersection/javascript/toolchain:cc_toolchain_config.bzl", "emsdk_configure")
 load("@rules_proto//proto:repositories.bzl", "rules_proto_dependencies", "rules_proto_toolchains")
 load("@io_bazel_rules_go//go:deps.bzl", "go_register_toolchains", "go_rules_dependencies")
 load("@rules_pkg//:deps.bzl", "rules_pkg_dependencies")
@@ -28,6 +27,8 @@ load("@build_bazel_rules_apple//apple:repositories.bzl", "apple_rules_dependenci
 load("//third_party/cargo:crates.bzl", "raze_fetch_remote_crates")
 load("@rules_proto_grpc//:repositories.bzl", "rules_proto_grpc_repos", "rules_proto_grpc_toolchains")
 load("@rules_proto_grpc//python:repositories.bzl", rules_proto_grpc_python_repos = "python_repos")
+load("@emsdk//:deps.bzl", emsdk_deps = "deps")
+load("@build_bazel_rules_nodejs//:repositories.bzl", "build_bazel_rules_nodejs_dependencies")
 
 def psi_deps():
     # General dependencies.
@@ -35,17 +36,17 @@ def psi_deps():
         #TODO revert to the upstream repository when the https://github.com/google/private-join-and-compute/pull/21 is merged
         http_archive(
             name = "private_join_and_compute",
-            sha256 = "a9f2550c2856f17d94885856bf3bd319868e27efad6b8740e3ada3c57cf163e5",
-            strip_prefix = "private-join-and-compute-8ef3c87da225307c5601e88828b0e0bccfb19ba1",
-            url = "https://github.com/s0l0ist/private-join-and-compute/archive/8ef3c87da225307c5601e88828b0e0bccfb19ba1.zip",
+            sha256 = "5678dab460a75d7010ab4ca5c8830519c00ba10a3ed4245333b6c76c90d56612",
+            strip_prefix = "private-join-and-compute-f4571aca5e41d59b88b9b4b18f77645f9f473f2b",
+            url = "https://github.com/s0l0ist/private-join-and-compute/archive/f4571aca5e41d59b88b9b4b18f77645f9f473f2b.zip",
         )
 
     if "com_google_absl" not in native.existing_rules():
         http_archive(
             name = "com_google_absl",
-            sha256 = "b9f490fae1c0d89a19073a081c3c588452461e5586e4ae31bc50a8f36339135e",
-            strip_prefix = "abseil-cpp-8c0b94e793a66495e0b1f34a5eb26bd7dc672db0",
-            url = "https://github.com/abseil/abseil-cpp/archive/8c0b94e793a66495e0b1f34a5eb26bd7dc672db0.zip",
+            sha256 = "31b0b6fe3f14875a27c48d5775d05e157bab233065f7c55f0e1f4991c5e95840",
+            strip_prefix = "abseil-cpp-522606b7fae37836c138e83f6eec0eabb9947dc0",
+            url = "https://github.com/abseil/abseil-cpp/archive/522606b7fae37836c138e83f6eec0eabb9947dc0.zip",
         )
 
     if "com_google_googletest" not in native.existing_rules():
@@ -75,9 +76,9 @@ def psi_deps():
     if "com_github_google_glog" not in native.existing_rules():
         http_archive(
             name = "com_github_google_glog",
-            sha256 = "44fdfe7e9590e73ee3b92519c2f166b20301f3e0f8092fc6d03e540de95a3be4",
-            strip_prefix = "glog-b33e3bad4c46c8a6345525fd822af355e5ef9446",
-            urls = ["https://github.com/google/glog/archive/b33e3bad4c46c8a6345525fd822af355e5ef9446.zip"],
+            sha256 = "42c7395b26f1aa2157015b7d7b811b799c9c477147f4239410bde48901f009c5",
+            strip_prefix = "glog-c18db3903b9f0abd80ae740fde94f7e32aa40b92",
+            urls = ["https://github.com/google/glog/archive/c18db3903b9f0abd80ae740fde94f7e32aa40b92.zip"],
         )
 
     if "com_github_gflags_gflags" not in native.existing_rules():
@@ -94,12 +95,12 @@ def psi_deps():
     grpc_deps()
     apple_rules_dependencies()
 
+
     # Language-specific dependencies.
 
-    # Javascript
-    # Make all files under submodules/emsdk/* visible to the toolchain. The files are
-    # available as external/emsdk/emsdk/*
-    emsdk_configure(name = "emsdk")
+    # Javascript.
+    build_bazel_rules_nodejs_dependencies()
+    emsdk_deps()
 
     # Python.
     # Configure python3 for pybind11.
@@ -128,5 +129,3 @@ def psi_deps():
     rust_repositories(edition="2018")
 
     rust_proto_repositories()
-
-    # bazel_version(name = "bazel_version")

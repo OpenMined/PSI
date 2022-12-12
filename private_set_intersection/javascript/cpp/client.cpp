@@ -1,5 +1,5 @@
 #include "emscripten/bind.h"
-#include "private_set_intersection/javascript/bindings/utils.h"
+#include "private_set_intersection/javascript/cpp/utils.h"
 #include "private_set_intersection/proto/psi.pb.h"
 #include "psi_client.h"
 

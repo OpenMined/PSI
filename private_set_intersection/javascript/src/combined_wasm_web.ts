@@ -1,10 +1,10 @@
-import clientJsLibrary from 'psi_combined_wasm_web'
+import psiCombined from 'psi_combined_wasm_web'
 
 import { Loader, createLoader } from './main/loader'
 import { PSILibrary } from './implementation/psi'
 import { PSI } from './main/psi'
 
-const Loader = (): Promise<Loader> => createLoader(clientJsLibrary)
+const Loader = (): Promise<Loader> => createLoader(psiCombined)
 
 /**
  * Main export for the library

@@ -1,6 +1,6 @@
 #include "emscripten/bind.h"
 #include "private_set_intersection/cpp/psi_server.h"
-#include "private_set_intersection/javascript/bindings/utils.h"
+#include "private_set_intersection/javascript/cpp/utils.h"
 #include "private_set_intersection/proto/psi.pb.h"
 
 EMSCRIPTEN_BINDINGS(PSI_Server) {
