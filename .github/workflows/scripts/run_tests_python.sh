@@ -1,11 +1,6 @@
 #!/bin/sh
 set -e
 
-if [ "${RUNNER_OS}" -eq "macOS" ]:
-then
-    bazel clean --expunge
-fi
-
 python -m pip install --upgrade pip
 pip install -r private_set_intersection/python/requirements_dev.txt
 
