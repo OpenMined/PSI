@@ -1,4 +1,4 @@
-build --cxxopt="-std=c++17" --copt="-Wno-unknown-warning" --copt="-Wno-unknown-warning-option" --copt="-Wno-error=deprecated-declarations" --copt="-Wno-error=unused-function" --copt="-Wno-error=array-bounds" --copt="-Wno-error=array-parameter" --copt="-Wno-error=pessimizing-move" --copt="-Wno-error=unused-but-set-variable" --copt="-Wno-error=stringop-overflow"
+build --cxxopt="-std=c++17" --copt="-Wno-unknown-warning" --copt="-Wno-error=deprecated-declarations" --copt="-Wno-error=unused-function" --copt="-Wno-error=array-bounds" --copt="-Wno-error=array-parameter" --copt="-Wno-error=pessimizing-move" --copt="-Wno-error=unused-but-set-variable" --copt="-Wno-error=stringop-overflow"
 
 #   --copt="-Wno-error=unknown-warning-option" 
 # COPTS = [
