@@ -10,7 +10,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [macos-latest, ubuntu-latest]
+        os: [macos-latest, ubuntu-latest, windows-latest]
     steps:
       - uses: actions/checkout@v3
       - name: Run tests Linux/OSX
@@ -25,89 +25,89 @@ jobs:
         run: .github/workflows/scripts/lint_cpp.sh
         if: ${{ matrix.os == 'ubuntu-latest' }}
 
-  # JS:
-  #   runs-on: ${{ matrix.os }}
-  #   strategy:
-  #     matrix:
-  #       os: [ubuntu-latest]
-  #   steps:
-  #     - uses: actions/checkout@v3
-  #     - name: Run tests nix
-  #       timeout-minutes: 60
-  #       run: .github/workflows/scripts/run_tests_js.sh
-  #       if: ${{ matrix.os != 'windows-latest' }}
-  #     - name: Run tests windows
-  #       timeout-minutes: 60
-  #       run: .github/workflows/scripts/run_tests_js.bat
-  #       if: ${{ matrix.os == 'windows-latest' }}
+  JS:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [macos-latest, ubuntu-latest, windows-latest]
+    steps:
+      - uses: actions/checkout@v3
+      - name: Run tests nix
+        timeout-minutes: 60
+        run: .github/workflows/scripts/run_tests_js.sh
+        if: ${{ matrix.os != 'windows-latest' }}
+      - name: Run tests windows
+        timeout-minutes: 60
+        run: .github/workflows/scripts/run_tests_js.bat
+        if: ${{ matrix.os == 'windows-latest' }}
 
-  # Python:
-  #   runs-on: ${{ matrix.os }}
-  #   strategy:
-  #     matrix:
-  #       os: [ubuntu-latest]
-  #       python-version: ['3.8', '3.9', '3.10']
-  #   steps:
-  #     - uses: actions/checkout@v3
-  #     - name: Set up Python ${{ matrix.python-version }}
-  #       uses: actions/setup-python@v4
-  #       with:
-  #         python-version: ${{ matrix.python-version }}
-  #     - name: Run tests nix
-  #       timeout-minutes: 30
-  #       run: .github/workflows/scripts/run_tests_python.sh
-  #       if: ${{ matrix.os != 'windows-latest' }}
-  #     - name: Run tests Windows
-  #       timeout-minutes: 30
-  #       run: .github/workflows/scripts/run_tests_python.bat
-  #       if: ${{ matrix.os == 'windows-latest' }}
-  #     - name: Python linters
-  #       run: .github/workflows/scripts/lint_python.sh
-  #       if: ${{ matrix.os != 'windows-latest' }}
+  Python:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [macos-latest, ubuntu-latest, windows-latest]
+        python-version: ['3.8', '3.9', '3.10']
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Run tests nix
+        timeout-minutes: 30
+        run: .github/workflows/scripts/run_tests_python.sh
+        if: ${{ matrix.os != 'windows-latest' }}
+      - name: Run tests Windows
+        timeout-minutes: 30
+        run: .github/workflows/scripts/run_tests_python.bat
+        if: ${{ matrix.os == 'windows-latest' }}
+      - name: Python linters
+        run: .github/workflows/scripts/lint_python.sh
+        if: ${{ matrix.os != 'windows-latest' }}
 
-  # Go:
-  #   runs-on: ${{ matrix.os }}
-  #   strategy:
-  #     matrix:
-  #       os: [ubuntu-latest]
-  #   steps:
-  #     - name: Install toolchains
-  #       uses: actions/setup-go@v3
-  #       with:
-  #         go-version: 1.19.4
-  #       id: go
-  #     - name: Install Go dependencies
-  #       run: go get -u golang.org/x/lint/golint
-  #     - uses: actions/checkout@v3
-  #     - name: Run tests nix
-  #       timeout-minutes: 30
-  #       run: .github/workflows/scripts/run_tests_go.sh
-  #       if: ${{ matrix.os != 'windows-latest' }}
-  #     - name: Run tests windows
-  #       timeout-minutes: 30
-  #       run: .github/workflows/scripts/run_tests_go.bat
-  #       if: ${{ matrix.os == 'windows-latest' }}
-  #     - name: Go linters
-  #       run: .github/workflows/scripts/lint_go.sh
-  #       if: ${{ matrix.os != 'windows-latest' }}
+  Go:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [macos-latest, ubuntu-latest, windows-latest]
+    steps:
+      - name: Install toolchains
+        uses: actions/setup-go@v3
+        with:
+          go-version: 1.19.4
+        id: go
+      - name: Install Go dependencies
+        run: go get -u golang.org/x/lint/golint
+      - uses: actions/checkout@v3
+      - name: Run tests nix
+        timeout-minutes: 30
+        run: .github/workflows/scripts/run_tests_go.sh
+        if: ${{ matrix.os != 'windows-latest' }}
+      - name: Run tests windows
+        timeout-minutes: 30
+        run: .github/workflows/scripts/run_tests_go.bat
+        if: ${{ matrix.os == 'windows-latest' }}
+      - name: Go linters
+        run: .github/workflows/scripts/lint_go.sh
+        if: ${{ matrix.os != 'windows-latest' }}
 
-  # Rust:
-  #   runs-on: ${{ matrix.os }}
-  #   strategy:
-  #     matrix:
-  #       os: [ubuntu-latest]
-  #   steps:
-  #     - name: Install toolchains
-  #       uses: actions-rs/toolchain@v1
-  #       with:
-  #         toolchain: stable
-  #         default: true
-  #     - uses: actions/checkout@v3
-  #     - name: Run tests nix
-  #       timeout-minutes: 30
-  #       run: .github/workflows/scripts/run_tests_rust.sh
-  #       if: ${{ matrix.os != 'windows-latest' }}
-  #     - name: Run tests windows
-  #       timeout-minutes: 30
-  #       run: .github/workflows/scripts/run_tests_rust.bat
-  #       if: ${{ matrix.os == 'windows-latest' }}
+  Rust:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [macos-latest, ubuntu-latest, windows-latest]
+    steps:
+      - name: Install toolchains
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          default: true
+      - uses: actions/checkout@v3
+      - name: Run tests nix
+        timeout-minutes: 30
+        run: .github/workflows/scripts/run_tests_rust.sh
+        if: ${{ matrix.os != 'windows-latest' }}
+      - name: Run tests windows
+        timeout-minutes: 30
+        run: .github/workflows/scripts/run_tests_rust.bat
+        if: ${{ matrix.os == 'windows-latest' }}

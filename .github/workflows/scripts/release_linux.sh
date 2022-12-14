@@ -26,7 +26,7 @@ export BAZEL_LINKLIBS=-l%:libstdc++.a
 export LD_LIBRARY_PATH=/usr/local/gcc-8.3.0/lib64/:$LD_LIBRARY_PATH
 
 # Testing
-bazel test //private_set_intersection/python/...
+bazel test -c opt //private_set_intersection/python/...
 
 # Publish
 python3 -m pip wheel . -w dist/ --no-deps
