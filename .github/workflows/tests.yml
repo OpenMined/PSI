@@ -10,7 +10,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [macos-latest]
+        os: [macos-latest, ubuntu-latest]
     steps:
       - uses: actions/checkout@v3
       - name: Run tests Linux/OSX
@@ -29,7 +29,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [macos-latest]
+        os: [macos-latest, ubuntu-latest]
     steps:
       - uses: actions/checkout@v3
       - name: Run tests nix
@@ -45,7 +45,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [macos-latest]
+        os: [macos-latest, ubuntu-latest]
         python-version: ['3.8', '3.9', '3.10']
     steps:
       - uses: actions/checkout@v3
@@ -69,12 +69,12 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [macos-latest]
+        os: [macos-latest, ubuntu-latest]
     steps:
       - name: Install toolchains
-        uses: actions/setup-go@v2
+        uses: actions/setup-go@v3
         with:
-          go-version: 1.13.3
+          go-version: 1.19.4
         id: go
       - name: Install Go dependencies
         run: go get -u golang.org/x/lint/golint
@@ -95,7 +95,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [macos-latest]
+        os: [macos-latest, ubuntu-latest]
     steps:
       - name: Install toolchains
         uses: actions-rs/toolchain@v1

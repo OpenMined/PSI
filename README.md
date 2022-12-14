@@ -49,7 +49,7 @@ See the [Rust README.md](private_set_intersection/rust/README.md)
 
 ## Usage
 
-To use this library in another Bazel project, add the following in your WORKSPACE file:
+To use this library in another Bazel project, add the following to your WORKSPACE file:
 
 ```
 load("@bazel_tools//tools/build_defs/repo:git.bzl", "git_repository")
@@ -58,7 +58,6 @@ git_repository(
    name = "org_openmined_psi",
    remote = "https://github.com/OpenMined/PSI",
    branch = "master",
-   init_submodules = True,
 )
 
 load("@org_openmined_psi//private_set_intersection:preload.bzl", "psi_preload")
@@ -68,6 +67,20 @@ psi_preload()
 load("@org_openmined_psi//private_set_intersection:deps.bzl", "psi_deps")
 
 psi_deps()
+
+load("@build_bazel_rules_nodejs//:index.bzl", "node_repositories", "npm_install")
+
+node_repositories()
+
+npm_install(
+    name = "npm",
+    package_json = "//:package.json",
+    package_lock_json = "//:package-lock.json",
+)
+
+load("@emsdk//:emscripten_deps.bzl", emsdk_emscripten_deps = "emscripten_deps")
+
+emsdk_emscripten_deps()
 
 ```
 
