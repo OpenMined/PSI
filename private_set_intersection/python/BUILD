@@ -4,7 +4,7 @@ pybind_extension(
     name = "_openmined_psi",
     srcs = ["psi_bindings.cpp"],
     copts = [
-        "--std=c++14",
+        "--std=c++17",
     ],
     features = ["-use_header_modules"],
     linkstatic = True,

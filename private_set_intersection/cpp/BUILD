@@ -28,6 +28,18 @@ PSI_LINKOPTS = select({
     ],
 })
 
+# Some of the compilers error on these warnings
+COPTS = [
+    "--std=c++17",
+    "-Wno-error=deprecated-declarations",
+    "-Wno-error=deprecated-builtins",
+    "-Wno-error=deprecated-non-prototype",
+    "-Wno-error=unused-function",
+    "-Wno-error=array-parameter",
+    "-Wno-error=pessimizing-move",
+    "-Wno-error=unused-but-set-variable",
+]
+
 template_rule(
     name = "package_h",
     src = "package.h.templ",
@@ -105,6 +117,7 @@ cc_library(
     name = "bloom_filter",
     srcs = ["bloom_filter.cpp"],
     hdrs = ["bloom_filter.h"],
+    copts = COPTS,
     visibility = ["//visibility:private"],
     deps = [
         "//private_set_intersection/proto:psi_cc_proto",
@@ -134,6 +147,7 @@ cc_library(
     name = "psi_client",
     srcs = ["psi_client.cpp"],
     hdrs = ["psi_client.h"],
+    copts = COPTS,
     includes = ["."],
     deps = [
         ":bloom_filter",
@@ -151,6 +165,7 @@ cc_library(
 cc_test(
     name = "psi_client_test",
     srcs = ["psi_client_test.cpp"],
+    copts = COPTS,
     linkopts = PSI_LINKOPTS,
     deps = [
         ":psi_client",
@@ -167,6 +182,7 @@ cc_library(
     name = "psi_server",
     srcs = ["psi_server.cpp"],
     hdrs = ["psi_server.h"],
+    copts = COPTS,
     includes = ["."],
     deps = [
         ":bloom_filter",
