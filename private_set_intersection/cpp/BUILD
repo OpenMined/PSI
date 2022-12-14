@@ -79,10 +79,10 @@ cc_library(
         ":golomb",
         "//private_set_intersection/proto:psi_cc_proto",
         "@com_google_absl//absl/memory",
+        "@com_google_absl//absl/status:statusor",
         "@com_google_absl//absl/strings",
         "@com_google_absl//absl/types:span",
         "@private_join_and_compute//private_join_and_compute/crypto:bn_util",
-        "@com_google_absl//absl/status:statusor",
     ],
 )
 
@@ -109,10 +109,10 @@ cc_library(
     deps = [
         "//private_set_intersection/proto:psi_cc_proto",
         "@com_google_absl//absl/memory",
+        "@com_google_absl//absl/status:statusor",
         "@com_google_absl//absl/strings",
         "@com_google_absl//absl/types:span",
         "@private_join_and_compute//private_join_and_compute/crypto:bn_util",
-        "@com_google_absl//absl/status:statusor",
     ],
 )
 
@@ -141,10 +141,10 @@ cc_library(
         "//private_set_intersection/proto:psi_cc_proto",
         "@boringssl//:crypto",
         "@com_google_absl//absl/memory",
+        "@com_google_absl//absl/status:statusor",
         "@com_google_absl//absl/strings",
         "@com_google_absl//absl/types:span",
         "@private_join_and_compute//private_join_and_compute/crypto:ec_commutative_cipher",
-        "@com_google_absl//absl/status:statusor",
     ],
 )
 
@@ -174,10 +174,10 @@ cc_library(
         "//private_set_intersection/proto:psi_cc_proto",
         "@boringssl//:crypto",
         "@com_google_absl//absl/memory",
+        "@com_google_absl//absl/status:statusor",
         "@com_google_absl//absl/strings",
         "@com_google_absl//absl/types:span",
         "@private_join_and_compute//private_join_and_compute/crypto:ec_commutative_cipher",
-        "@com_google_absl//absl/status:statusor",
     ],
 )
 

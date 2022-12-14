@@ -37,7 +37,6 @@ def psi_preload():
             ],
         )
 
-
     if "bazel_gazelle" not in native.existing_rules():
         http_archive(
             name = "bazel_gazelle",
@@ -47,7 +46,6 @@ def psi_preload():
                 "https://github.com/bazelbuild/bazel-gazelle/releases/download/v0.27.0/bazel-gazelle-v0.27.0.tar.gz",
             ],
         )
-
 
     if "rules_pkg" not in native.existing_rules():
         http_archive(
@@ -90,7 +88,7 @@ def psi_preload():
             name = "rules_rust",
             sha256 = "dd79bd4e2e2adabae738c5e93c36d351cf18071ff2acf6590190acf4138984f6",
             urls = [
-                "https://github.com/bazelbuild/rules_rust/releases/download/0.14.0/rules_rust-v0.14.0.tar.gz"
+                "https://github.com/bazelbuild/rules_rust/releases/download/0.14.0/rules_rust-v0.14.0.tar.gz",
             ],
         )
 
@@ -171,7 +169,7 @@ def psi_preload():
 
     # Must use 3.20.1 because of https://github.com/protocolbuffers/protobuf-javascript/issues/127
     if "google_protobuf" not in native.existing_rules():
-         http_archive(
+        http_archive(
             name = "google_protobuf",
             sha256 = "8b28fdd45bab62d15db232ec404248901842e5340299a57765e48abe8a80d930",
             strip_prefix = "protobuf-3.20.1",

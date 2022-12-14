@@ -1,10 +1,10 @@
-import psiCombined from 'psi_combined_wasm_web'
+import psi from 'psi_wasm_web'
 
 import { Loader, createLoader } from './main/loader'
 import { PSILibrary } from './implementation/psi'
 import { PSI } from './main/psi'
 
-const Loader = (): Promise<Loader> => createLoader(psiCombined)
+const Loader = (): Promise<Loader> => createLoader(psi)
 
 /**
  * Main export for the library

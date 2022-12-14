@@ -1,4 +1,4 @@
-import PSI from '../combined_wasm_node'
+import PSI from '../wasm_node'
 import { PSILibrary } from '../implementation/psi'
 
 let psi: PSILibrary

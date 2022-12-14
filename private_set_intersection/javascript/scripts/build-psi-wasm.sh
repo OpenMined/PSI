@@ -9,7 +9,7 @@ bazel build -c opt \
 --copt="-Wno-error=array-parameter" \
 --copt="-Wno-error=pessimizing-move" \
 --copt="-Wno-error=unused-but-set-variable" \
-//private_set_intersection/javascript/cpp:psi_combined_wasm_node.js
+//private_set_intersection/javascript/cpp:psi_wasm_node.js
 
 bazel build -c opt \
 --copt="-Wno-error=deprecated-declarations" \
@@ -19,7 +19,7 @@ bazel build -c opt \
 --copt="-Wno-error=array-parameter" \
 --copt="-Wno-error=pessimizing-move" \
 --copt="-Wno-error=unused-but-set-variable" \
-//private_set_intersection/javascript/cpp:psi_combined_wasm_web.js
+//private_set_intersection/javascript/cpp:psi_wasm_web.js
 
 bazel build -c opt \
 --copt="-Wno-error=deprecated-declarations" \
@@ -29,4 +29,4 @@ bazel build -c opt \
 --copt="-Wno-error=array-parameter" \
 --copt="-Wno-error=pessimizing-move" \
 --copt="-Wno-error=unused-but-set-variable" \
-//private_set_intersection/javascript/cpp:psi_combined_wasm_worker.js
+//private_set_intersection/javascript/cpp:psi_wasm_worker.js

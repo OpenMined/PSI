@@ -95,7 +95,6 @@ def psi_deps():
     grpc_deps()
     apple_rules_dependencies()
 
-
     # Language-specific dependencies.
 
     # Javascript.
@@ -126,6 +125,6 @@ def psi_deps():
     # Rust.
     raze_fetch_remote_crates()
 
-    rust_repositories(edition="2018")
+    rust_repositories(edition = "2018")
 
     rust_proto_repositories()

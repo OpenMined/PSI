@@ -6,7 +6,7 @@
  * it is designed to update the version at build time in order to trigger
  * the need for a commit before bundling.
  */
-import PSI from './bin/psi_combined_wasm_node.js'
+import PSI from './bin/psi_wasm_node.js'
 import { writeFileSync } from 'fs'
 import npmPackage from '../../package.json'
 import npmPackageLock from '../../package-lock.json'

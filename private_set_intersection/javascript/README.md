@@ -33,17 +33,17 @@ import PSI from '@openmined/psi.js'
 const PSI = require('@openmined/psi.js')
 ```
 
-By **default**, the package will use the `combined` build with the `wasm` targeting the `node` environment.
+By **default**, the package will use the `psi` build with the `wasm` targeting the `node` environment.
 
 The deep import structure is as follows:
-`<package name> / <combined>_<wasm>_<node|web|worker>`
+`<package name> / <psi>_<wasm>_<node|web|worker>`
 
 Example:
 
 ```javascript
-import PSI from '@openmined/psi.js/combined_wasm_node.js'
-import PSI from '@openmined/psi.js/combined_wasm_web.js'
-import PSI from '@openmined/psi.js/combined_wasm_worker.js'
+import PSI from '@openmined/psi.js/psi_wasm_node.js'
+import PSI from '@openmined/psi.js/psi_wasm_web.js'
+import PSI from '@openmined/psi.js/psi_wasm_worker.js'
 ```
 
 ## React-Native
@@ -53,7 +53,7 @@ The bundle needs a bit of extra work. Specifically, it expects the browser `cryp
 ```javascript
 // Provide a CSPRNG mapping to crypto.getRandomValues()
 import 'react-native-get-random-values'
-import PSI from '@openmined/psi.js/combined_wasm_web'
+import PSI from '@openmined/psi.js/psi_wasm_web'
 ;(async () => {
   // Spoof the browser document
   global.document = {}
@@ -232,7 +232,7 @@ Now, install the rest of the dev dependencies
 npm install
 ```
 
-To compile the client, server, or combined (both client and server) for WebAssembly and pure JS
+To compile the client, server, or psi (both client and server) for WebAssembly and pure JS
 
 ```
 npm run build
@@ -279,7 +279,7 @@ Ensure we start with a clean build
 
 `npm run clean`
 
-Build the client, server, and combined (client and server)
+Build the client, server, and psi (client and server)
 
 `npm run build`
 

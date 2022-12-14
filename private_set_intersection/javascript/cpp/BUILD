@@ -23,94 +23,96 @@ NODE_LINKOPTS = [
     "-s EXPORT_ES6=0",
     "-s ENVIRONMENT=node",
 ]
+
 WEB_LINKOPTS = [
     "-s EXPORT_ES6=1",  # Export as es6 module, used for rollup
     "-s ENVIRONMENT=web,webview",
 ]
+
 WORKER_LINKOPTS = [
     "-s EXPORT_ES6=1",  # Export as es6 module, used for rollup
     "-s ENVIRONMENT=worker",
 ]
 
-
-# Combined server + client build
+# psi server + client build
 cc_binary(
-    name = "combined_wasm_node.js",
+    name = "wasm_node.js",
     srcs = [
-        "utils.h",
         "client.cpp",
         "data_structure.cpp",
         "package.cpp",
         "server.cpp",
+        "utils.h",
     ],
-    visibility = ["//visibility:private"],
     linkopts = DEFAULT_EMSCRIPTEN_LINKOPTS + NODE_LINKOPTS,
+    visibility = ["//visibility:private"],
     deps = [
         "//private_set_intersection/cpp:package",
-        "@com_google_absl//absl/status:statusor",
         "//private_set_intersection/cpp:psi_client",
         "//private_set_intersection/cpp:psi_server",
     ],
 )
+
 cc_binary(
-    name = "combined_wasm_web.js",
+    name = "wasm_web.js",
     srcs = [
-        "utils.h",
         "client.cpp",
         "data_structure.cpp",
         "package.cpp",
         "server.cpp",
+        "utils.h",
     ],
-    visibility = ["//visibility:private"],
     linkopts = DEFAULT_EMSCRIPTEN_LINKOPTS + WEB_LINKOPTS,
+    visibility = ["//visibility:private"],
     deps = [
         "//private_set_intersection/cpp:package",
-        "@com_google_absl//absl/status:statusor",
         "//private_set_intersection/cpp:psi_client",
         "//private_set_intersection/cpp:psi_server",
     ],
 )
+
 cc_binary(
-    name = "combined_wasm_worker.js",
+    name = "wasm_worker.js",
     srcs = [
-        "utils.h",
         "client.cpp",
         "data_structure.cpp",
         "package.cpp",
         "server.cpp",
+        "utils.h",
     ],
-    visibility = ["//visibility:private"],
     linkopts = DEFAULT_EMSCRIPTEN_LINKOPTS + WORKER_LINKOPTS,
+    visibility = ["//visibility:private"],
     deps = [
         "//private_set_intersection/cpp:package",
-        "@com_google_absl//absl/status:statusor",
         "//private_set_intersection/cpp:psi_client",
         "//private_set_intersection/cpp:psi_server",
     ],
 )
+
 wasm_cc_binary(
-    name = "psi_combined_wasm_node.js",
-    cc_target = ":combined_wasm_node.js",
+    name = "psi_wasm_node.js",
+    cc_target = ":wasm_node.js",
 )
+
 wasm_cc_binary(
-    name = "psi_combined_wasm_web.js",
-    cc_target = ":combined_wasm_web.js",
+    name = "psi_wasm_web.js",
+    cc_target = ":wasm_web.js",
 )
+
 wasm_cc_binary(
-    name = "psi_combined_wasm_worker.js",
-    cc_target = ":combined_wasm_worker.js",
+    name = "psi_wasm_worker.js",
+    cc_target = ":wasm_worker.js",
 )
 
 # Benchmark
 cc_binary(
     name = "benchmark_wasm.js",
     srcs = ["//private_set_intersection/cpp:psi_benchmark.cpp"],
-    visibility = ["//visibility:private"],
     linkopts = DEFAULT_EMSCRIPTEN_LINKOPTS + NODE_LINKOPTS,
+    visibility = ["//visibility:private"],
     deps = [
         "//private_set_intersection/cpp:psi_client",
         "//private_set_intersection/cpp:psi_server",
-        "@com_google_absl//absl/strings",
         "@com_google_benchmark//:benchmark_main",
     ],
 )
