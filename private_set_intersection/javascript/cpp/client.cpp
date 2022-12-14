@@ -90,7 +90,7 @@ EMSCRIPTEN_BINDINGS(PSI_Client) {
               // Convert vector to JS array
               emscripten::val array = emscripten::val::array(
                   supported_result.begin(), supported_result.end());
-              result = std::move(StatusOr<emscripten::val>(array));
+              result = StatusOr<emscripten::val>(array);
             } else {
               result = status.status();
             }
