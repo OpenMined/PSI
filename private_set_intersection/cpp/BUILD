@@ -28,6 +28,17 @@ PSI_LINKOPTS = select({
     ],
 })
 
+# Some of the compilers error on these warnings
+COPTS = [
+    "--std=c++17",
+    "-Wno-error=deprecated-declarations",
+    "-Wno-error=unused-function",
+    "-Wno-error=array-parameter",  # gcc; boringssl
+    "-Wno-error=pessimizing-move",
+    "-Wno-error=unused-but-set-variable",
+    "-Wno-error=stringop-overflow",  # gcc; protobuf
+]
+
 template_rule(
     name = "package_h",
     src = "package.h.templ",

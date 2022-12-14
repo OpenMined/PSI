@@ -1,1 +1,22 @@
-build --cxxopt="-std=c++14"
+build --cxxopt="-std=c++17" --cxxopt="-w"
+
+# --cxxopt="-Wno-error=deprecated-declarations" \
+# --cxxopt="-Wno-error=deprecated-builtins" \
+# --cxxopt="-Wno-error=deprecated-non-prototype" \
+# --cxxopt="-Wno-error=unused-function" \
+# --cxxopt="-Wno-error=array-parameter" \
+# --cxxopt="-Wno-error=pessimizing-move" \
+# --cxxopt="-Wno-error=unused-but-set-variable" \
+# --cxxopt="-Wno-error=stringop-overflow" 
+
+# COPTS = [
+# "--std=c++17",
+# "-Wno-error=deprecated-declarations",
+# "-Wno-error=deprecated-builtins" // not working in GCC?
+# "-Wno-error=deprecated-non-prototype" // not working in GCC?
+# "-Wno-error=unused-function",
+# "-Wno-error=array-parameter",  # gcc; boringssl
+# "-Wno-error=pessimizing-move",
+# "-Wno-error=unused-but-set-variable",
+# "-Wno-error=stringop-overflow",  # gcc; protobuf
+# ]
