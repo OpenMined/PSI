@@ -36,6 +36,7 @@ COPTS = [
     "-Wno-error=array-parameter",
     "-Wno-error=pessimizing-move",
     "-Wno-error=unused-but-set-variable",
+    "-Wno-error=stringop-overflow",
 ]
 
 template_rule(
