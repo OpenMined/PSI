@@ -18,8 +18,8 @@
 
 #include "absl/container/flat_hash_set.h"
 #include "absl/strings/str_cat.h"
-#include "private_join_and_compute/crypto/ec_commutative_cipher.h"
 #include "gtest/gtest.h"
+#include "private_join_and_compute/crypto/ec_commutative_cipher.h"
 #include "private_set_intersection/c/psi_client.h"
 #include "util/status_matchers.h"
 
