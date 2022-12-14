@@ -1,6 +1,6 @@
 build \ 
     --cxxopt="-std=c++17" \
-    --cxxopt="-w"
+    --copt="-w"
 # --cxxopt="-Wno-error=unknown-warning" \
 # # --cxxopt="-Wno-error=unknown-warning-option" \
 # --cxxopt="-Wno-error=deprecated-declarations" \
