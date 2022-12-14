@@ -1,16 +1,16 @@
-build \
+build \ 
     --cxxopt="-std=c++17" \
-    --cxxopt="-Wno-error=unknown-warning" \
-    --cxxopt="-Wno-error=unknown-warning-option" \
-    --cxxopt="-Wno-error=deprecated-declarations" \
-    --cxxopt="-Wno-error=deprecated-builtins" \
-    --cxxopt="-Wno-error=deprecated-non-prototype" \
-    --cxxopt="-Wno-error=unused-function" \
-    --cxxopt="-Wno-error=array-parameter" \
-    --cxxopt="-Wno-error=pessimizing-move" \
-    --cxxopt="-Wno-error=unused-but-set-variable" \
-    --cxxopt="-Wno-error=stringop-overflow"
-
+    --cxxopt="-w"
+# --cxxopt="-Wno-error=unknown-warning" \
+# # --cxxopt="-Wno-error=unknown-warning-option" \
+# --cxxopt="-Wno-error=deprecated-declarations" \
+# # --cxxopt="-Wno-error=deprecated-builtins" \
+# --cxxopt="-Wno-error=deprecated-non-prototype" \
+# --cxxopt="-Wno-error=unused-function" \
+# --cxxopt="-Wno-error=array-parameter" \
+# --cxxopt="-Wno-error=pessimizing-move" \
+# --cxxopt="-Wno-error=unused-but-set-variable" \
+# --cxxopt="-Wno-error=stringop-overflow"
 # COPTS = [
 # "--std=c++17",
 # "-Wno-error=deprecated-declarations",

@@ -37,15 +37,15 @@ jobs:
           - cp39-cp39
           - cp3_10-cp3_10
 
-    runs-on: ubuntu-latest
-    container: bcebere/manylinux2014_gcc8:latest 
+    runs-on: ubuntu-22.04
+    container: bcebere/manylinux2014_gcc8:latest
     steps:
       - uses: actions/checkout@v1
         with:
           submodules: true
       - name: Set target Python version PATH
         run: |
-            echo "/opt/python/${{ matrix.python-version }}/bin" >> $GITHUB_PATH
+          echo "/opt/python/${{ matrix.python-version }}/bin" >> $GITHUB_PATH
       - name: Build and publish
         env:
           TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}

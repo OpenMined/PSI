@@ -10,7 +10,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [macos-latest, ubuntu-latest]
+        os: [ubuntu-22.04]
     steps:
       - uses: actions/checkout@v3
       - name: Cleanup
@@ -26,13 +26,13 @@ jobs:
         if: ${{ matrix.os == 'windows-latest' }}
       - name: Linters
         run: .github/workflows/scripts/lint_cpp.sh
-        if: ${{ matrix.os == 'ubuntu-latest' }}
+        if: ${{ matrix.os == 'ubuntu-22.04' }}
 
   # JS:
   #   runs-on: ${{ matrix.os }}
   #   strategy:
   #     matrix:
-  #       os: [macos-latest, ubuntu-latest]
+  #       os: [ubuntu-22.04]
   #   steps:
   #     - uses: actions/checkout@v3
   #     - name: Run tests nix
@@ -48,7 +48,7 @@ jobs:
   #   runs-on: ${{ matrix.os }}
   #   strategy:
   #     matrix:
-  #       os: [macos-latest, ubuntu-latest]
+  #       os: [ubuntu-22.04]
   #       python-version: ['3.8', '3.9', '3.10']
   #   steps:
   #     - uses: actions/checkout@v3
@@ -72,7 +72,7 @@ jobs:
   #   runs-on: ${{ matrix.os }}
   #   strategy:
   #     matrix:
-  #       os: [macos-latest, ubuntu-latest]
+  #       os: [ubuntu-22.04]
   #   steps:
   #     - name: Install toolchains
   #       uses: actions/setup-go@v3
@@ -98,7 +98,7 @@ jobs:
   #   runs-on: ${{ matrix.os }}
   #   strategy:
   #     matrix:
-  #       os: [macos-latest, ubuntu-latest]
+  #       os: [ubuntu-22.04]
   #   steps:
   #     - name: Install toolchains
   #       uses: actions-rs/toolchain@v1
