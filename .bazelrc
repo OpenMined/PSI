@@ -1,13 +1,3 @@
-build --cxxopt="-std=c++17" --copt="-Wno-unknown-warning" --copt="-Wno-unknown-warning-option" --copt="-Wno-error=deprecated-declarations" --copt="-Wno-error=deprecated-non-prototype" --copt="-Wno-error=unused-function" --copt="-Wno-error=array-bounds" --copt="-Wno-error=array-parameter" --copt="-Wno-error=pessimizing-move" --copt="-Wno-error=unused-but-set-variable" --copt="-Wno-error=stringop-overflow"
-
-# COPTS = [
-# "--std=c++17",
-# "-Wno-error=deprecated-declarations",
-# "-Wno-error=deprecated-non-prototype" # zlib
-# "-Wno-error=unused-function", # protobuf
-# "-Wno-error=array-bounds",  # boringssl
-# "-Wno-error=array-parameter",  # boringssl
-# "-Wno-error=pessimizing-move", # WASM
-# "-Wno-error=unused-but-set-variable",
-# "-Wno-error=stringop-overflow",  # protobuf
-# ]
+# There are many warnings that lead to errors on Clang and GCC (maybe even MSVC)
+# because of the compiler and version disparity, we're opting to eat the risk and silence all warnings
+build --cxxopt="-std=c++17" --copt="-w"
