@@ -1,1 +1,1 @@
-build --cxxopt="-std=c++17" --cxxopt="-w"
+build --cxxopt="-std=c++17" --copt="-w"
