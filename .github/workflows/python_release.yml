@@ -37,7 +37,7 @@ jobs:
           - cp39-cp39
           - cp3_10-cp3_10
 
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     container: bcebere/manylinux2014_gcc8:latest
     steps:
       - uses: actions/checkout@v1

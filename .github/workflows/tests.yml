@@ -10,12 +10,9 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-22.04]
+        os: [macos-latest, ubuntu-latest]
     steps:
       - uses: actions/checkout@v3
-      - name: Cleanup
-        run: bazel clean --expunge
-        if: ${{ matrix.os == 'macos-latest' }}
       - name: Run tests Linux/OSX
         timeout-minutes: 60
         run: .github/workflows/scripts/run_tests_core.sh
@@ -26,13 +23,13 @@ jobs:
         if: ${{ matrix.os == 'windows-latest' }}
       - name: Linters
         run: .github/workflows/scripts/lint_cpp.sh
-        if: ${{ matrix.os == 'ubuntu-22.04' }}
+        if: ${{ matrix.os == 'ubuntu-latest' }}
 
   # JS:
   #   runs-on: ${{ matrix.os }}
   #   strategy:
   #     matrix:
-  #       os: [ubuntu-22.04]
+  #       os: [ubuntu-latest]
   #   steps:
   #     - uses: actions/checkout@v3
   #     - name: Run tests nix
@@ -48,7 +45,7 @@ jobs:
   #   runs-on: ${{ matrix.os }}
   #   strategy:
   #     matrix:
-  #       os: [ubuntu-22.04]
+  #       os: [ubuntu-latest]
   #       python-version: ['3.8', '3.9', '3.10']
   #   steps:
   #     - uses: actions/checkout@v3
@@ -72,7 +69,7 @@ jobs:
   #   runs-on: ${{ matrix.os }}
   #   strategy:
   #     matrix:
-  #       os: [ubuntu-22.04]
+  #       os: [ubuntu-latest]
   #   steps:
   #     - name: Install toolchains
   #       uses: actions/setup-go@v3
@@ -98,7 +95,7 @@ jobs:
   #   runs-on: ${{ matrix.os }}
   #   strategy:
   #     matrix:
-  #       os: [ubuntu-22.04]
+  #       os: [ubuntu-latest]
   #   steps:
   #     - name: Install toolchains
   #       uses: actions-rs/toolchain@v1
