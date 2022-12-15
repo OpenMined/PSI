@@ -142,12 +142,14 @@ def psi_preload():
             ],
         )
 
+    # Using a specific commit until the issue on windows has been resolved
+    # https://github.com/rules-proto-grpc/rules_proto_grpc/issues/234
     if "rules_proto_grpc" not in native.existing_rules():
         http_archive(
             name = "rules_proto_grpc",
-            urls = ["https://github.com/rules-proto-grpc/rules_proto_grpc/archive/fbd914b6a2145dc43375690d8c32aff0211abf59.tar.gz"],
-            sha256 = "ebf6a163e9b1472d96a258af4e1c63f45bfb7cb0af7d6dba64388d6b822b90dd",
-            strip_prefix = "rules_proto_grpc-fbd914b6a2145dc43375690d8c32aff0211abf59",
+            urls = ["https://github.com/rules-proto-grpc/rules_proto_grpc/archive/ac9afa1be813e371cd6457d794ec2da6fccc2238.tar.gz"],
+            sha256 = "37e87cc19220075471d3dcfe03172b22a6e5722de439de05e420736a2c06ff01",
+            strip_prefix = "rules_proto_grpc-ac9afa1be813e371cd6457d794ec2da6fccc2238",
         )
 
     if "build_bazel_rules_nodejs" not in native.existing_rules():
