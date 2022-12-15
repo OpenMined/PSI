@@ -10,10 +10,8 @@ to deprecate a few things.
 - Python 3.6 and 3.7 are no longer supported and are superceeded by 3.8, 3.9,
   and 3.10. For M1 macs (arm64), building python < 3.8 is problematic.
 - The pure Javascript builds are no longer supported or packaged. We're making
-  this change because this variant is extremely slow in comparison to WASM
-  (which is already slower than the native builds). In practice, this means
-  you'd need to use a much smaller dataset and therefore become more succeptable
-  to brute forcing.
+  this change because this variant is an order of magnitude slower than WASM
+  (which is already slower than the native builds).
 - No longer supporting rust < 2018
 - No longer supporting building on Windows
 
