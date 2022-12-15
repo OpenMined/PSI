@@ -17,14 +17,16 @@ import "github.com/openmined/psi/server"
 
 ## Tests
 
+(\*nix --cxxopt="-std=c++17", windows --cxxopt="-std:c++17")
+
 ```
-bazel test -c opt --test_output=all //private_set_intersection/go/...
+bazel test -c opt --cxxopt="-std=c++17" --test_output=all //private_set_intersection/go/...
 ```
 
 ## Benchmarks
 
 ```
-bazel test -c opt --test_output=all --test_arg=-test.bench=. //private_set_intersection/go/...
+bazel test -c opt --cxxopt="-std=c++17" --test_output=all --test_arg=-test.bench=. //private_set_intersection/go/...
 ```
 
 ## Integration
