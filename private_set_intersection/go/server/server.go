@@ -10,7 +10,6 @@
 //
 // The protocol works as follows.
 //
-//
 // 1. Setup phase
 //
 // The server encrypts all its elements x under a commutative encryption scheme,
@@ -18,10 +17,10 @@
 // inserted in a Bloom filter, which is sent to the client in the form of a serialized
 // protobuf. The protobuf has the following form:
 //
-//   {
-//     "num_hash_functions": <int>,
-//     "bits": <string>
-//   }
+//	{
+//	  "num_hash_functions": <int>,
+//	  "bits": <string>
+//	}
 //
 // Here, `bits` is a binary string.
 //
@@ -34,12 +33,10 @@
 // intersection or only its size. The payload is sent as a serialized protobuf
 // to the client and holds the following form:
 //
-//
-//   {
-//     "reveal_intersection": <bool>,
-//     "encrypted_elements": [ H(x_1)^c, H(x_2)^c, ... ]
-//   }
-//
+//	{
+//	  "reveal_intersection": <bool>,
+//	  "encrypted_elements": [ H(x_1)^c, H(x_2)^c, ... ]
+//	}
 //
 // 3. Server response
 //
@@ -48,9 +45,9 @@
 // key s, computing (H(x)^c)^s = H(x)^(cs). The result is sent back to the
 // client as a serialized protobuf holding the following form:
 //
-//   {
-//     "encrypted_elements": [ H(x_1)^c, H(x_2)^c, ... ]
-//   }
+//	{
+//	  "encrypted_elements": [ H(x_1)^c, H(x_2)^c, ... ]
+//	}
 //
 // If reveal_intersection is false, the array is sorted to hide the order of
 // entries from the client.
@@ -134,10 +131,10 @@ func CreateFromKey(key []byte, revealIntersection bool) (*PsiServer, error) {
 // key. The setup is sent to the client as a serialized protobuf with
 // the following form:
 //
-//   {
-//     "num_hash_functions": <int>,
-//     "bits": <string>
-//   }
+//	{
+//	  "num_hash_functions": <int>,
+//	  "bits": <string>
+//	}
 //
 // `bits` is encoded as Base64.
 // The false-positive rate `fpr` is the probability that any query of size

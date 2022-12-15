@@ -1,3 +1,29 @@
+# Version 1.0.0
+
+Breaking:
+
+Our goal was to get CI working after 2 years of dormancy. Part of that jorney meant updating almost all dependencies. There are no functional changes in this release; however, there were many updates to the tooling which meant we needed to deprecate a few things.
+
+- Python 3.6 and 3.7 are no longer supported and are superceeded by 3.8, 3.9, and 3.10. For M1 macs (arm64), building python < 3.8 is problematic.
+- The pure JavasSript builds are no longer supported or packaged. We're making
+  this change because this variant is extremely slow in comparison to WASM
+  (which is already slower than the native builds). In practice, this means
+  you'd need to use a much smaller dataset and therefore become more succeptable
+  to brute forcing.
+
+Chore:
+
+- Upgraded all dev dependencies for the entire project to the latest possible versions that were compatable with each other. This means we have changed forks for PJC to another that contains the latest upstream changes but with updated/compatable dependencies that the project requires.
+- Updated tests to use `-c opt` for all CI tests as it was in noticeably faster
+- Updated all dev deps for the WebAssembly builds. The WASM build configuration is not entirely migrated to bazel and still requires the use of a few npm scripts to compile and build locally.
+
+Feat:
+
+- Updated to use rust 2018 edition
+- Updated to use go 1.19
+- Updated to use python 3.8, 3.9, and 3.10
+- Updated the bazel build to use the native `emsdk` bazel configurations. This change means we could remove the dependency on the custom toolchain and emsdk submodule.
+
 # Version 0.3.5
 
 Feat:
