@@ -15,27 +15,25 @@ For developing with rust, you need `Cargo` which is used to update dependencies.
 
 Build libraries and documentation with or without optimizations:
 
-(\*nix: --cxxopt="-std=c++17", windows --cxxopt="-std:c++17")
-
 ```
 # Build everything using the fastbuild optimization configuration
 
-bazel build --cxxopt="-std=c++17" //private_set_intersection/rust/...
+bazel build //private_set_intersection/rust/...
 
 # With a specific optimization flag '-c opt'
-bazel build -c opt --cxxopt="-std=c++17" //private_set_intersection/rust/...
+bazel build -c opt //private_set_intersection/rust/...
 ```
 
 Build and run tests:
 
 ```
-bazel test -c opt --cxxopt="-std=c++17" //private_set_intersection/rust/...
+bazel test -c opt //private_set_intersection/rust/...
 ```
 
 Run the benchmark:
 
 ```
-bazel run -c opt --cxxopt="-std=c++17" //private_set_intersection/rust:rust_psi_bench
+bazel run -c opt //private_set_intersection/rust:rust_psi_bench
 ```
 
 ## Use in other projects
