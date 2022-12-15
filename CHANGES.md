@@ -15,12 +15,13 @@ to deprecate a few things.
   you'd need to use a much smaller dataset and therefore become more succeptable
   to brute forcing.
 - No longer supporting rust < 2018
+- No longer supporting building on Windows
 
 Feat:
 
 - Updated to bazel 5.3.2
 - Updated to use rust 2018 edition
-- Updated to go 1.19
+- Updated to support go 1.17, 1.18, and 1.19
 - Updated to support python 3.8, 3.9, and 3.10
 - Removed all remnants of the custom emscripten toolchain (including the git
   submodule) in favor of the native `emsdk` bazel configurations.

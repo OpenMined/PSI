@@ -18,7 +18,7 @@ also could be requirements for each target language:
 
 These are the common requirements across all target languages of this project.
 
-- A compiler such as clang, gcc, or msvc
+- A compiler such as clang, or gcc
 - [Bazel](https://bazel.build)
 
 ## Installation
