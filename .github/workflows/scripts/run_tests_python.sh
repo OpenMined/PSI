@@ -8,5 +8,5 @@ pip install -r private_set_intersection/python/requirements_dev.txt
 bazel test -c opt --test_output=all //private_set_intersection/python:tests
 
 # Python package
-pip install .
-python private_set_intersection/python/tests.py
+# pip install .
+# python private_set_intersection/python/tests.py
