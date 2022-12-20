@@ -4,7 +4,11 @@ Filters.
 from typing import List
 
 from private_set_intersection.python import _openmined_psi as psi
-from private_set_intersection.proto.psi_python_proto_pb.private_set_intersection.proto.psi_pb2 import ServerSetup, Request, Response
+from private_set_intersection.proto.psi_python_proto_pb.private_set_intersection.proto.psi_pb2 import (
+    ServerSetup,
+    Request,
+    Response,
+)
 
 __version__ = psi.__version__
 

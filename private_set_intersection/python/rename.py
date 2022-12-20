@@ -1,7 +1,8 @@
-# This file is used to rename the wheel generated via py_wheel 
-# with values determined at runtime
+# This file is used to rename the wheel generated via py_wheel with values
+# determined at runtime
 import sys, os, re
 from packaging import tags
+
 
 def main():
     inputfile = ""
@@ -23,6 +24,7 @@ def main():
 
     print("renaming ", inputfile, outfile)
     os.rename(inputfile, outfile)
+
 
 if __name__ == "__main__":
     main()
