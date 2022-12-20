@@ -55,9 +55,9 @@ def psi_deps():
     if "com_google_googletest" not in native.existing_rules():
         http_archive(
             name = "com_google_googletest",
-            sha256 = "94c634d499558a76fa649edb13721dce6e98fb1e7018dfaeba3cd7a083945e91",
-            strip_prefix = "googletest-release-1.10.0",
-            url = "https://github.com/google/googletest/archive/release-1.10.0.zip",
+            sha256 = "81964fe578e9bd7c94dfdb09c8e4d6e6759e19967e397dbea48d1c10e45d0df2",
+            strip_prefix = "googletest-release-1.12.1",
+            url = "https://github.com/google/googletest/archive/refs/tags/release-1.12.1.tar.gz",
         )
 
     if "com_google_benchmark" not in native.existing_rules():
@@ -71,9 +71,9 @@ def psi_deps():
     if "boringssl" not in native.existing_rules():
         http_archive(
             name = "boringssl",
-            sha256 = "7fefc298fa2a60fc04761768c2a3ded048cf69cc058e1167819546ef9efed325",
-            strip_prefix = "boringssl-38496d7d00af11364b0fdc9dbf8b181277fa5dab",
-            url = "https://github.com/google/boringssl/archive/38496d7d00af11364b0fdc9dbf8b181277fa5dab.zip",
+            sha256 = "018c4cec9554528fc58962aa71738940f051fef10c2ef6e61fa34ddbdc126387",
+            strip_prefix = "boringssl-0e2e48f9baa351c58fb68540332dc1382773699a",
+            url = "https://github.com/google/boringssl/archive/0e2e48f9baa351c58fb68540332dc1382773699a.zip",
         )
 
     if "com_github_google_glog" not in native.existing_rules():

@@ -19,7 +19,7 @@ to deprecate a few things.
 
 Feat:
 
-- Updated to bazel 5.4.0
+- Updated to bazel 6.0.0
 - Updated to use rust 2018 edition
 - Updated to support go 1.17+
 - Updated to support python 3.8+

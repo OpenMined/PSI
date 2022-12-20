@@ -17,6 +17,15 @@
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 
 def psi_preload():
+    if "platforms" not in native.existing_rules():
+        http_archive(
+            name = "platforms",
+            urls = [
+                "https://mirror.bazel.build/github.com/bazelbuild/platforms/releases/download/0.0.6/platforms-0.0.6.tar.gz",
+                "https://github.com/bazelbuild/platforms/releases/download/0.0.6/platforms-0.0.6.tar.gz",
+            ],
+            sha256 = "5308fc1d8865406a49427ba24a9ab53087f17f5266a7aabbfc28823f3916e1ca",
+        )
     if "rules_proto" not in native.existing_rules():
         http_archive(
             name = "rules_proto",

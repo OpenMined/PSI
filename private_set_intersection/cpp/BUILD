@@ -19,7 +19,7 @@ load("//tools:common.bzl", "template_rule")
 package(default_visibility = ["//visibility:public"])
 
 PSI_LINKOPTS = select({
-    "@bazel_tools//src/conditions:darwin": [],
+    "@platforms//os:osx": [],
     "//conditions:default": [
         # Needed on some Linux systems. See also
         # https://github.com/google/cctz/issues/47
