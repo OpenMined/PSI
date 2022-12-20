@@ -19,7 +19,7 @@ bash -x -e bazel-${bazel_version}-installer-linux-x86_64.sh
 
 # Python
 python3 -m pip install --upgrade pip
-python3 -m pip install -r private_set_intersection/python/requirements_dev.txt
+python3 -m pip install -r private_set_intersection/python/requirements.txt
 python3 -m pip install setuptools wheel twine auditwheel
 
 export BAZEL_LINKLIBS=-l%:libstdc++.a
