@@ -1,5 +1,8 @@
 workspace(
     name = "org_openmined_psi",
+    managed_directories = {
+        "@npm": ["node_modules"],
+    },
 )
 
 load("@org_openmined_psi//private_set_intersection:preload.bzl", "psi_preload")
