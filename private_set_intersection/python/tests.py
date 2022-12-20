@@ -2,12 +2,7 @@ import pytest
 import sys
 import re
 
-try:
-    # Used in Bazel envs
-    import private_set_intersection.python as psi
-except ImportError:
-    # Default package
-    import openmined_psi as psi
+import private_set_intersection.python as psi
 
 
 def dup(do, msg, dst):

@@ -1,1 +1,4 @@
-exports_files(["tsconfig.json"])
+exports_files([
+    "tsconfig.json",
+    "LICENSE",
+])

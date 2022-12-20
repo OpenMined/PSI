@@ -7,8 +7,10 @@ meant updating almost all dependencies. There are no functional changes in this
 release; however, there were many updates to the tooling which meant we needed
 to deprecate a few things.
 
-- Python 3.6 and 3.7 are no longer supported and are superceeded by 3.8, 3.9,
-  and 3.10. For M1 macs (arm64), building python < 3.8 is problematic.
+- Python 3.6 and 3.7 are no longer supported and are superceeded by 3.8+. For M1
+  macs (arm64), building python < 3.8 is problematic. The import structure has
+  changed to remove complexity between the development environment and the
+  published wheels. See the [code](private_set_intersection/python/__init__.py) for an example.
 - The pure Javascript builds are no longer supported or packaged. We're making
   this change because this variant is an order of magnitude slower than WASM
   (which is already slower than the native builds).
@@ -19,8 +21,8 @@ Feat:
 
 - Updated to bazel 5.3.2
 - Updated to use rust 2018 edition
-- Updated to support go 1.17, 1.18, and 1.19
-- Updated to support python 3.8, 3.9, and 3.10
+- Updated to support go 1.17+
+- Updated to support python 3.8+
 - Removed all remnants of the custom emscripten toolchain (including the git
   submodule) in favor of the native `emsdk` bazel configurations.
 

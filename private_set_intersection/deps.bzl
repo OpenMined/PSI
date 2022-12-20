@@ -19,7 +19,6 @@ load("@rules_proto//proto:repositories.bzl", "rules_proto_dependencies", "rules_
 load("@io_bazel_rules_go//go:deps.bzl", "go_register_toolchains", "go_rules_dependencies")
 load("@rules_pkg//:deps.bzl", "rules_pkg_dependencies")
 load("@bazel_gazelle//:deps.bzl", "gazelle_dependencies")
-load("@pybind11_bazel//:python_configure.bzl", "python_configure")
 load("@rules_rust//rust:repositories.bzl", "rust_repositories")
 load("@rules_rust//proto:repositories.bzl", "rust_proto_repositories")
 load("@com_github_grpc_grpc//bazel:grpc_deps.bzl", "grpc_deps")
@@ -29,6 +28,10 @@ load("@rules_proto_grpc//:repositories.bzl", "rules_proto_grpc_repos", "rules_pr
 load("@rules_proto_grpc//python:repositories.bzl", rules_proto_grpc_python_repos = "python_repos")
 load("@emsdk//:deps.bzl", emsdk_deps = "deps")
 load("@build_bazel_rules_nodejs//:repositories.bzl", "build_bazel_rules_nodejs_dependencies")
+
+# load("@rules_python//python/pip_install:repositories.bzl", "pip_install_dependencies")
+load("@pybind11_bazel//:python_configure.bzl", "python_configure")
+load("@rules_python//python:pip.bzl", "pip_parse")
 
 def psi_deps():
     # General dependencies.
@@ -102,8 +105,14 @@ def psi_deps():
     emsdk_deps()
 
     # Python.
-    # Configure python3 for pybind11.
-    python_configure(name = "local_config_python")
+    python_configure(
+        name = "local_config_python",
+    )
+    pip_parse(
+        name = "pip_deps",
+        # Generated via pip-compile requirements.in
+        requirements_lock = "//private_set_intersection/python:requirements.txt",
+    )
 
     # Protobuf.
     rules_proto_grpc_repos()

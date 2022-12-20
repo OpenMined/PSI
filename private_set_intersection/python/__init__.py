@@ -3,14 +3,8 @@ Filters.
 """
 from typing import List
 
-try:
-    # Used in Bazel envs
-    from private_set_intersection.python import _openmined_psi as psi
-    from private_set_intersection.proto.psi_pb2 import ServerSetup, Request, Response
-except ImportError:
-    # Default package
-    import _openmined_psi as psi
-    from openmined_psi.psi_pb2 import ServerSetup, Request, Response
+from private_set_intersection.python import _openmined_psi as psi
+from private_set_intersection.proto.psi_python_proto_pb.private_set_intersection.proto.psi_pb2 import ServerSetup, Request, Response
 
 __version__ = psi.__version__
 
