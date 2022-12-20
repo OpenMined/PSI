@@ -1,5 +1,5 @@
 [tool.black]
-target-version = ['py38', 'py39', 'py3_10']
+target-version = ['py38', 'py39', 'py310']
 line-length = 100
 exclude = '''
 (
