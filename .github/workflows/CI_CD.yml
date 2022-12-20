@@ -111,4 +111,4 @@ jobs:
         run: |
           bazel build -c opt //private_set_intersection/python:wheel
           python private_set_intersection/python/rename.py
-          bash .github/workflows/scripts/publish-python.sh
+          bash .github/workflows/scripts/publish_python.sh
