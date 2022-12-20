@@ -8,9 +8,10 @@ release; however, there were many updates to the tooling which meant we needed
 to deprecate a few things.
 
 - Python 3.6 and 3.7 are no longer supported and are superceeded by 3.8+. For M1
-  macs (arm64), building python < 3.8 is problematic. The import structure has
-  changed to remove complexity between the development environment and the
-  published wheels. See the [code](private_set_intersection/python/__init__.py) for an example.
+  macs (arm64), building python < 3.8 is problematic. There is a breaking change
+  in the import structure. We simplify the importing logic to remove complexity
+  between the development environment and the published wheels. See the
+  [code](private_set_intersection/python/__init__.py) for an example.
 - The pure Javascript builds are no longer supported or packaged. We're making
   this change because this variant is an order of magnitude slower than WASM
   (which is already slower than the native builds).
