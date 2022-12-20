@@ -1,6 +1,6 @@
 ![om-logo](https://github.com/OpenMined/design-assets/blob/master/logos/OM/horizontal-primary-trans.png)
 
-[![Tests](https://github.com/OpenMined/PSI/workflows/Tests/badge.svg?branch=master&event=push)](https://github.com/OpenMined/PSI/actions?query=workflow%3ATests+branch%3Amaster+event%3Apush)
+[![Tests](https://github.com/OpenMined/PSI/workflows/Tests/badge.svg?branch=master&event=push)](https://github.com/OpenMined/PSI/actions?query=workflow%3ACI_CD+branch%3Amaster+event%3Apush)
 ![License](https://img.shields.io/github/license/OpenMined/PSI)
 ![OpenCollective](https://img.shields.io/opencollective/all/openmined)
 
@@ -18,7 +18,7 @@ also could be requirements for each target language:
 
 These are the common requirements across all target languages of this project.
 
-- A compiler such as clang, or gcc
+- A compiler such as clang or gcc
 - [Bazel](https://bazel.build)
 
 ## Installation
@@ -72,6 +72,10 @@ load("@org_openmined_psi//private_set_intersection:deps.bzl", "psi_deps")
 
 psi_deps()
 
+load("@pip_deps//:requirements.bzl", "install_deps")
+
+install_deps()
+
 load("@build_bazel_rules_nodejs//:index.bzl", "node_repositories", "npm_install")
 
 node_repositories()
@@ -85,7 +89,6 @@ npm_install(
 load("@emsdk//:emscripten_deps.bzl", emsdk_emscripten_deps = "emscripten_deps")
 
 emsdk_emscripten_deps()
-
 ```
 
 A full description of the protocol can be found in the documentation of the
