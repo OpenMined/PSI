@@ -1,6 +1,6 @@
-import PSI from '../combined_wasm_node'
+import PSI from '../wasm_node'
 import { ERROR_INSTANCE_DELETED } from '../implementation/constants'
-import { PSILibrary } from 'src/implementation/psi'
+import { PSILibrary } from '../implementation/psi'
 import { Response, ServerSetup } from '../implementation/proto/psi_pb'
 
 let psi: PSILibrary
@@ -27,7 +27,7 @@ describe('PSI Client', () => {
 
     client.delete()
 
-    expect(client.delete).toThrowError(ERROR_INSTANCE_DELETED)
+    expect(client.delete).toThrow(ERROR_INSTANCE_DELETED)
   })
 
   test('It should return the private key as a binary array', async () => {
@@ -40,7 +40,7 @@ describe('PSI Client', () => {
   test('It should fail return the private key as a binary array if deleted', async () => {
     const client = psi.client!.createWithNewKey()
     client.delete()
-    expect(client.getPrivateKeyBytes.bind(client)).toThrowError(
+    expect(client.getPrivateKeyBytes.bind(client)).toThrow(
       ERROR_INSTANCE_DELETED
     )
   })
@@ -69,7 +69,7 @@ describe('PSI Client', () => {
 
     client.delete()
 
-    expect(client.createRequest.bind(client, clientInputs)).toThrowError(
+    expect(client.createRequest.bind(client, clientInputs)).toThrow(
       ERROR_INSTANCE_DELETED
     )
   })
@@ -166,8 +166,8 @@ describe('PSI Client', () => {
       171, 197,  88,   9, 148,  22, 129,  12, 112, 149, 170,   1
     ]))
 
-  // prettier-ignore
-  const response = Response.deserializeBinary(Uint8Array.from([
+    // prettier-ignore
+    const response = Response.deserializeBinary(Uint8Array.from([
       10,  33,   3,  76, 217, 211, 215, 254, 176,  87,  33, 177,
     111, 184, 131,   7, 251, 172, 119,  48,  58, 156, 152,  18,
     186, 184, 140, 122, 119, 253, 134, 206, 216, 193,   5,  10,
@@ -261,7 +261,7 @@ describe('PSI Client', () => {
 
     expect(
       client.getIntersectionSize.bind(client, serverSetup, response)
-    ).toThrowError(ERROR_INSTANCE_DELETED)
+    ).toThrow(ERROR_INSTANCE_DELETED)
   })
 
   test('It should throw if attempting to process a response after deletion (intersection)', async () => {
@@ -319,9 +319,9 @@ describe('PSI Client', () => {
 
     client.delete()
 
-    expect(
-      client.getIntersection.bind(client, serverSetup, response)
-    ).toThrowError(ERROR_INSTANCE_DELETED)
+    expect(client.getIntersection.bind(client, serverSetup, response)).toThrow(
+      ERROR_INSTANCE_DELETED
+    )
   })
 
   test('It should fail to process a response (cardinality)', async () => {

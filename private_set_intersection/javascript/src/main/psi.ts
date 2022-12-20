@@ -18,7 +18,6 @@ type Init = (opts: InitOpts) => PSILibrary
 export const PSI = async (Loader: () => Promise<Loader>): Promise<Init> => {
   const loader = await Loader()
   return ({ client, server }): PSILibrary => {
-
     // Initialize dependencies
     const dataStructure = DataStructureWrapperConstructor({
       loader
@@ -37,7 +36,7 @@ export const PSI = async (Loader: () => Promise<Loader>): Promise<Init> => {
       ...(server && {
         serverWrapper: ServerWrapperConstructor({
           loader
-        })({ DataStructure: dataStructure})
+        })({ DataStructure: dataStructure })
       })
     })
   }

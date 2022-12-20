@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"github.com/golang/protobuf/proto"
 	"github.com/openmined/psi/client"
-	"github.com/openmined/psi/pb"
+	psi_proto "github.com/openmined/psi/pb"
 	"regexp"
 	"testing"
 )

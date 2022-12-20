@@ -1,5 +1,5 @@
-import PSI from '../combined_wasm_node'
-import { PSILibrary } from 'src/implementation/psi'
+import PSI from '../wasm_node'
+import { PSILibrary } from '../implementation/psi'
 
 let psi: PSILibrary
 beforeAll(async () => {

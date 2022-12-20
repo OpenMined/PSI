@@ -15,20 +15,23 @@
 #
 
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
-load("//private_set_intersection/javascript/toolchain:cc_toolchain_config.bzl", "emsdk_configure")
 load("@rules_proto//proto:repositories.bzl", "rules_proto_dependencies", "rules_proto_toolchains")
 load("@io_bazel_rules_go//go:deps.bzl", "go_register_toolchains", "go_rules_dependencies")
 load("@rules_pkg//:deps.bzl", "rules_pkg_dependencies")
 load("@bazel_gazelle//:deps.bzl", "gazelle_dependencies")
-load("@pybind11_bazel//:python_configure.bzl", "python_configure")
-load("@io_bazel_rules_rust//rust:repositories.bzl", "rust_repositories")
-load("@io_bazel_rules_rust//proto:repositories.bzl", "rust_proto_repositories")
-load("@io_bazel_rules_rust//:workspace.bzl", "bazel_version")
+load("@rules_rust//rust:repositories.bzl", "rust_repositories")
+load("@rules_rust//proto:repositories.bzl", "rust_proto_repositories")
 load("@com_github_grpc_grpc//bazel:grpc_deps.bzl", "grpc_deps")
 load("@build_bazel_rules_apple//apple:repositories.bzl", "apple_rules_dependencies")
 load("//third_party/cargo:crates.bzl", "raze_fetch_remote_crates")
 load("@rules_proto_grpc//:repositories.bzl", "rules_proto_grpc_repos", "rules_proto_grpc_toolchains")
 load("@rules_proto_grpc//python:repositories.bzl", rules_proto_grpc_python_repos = "python_repos")
+load("@emsdk//:deps.bzl", emsdk_deps = "deps")
+load("@build_bazel_rules_nodejs//:repositories.bzl", "build_bazel_rules_nodejs_dependencies")
+
+# load("@rules_python//python/pip_install:repositories.bzl", "pip_install_dependencies")
+load("@pybind11_bazel//:python_configure.bzl", "python_configure")
+load("@rules_python//python:pip.bzl", "pip_parse")
 
 def psi_deps():
     # General dependencies.
@@ -36,49 +39,49 @@ def psi_deps():
         #TODO revert to the upstream repository when the https://github.com/google/private-join-and-compute/pull/21 is merged
         http_archive(
             name = "private_join_and_compute",
-            sha256 = "219f7cff49841901f8d88a7f84c9c8a61e69b5eb308a8535835743093eb4b595",
-            strip_prefix = "private-join-and-compute-ee2c581454fd895d9928fe27b7ba0d0ebfd8fda2",
-            url = "https://github.com/schoppmp/private-join-and-compute/archive/ee2c581454fd895d9928fe27b7ba0d0ebfd8fda2.zip",
+            sha256 = "5678dab460a75d7010ab4ca5c8830519c00ba10a3ed4245333b6c76c90d56612",
+            strip_prefix = "private-join-and-compute-f4571aca5e41d59b88b9b4b18f77645f9f473f2b",
+            url = "https://github.com/s0l0ist/private-join-and-compute/archive/f4571aca5e41d59b88b9b4b18f77645f9f473f2b.zip",
         )
 
     if "com_google_absl" not in native.existing_rules():
         http_archive(
             name = "com_google_absl",
-            sha256 = "d29785bb94deaba45946d40bde5b356c66a4eb76505de0181ea9a23c46bc5ed4",
-            strip_prefix = "abseil-cpp-592924480acf034aec0454160492a20bccdbdf3e",
-            url = "https://github.com/abseil/abseil-cpp/archive/592924480acf034aec0454160492a20bccdbdf3e.zip",
+            sha256 = "31b0b6fe3f14875a27c48d5775d05e157bab233065f7c55f0e1f4991c5e95840",
+            strip_prefix = "abseil-cpp-522606b7fae37836c138e83f6eec0eabb9947dc0",
+            url = "https://github.com/abseil/abseil-cpp/archive/522606b7fae37836c138e83f6eec0eabb9947dc0.zip",
         )
 
     if "com_google_googletest" not in native.existing_rules():
         http_archive(
             name = "com_google_googletest",
-            sha256 = "94c634d499558a76fa649edb13721dce6e98fb1e7018dfaeba3cd7a083945e91",
-            strip_prefix = "googletest-release-1.10.0",
-            url = "https://github.com/google/googletest/archive/release-1.10.0.zip",
+            sha256 = "81964fe578e9bd7c94dfdb09c8e4d6e6759e19967e397dbea48d1c10e45d0df2",
+            strip_prefix = "googletest-release-1.12.1",
+            url = "https://github.com/google/googletest/archive/refs/tags/release-1.12.1.tar.gz",
         )
 
     if "com_google_benchmark" not in native.existing_rules():
         http_archive(
             name = "com_google_benchmark",
-            sha256 = "a9d41abe1bd45a707d39fdfd46c01b92e340923bc5972c0b54a48002a9a7cfa3",
-            strip_prefix = "benchmark-8cead007830bdbe94b7cc259e873179d0ef84da6",
-            url = "https://github.com/google/benchmark/archive/8cead007830bdbe94b7cc259e873179d0ef84da6.zip",
+            sha256 = "f6f62c4a1fc9b0a2edb70c77cdb9011b605430eabb4dddbb14d60fb492aea7bb",
+            strip_prefix = "benchmark-d572f4777349d43653b21d6c2fc63020ab326db2",
+            url = "https://github.com/google/benchmark/archive/d572f4777349d43653b21d6c2fc63020ab326db2.zip",
         )
 
     if "boringssl" not in native.existing_rules():
         http_archive(
             name = "boringssl",
-            sha256 = "7fefc298fa2a60fc04761768c2a3ded048cf69cc058e1167819546ef9efed325",
-            strip_prefix = "boringssl-38496d7d00af11364b0fdc9dbf8b181277fa5dab",
-            url = "https://github.com/google/boringssl/archive/38496d7d00af11364b0fdc9dbf8b181277fa5dab.zip",
+            sha256 = "018c4cec9554528fc58962aa71738940f051fef10c2ef6e61fa34ddbdc126387",
+            strip_prefix = "boringssl-0e2e48f9baa351c58fb68540332dc1382773699a",
+            url = "https://github.com/google/boringssl/archive/0e2e48f9baa351c58fb68540332dc1382773699a.zip",
         )
 
-    if "com_github_glog_glog" not in native.existing_rules():
+    if "com_github_google_glog" not in native.existing_rules():
         http_archive(
-            name = "com_github_glog_glog",
-            sha256 = "ec64c82f3c2cd5be25d18f52bcca2840c1b29cf3d109cd61149935838645817b",
-            strip_prefix = "glog-381e349a5bc3fd858a84b80c48ac465ad79c4a71",
-            urls = ["https://github.com/schoppmp/glog/archive/381e349a5bc3fd858a84b80c48ac465ad79c4a71.zip"],
+            name = "com_github_google_glog",
+            sha256 = "42c7395b26f1aa2157015b7d7b811b799c9c477147f4239410bde48901f009c5",
+            strip_prefix = "glog-c18db3903b9f0abd80ae740fde94f7e32aa40b92",
+            urls = ["https://github.com/google/glog/archive/c18db3903b9f0abd80ae740fde94f7e32aa40b92.zip"],
         )
 
     if "com_github_gflags_gflags" not in native.existing_rules():
@@ -97,14 +100,19 @@ def psi_deps():
 
     # Language-specific dependencies.
 
-    # Javascript
-    # Make all files under submodules/emsdk/* visible to the toolchain. The files are
-    # available as external/emsdk/emsdk/*
-    emsdk_configure(name = "emsdk")
+    # Javascript.
+    build_bazel_rules_nodejs_dependencies()
+    emsdk_deps()
 
     # Python.
-    # Configure python3 for pybind11.
-    python_configure(name = "local_config_python")
+    python_configure(
+        name = "local_config_python",
+    )
+    pip_parse(
+        name = "pip_deps",
+        # Generated via pip-compile requirements.in
+        requirements_lock = "//private_set_intersection/python:requirements.txt",
+    )
 
     # Protobuf.
     rules_proto_grpc_repos()
@@ -117,7 +125,7 @@ def psi_deps():
     # Golang.
     go_rules_dependencies()
 
-    go_register_toolchains(version = "1.16")
+    go_register_toolchains(version = "1.19")
 
     rules_pkg_dependencies()
 
@@ -126,8 +134,6 @@ def psi_deps():
     # Rust.
     raze_fetch_remote_crates()
 
-    rust_repositories()
+    rust_repositories(edition = "2018")
 
     rust_proto_repositories()
-
-    bazel_version(name = "bazel_version")

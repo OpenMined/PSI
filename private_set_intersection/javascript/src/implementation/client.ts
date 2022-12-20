@@ -164,9 +164,8 @@ export const ClientWrapperConstructor = ({
      * @returns {Client} A Client instance
      */
     createWithNewKey(revealIntersection = false): Client {
-      const { Value, Status } = library.PsiClient.CreateWithNewKey(
-        revealIntersection
-      )
+      const { Value, Status } =
+        library.PsiClient.CreateWithNewKey(revealIntersection)
       if (Status) {
         throw new Error(Status.Message)
       }

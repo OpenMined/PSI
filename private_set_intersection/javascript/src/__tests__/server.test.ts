@@ -1,6 +1,6 @@
-import PSI from '../combined_wasm_node'
+import PSI from '../wasm_node'
 import { ERROR_INSTANCE_DELETED } from '../implementation/constants'
-import { PSILibrary } from 'src/implementation/psi'
+import { PSILibrary } from '../implementation/psi'
 import { Request, Response } from '../implementation/proto/psi_pb'
 
 let psi: PSILibrary
@@ -26,7 +26,7 @@ describe('PSI Server', () => {
   test('It should throw if deleted twice', async () => {
     const server = psi.server!.createWithNewKey()
     server.delete()
-    expect(server.delete).toThrowError(ERROR_INSTANCE_DELETED)
+    expect(server.delete).toThrow(ERROR_INSTANCE_DELETED)
   })
 
   test('It should return the private key as a binary array', async () => {
@@ -39,9 +39,7 @@ describe('PSI Server', () => {
   test('It should fail return the private key as a binary array if deleted', async () => {
     const server = psi.server!.createWithNewKey()
     server.delete()
-    expect(() => server.getPrivateKeyBytes()).toThrowError(
-      ERROR_INSTANCE_DELETED
-    )
+    expect(() => server.getPrivateKeyBytes()).toThrow(ERROR_INSTANCE_DELETED)
   })
 
   test('It should create a setup message (BloomFilter)', async () => {
@@ -97,13 +95,13 @@ describe('PSI Server', () => {
         numClientElements,
         serverInputs
       )
-    ).toThrowError(ERROR_INSTANCE_DELETED)
+    ).toThrow(ERROR_INSTANCE_DELETED)
   })
 
   test('It should fail to create a setup message', async () => {
     const server = psi.server!.createWithNewKey()
     const fpr = 0.001
-    const numClientElements = -10
+    const numClientElements = Infinity
     const serverInputs = Array.from({ length: 100 }, (_, i) => `Element ${i}`)
 
     expect(
@@ -198,7 +196,7 @@ describe('PSI Server', () => {
 
     server.delete()
 
-    expect(server.processRequest.bind(server, request)).toThrowError(
+    expect(server.processRequest.bind(server, request)).toThrow(
       ERROR_INSTANCE_DELETED
     )
   })

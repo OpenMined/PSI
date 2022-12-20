@@ -1,33 +1,37 @@
 # Private Set Intersection - Go [![Go Report Card](https://goreportcard.com/badge/github.com/OpenMined/PSI)](https://goreportcard.com/report/github.com/OpenMined/PSI)
 
-Private Set Intersection protocol based on ECDH, Bloom Filters, and Golomb Compressed Sets.
-
+Private Set Intersection protocol based on ECDH, Bloom Filters, and Golomb
+Compressed Sets.
 
 ## PSI client [![Documentation](https://img.shields.io/badge/godoc-reference-blue.svg)](https://pkg.go.dev/github.com/OpenMined/PSI/private_set_intersection/go/client)
+
 ```
 import "github.com/openmined/psi/client"
 ```
 
 ## PSI server [![Documentation](https://img.shields.io/badge/godoc-reference-blue.svg)](https://pkg.go.dev/github.com/OpenMined/PSI/private_set_intersection/go/server)
+
 ```
 import "github.com/openmined/psi/server"
 ```
 
 ## Tests
+
 ```
-bazel test --incompatible_require_linker_input_cc_api=false --features=-supports_dynamic_linker //private_set_intersection/go/... --test_output=all
+bazel test -c opt --test_output=all //private_set_intersection/go/...
 ```
 
 ## Benchmarks
+
 ```
-bazel test --incompatible_require_linker_input_cc_api=false --features=-supports_dynamic_linker //private_set_intersection/go/... --test_arg=-test.bench=. --test_output=all
+bazel test -c opt --test_output=all --test_arg=-test.bench=. //private_set_intersection/go/...
 ```
 
 ## Integration
 
-* Add Bazel depends to your WORKSPACE, as indicated in the [Usage](https://github.com/OpenMined/PSI#Usage) section.
-* Add the server or the client to your deps in the BUILD file
-
+- Add Bazel depends to your WORKSPACE, as indicated in the
+  [Usage](https://github.com/OpenMined/PSI#Usage) section.
+- Add the server or the client to your deps in the BUILD file
 
 ```
 go_library(
@@ -41,8 +45,7 @@ go_library(
 )
 ```
 
-
-* Import and use the library
+- Import and use the library
 
 ```go
 package main
@@ -67,4 +70,3 @@ func main(){
     }
 }
 ```
-

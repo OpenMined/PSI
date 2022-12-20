@@ -31,7 +31,10 @@ type ServerWrapperOptions = {
 /**
  * @implements Server
  */
-const ServerConstructor = ({ DataStructure }: { DataStructure: DataStructure}, instance: psi.Server): Server => {
+const ServerConstructor = (
+  { DataStructure }: { DataStructure: DataStructure },
+  instance: psi.Server
+): Server => {
   let _instance: psi.Server | null = instance
 
   /**
@@ -137,54 +140,51 @@ const ServerConstructor = ({ DataStructure }: { DataStructure: DataStructure}, i
 }
 
 export type ServerConstructorDependencies = {
-  ({ DataStructure }: {
-    DataStructure: DataStructure
-  }): ServerWrapper
+  ({ DataStructure }: { DataStructure: DataStructure }): ServerWrapper
 }
 
-export const ServerWrapperConstructor = ({
-  loader
-}: ServerWrapperOptions): ServerConstructorDependencies => ({ DataStructure }): ServerWrapper => {
-  const library: psi.Library = loader.library
+export const ServerWrapperConstructor =
+  ({ loader }: ServerWrapperOptions): ServerConstructorDependencies =>
+  ({ DataStructure }): ServerWrapper => {
+    const library: psi.Library = loader.library
 
-  return {
-    /**
-     * Create a new PSI server
-     *
-     * @function
-     * @name Server.createWithNewKey
-     * @param {boolean} [revealIntersection=false] - If true, reveals the actual intersection instead of the cardinality.
-     * @returns {Server} A Server instance
-     */
-    createWithNewKey(revealIntersection: boolean = false): Server {
-      const { Value, Status } = library.PsiServer.CreateWithNewKey(
-        revealIntersection
-      )
-      if (Status) {
-        throw new Error(Status.Message)
+    return {
+      /**
+       * Create a new PSI server
+       *
+       * @function
+       * @name Server.createWithNewKey
+       * @param {boolean} [revealIntersection=false] - If true, reveals the actual intersection instead of the cardinality.
+       * @returns {Server} A Server instance
+       */
+      createWithNewKey(revealIntersection = false): Server {
+        const { Value, Status } =
+          library.PsiServer.CreateWithNewKey(revealIntersection)
+        if (Status) {
+          throw new Error(Status.Message)
+        }
+
+        return ServerConstructor({ DataStructure }, Value)
+      },
+      /**
+       * Create a new PSI server from a key
+       *
+       * @function
+       * @name Server.createFromKey
+       * @param {Uint8Array} key Private key as a binary Uint8Array
+       * @param {boolean} [revealIntersection=false] - If true, reveals the actual intersection instead of the cardinality.
+       * @returns {Server} A Server instance
+       */
+      createFromKey(key: Uint8Array, revealIntersection = false): Server {
+        const { Value, Status } = library.PsiServer.CreateFromKey(
+          key,
+          revealIntersection
+        )
+        if (Status) {
+          throw new Error(Status.Message)
+        }
+
+        return ServerConstructor({ DataStructure }, Value)
       }
-
-      return ServerConstructor({ DataStructure }, Value)
-    },
-    /**
-     * Create a new PSI server from a key
-     *
-     * @function
-     * @name Server.createFromKey
-     * @param {Uint8Array} key Private key as a binary Uint8Array
-     * @param {boolean} [revealIntersection=false] - If true, reveals the actual intersection instead of the cardinality.
-     * @returns {Server} A Server instance
-     */
-    createFromKey(key: Uint8Array, revealIntersection: boolean = false): Server {
-      const { Value, Status } = library.PsiServer.CreateFromKey(
-        key,
-        revealIntersection
-      )
-      if (Status) {
-        throw new Error(Status.Message)
-      }
-
-      return ServerConstructor({ DataStructure }, Value)
     }
   }
-}

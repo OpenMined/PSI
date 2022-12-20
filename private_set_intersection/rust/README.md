@@ -17,16 +17,23 @@ Build libraries and documentation with or without optimizations:
 
 ```
 # Build everything using the fastbuild optimization configuration
-bazel build --incompatible_require_linker_input_cc_api=false --features=-supports_dynamic_linker //private_set_intersection/rust/...
+
+bazel build //private_set_intersection/rust/...
 
 # With a specific optimization flag '-c opt'
-bazel build -c opt --incompatible_require_linker_input_cc_api=false --features=-supports_dynamic_linker //private_set_intersection/rust/...
+bazel build -c opt //private_set_intersection/rust/...
 ```
 
 Build and run tests:
 
 ```
-bazel test -c opt --incompatible_require_linker_input_cc_api=false --features=-supports_dynamic_linker //private_set_intersection/rust/...
+bazel test -c opt //private_set_intersection/rust/...
+```
+
+Run the benchmark:
+
+```
+bazel run -c opt //private_set_intersection/rust:rust_psi_bench
 ```
 
 ## Use in other projects

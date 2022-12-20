@@ -1,0 +1,114 @@
+name: CI_CD
+
+on:
+  release:
+    types: [created]
+  push:
+    branches: [master]
+  pull_request:
+
+jobs:
+  Core:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-22.04, macos-12]
+    steps:
+      - uses: actions/checkout@v3
+      - name: Run tests nix
+        timeout-minutes: 60
+        run: .github/workflows/scripts/run_tests_core.sh
+      - name: Linters
+        run: .github/workflows/scripts/lint_cpp.sh
+        if: ${{ matrix.os == 'ubuntu-22.04' }}
+
+  JS:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-22.04, macos-12]
+    steps:
+      - uses: actions/checkout@v3
+      - name: Run tests nix
+        timeout-minutes: 60
+        run: .github/workflows/scripts/run_tests_js.sh
+
+  Python:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-22.04, macos-12]
+        python-version: ['3.8', '3.9', '3.10']
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Run tests nix
+        timeout-minutes: 30
+        run: .github/workflows/scripts/run_tests_python.sh
+      - name: Python linters
+        run: .github/workflows/scripts/lint_python.sh
+
+  Go:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-22.04, macos-12]
+        golang-version: ['1.17', '1.18', '1.19']
+    steps:
+      - name: Set up Golang ${{ matrix.golang-version }}
+        uses: actions/setup-go@v3
+        with:
+          go-version: ${{ matrix.golang-version }}
+        id: go
+      - name: Install Go dependencies
+        run: go install golang.org/x/lint/golint@latest
+      - uses: actions/checkout@v3
+      - name: Run tests nix
+        timeout-minutes: 30
+        run: .github/workflows/scripts/run_tests_go.sh
+      - name: Go linters
+        run: .github/workflows/scripts/lint_go.sh
+
+  Rust:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-22.04, macos-12]
+    steps:
+      - name: Install toolchains
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          default: true
+      - uses: actions/checkout@v3
+      - name: Run tests nix
+        timeout-minutes: 30
+        run: .github/workflows/scripts/run_tests_rust.sh
+
+  # Publish python releases only if all other tests have passed after creating a
+  # release.
+  Publish-python:
+    needs: [Core, JS, Go, Python, Rust]
+    if: ${{ github.event.event_name == 'release' }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        python-version: ['3.8', '3.9', '3.10']
+        os: [ubuntu-22.04, macos-12]
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Build and publish the python wheel
+        env:
+          TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
+          TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
+        run: |
+          bazel build -c opt //private_set_intersection/python:wheel
+          python private_set_intersection/python/rename.py
+          bash .github/workflows/scripts/publish_python.sh
