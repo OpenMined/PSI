@@ -43,7 +43,9 @@ more-itertools==9.0.0
 mypy-extensions==0.4.3
     # via black
 packaging==22.0
-    # via pytest
+    # via
+    #   -r requirements.in
+    #   pytest
 pathspec==0.10.3
     # via black
 pkginfo==1.9.2

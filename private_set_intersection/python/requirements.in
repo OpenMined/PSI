@@ -3,4 +3,5 @@ flake8==6.0.0
 pytest==7.2.0
 pytest-benchmark==4.0.0
 twine==4.0.2
+packaging==22.0
 protobuf==4.21.12 # must be updated in wheel rule!
