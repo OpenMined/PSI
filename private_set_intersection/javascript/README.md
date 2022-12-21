@@ -6,11 +6,16 @@
 
 # PSI - JavaScript
 
-Private Set Intersection protocol based on ECDH, Bloom Filters, and Golomb Compressed Sets. The goal of this library is to allow a server to compute and return the intersection or intersection size (cardinality) from a set on the server and a set from a client without the server learning anything about the client's set.
+Private Set Intersection protocol based on ECDH, Bloom Filters, and Golomb
+Compressed Sets. The goal of this library is to allow a server to compute and
+return the intersection or intersection size (cardinality) from a set on the
+server and a set from a client without the server learning anything about the
+client's set.
 
 - 💾 Low memory footprint
 - 🚀 Fastest implementation using WebAssembly
-- 🔥 Works in any client / server configuration, even [React Native](https://reactnative.dev/)!
+- 🔥 Works in any client / server configuration, even [React
+  Native](https://reactnative.dev/)!
 - 😎 Privacy preserving
 
 ## Installation
@@ -33,10 +38,11 @@ import PSI from '@openmined/psi.js'
 const PSI = require('@openmined/psi.js')
 ```
 
-By **default**, the package will use the `psi` build with the `wasm` targeting the `node` environment.
+By **default**, the package will use the `psi` build with the `wasm` targeting
+the `node` environment.
 
-The deep import structure is as follows:
-`<package name> / <psi>_<wasm>_<node|web|worker>`
+The deep import structure is as follows: `<package name> /
+<psi>_<wasm>_<node|web|worker>`
 
 Example:
 
@@ -48,7 +54,13 @@ import PSI from '@openmined/psi.js/psi_wasm_worker.js'
 
 ## React-Native
 
-The bundle needs a bit of extra work. Specifically, it expects the browser `crypto.getRandomValues` which it will not find by default as react-native doesn't support the crypto builtin. It can be fixed by `npm install react-native-get-random-values` which provides access to this global while supporting a CSPRNG. The library also needs to have the browser `document` which is an artifact from the build system. Simply provide `global.document = {}`. Finally, it requires the following deep import structure:
+The bundle needs a bit of extra work. Specifically, it expects the browser
+`crypto.getRandomValues` which it will not find by default as react-native
+doesn't support the crypto builtin. It can be fixed by `npm install
+react-native-get-random-values` which provides access to this global while
+supporting a CSPRNG. The library also needs to have the browser `document` which
+is an artifact from the build system. Simply provide `global.document = {}`.
+Finally, it requires the following deep import structure:
 
 ```javascript
 // Provide a CSPRNG mapping to crypto.getRandomValues()
@@ -72,7 +84,8 @@ We show an example following the steps:
 
 1. Initialize the server and create the `server setup` to be sent later
 2. Initialize the client and create a client `request` to be sent to the server
-3. Process the `request` and send both the `server setup` and `response` to the client
+3. Process the `request` and send both the `server setup` and `response` to the
+   client
 4. Client receives the `setup` and `response` and computes the intersection
 
 ```javascript
@@ -211,11 +224,13 @@ const PSI = require('@openmined/psi.js')
 
 ## Contributors
 
-See [CONTRIBUTORS.md](https://github.com/OpenMined/PSI/blob/master/CONTRIBUTORS.md).
+See
+[CONTRIBUTORS.md](https://github.com/OpenMined/PSI/blob/master/CONTRIBUTORS.md).
 
 ## Contributing
 
-Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
+Pull requests are welcome. For major changes, please open an issue first to
+discuss what you would like to change.
 
 Please make sure to update tests as appropriate.
 
@@ -232,7 +247,8 @@ Now, install the rest of the dev dependencies
 npm install
 ```
 
-To compile the client, server, or psi (both client and server) for WebAssembly and pure JS
+To compile the client, server, or psi (both client and server) for WebAssembly
+and pure JS
 
 ```
 npm run build
@@ -250,7 +266,8 @@ Compile TypeScript to JS (sanity checking)
 npm run compile
 ```
 
-Run the tests or generate coverage reports. **Note** tests are run using the WASM variant.
+Run the tests or generate coverage reports. **Note** tests are run using the
+WASM variant.
 
 ```
 npm run test
@@ -313,10 +330,11 @@ Finally, publish the bundle
 
 `npm run publish`
 
-**Note**: The default `npm publish` has been disabled to prevent publishing of the entire project files.
-Instead, we have a custom override which will publish the npm package from a specific directory.
-This allows us to publish a single package with shortened deep import links that specify the
-different targets listed above.
+**Note**: The default `npm publish` has been disabled to prevent publishing of
+the entire project files. Instead, we have a custom override which will publish
+the npm package from a specific directory. This allows us to publish a single
+package with shortened deep import links that specify the different targets
+listed above.
 
 ## Changes
 
