@@ -92,7 +92,7 @@ jobs:
   # release.
   Publish-python:
     needs: [Core, JS, Go, Python, Rust]
-    if: ${{ github.event.event_name == 'release' }}
+    if: ${{ github.event_name == 'release' }}
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
