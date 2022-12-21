@@ -2,7 +2,7 @@
 set -e
 
 python -m pip install --upgrade pip
-pip install twine
+pip install twine packaging
 
 # upload to PyPI
 twine upload --skip-existing bazel-bin/private_set_intersection/python/openmined.psi-*
