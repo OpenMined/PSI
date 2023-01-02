@@ -1,6 +1,6 @@
 ![om-logo](https://github.com/OpenMined/design-assets/blob/master/logos/OM/horizontal-primary-trans.png)
 
-[![Tests](https://github.com/OpenMined/PSI/workflows/Tests/badge.svg?branch=master&event=push)](https://github.com/OpenMined/PSI/actions?query=workflow%3ATests+branch%3Amaster+event%3Apush)
+[![CI_CD](https://github.com/OpenMined/PSI/actions/workflows/CI_CD.yml/badge.svg?event=push)](https://github.com/OpenMined/PSI/actions/workflows/CI_CD.yml)
 ![License](https://img.shields.io/github/license/OpenMined/PSI)
 ![OpenCollective](https://img.shields.io/opencollective/all/openmined)
 

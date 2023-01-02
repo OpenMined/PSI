@@ -31,7 +31,7 @@ const DataStructureConstructor = (library: psi.Library): DataStructure => {
      */
     get BloomFilter(): DataStructure {
       /**
-       * @typedef {DataStructure.BloomFilter} SecurityLevel.BloomFilter
+       * @typedef {DataStructure.BloomFilter} DataStructure.BloomFilter
        */
       return DataStructure.BloomFilter
     },
@@ -44,7 +44,7 @@ const DataStructureConstructor = (library: psi.Library): DataStructure => {
      */
     get GCS(): DataStructure {
       /**
-       * @typedef {DataStructure.GCS} SecurityLevel.GCS
+       * @typedef {DataStructure.GCS} DataStructure.GCS
        */
       return DataStructure.GCS
     }
