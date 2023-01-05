@@ -9,8 +9,14 @@ from private_set_intersection.proto.psi_python_proto_pb.private_set_intersection
     Request,
     Response,
 )
+from enum import Enum
 
 __version__ = psi.__version__
+
+
+class DataStructure(Enum):
+    GCS = psi.data_structure.GCS
+    BLOOM_FILTER = psi.data_structure.BloomFilter
 
 
 class client:
@@ -125,17 +131,18 @@ class server:
         return cls(psi.cpp_server.CreateFromKey(key_bytes, reveal_intersection))
 
     def CreateSetupMessage(
-        self, fpr: float, num_client_inputs: int, inputs: List[str]
+        self, fpr: float, num_client_inputs: int, inputs: List[str], ds=DataStructure.GCS
     ) -> ServerSetup:
         """Create a setup message from the server's dataset to be sent to the client.
         Args:
             fpr: the probability that any query of size `num_client_inputs` will result in a false positive.
             num_client_inputs: Client set size.
             inputs: Server items.
+            ds: The underlying data structure to use. Defaults to GCS.
         Returns:
             A Protobuf with the setup message.
         """
-        interm_msg = self.data.CreateSetupMessage(fpr, num_client_inputs, inputs).save()
+        interm_msg = self.data.CreateSetupMessage(fpr, num_client_inputs, inputs, ds.value).save()
         msg = ServerSetup()
         msg.ParseFromString(interm_msg)
         return msg
@@ -164,6 +171,7 @@ class server:
 
 
 __all__ = [
+    "DataStructure",
     "client",
     "server",
     "ServerSetup",
