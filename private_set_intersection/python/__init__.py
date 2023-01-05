@@ -16,7 +16,7 @@ __version__ = psi.__version__
 
 class DataStructure(Enum):
     GCS = psi.data_structure.GCS
-    BloomFilter = psi.data_structure.BloomFilter
+    BLOOM_FILTER = psi.data_structure.BloomFilter
 
 
 class client:

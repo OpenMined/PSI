@@ -1,3 +1,35 @@
+# Version 1.0.1
+
+Feat:
+
+- Update the Python bindings to take in an optional `DataStructure` argument for
+  `CreateSetupMessage`. This allows the user to customize the behavior of the
+  backing datastructure - i.e. to select between the default (`GCS`) or specify
+  `BloomFilter`. The previous behavior always selected `GCS` so if the parameter
+  is omitted, the behavior will remain the same.
+
+  Ex:
+
+  ```python
+  import private_set_intersection.python as psi
+
+  c = psi.client.CreateWithNewKey(...)
+  s = psi.server.CreateWithNewKey(...)
+
+  #...
+
+  # Defaults to GCS
+  s.CreateSetupMessage(fpr, len(client_items), server_items)
+
+  # Same as above
+  s.CreateSetupMessage(fpr, len(client_items), server_items, psi.DataStructure.GCS)
+
+  # Specify BloomFilter
+  s.CreateSetupMessage(fpr, len(client_items), server_items, psi.DataStructure.BloomFilter)
+
+  # ...
+  ```
+
 # Version 1.0.0
 
 Breaking:
@@ -145,3 +177,7 @@ Initial release!
 Feat:
 
 - Data is passed between client and server as json strings for all languages
+
+```
+
+```

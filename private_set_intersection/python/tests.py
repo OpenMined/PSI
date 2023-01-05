@@ -19,7 +19,7 @@ def test_sanity(reveal_intersection):
     assert c != None
 
 
-@pytest.mark.parametrize("ds", [psi.DataStructure.GCS, psi.DataStructure.BloomFilter])
+@pytest.mark.parametrize("ds", [psi.DataStructure.GCS, psi.DataStructure.BLOOM_FILTER])
 @pytest.mark.parametrize("reveal_intersection", [False, True])
 @pytest.mark.parametrize("duplicate", [False, True])
 def test_client_server(ds, reveal_intersection, duplicate):
@@ -83,7 +83,7 @@ def test_client_sanity(reveal_intersection):
     assert key == newkey
 
 
-@pytest.mark.parametrize("ds", [psi.DataStructure.GCS, psi.DataStructure.BloomFilter])
+@pytest.mark.parametrize("ds", [psi.DataStructure.GCS, psi.DataStructure.BLOOM_FILTER])
 @pytest.mark.parametrize("reveal_intersection", [False, True])
 def test_server_client(ds, reveal_intersection):
     c = psi.client.CreateWithNewKey(reveal_intersection)
@@ -111,7 +111,7 @@ def test_server_client(ds, reveal_intersection):
         assert intersection <= (1.1 * len(client_items) / 2.0)
 
 
-@pytest.mark.parametrize("ds", [psi.DataStructure.GCS, psi.DataStructure.BloomFilter])
+@pytest.mark.parametrize("ds", [psi.DataStructure.GCS, psi.DataStructure.BLOOM_FILTER])
 @pytest.mark.parametrize("reveal_intersection", [False, True])
 def test_serialization_setup_msg(ds, reveal_intersection):
     s = psi.server.CreateWithNewKey(reveal_intersection)
@@ -142,7 +142,7 @@ def test_serialization_request(reveal_intersection):
     assert request.reveal_intersection == recreated.reveal_intersection
 
 
-@pytest.mark.parametrize("ds", [psi.DataStructure.GCS, psi.DataStructure.BloomFilter])
+@pytest.mark.parametrize("ds", [psi.DataStructure.GCS, psi.DataStructure.BLOOM_FILTER])
 @pytest.mark.parametrize("reveal_intersection", [False, True])
 def test_serialization_response(ds, reveal_intersection):
     c = psi.client.CreateWithNewKey(reveal_intersection)
@@ -164,7 +164,7 @@ def test_serialization_response(ds, reveal_intersection):
     assert resp.encrypted_elements == recreated.encrypted_elements
 
 
-@pytest.mark.parametrize("ds", [psi.DataStructure.GCS, psi.DataStructure.BloomFilter])
+@pytest.mark.parametrize("ds", [psi.DataStructure.GCS, psi.DataStructure.BLOOM_FILTER])
 @pytest.mark.parametrize("reveal_intersection", [False, True])
 def test_empty_intersection(ds, reveal_intersection):
     c = psi.client.CreateWithNewKey(reveal_intersection)
