@@ -39,6 +39,11 @@ void bind(pybind11::module& m) {
       "Filters";
 
   m.attr("__version__") = ::private_set_intersection::Package::kVersion;
+
+  py::enum_<psi::DataStructure>(m, "data_structure", py::arithmetic())
+      .value("GCS", psi::DataStructure::GCS)
+      .value("BloomFilter", psi::DataStructure::BloomFilter);
+
   py::class_<psi_proto::ServerSetup>(m, "cpp_proto_server_setup")
       .def(py::init<>())
       .def("load", [](psi_proto::ServerSetup& obj,
@@ -147,9 +152,9 @@ void bind(pybind11::module& m) {
       .def(
           "CreateSetupMessage",
           [](const psi::PsiServer& obj, double fpr, int64_t num_client_inputs,
-             const std::vector<std::string>& inputs) {
+             const std::vector<std::string>& inputs, psi::DataStructure ds) {
             return throwOrReturn(
-                obj.CreateSetupMessage(fpr, num_client_inputs, inputs));
+                obj.CreateSetupMessage(fpr, num_client_inputs, inputs, ds));
           },
           py::call_guard<py::gil_scoped_release>())
       .def(

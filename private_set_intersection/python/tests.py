@@ -19,9 +19,10 @@ def test_sanity(reveal_intersection):
     assert c != None
 
 
+@pytest.mark.parametrize("ds", [psi.DataStructure.GCS, psi.DataStructure.BloomFilter])
 @pytest.mark.parametrize("reveal_intersection", [False, True])
 @pytest.mark.parametrize("duplicate", [False, True])
-def test_client_server(reveal_intersection, duplicate):
+def test_client_server(ds, reveal_intersection, duplicate):
     c = psi.client.CreateWithNewKey(reveal_intersection)
     s = psi.server.CreateWithNewKey(reveal_intersection)
 
@@ -30,7 +31,7 @@ def test_client_server(reveal_intersection, duplicate):
 
     fpr = 1.0 / (1000000000)
     setup = dup(
-        duplicate, s.CreateSetupMessage(fpr, len(client_items), server_items), psi.ServerSetup()
+        duplicate, s.CreateSetupMessage(fpr, len(client_items), server_items, ds), psi.ServerSetup()
     )
     request = dup(duplicate, c.CreateRequest(client_items), psi.Request())
     resp = dup(duplicate, s.ProcessRequest(request), psi.Response())
@@ -82,8 +83,9 @@ def test_client_sanity(reveal_intersection):
     assert key == newkey
 
 
+@pytest.mark.parametrize("ds", [psi.DataStructure.GCS, psi.DataStructure.BloomFilter])
 @pytest.mark.parametrize("reveal_intersection", [False, True])
-def test_server_client(reveal_intersection):
+def test_server_client(ds, reveal_intersection):
     c = psi.client.CreateWithNewKey(reveal_intersection)
     s = psi.server.CreateWithNewKey(reveal_intersection)
 
@@ -91,7 +93,7 @@ def test_server_client(reveal_intersection):
     server_items = ["Element " + str(2 * i) for i in range(10000)]
 
     fpr = 1.0 / (1000000000)
-    setup = s.CreateSetupMessage(fpr, len(client_items), server_items)
+    setup = s.CreateSetupMessage(fpr, len(client_items), server_items, ds)
     request = c.CreateRequest(client_items)
     resp = s.ProcessRequest(request)
 
@@ -109,14 +111,15 @@ def test_server_client(reveal_intersection):
         assert intersection <= (1.1 * len(client_items) / 2.0)
 
 
+@pytest.mark.parametrize("ds", [psi.DataStructure.GCS, psi.DataStructure.BloomFilter])
 @pytest.mark.parametrize("reveal_intersection", [False, True])
-def test_serialization_setup_msg(reveal_intersection):
+def test_serialization_setup_msg(ds, reveal_intersection):
     s = psi.server.CreateWithNewKey(reveal_intersection)
 
     server_items = ["Element " + str(2 * i) for i in range(10000)]
 
     fpr = 1.0 / (1000000000)
-    setup = s.CreateSetupMessage(fpr, 1000, server_items)
+    setup = s.CreateSetupMessage(fpr, 1000, server_items, ds)
 
     buff = setup.SerializeToString()
     recreated = psi.ServerSetup()
@@ -139,8 +142,9 @@ def test_serialization_request(reveal_intersection):
     assert request.reveal_intersection == recreated.reveal_intersection
 
 
+@pytest.mark.parametrize("ds", [psi.DataStructure.GCS, psi.DataStructure.BloomFilter])
 @pytest.mark.parametrize("reveal_intersection", [False, True])
-def test_serialization_response(reveal_intersection):
+def test_serialization_response(ds, reveal_intersection):
     c = psi.client.CreateWithNewKey(reveal_intersection)
     s = psi.server.CreateWithNewKey(reveal_intersection)
 
@@ -148,7 +152,7 @@ def test_serialization_response(reveal_intersection):
     server_items = ["Element " + str(2 * i) for i in range(10000)]
 
     fpr = 1.0 / (1000000000)
-    setup = s.CreateSetupMessage(fpr, len(client_items), server_items)
+    setup = s.CreateSetupMessage(fpr, len(client_items), server_items, ds)
     req = c.CreateRequest(client_items)
     resp = s.ProcessRequest(req)
 
@@ -160,8 +164,9 @@ def test_serialization_response(reveal_intersection):
     assert resp.encrypted_elements == recreated.encrypted_elements
 
 
+@pytest.mark.parametrize("ds", [psi.DataStructure.GCS, psi.DataStructure.BloomFilter])
 @pytest.mark.parametrize("reveal_intersection", [False, True])
-def test_empty_intersection(reveal_intersection):
+def test_empty_intersection(ds, reveal_intersection):
     c = psi.client.CreateWithNewKey(reveal_intersection)
     s = psi.server.CreateWithNewKey(reveal_intersection)
 
@@ -169,7 +174,7 @@ def test_empty_intersection(reveal_intersection):
     server_items = ["Other " + str(2 * i) for i in range(10000)]
 
     fpr = 1.0 / (1000000000)
-    setup = s.CreateSetupMessage(fpr, len(client_items), server_items)
+    setup = s.CreateSetupMessage(fpr, len(client_items), server_items, ds)
     request = c.CreateRequest(client_items)
     resp = s.ProcessRequest(request)
 
