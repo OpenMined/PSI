@@ -11,7 +11,6 @@ from private_set_intersection.proto.psi_python_proto_pb.private_set_intersection
 )
 from enum import Enum
 
-
 __version__ = psi.__version__
 
 
@@ -172,6 +171,7 @@ class server:
 
 
 __all__ = [
+    "DataStructure",
     "client",
     "server",
     "ServerSetup",
