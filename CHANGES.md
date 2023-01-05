@@ -177,7 +177,3 @@ Initial release!
 Feat:
 
 - Data is passed between client and server as json strings for all languages
-
-```
-
-```
