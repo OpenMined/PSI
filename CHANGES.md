@@ -5,7 +5,7 @@ Feat:
 - Update the Python bindings to take in an optional `DataStructure` argument for
   `CreateSetupMessage`. This allows the user to customize the behavior of the
   backing datastructure - i.e. to select between the default (`GCS`) or specify
-  `BloomFilter`. The previous behavior always selected `GCS` so if the parameter
+  `BLOOM_FILTER`. The previous behavior always selected `GCS` so if the parameter
   is omitted, the behavior will remain the same.
 
   Ex:
