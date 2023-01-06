@@ -1,3 +1,10 @@
+# This workflow is where we run tests depending on what files have been
+# modified. This allows us to segment modified areas of the code and run only
+# the tests corresponding to any changes.
+#
+# One exception is that we want to run all tests if the 'core' has been modified in
+# any way.
+
 name: CI
 
 on:
@@ -35,28 +42,20 @@ jobs:
               - 'private_set_intersection/c/**'
               - 'private_set_intersection/cpp/**'
               - 'private_set_intersection/proto/**'
-              - 'private_set_intersection/tools/**'
               - 'private_set_intersection/BUILD'
               - 'private_set_intersection/*.bzl'
+              - 'tools/**'
               - '.clang-format'
               - '.bazelrc'
               - '.bazelversion'
               - 'WORKSPACE'
             go:
               - 'private_set_intersection/go/**'
-              - 'private_set_intersection/proto/**'
-              - 'private_set_intersection/tools/**'
-              - 'private_set_intersection/BUILD'
-              - 'private_set_intersection/*.bzl'
               - '.bazelrc'
               - '.bazelversion'
               - 'WORKSPACE'
             javascript:
               - 'private_set_intersection/javascript/**'
-              - 'private_set_intersection/proto/**'
-              - 'private_set_intersection/tools/**'
-              - 'private_set_intersection/BUILD'
-              - 'private_set_intersection/*.bzl'
               - '*.json'
               - '*.js'
               - '.prettier*'
@@ -66,10 +65,6 @@ jobs:
               - 'WORKSPACE'
             python:
               - 'private_set_intersection/python/**'
-              - 'private_set_intersection/proto/**'
-              - 'private_set_intersection/tools/**'
-              - 'private_set_intersection/BUILD'
-              - 'private_set_intersection/*.bzl'
               - '.flake8'
               - '.pyproject.toml'
               - '.bazelrc'
@@ -77,11 +72,7 @@ jobs:
               - 'WORKSPACE'
             rust:
               - 'private_set_intersection/rust/**'
-              - 'private_set_intersection/third_party/**'
-              - 'private_set_intersection/proto/**'
-              - 'private_set_intersection/tools/**'
-              - 'private_set_intersection/BUILD'
-              - 'private_set_intersection/*.bzl'
+              - 'third_party/**'
               - '.bazelrc'
               - '.bazelversion'
               - 'WORKSPACE'
@@ -103,7 +94,7 @@ jobs:
 
   JS:
     needs: changes
-    if: ${{ needs.changes.outputs.javascript == 'true' }}
+    if: ${{ needs.changes.outputs.core == 'true' || needs.changes.outputs.javascript == 'true' }}
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -116,7 +107,7 @@ jobs:
 
   Python:
     needs: changes
-    if: ${{ needs.changes.outputs.python == 'true' }}
+    if: ${{ needs.changes.outputs.core == 'true' || needs.changes.outputs.python == 'true' }}
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -136,7 +127,7 @@ jobs:
 
   Go:
     needs: changes
-    if: ${{ needs.changes.outputs.go == 'true' }}
+    if: ${{ needs.changes.outputs.core == 'true' || needs.changes.outputs.go == 'true' }}
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -159,7 +150,7 @@ jobs:
 
   Rust:
     needs: changes
-    if: ${{ needs.changes.outputs.rust == 'true' }}
+    if: ${{ needs.changes.outputs.core == 'true' || needs.changes.outputs.rust == 'true' }}
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:

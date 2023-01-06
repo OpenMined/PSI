@@ -1,3 +1,12 @@
+# This workflow is where we publish the PSI library to the various CDNs such as
+# PyPi, NPM, etc.
+#
+# We're making the decision to publish only if all tests for all supported
+# platforms and runtime versions have passed. The accepted tradeoff is that we
+# reduce the risk of publishing builds that are not compatable with each other
+# but increase time to delivery. We're okay with a delay becasue of
+# optimizations in CI testing that offset the turn-around testing bug fixes.
+
 name: CD
 
 on:
