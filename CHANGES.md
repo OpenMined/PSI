@@ -25,7 +25,7 @@ Feat:
   s.CreateSetupMessage(fpr, len(client_items), server_items, psi.DataStructure.GCS)
 
   # Specify BloomFilter
-  s.CreateSetupMessage(fpr, len(client_items), server_items, psi.DataStructure.BloomFilter)
+  s.CreateSetupMessage(fpr, len(client_items), server_items, psi.DataStructure.BLOOM_FILTER)
 
   # ...
   ```
