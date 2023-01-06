@@ -1,3 +1,9 @@
+# Version 1.0.2
+
+Feat:
+
+- This patch version relaxes the Python requirement to allow for older `protobuf` libraries to work with the PSI library.
+
 # Version 1.0.1
 
 Feat:

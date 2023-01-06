@@ -4,4 +4,4 @@ pytest==7.2.0
 pytest-benchmark==4.0.0
 twine==4.0.2
 packaging==22.0
-protobuf==4.21.12 # must be updated in wheel rule!
+protobuf>=3.20 # must be updated in wheel rule!

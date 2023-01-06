@@ -102,7 +102,7 @@ py_wheel(
     }),
     python_requires = ">=3.8",
     python_tag = "INTERPRETER",
-    requires = ["protobuf==4.21.12"],
+    requires = ["protobuf>=3.20"],
     version = VERSION_LABEL,
     deps = [
         ":openmined_psi_pkg",
