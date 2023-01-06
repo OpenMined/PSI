@@ -1,0 +1,176 @@
+name: CI
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+
+# Cancel in progress workflows on pull_requests.
+# https://docs.github.com/en/actions/using-jobs/using-concurrency#example-using-a-fallback-value
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+
+jobs:
+  # JOB to run change detection
+  changes:
+    runs-on: ubuntu-latest
+    # Required permissions
+    permissions:
+      pull-requests: read
+    # Set job outputs to values from filter step
+    outputs:
+      core: ${{ steps.filter.outputs.core }}
+      go: ${{ steps.filter.outputs.go }}
+      javascript: ${{ steps.filter.outputs.javascript }}
+      python: ${{ steps.filter.outputs.python }}
+      rust: ${{ steps.filter.outputs.rust }}
+    steps:
+      # For pull requests it's not necessary to checkout the code
+      - uses: dorny/paths-filter@v2
+        id: filter
+        with:
+          filters: |
+            core:
+              - 'private_set_intersection/c/**'
+              - 'private_set_intersection/cpp/**'
+              - 'private_set_intersection/proto/**'
+              - 'private_set_intersection/tools/**'
+              - 'private_set_intersection/BUILD'
+              - 'private_set_intersection/*.bzl'
+              - '.clang-format'
+              - '.bazelrc'
+              - '.bazelversion'
+              - 'WORKSPACE'
+            go:
+              - 'private_set_intersection/go/**'
+              - 'private_set_intersection/proto/**'
+              - 'private_set_intersection/tools/**'
+              - 'private_set_intersection/BUILD'
+              - 'private_set_intersection/*.bzl'
+              - '.bazelrc'
+              - '.bazelversion'
+              - 'WORKSPACE'
+            javascript:
+              - 'private_set_intersection/javascript/**'
+              - 'private_set_intersection/proto/**'
+              - 'private_set_intersection/tools/**'
+              - 'private_set_intersection/BUILD'
+              - 'private_set_intersection/*.bzl'
+              - '*.json'
+              - '*.js'
+              - '.prettier*'
+              - '.eslint*'
+              - '.bazelrc'
+              - '.bazelversion'
+              - 'WORKSPACE'
+            python:
+              - 'private_set_intersection/python/**'
+              - 'private_set_intersection/proto/**'
+              - 'private_set_intersection/tools/**'
+              - 'private_set_intersection/BUILD'
+              - 'private_set_intersection/*.bzl'
+              - '.flake8'
+              - '.pyproject.toml'
+              - '.bazelrc'
+              - '.bazelversion'
+              - 'WORKSPACE'
+            rust:
+              - 'private_set_intersection/rust/**'
+              - 'private_set_intersection/third_party/**'
+              - 'private_set_intersection/proto/**'
+              - 'private_set_intersection/tools/**'
+              - 'private_set_intersection/BUILD'
+              - 'private_set_intersection/*.bzl'
+              - '.bazelrc'
+              - '.bazelversion'
+              - 'WORKSPACE'
+  Core:
+    needs: changes
+    if: ${{ needs.changes.outputs.core == 'true' }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-22.04, macos-12]
+    steps:
+      - uses: actions/checkout@v3
+      - name: Run tests nix
+        timeout-minutes: 60
+        run: .github/workflows/scripts/run_tests_core.sh
+      - name: Linters
+        run: .github/workflows/scripts/lint_cpp.sh
+        if: ${{ matrix.os == 'ubuntu-22.04' }}
+
+  JS:
+    needs: changes
+    if: ${{ needs.changes.outputs.javascript == 'true' }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-22.04, macos-12]
+    steps:
+      - uses: actions/checkout@v3
+      - name: Run tests nix
+        timeout-minutes: 60
+        run: .github/workflows/scripts/run_tests_js.sh
+
+  Python:
+    needs: changes
+    if: ${{ needs.changes.outputs.python == 'true' }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-22.04, macos-12]
+        python-version: ['3.8', '3.9', '3.10']
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Run tests nix
+        timeout-minutes: 30
+        run: .github/workflows/scripts/run_tests_python.sh
+      - name: Python linters
+        run: .github/workflows/scripts/lint_python.sh
+
+  Go:
+    needs: changes
+    if: ${{ needs.changes.outputs.go == 'true' }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-22.04, macos-12]
+        golang-version: ['1.17', '1.18', '1.19']
+    steps:
+      - name: Set up Golang ${{ matrix.golang-version }}
+        uses: actions/setup-go@v3
+        with:
+          go-version: ${{ matrix.golang-version }}
+        id: go
+      - name: Install Go dependencies
+        run: go install golang.org/x/lint/golint@latest
+      - uses: actions/checkout@v3
+      - name: Run tests nix
+        timeout-minutes: 30
+        run: .github/workflows/scripts/run_tests_go.sh
+      - name: Go linters
+        run: .github/workflows/scripts/lint_go.sh
+
+  Rust:
+    needs: changes
+    if: ${{ needs.changes.outputs.rust == 'true' }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-22.04, macos-12]
+    steps:
+      - name: Install toolchains
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          default: true
+      - uses: actions/checkout@v3
+      - name: Run tests nix
+        timeout-minutes: 30
+        run: .github/workflows/scripts/run_tests_rust.sh
