@@ -8,6 +8,8 @@
 name: CI
 
 on:
+  push:
+    branches: [master]
   pull_request:
 
 # Cancel in progress workflows on pull_requests.
