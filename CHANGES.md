@@ -1,3 +1,9 @@
+# Version 1.0.3
+
+Bugfix:
+
+- The Python builds were using the older `manylinux2014` tagging convention which was causing issues on systems that expected a specific glibc version (Ubuntu 20.04 uses [2.31](https://launchpad.net/ubuntu/+source/glibc)). We now use the latest `manylinux_x_y` tagging convention to accomodate different glibc versions across linux when building wheels. This means we must support `python 3.8.10+, 3.9.5+, 3.10.0+` and `pip >= 20.3` in accordance with [PEP 600](https://github.com/pypa/manylinux)
+
 # Version 1.0.2
 
 Feat:

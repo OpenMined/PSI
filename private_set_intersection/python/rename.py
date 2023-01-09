@@ -1,6 +1,6 @@
 # This file is used to rename the wheel generated via py_wheel with values
 # determined at runtime
-import sys, os, re
+import sys, os, re, platform
 from packaging import tags
 
 
@@ -21,6 +21,13 @@ def main():
     # INTERPRETER and ABI should be the same value
     outfile = re.sub(r"INTERPRETER", abi_tag, inputfile)
     outfile = re.sub(r"ABI", abi_tag, outfile)
+    system = platform.system()
+
+    # Rename the wheel depending on the version of glibc
+    if system.lower() == "linux":
+        version = platform.libc_ver()[1]
+        glibc_version = version.replace(".", "_")
+        outfile = re.sub(r"GLIBC", glibc_version, outfile)
 
     print("renaming ", inputfile, outfile)
     os.rename(inputfile, outfile)
