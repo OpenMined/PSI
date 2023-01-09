@@ -97,7 +97,7 @@ py_wheel(
         "@bazel_tools//src/conditions:windows_arm64": "win_arm64",
         "@bazel_tools//src/conditions:darwin_x86_64": "macosx_12_0_x86_64",
         "@bazel_tools//src/conditions:darwin_arm64": "macosx_12_0_arm64",
-        "@bazel_tools//src/conditions:linux_x86_64": "manylinux2_GLIBC_x86_64",
+        "@bazel_tools//src/conditions:linux_x86_64": "manylinux_GLIBC_x86_64",
         "@bazel_tools//src/conditions:linux_aarch64": "manylinux_GLIBC_aarch64",
     }),
     python_requires = ">=3.8.10",  # Required for linux's wheel naming convention
