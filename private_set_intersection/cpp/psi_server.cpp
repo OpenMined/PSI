@@ -63,7 +63,7 @@ StatusOr<psi_proto::ServerSetup> PsiServer::CreateSetupMessage(
     DataStructure ds) const {
   auto num_inputs = static_cast<int64_t>(inputs.size());
   // Correct fpr to account for multiple client queries.
-  double corrected_fpr = fpr / std::min(num_client_inputs, num_inputs);
+  double corrected_fpr = fpr / std::max(num_client_inputs, num_inputs);
   std::vector<std::string> encrypted;
   encrypted.reserve(num_inputs);
 
