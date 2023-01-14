@@ -2,7 +2,10 @@
 
 Bugfix:
 
-- There was a bug when specifying `bloom_filter` as the backing datastructure and when the client's set was **larger** than the server's set. Now, the intersection (and cardinality) is computed correctly. In the default case, the `GCS` datastructure is used and was unaffected.
+- Fixed an issue when computing the intersection with client's set **larger**
+  than the server's set. In this case, the intersection reported more values
+  than possible. e.g. computing an intersection with a client set of 100 values
+  and server with 10 values sometimes resulted in 12.
 
 # Version 1.0.3
 

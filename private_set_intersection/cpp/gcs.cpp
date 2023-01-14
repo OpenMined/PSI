@@ -35,12 +35,14 @@ GCS::GCS(std::string golomb, int64_t div, int64_t hash_range,
       context_(std::move(context)) {}
 
 StatusOr<std::unique_ptr<GCS>> GCS::Create(
-    double fpr, absl::Span<const std::string> elements) {
+    double fpr, int64_t num_client_inputs,
+    absl::Span<const std::string> elements) {
   if (fpr <= 0 || fpr >= 1) {
     return absl::InvalidArgumentError("`fpr` must be in (0,1)");
   }
 
-  auto hash_range = static_cast<int64_t>(elements.size() / fpr);
+  auto hash_range = static_cast<int64_t>(
+      std::max(num_client_inputs, (int64_t)elements.size()) / fpr);
   std::vector<int64_t> hashes;
   hashes.reserve(elements.size());
   auto context = absl::make_unique<::private_join_and_compute::Context>();
