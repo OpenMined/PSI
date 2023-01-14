@@ -1,3 +1,12 @@
+# Version 1.1.0
+
+Bugfix:
+
+- Fixed an issue when computing an intersection with the client's set **larger**
+  than the server's set. In this case, the intersection reported more values
+  than possible. e.g. computing an intersection with a client set of 100 values
+  and server with 10 values sometimes resulted in 12.
+
 # Version 1.0.3
 
 Bugfix:

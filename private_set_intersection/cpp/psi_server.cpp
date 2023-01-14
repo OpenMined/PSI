@@ -77,7 +77,7 @@ StatusOr<psi_proto::ServerSetup> PsiServer::CreateSetupMessage(
     // Create a GCS and insert elements into it.
     ASSIGN_OR_RETURN(
         auto gcs,
-        GCS::Create(corrected_fpr,
+        GCS::Create(corrected_fpr, num_client_inputs,
                     absl::MakeConstSpan(&encrypted[0], encrypted.size())));
 
     // Return the GCS as a Protobuf
@@ -86,7 +86,7 @@ StatusOr<psi_proto::ServerSetup> PsiServer::CreateSetupMessage(
     // Create a Bloom Filter and insert elements into it.
     ASSIGN_OR_RETURN(auto filter,
                      BloomFilter::Create(
-                         corrected_fpr,
+                         corrected_fpr, num_client_inputs,
                          absl::MakeConstSpan(&encrypted[0], encrypted.size())));
 
     // Return the Bloom Filter as a Protobuf

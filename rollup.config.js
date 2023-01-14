@@ -20,8 +20,8 @@ const outputs = [
       sourcemap: true,
       format: 'cjs',
       name: 'PSI',
-      exports: 'auto'
-      // plugins: [terser()]
+      exports: 'auto',
+      plugins: [terser()]
     },
     plugins: [
       // UGLY hack to 'fix' nodejs complaining about 'window' and 'self'

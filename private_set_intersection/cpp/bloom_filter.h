@@ -45,7 +45,8 @@ class BloomFilter {
   BloomFilter() = delete;
 
   static StatusOr<std::unique_ptr<BloomFilter>> Create(
-      double fpr, absl::Span<const std::string> elements);
+      double fpr, int64_t num_client_inputs,
+      absl::Span<const std::string> elements);
 
   // Creates a new Bloom filter. As long as less than `max_elements` are
   // inserted, the probability of false positives when performing checks

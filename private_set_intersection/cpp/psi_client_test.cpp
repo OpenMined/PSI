@@ -55,7 +55,8 @@ class PsiClientTest : public ::testing::Test {
     // Insert server elements into GCS.
     PSI_ASSERT_OK_AND_ASSIGN(
         auto gcs,
-        GCS::Create(fpr, absl::MakeConstSpan(&elements[0], elements.size())));
+        GCS::Create(fpr, (int64_t)elements.size(),
+                    absl::MakeConstSpan(&elements[0], elements.size())));
     *server_setup = gcs->ToProtobuf();
   }
 

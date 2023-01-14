@@ -33,7 +33,8 @@ class GCS {
   GCS() = delete;
 
   static StatusOr<std::unique_ptr<GCS>> Create(
-      double fpr, absl::Span<const std::string> elements);
+      double fpr, int64_t num_client_inputs,
+      absl::Span<const std::string> elements);
 
   static StatusOr<std::unique_ptr<GCS>> CreateFromProtobuf(
       const psi_proto::ServerSetup& encoded_set);
