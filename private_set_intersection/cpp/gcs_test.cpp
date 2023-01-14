@@ -30,13 +30,14 @@ namespace {
 
 TEST(GCSTest, TestIntersect) {
   std::vector<std::string> elements = {"a", "b", "c", "d"};
+  std::vector<std::string> elements2 = {"a", "b", "d", "e"};
 
   std::unique_ptr<GCS> gcs;
   PSI_ASSERT_OK_AND_ASSIGN(
       gcs,
-      GCS::Create(0.001, absl::MakeConstSpan(&elements[0], elements.size())));
+      GCS::Create(0.001, (int64_t)std::max(elements.size(), elements2.size()),
+                  absl::MakeConstSpan(&elements[0], elements.size())));
 
-  std::vector<std::string> elements2 = {"a", "b", "d", "e"};
   std::vector<int64_t> intersect = {0, 1, 2};
 
   auto res =
@@ -63,7 +64,7 @@ TEST(GCSTest, TestFPR) {
 
     std::unique_ptr<GCS> gcs;
     PSI_ASSERT_OK_AND_ASSIGN(
-        gcs, GCS::Create(target_fpr,
+        gcs, GCS::Create(target_fpr, (int64_t)elements.size(),
                          absl::MakeConstSpan(&elements[0], elements.size())));
 
     // Test 10k elements to measure FPR.
@@ -98,8 +99,8 @@ TEST(GCSTest, TestToProtobuf) {
 
   std::unique_ptr<GCS> gcs;
   PSI_ASSERT_OK_AND_ASSIGN(
-      gcs,
-      GCS::Create(fpr, absl::MakeConstSpan(&elements[0], elements.size())));
+      gcs, GCS::Create(fpr, (int64_t)elements.size(),
+                       absl::MakeConstSpan(&elements[0], elements.size())));
 
   // Create the protobuf from the GCS and check if it matches.
   psi_proto::ServerSetup encoded_gcs = gcs->ToProtobuf();
@@ -110,17 +111,18 @@ TEST(GCSTest, TestToProtobuf) {
 
 TEST(GCSTest, TestCreateFromProtobuf) {
   std::vector<std::string> elements = {"a", "b", "c", "d"};
+  std::vector<std::string> elements2 = {"a", "b", "c", "d", "not present"};
 
   std::unique_ptr<GCS> gcs;
   PSI_ASSERT_OK_AND_ASSIGN(
       gcs,
-      GCS::Create(0.001, absl::MakeConstSpan(&elements[0], elements.size())));
+      GCS::Create(0.001, (int64_t)std::max(elements.size(), elements2.size()),
+                  absl::MakeConstSpan(&elements[0], elements.size())));
 
   psi_proto::ServerSetup encoded_gcs = gcs->ToProtobuf();
   std::unique_ptr<GCS> gcs2;
   PSI_ASSERT_OK_AND_ASSIGN(gcs2, GCS::CreateFromProtobuf(encoded_gcs));
 
-  std::vector<std::string> elements2 = {"a", "b", "c", "d", "not present"};
   auto res =
       gcs2->Intersect(absl::MakeConstSpan(&elements2[0], elements2.size()));
   std::vector<int64_t> intersect = {0, 1, 2, 3};
@@ -149,7 +151,7 @@ TEST(GCSTest, TestGolombSize) {
   for (size_t i = 0; i < sizeof(fpr) / sizeof(double); i++) {
     std::unique_ptr<GCS> gcs;
     PSI_ASSERT_OK_AND_ASSIGN(
-        gcs, GCS::Create(fpr[i],
+        gcs, GCS::Create(fpr[i], (int64_t)elements.size(),
                          absl::MakeConstSpan(&elements[0], elements.size())));
     auto res =
         gcs->Intersect(absl::MakeConstSpan(&elements[0], elements.size()));
