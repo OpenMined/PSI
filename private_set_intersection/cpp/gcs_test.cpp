@@ -31,12 +31,13 @@ namespace {
 TEST(GCSTest, TestIntersect) {
   std::vector<std::string> elements = {"a", "b", "c", "d"};
   std::vector<std::string> elements2 = {"a", "b", "d", "e"};
+  auto max_inputs =
+      static_cast<int64_t>(std::max(elements.size(), elements2.size()));
 
   std::unique_ptr<GCS> gcs;
   PSI_ASSERT_OK_AND_ASSIGN(
-      gcs,
-      GCS::Create(0.001, (int64_t)std::max(elements.size(), elements2.size()),
-                  absl::MakeConstSpan(&elements[0], elements.size())));
+      gcs, GCS::Create(0.001, max_inputs,
+                       absl::MakeConstSpan(&elements[0], elements.size())));
 
   std::vector<int64_t> intersect = {0, 1, 2};
 
@@ -112,12 +113,13 @@ TEST(GCSTest, TestToProtobuf) {
 TEST(GCSTest, TestCreateFromProtobuf) {
   std::vector<std::string> elements = {"a", "b", "c", "d"};
   std::vector<std::string> elements2 = {"a", "b", "c", "d", "not present"};
+  auto max_inputs =
+      static_cast<int64_t>(std::max(elements.size(), elements2.size()));
 
   std::unique_ptr<GCS> gcs;
   PSI_ASSERT_OK_AND_ASSIGN(
-      gcs,
-      GCS::Create(0.001, (int64_t)std::max(elements.size(), elements2.size()),
-                  absl::MakeConstSpan(&elements[0], elements.size())));
+      gcs, GCS::Create(0.001, max_inputs,
+                       absl::MakeConstSpan(&elements[0], elements.size())));
 
   psi_proto::ServerSetup encoded_gcs = gcs->ToProtobuf();
   std::unique_ptr<GCS> gcs2;

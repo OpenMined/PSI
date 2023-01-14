@@ -35,11 +35,9 @@ BloomFilter::BloomFilter(
 StatusOr<std::unique_ptr<BloomFilter>> BloomFilter::Create(
     double fpr, int64_t num_client_inputs,
     absl::Span<const std::string> elements) {
-  // To account for the asymmetric case where the number of client inputs is
-  // greater than the server's, select the maximum between the two.
-  ASSIGN_OR_RETURN(
-      auto filter,
-      CreateEmpty(fpr, std::max(num_client_inputs, (int64_t)elements.size())));
+  auto num_server_inputs = static_cast<int64_t>(elements.size());
+  ASSIGN_OR_RETURN(auto filter, CreateEmpty(fpr, std::max(num_client_inputs,
+                                                          num_server_inputs)));
 
   filter->Add(elements);
   // This move seems to be needed for some versions of GCC. See for example this

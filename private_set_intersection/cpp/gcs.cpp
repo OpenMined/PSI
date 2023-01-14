@@ -40,9 +40,9 @@ StatusOr<std::unique_ptr<GCS>> GCS::Create(
   if (fpr <= 0 || fpr >= 1) {
     return absl::InvalidArgumentError("`fpr` must be in (0,1)");
   }
-
+  auto num_server_inputs = static_cast<int64_t>(elements.size());
   auto hash_range = static_cast<int64_t>(
-      std::max(num_client_inputs, (int64_t)elements.size()) / fpr);
+      std::max(num_client_inputs, num_server_inputs) / fpr);
   std::vector<int64_t> hashes;
   hashes.reserve(elements.size());
   auto context = absl::make_unique<::private_join_and_compute::Context>();
