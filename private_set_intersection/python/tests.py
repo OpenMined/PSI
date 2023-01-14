@@ -60,7 +60,7 @@ def test_large_client_small_server(ds, reveal_intersection, duplicate):
     client_items = ["Element " + str(i) for i in range(1000)]
     server_items = ["Element " + str(2 * i) for i in range(10)]
 
-    fpr = 1.0e-1
+    fpr = 1.0e-9
     setup = dup(
         duplicate, s.CreateSetupMessage(fpr, len(client_items), server_items, ds), psi.ServerSetup()
     )
