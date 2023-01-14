@@ -1,3 +1,9 @@
+# Version 1.1.0
+
+Bugfix:
+
+- There was a bug when specifying `bloom_filter` as the backing datastructure and when the client's set was **larger** than the server's set. Now, the intersection (and cardinality) is computed correctly. In the default case, the `GCS` datastructure is used and was unaffected.
+
 # Version 1.0.3
 
 Bugfix:

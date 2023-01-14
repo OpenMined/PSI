@@ -63,7 +63,10 @@ StatusOr<psi_proto::ServerSetup> PsiServer::CreateSetupMessage(
     DataStructure ds) const {
   auto num_inputs = static_cast<int64_t>(inputs.size());
   // Correct fpr to account for multiple client queries.
-  double corrected_fpr = fpr / num_client_inputs;
+  // To account for the asymmetric case where the number of client inputs is
+  // greater than the server's, select the maximum between the two.
+  double corrected_fpr =
+      fpr / std::max(num_client_inputs, (int64_t)inputs.size());
   std::vector<std::string> encrypted;
   encrypted.reserve(num_inputs);
 
@@ -86,7 +89,7 @@ StatusOr<psi_proto::ServerSetup> PsiServer::CreateSetupMessage(
     // Create a Bloom Filter and insert elements into it.
     ASSIGN_OR_RETURN(auto filter,
                      BloomFilter::Create(
-                         corrected_fpr,
+                         corrected_fpr, num_client_inputs,
                          absl::MakeConstSpan(&encrypted[0], encrypted.size())));
 
     // Return the Bloom Filter as a Protobuf
