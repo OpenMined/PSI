@@ -56,7 +56,7 @@ describe('PSI Server', () => {
     )
 
     const numHashFunctions = setup.getBloomFilter()!.getNumHashFunctions()
-    expect(numHashFunctions).toStrictEqual(17)
+    expect(numHashFunctions).toStrictEqual(14)
     const bits = setup.getBits()
     expect(bits.constructor).toStrictEqual(Uint8Array)
   })
@@ -75,7 +75,7 @@ describe('PSI Server', () => {
     )
 
     const hashRange = setup.getGcs()!.getHashRange()
-    expect(hashRange).toStrictEqual(10000000)
+    expect(hashRange).toStrictEqual(1000000)
     const bits = setup.getBits()
     expect(bits.constructor).toStrictEqual(Uint8Array)
   })
@@ -101,8 +101,8 @@ describe('PSI Server', () => {
   test('It should fail to create a setup message', async () => {
     const server = psi.server!.createWithNewKey()
     const fpr = 0.001
-    const numClientElements = 0
-    const serverInputs = Array.from({ length: 0 }, (_, i) => `Element ${i}`)
+    const numClientElements = Infinity
+    const serverInputs = Array.from({ length: 100 }, (_, i) => `Element ${i}`)
 
     expect(
       server.createSetupMessage.bind(
