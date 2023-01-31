@@ -7,7 +7,7 @@ from enum import Enum
 
 
 class ABIVersion(Enum):
-    MANY_LINUX_X_Y = "manylinux_" + platform.libc_ver()[1].replace(".", "_")
+    MANY_LINUX_X_Y = "manylinux_" + str(platform.libc_ver()[1].replace(".", "_"))
     MANY_LINUX_2014 = "manylinux2014"
     MANY_LINUX_2010 = "manylinux2010"
 
@@ -45,10 +45,10 @@ def main():
     # We rename the wheel depending on the version of python and glibc
     if system.lower() == "linux":
         current_version = version.parse(python_version())
-        manylinux = ABIVersion.MANY_LINUX_X_Y.value()
+        manylinux = ABIVersion.MANY_LINUX_X_Y.value
         for (ver, ml) in python_versions.items():
             if current_version >= ver:
-                manylinux = ml.value()
+                manylinux = ml.value
                 break
 
         outfile = re.sub(r"LINUX", manylinux, outfile)
