@@ -1,3 +1,9 @@
+# Version 1.1.1
+
+Chore:
+
+- Publish new `python` wheels to support `3.8.0+`
+
 # Version 1.1.0
 
 Bugfix:
