@@ -12,14 +12,14 @@ class ABIVersion(Enum):
     MANY_LINUX_2010 = "manylinux2010"
 
 
-# In python 3.7+, insertion order is guaranteed
+# NOTE: Order matters
 python_versions = {
     version.parse("3.10.0"): ABIVersion.MANY_LINUX_X_Y,
     version.parse("3.9.5"): ABIVersion.MANY_LINUX_X_Y,
     version.parse("3.9.0"): ABIVersion.MANY_LINUX_2014,
     version.parse("3.8.10"): ABIVersion.MANY_LINUX_X_Y,
     version.parse("3.8.4"): ABIVersion.MANY_LINUX_2014,
-    version.parse("3.8.0"): ABIVersion.MANY_LINUX_2010,
+    version.parse("3.8.0"): ABIVersion.MANY_LINUX_2010,  # Fails for aarch64
 }
 
 
