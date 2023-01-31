@@ -12,6 +12,9 @@ class ABIVersion(Enum):
     MANY_LINUX_2010 = "manylinux2010"
 
 
+# We rely on the bundled pip versions installed with python to determine the
+# naming variant: https://github.com/pypa/manylinux
+#
 # NOTE: Order matters
 python_versions = {
     version.parse("3.10.0"): ABIVersion.MANY_LINUX_X_Y,
