@@ -7,7 +7,7 @@ from enum import Enum
 
 
 class ABIVersion(Enum):
-    MANY_LINUX_X_Y = "manylinux_" + str(platform.libc_ver()[1].replace(".", "_"))
+    MANY_LINUX_X_Y = "manylinux_" + platform.libc_ver()[1].replace(".", "_")
     MANY_LINUX_2014 = "manylinux2014"
     MANY_LINUX_2010 = "manylinux2010"
 
