@@ -20,13 +20,12 @@
 #include "absl/status/statusor.h"
 #include "absl/types/span.h"
 #include "private_join_and_compute/crypto/ec_commutative_cipher.h"
+#include "private_set_intersection/cpp/datastructure/datastructure.h"
 #include "private_set_intersection/proto/psi.pb.h"
 
 namespace private_set_intersection {
 
 using absl::StatusOr;
-
-enum class DataStructure { GCS, BloomFilter };
 
 // The server side of a Private Set Intersection protocol.
 // See the documentation in PsiClient for a full description of the
@@ -51,26 +50,30 @@ class PsiServer {
   static StatusOr<std::unique_ptr<PsiServer>> CreateFromKey(
       const std::string& key_bytes, bool reveal_intersection);
 
-  // Creates a setup message from the server's dataset to be sent to the
-  // client. The setup message is a set containing
-  // H(x)^s for each element x in `inputs`, where s is the server's secret
-  // key. The setup is sent to the client as a serialized protobuf with
-  // the following form:
+  // Creates a setup message from the server's dataset to be sent to the client.
+  // The setup message is a set containing H(x)^s for each element x in
+  // `inputs`, where s is the server's secret key. The setup is sent to the
+  // client as a serialized protobuf with the following form:
   //
   //   {
   //     "num_hash_functions": <int>,
   //     "bits": <string>
   //   }
   //
-  // `bits` is a binary string.
-  // The false-positive rate `fpr` is the probability that any query of size
-  // `num_client_inputs` will result in a false positive.
+  // `bits` is a binary string. The false-positive rate `fpr` is the probability
+  // that any query of size `num_client_inputs` will result in a false positive.
   //
   // By default, Golomb Compressed Sets are used as the underlying set data
-  // structure. If the number of client elements is expected to be orders
-  // of magnitude lower than the number of server elements, then Bloom
-  // Filters may be faster. Otherwise, Golomb Compressed Sets can achieve
-  // better compression, so it is better for network transfer.
+  // structure. If the number of client elements is expected to be orders of
+  // magnitude lower than the number of server elements, then Bloom Filters may
+  // be faster. Otherwise, Golomb Compressed Sets can achieve better
+  // compression, so it is better for network transfer.
+  //
+  // NOTE: If DataStructure::Raw is specified, the protocol will use raw
+  // encrypted values and intersection calculations will not have false
+  // positive. This means the `fpr` parameter is ignored, but comes at the cost
+  // of larger communication costs. Specifying DataStructure::Raw is useful if
+  // you must have correctness.
   //
   // Returns INTERNAL if encryption fails.
   StatusOr<psi_proto::ServerSetup> CreateSetupMessage(

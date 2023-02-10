@@ -22,7 +22,7 @@
 #include "gtest/gtest.h"
 #include "private_join_and_compute/crypto/ec_commutative_cipher.h"
 #include "private_set_intersection/c/internal_utils.h"
-#include "private_set_intersection/cpp/bloom_filter.h"
+#include "private_set_intersection/cpp/datastructure/bloom_filter.h"
 #include "util/status_matchers.h"
 
 namespace private_set_intersection {

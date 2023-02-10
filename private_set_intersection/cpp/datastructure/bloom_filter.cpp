@@ -14,7 +14,7 @@
 // limitations under the License.
 //
 
-#include "private_set_intersection/cpp/bloom_filter.h"
+#include "private_set_intersection/cpp/datastructure/bloom_filter.h"
 
 #include <cmath>
 
@@ -71,9 +71,9 @@ StatusOr<std::unique_ptr<BloomFilter>> BloomFilter::CreateFromProtobuf(
   }
 
   auto context = absl::make_unique<::private_join_and_compute::Context>();
-  return absl::WrapUnique(
-      new BloomFilter(encoded_filter.bloom_filter().num_hash_functions(),
-                      std::move(encoded_filter.bits()), std::move(context)));
+  return absl::WrapUnique(new BloomFilter(
+      encoded_filter.bloom_filter().num_hash_functions(),
+      std::move(encoded_filter.bloom_filter().bits()), std::move(context)));
 }
 
 void BloomFilter::Add(const std::string& input) {
@@ -113,7 +113,7 @@ psi_proto::ServerSetup BloomFilter::ToProtobuf() const {
   psi_proto::ServerSetup server_setup;
   server_setup.mutable_bloom_filter()->set_num_hash_functions(
       NumHashFunctions());
-  server_setup.set_bits(bits_);
+  server_setup.mutable_bloom_filter()->set_bits(bits_);
   return server_setup;
 }
 

@@ -22,8 +22,8 @@
 #include "absl/strings/escaping.h"
 #include "absl/strings/str_cat.h"
 #include "openssl/obj_mac.h"
-#include "private_set_intersection/cpp/bloom_filter.h"
-#include "private_set_intersection/cpp/gcs.h"
+#include "private_set_intersection/cpp/datastructure/bloom_filter.h"
+#include "private_set_intersection/cpp/datastructure/gcs.h"
 #include "private_set_intersection/proto/psi.pb.h"
 
 namespace private_set_intersection {

@@ -127,7 +127,11 @@ def test_serialization_setup_msg(ds, reveal_intersection):
     recreated = psi.ServerSetup()
     recreated.ParseFromString(buff)
     assert isinstance(buff, bytes)
-    assert setup.bits == recreated.bits
+
+    if reveal_intersection == psi.DataStructure.GCS:
+        assert setup.bits == recreated.gcs().bits
+    if reveal_intersection == psi.DataStructure.GCS:
+        assert setup.bits == recreated.bloom_filter().bits
 
 
 @pytest.mark.parametrize("reveal_intersection", [False, True])

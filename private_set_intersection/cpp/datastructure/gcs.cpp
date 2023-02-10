@@ -14,7 +14,7 @@
 // limitations under the License.
 //
 
-#include "private_set_intersection/cpp/gcs.h"
+#include "private_set_intersection/cpp/datastructure/gcs.h"
 
 #include <algorithm>
 #include <cmath>
@@ -22,7 +22,7 @@
 
 #include "absl/memory/memory.h"
 #include "absl/strings/escaping.h"
-#include "private_set_intersection/cpp/golomb.h"
+#include "private_set_intersection/cpp/datastructure/golomb.h"
 #include "private_set_intersection/proto/psi.pb.h"
 
 namespace private_set_intersection {
@@ -65,7 +65,7 @@ StatusOr<std::unique_ptr<GCS>> GCS::CreateFromProtobuf(
   }
 
   auto context = absl::make_unique<::private_join_and_compute::Context>();
-  return absl::WrapUnique(new GCS(std::move(encoded_set.bits()),
+  return absl::WrapUnique(new GCS(std::move(encoded_set.gcs().bits()),
                                   static_cast<int64_t>(encoded_set.gcs().div()),
                                   encoded_set.gcs().hash_range(),
                                   std::move(context)));
@@ -91,7 +91,7 @@ std::vector<int64_t> GCS::Intersect(
 
 psi_proto::ServerSetup GCS::ToProtobuf() const {
   psi_proto::ServerSetup server_setup;
-  server_setup.set_bits(golomb_);
+  server_setup.mutable_gcs()->set_bits(golomb_);
   server_setup.mutable_gcs()->set_div(static_cast<int32_t>(div_));
   server_setup.mutable_gcs()->set_hash_range(hash_range_);
   return server_setup;

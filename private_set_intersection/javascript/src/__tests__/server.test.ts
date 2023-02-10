@@ -57,7 +57,7 @@ describe('PSI Server', () => {
 
     const numHashFunctions = setup.getBloomFilter()!.getNumHashFunctions()
     expect(numHashFunctions).toStrictEqual(14)
-    const bits = setup.getBits()
+    const bits = setup.getBloomFilter()!.getBits()
     expect(bits.constructor).toStrictEqual(Uint8Array)
   })
 
@@ -76,7 +76,7 @@ describe('PSI Server', () => {
 
     const hashRange = setup.getGcs()!.getHashRange()
     expect(hashRange).toStrictEqual(1000000)
-    const bits = setup.getBits()
+    const bits = setup.getGcs()!.getBits()
     expect(bits.constructor).toStrictEqual(Uint8Array)
   })
 

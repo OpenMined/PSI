@@ -22,8 +22,9 @@
 #include "absl/strings/escaping.h"
 #include "absl/strings/str_cat.h"
 #include "openssl/obj_mac.h"
-#include "private_set_intersection/cpp/bloom_filter.h"
-#include "private_set_intersection/cpp/gcs.h"
+#include "private_set_intersection/cpp/datastructure/bloom_filter.h"
+#include "private_set_intersection/cpp/datastructure/gcs.h"
+#include "private_set_intersection/cpp/datastructure/raw.h"
 #include "private_set_intersection/proto/psi.pb.h"
 
 namespace private_set_intersection {
@@ -73,26 +74,37 @@ StatusOr<psi_proto::ServerSetup> PsiServer::CreateSetupMessage(
     encrypted.push_back(encrypted_element);
   }
 
-  if (ds == DataStructure::GCS) {
-    // Create a GCS and insert elements into it.
-    ASSIGN_OR_RETURN(
-        auto gcs,
-        GCS::Create(corrected_fpr, num_client_inputs,
-                    absl::MakeConstSpan(&encrypted[0], encrypted.size())));
+  switch (ds) {
+    case DataStructure::GCS: {
+      // Create a GCS and insert elements into it.
+      ASSIGN_OR_RETURN(
+          auto gcs,
+          GCS::Create(corrected_fpr, num_client_inputs,
+                      absl::MakeConstSpan(&encrypted[0], encrypted.size())));
 
-    // Return the GCS as a Protobuf
-    return gcs->ToProtobuf();
-  } else if (ds == DataStructure::BloomFilter) {
-    // Create a Bloom Filter and insert elements into it.
-    ASSIGN_OR_RETURN(auto filter,
-                     BloomFilter::Create(
-                         corrected_fpr, num_client_inputs,
-                         absl::MakeConstSpan(&encrypted[0], encrypted.size())));
+      // Return the GCS as a Protobuf
+      return gcs->ToProtobuf();
+    }
+    case DataStructure::BloomFilter: {
+      // Create a Bloom Filter and insert elements into it.
+      ASSIGN_OR_RETURN(auto filter, BloomFilter::Create(
+                                        corrected_fpr, num_client_inputs,
+                                        absl::MakeConstSpan(&encrypted[0],
+                                                            encrypted.size())));
 
-    // Return the Bloom Filter as a Protobuf
-    return filter->ToProtobuf();
-  } else {
-    return absl::InvalidArgumentError("Impossible");
+      // Return the Bloom Filter as a Protobuf
+      return filter->ToProtobuf();
+    }
+    case DataStructure::Raw: {
+      // Create a Raw container and insert elements into it.
+      ASSIGN_OR_RETURN(auto raw,
+                       Raw::Create(num_client_inputs, std::move(encrypted)));
+
+      // Return the Raw container as a Protobuf
+      return raw->ToProtobuf();
+    }
+    default:
+      return absl::InvalidArgumentError("Impossible");
   }
 }
 
