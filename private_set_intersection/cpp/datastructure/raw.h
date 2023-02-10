@@ -36,10 +36,8 @@ class Raw {
   static StatusOr<std::unique_ptr<Raw>> Create(
       int64_t num_client_inputs, std::vector<std::string> elements);
 
-  // Creates a container containing the bits of the passed protobuf, and the
-  // given number of hash functions.
-  //
-  // Returns INVALID_ARGUMENT if `bits` is empty.
+  // Creates a container containing holding encrypted values from a protocol
+  // buffer
   static StatusOr<std::unique_ptr<Raw>> CreateFromProtobuf(
       const psi_proto::ServerSetup& encoded_filter);
 

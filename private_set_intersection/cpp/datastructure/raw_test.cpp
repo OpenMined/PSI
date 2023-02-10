@@ -48,7 +48,7 @@ TEST_F(RawTest, TestAdd) {
 }
 
 TEST_F(RawTest, TestToProtobuf) {
-  std::vector<std::string> server = {"a", "b", "c", "d", "e"};
+  std::vector<std::string> server = {"b", "a", "c", "d", "e"};
   std::vector<std::string> client = {"z", "b", "c", "d"};
 
   SetUp(static_cast<int64_t>(client.size()), server);
@@ -58,8 +58,9 @@ TEST_F(RawTest, TestToProtobuf) {
   EXPECT_EQ(encoded_filter.raw().encrypted_elements().size(),
             container_->size());
 
-  // Ensure ordering is preserved
-  EXPECT_EQ(encoded_filter.raw().encrypted_elements()[0], server[0]);
+  // In Raw mode, the encrypted results are sorted so this check
+  // is to verify we're performing a sort correctly.
+  EXPECT_EQ(encoded_filter.raw().encrypted_elements()[0], "a");
 }
 
 TEST_F(RawTest, TestCreateFromProtobuf) {
