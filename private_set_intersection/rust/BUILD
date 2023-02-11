@@ -20,7 +20,7 @@ rust_library(
 )
 
 rust_test(
-    name = "rust_psi_unit_test",
+    name = "rust_version",
     crate = ":rust_psi",
     deps = [
         "//third_party/cargo/cargo:semver",
@@ -28,8 +28,8 @@ rust_test(
 )
 
 rust_test(
-    name = "rust_psi_test",
-    srcs = ["tests/client_server_test.rs"],
+    name = "rust_integration",
+    srcs = ["tests/integration_test.rs"],
     deps = [
         ":rust_psi",
     ],
