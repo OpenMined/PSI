@@ -71,15 +71,19 @@ import (
 	"runtime"
 	"unsafe"
 
-	"github.com/golang/protobuf/proto"
 	psi_proto "github.com/openmined/psi/pb"
 	"github.com/openmined/psi/version"
+	"google.golang.org/protobuf/proto"
 )
 
 // PsiServer context for the server side of a Private Set Intersection protocol.
 type PsiServer struct {
 	context C.psi_server_ctx
 }
+
+// type PsiDatastructure struct {
+// 	datastructure C.psi_datastructure
+// }
 
 // CreateWithNewKey creates and returns a new server instance with a fresh private key.
 //

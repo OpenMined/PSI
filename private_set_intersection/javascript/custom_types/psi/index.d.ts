@@ -64,8 +64,9 @@ declare module 'psi_*' {
   }
 
   export type DataStructure = {
-    readonly BloomFilter: any
+    readonly Raw: any
     readonly GCS: any
+    readonly BloomFilter: any
   }
 
   export type Library = {

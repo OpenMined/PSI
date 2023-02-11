@@ -71,9 +71,9 @@ import (
 	"runtime"
 	"unsafe"
 
-	"github.com/golang/protobuf/proto"
 	psi_proto "github.com/openmined/psi/pb"
 	"github.com/openmined/psi/version"
+	"google.golang.org/protobuf/proto"
 )
 
 // PsiClient context for the client side of a Private Set Intersection protocol.
