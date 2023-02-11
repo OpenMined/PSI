@@ -12,6 +12,14 @@ const serverKey = Uint8Array.from([
 const fpr = 0.001
 const numClientElements = 10
 const numServerElements = 100
+const clientInputs = Array.from(
+  { length: numClientElements },
+  (_, i) => `Element ${i}`
+)
+const serverInputs = Array.from(
+  { length: numServerElements },
+  (_, i) => `Element ${i * 2}`
+)
 let psi: PSILibrary
 
 beforeAll(async () => {
@@ -34,14 +42,6 @@ describe('PSI Integration', () => {
       const client = psi.client!.createFromKey(clientKey, true)
       const server = psi.server!.createFromKey(serverKey, true)
 
-      const clientInputs = Array.from(
-        { length: numClientElements },
-        (_, i) => `Element ${i}`
-      )
-      const serverInputs = Array.from(
-        { length: numServerElements },
-        (_, i) => `Element ${i * 2}`
-      )
       const serverSetup = server
         .createSetupMessage(fpr, numClientElements, serverInputs, dataStructure)
         .serializeBinary()
@@ -69,14 +69,6 @@ describe('PSI Integration', () => {
       const client = psi.client!.createFromKey(clientKey, true)
       const server = psi.server!.createFromKey(serverKey, true)
 
-      const clientInputs = Array.from(
-        { length: numClientElements },
-        (_, i) => `Element ${i}`
-      )
-      const serverInputs = Array.from(
-        { length: numServerElements },
-        (_, i) => `Element ${i * 2}`
-      )
       const serverSetup = server
         .createSetupMessage(fpr, numClientElements, serverInputs, dataStructure)
         .serializeBinary()

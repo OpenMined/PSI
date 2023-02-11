@@ -78,30 +78,31 @@ StatusOr<psi_proto::ServerSetup> PsiServer::CreateSetupMessage(
     case DataStructure::GCS: {
       // Create a GCS and insert elements into it.
       ASSIGN_OR_RETURN(
-          auto gcs,
+          auto container,
           GCS::Create(corrected_fpr, num_client_inputs,
                       absl::MakeConstSpan(&encrypted[0], encrypted.size())));
 
       // Return the GCS as a Protobuf
-      return gcs->ToProtobuf();
+      return container->ToProtobuf();
     }
     case DataStructure::BloomFilter: {
       // Create a Bloom Filter and insert elements into it.
-      ASSIGN_OR_RETURN(auto filter, BloomFilter::Create(
-                                        corrected_fpr, num_client_inputs,
-                                        absl::MakeConstSpan(&encrypted[0],
-                                                            encrypted.size())));
+      ASSIGN_OR_RETURN(
+          auto container,
+          BloomFilter::Create(
+              corrected_fpr, num_client_inputs,
+              absl::MakeConstSpan(&encrypted[0], encrypted.size())));
 
       // Return the Bloom Filter as a Protobuf
-      return filter->ToProtobuf();
+      return container->ToProtobuf();
     }
     case DataStructure::Raw: {
       // Create a Raw container and insert elements into it.
-      ASSIGN_OR_RETURN(auto raw,
+      ASSIGN_OR_RETURN(auto container,
                        Raw::Create(num_client_inputs, std::move(encrypted)));
 
       // Return the Raw container as a Protobuf
-      return raw->ToProtobuf();
+      return container->ToProtobuf();
     }
     default:
       return absl::InvalidArgumentError("Impossible");
