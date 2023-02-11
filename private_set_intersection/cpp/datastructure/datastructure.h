@@ -16,10 +16,20 @@
 #ifndef PRIVATE_SET_INTERSECTION_CPP_DATASTRUCTURE_H_
 #define PRIVATE_SET_INTERSECTION_CPP_DATASTRUCTURE_H_
 
+#ifdef __cplusplus
 namespace private_set_intersection {
+extern "C" {
+#endif
 
-enum class DataStructure { Raw, GCS, BloomFilter };
+typedef enum DataStructure {
+  Raw = 0,
+  Gcs = 1,
+  BloomFilter = 2,
+} datastructure_t;
 
-}  // namespace private_set_intersection
+#ifdef __cplusplus
+}
+}
+#endif
 
 #endif  // PRIVATE_SET_INTERSECTION_CPP_DATASTRUCTURE_H_

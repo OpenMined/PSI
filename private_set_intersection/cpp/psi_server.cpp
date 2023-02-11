@@ -75,7 +75,7 @@ StatusOr<psi_proto::ServerSetup> PsiServer::CreateSetupMessage(
   }
 
   switch (ds) {
-    case DataStructure::GCS: {
+    case DataStructure::Gcs: {
       // Create a GCS and insert elements into it.
       ASSIGN_OR_RETURN(
           auto container,

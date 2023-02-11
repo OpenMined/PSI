@@ -42,7 +42,7 @@ void bind(pybind11::module& m) {
 
   py::enum_<psi::DataStructure>(m, "data_structure", py::arithmetic())
       .value("Raw", psi::DataStructure::Raw)
-      .value("GCS", psi::DataStructure::GCS)
+      .value("GCS", psi::DataStructure::Gcs)
       .value("BloomFilter", psi::DataStructure::BloomFilter);
 
   py::class_<psi_proto::ServerSetup>(m, "cpp_proto_server_setup")

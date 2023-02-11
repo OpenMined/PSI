@@ -21,6 +21,7 @@
 #include "gtest/gtest.h"
 #include "private_join_and_compute/crypto/ec_commutative_cipher.h"
 #include "private_set_intersection/c/psi_client.h"
+#include "private_set_intersection/cpp/datastructure/datastructure.h"
 #include "util/status_matchers.h"
 
 namespace private_set_intersection {
@@ -68,7 +69,8 @@ void test_correctness(bool reveal_intersection) {
   size_t server_setup_buff_len = 0;
   psi_server_create_setup_message(
       server, fpr, num_client_elements, server_elements.data(),
-      server_elements.size(), &server_setup, &server_setup_buff_len, &err);
+      server_elements.size(), &server_setup, &server_setup_buff_len, &err,
+      DataStructure::Gcs);
 
   ASSERT_TRUE(server_setup != nullptr);
   ASSERT_TRUE(server_setup_buff_len != 0);

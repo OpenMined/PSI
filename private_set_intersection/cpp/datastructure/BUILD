@@ -27,7 +27,7 @@ PSI_LINKOPTS = select({
 })
 
 cc_library(
-    name = "datastructures",
+    name = "datastructure",
     hdrs = ["datastructure.h"],
 )
 

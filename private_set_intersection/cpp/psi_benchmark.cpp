@@ -32,19 +32,19 @@ void BM_ServerSetup(benchmark::State& state, double fpr,
 // Range is for the number of inputs, and the captured argument is the false
 // positive rate for 10k client queries.
 BENCHMARK_CAPTURE(BM_ServerSetup, 0.001 size gcs, 0.001, false,
-                  DataStructure::GCS)
+                  DataStructure::Gcs)
     ->RangeMultiplier(10)
     ->Range(1, 100000);
 BENCHMARK_CAPTURE(BM_ServerSetup, 0.000001 size gcs, 0.000001, false,
-                  DataStructure::GCS)
+                  DataStructure::Gcs)
     ->RangeMultiplier(10)
     ->Range(1, 100000);
 BENCHMARK_CAPTURE(BM_ServerSetup, 0.001 intersection gcs, 0.001, true,
-                  DataStructure::GCS)
+                  DataStructure::Gcs)
     ->RangeMultiplier(10)
     ->Range(1, 100000);
 BENCHMARK_CAPTURE(BM_ServerSetup, 0.000001 intersection gcs, 0.000001, true,
-                  DataStructure::GCS)
+                  DataStructure::Gcs)
     ->RangeMultiplier(10)
     ->Range(1, 100000);
 BENCHMARK_CAPTURE(BM_ServerSetup, 0.001 size bloom, 0.001, false,
@@ -159,12 +159,12 @@ void BM_ClientProcessResponse(benchmark::State& state, bool reveal_intersection,
       static_cast<double>(elements_processed), benchmark::Counter::kIsRate);
 }
 // Range is for the number of inputs.
-BENCHMARK_CAPTURE(BM_ClientProcessResponse, size gcs, false, DataStructure::GCS,
+BENCHMARK_CAPTURE(BM_ClientProcessResponse, size gcs, false, DataStructure::Gcs,
                   1.0)
     ->RangeMultiplier(10)
     ->Range(1, 10000);
 BENCHMARK_CAPTURE(BM_ClientProcessResponse, intersection gcs, true,
-                  DataStructure::GCS, 1.0)
+                  DataStructure::Gcs, 1.0)
     ->RangeMultiplier(10)
     ->Range(1, 10000);
 BENCHMARK_CAPTURE(BM_ClientProcessResponse, size bloom, false,
@@ -176,11 +176,11 @@ BENCHMARK_CAPTURE(BM_ClientProcessResponse, intersection bloom, true,
     ->RangeMultiplier(10)
     ->Range(1, 10000);
 BENCHMARK_CAPTURE(BM_ClientProcessResponse, size gcs asymmetric, false,
-                  DataStructure::GCS, 0.001)
+                  DataStructure::Gcs, 0.001)
     ->RangeMultiplier(10)
     ->Range(10000, 100000);
 BENCHMARK_CAPTURE(BM_ClientProcessResponse, intersection gcs asymmetric, true,
-                  DataStructure::GCS, 0.001)
+                  DataStructure::Gcs, 0.001)
     ->RangeMultiplier(10)
     ->Range(10000, 100000);
 BENCHMARK_CAPTURE(BM_ClientProcessResponse, size bloom asymmetric, false,

@@ -1,6 +1,7 @@
 package client
 
 import (
+	psi_ds "github.com/openmined/psi/datastructure"
 	psi_proto "github.com/openmined/psi/pb"
 	"github.com/openmined/psi/server"
 	"google.golang.org/protobuf/proto"

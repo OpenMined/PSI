@@ -79,7 +79,7 @@ class PsiServer {
   StatusOr<psi_proto::ServerSetup> CreateSetupMessage(
       double fpr, int64_t num_client_inputs,
       absl::Span<const std::string> inputs,
-      DataStructure ds = DataStructure::GCS) const;
+      DataStructure ds = DataStructure::Gcs) const;
 
   // Processes a client query and returns the corresponding server response to
   // be sent to the client. For each encrytped element H(x)^c in the decoded

@@ -2,6 +2,7 @@
 #include "benchmark/benchmark.h"
 #include "private_set_intersection/c/psi_client.h"
 #include "private_set_intersection/c/psi_server.h"
+#include "private_set_intersection/cpp/datastructure/datastructure.h"
 
 namespace private_set_intersection {
 namespace {
@@ -26,9 +27,9 @@ void BM_ServerSetup(benchmark::State &state, double fpr,
   for (auto _ : state) {
     char *server_setup = nullptr;
     size_t server_setup_buff_len = 0;
-    psi_server_create_setup_message(server_, fpr, num_client_inputs,
-                                    inputs.data(), inputs.size(), &server_setup,
-                                    &server_setup_buff_len, &err);
+    psi_server_create_setup_message(
+        server_, fpr, num_client_inputs, inputs.data(), inputs.size(),
+        &server_setup, &server_setup_buff_len, &err, DataStructure::Gcs);
 
     ::benchmark::DoNotOptimize(server_setup);
     ::benchmark::ClobberMemory();
@@ -176,9 +177,9 @@ void BM_ClientProcessResponse(benchmark::State &state,
 
   char *server_setup = nullptr;
   size_t server_setup_buff_len = 0;
-  psi_server_create_setup_message(server_, fpr, num_inputs, srv_inputs.data(),
-                                  srv_inputs.size(), &server_setup,
-                                  &server_setup_buff_len, &err);
+  psi_server_create_setup_message(
+      server_, fpr, num_inputs, srv_inputs.data(), srv_inputs.size(),
+      &server_setup, &server_setup_buff_len, &err, DataStructure::Gcs);
 
   char *client_request = nullptr;
   size_t req_len = 0;

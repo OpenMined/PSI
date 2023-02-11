@@ -51,6 +51,7 @@ cc_library(
     deps = [
         "//private_set_intersection/c:internal_utils",
         "//private_set_intersection/cpp:psi_client",
+        "//private_set_intersection/cpp/datastructure",
     ],
 )
 
@@ -75,6 +76,7 @@ cc_library(
     deps = [
         "//private_set_intersection/c:internal_utils",
         "//private_set_intersection/cpp:psi_server",
+        "//private_set_intersection/cpp/datastructure",
     ],
 )
 

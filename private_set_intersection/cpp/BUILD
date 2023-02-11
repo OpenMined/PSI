@@ -58,8 +58,8 @@ cc_library(
     hdrs = ["psi_client.h"],
     includes = ["."],
     deps = [
+        "//private_set_intersection/cpp/datastructure",
         "//private_set_intersection/cpp/datastructure:bloom_filter",
-        "//private_set_intersection/cpp/datastructure:datastructures",
         "//private_set_intersection/cpp/datastructure:gcs",
         "//private_set_intersection/cpp/datastructure:raw",
         "//private_set_intersection/proto:psi_cc_proto",
@@ -95,8 +95,8 @@ cc_library(
     ],
     includes = ["."],
     deps = [
+        "//private_set_intersection/cpp/datastructure",
         "//private_set_intersection/cpp/datastructure:bloom_filter",
-        "//private_set_intersection/cpp/datastructure:datastructures",
         "//private_set_intersection/cpp/datastructure:gcs",
         "//private_set_intersection/cpp/datastructure:raw",
         "//private_set_intersection/proto:psi_cc_proto",

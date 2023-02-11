@@ -2,6 +2,7 @@ package integration_test
 
 import (
 	psi_client "github.com/openmined/psi/client"
+	psi_ds "github.com/openmined/psi/datastructure"
 	psi_proto "github.com/openmined/psi/pb"
 	psi_server "github.com/openmined/psi/server"
 	psi_version "github.com/openmined/psi/version"
@@ -54,15 +55,14 @@ func TestVersion(t *testing.T) {
 func TestIntegrationIntersection(t *testing.T) {
 	testCases := []struct {
 		revealIntersection bool
-		dataStructure      string
+		ds                 psi_ds.DataStructure
 	}{
-		// TODO: Datastructure enum support in c bindings
-		{true, "Raw"},
-		{true, "GCS"},
-		{true, "BloomFilter"},
-		{false, "Raw"},
-		{false, "GCS"},
-		{false, "BloomFilter"},
+		{true, psi_ds.Raw},
+		{true, psi_ds.Gcs},
+		{true, psi_ds.BloomFilter},
+		{false, psi_ds.Raw},
+		{false, psi_ds.Gcs},
+		{false, psi_ds.BloomFilter},
 	}
 	for _, tc := range testCases {
 		client, err := psi_client.CreateFromKey(clientKey, tc.revealIntersection)
@@ -84,7 +84,7 @@ func TestIntegrationIntersection(t *testing.T) {
 		}
 
 		// Create the setup
-		serverSetup, err := server.CreateSetupMessage(fpr, int64(len(clientInputs)), serverInputs)
+		serverSetup, err := server.CreateSetupMessage(fpr, int64(len(clientInputs)), serverInputs, 0)
 		if err != nil {
 			t.Errorf("Failed to create serverSetup: %v", err)
 		}

@@ -10,6 +10,7 @@ go_test(
     importpath = "github.com/openmined/psi",
     deps = [
         "//private_set_intersection/go/client",
+        "//private_set_intersection/go/datastructure",
         "//private_set_intersection/go/server",
         "//private_set_intersection/go/version",
         "//private_set_intersection/proto:psi_go_proto",

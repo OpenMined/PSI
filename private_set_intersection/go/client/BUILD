@@ -8,6 +8,7 @@ go_library(
     importpath = "github.com/openmined/psi/client",
     visibility = ["//visibility:public"],
     deps = [
+        "//private_set_intersection/go/datastructure",
         "//private_set_intersection/go/version",
         "//private_set_intersection/proto:psi_go_proto",
         "@org_golang_google_protobuf//proto:go_default_library",
@@ -19,6 +20,7 @@ go_test(
     srcs = ["client_test.go"],
     embed = [":client"],
     deps = [
+        "//private_set_intersection/go/datastructure",
         "//private_set_intersection/go/server",
         "//private_set_intersection/proto:psi_go_proto",
         "@org_golang_google_protobuf//proto:go_default_library",
