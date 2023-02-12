@@ -25,9 +25,8 @@ pub fn version() -> String {
 
 #[cfg(test)]
 mod tests {
-    extern crate semver;
-
     use super::*;
+    use semver;
 
     #[test]
     fn test_version() {
