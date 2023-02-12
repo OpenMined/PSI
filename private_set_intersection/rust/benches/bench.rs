@@ -71,7 +71,9 @@ fn bench_client_process_response(reveal: bool, n: usize, b: &mut Bencher) {
 
     let fpr = 1e-9f64;
 
-    let setup = server.create_setup_message(fpr, n, &elements).unwrap();
+    let setup = server
+        .create_setup_message(fpr, n, &elements, None)
+        .unwrap();
     let request = client.create_request(&elements).unwrap();
     let response = server.process_request(&request).unwrap();
 
@@ -137,7 +139,11 @@ fn bench_server_setup(reveal: bool, n: usize, fpr: f64, b: &mut Bencher) {
 
     let server = server::PsiServer::create_with_new_key(reveal).unwrap();
 
-    b.iter(|| server.create_setup_message(fpr, 10000, &elements).unwrap());
+    b.iter(|| {
+        server
+            .create_setup_message(fpr, 10000, &elements, None)
+            .unwrap()
+    });
 }
 
 const FPR3: f64 = 1e-3f64;
