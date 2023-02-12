@@ -1,12 +1,13 @@
-package(default_visibility = ["//visibility:public"])
-
 load("@rules_rust//rust:defs.bzl", "rust_binary", "rust_doc", "rust_library", "rust_test")
 load("@rules_rust//proto:toolchain.bzl", "PROTO_COMPILE_DEPS")
 
+package(default_visibility = ["//visibility:public"])
+
 rust_library(
-    name = "rust_psi",
+    name = "psi",
     srcs = [
         "src/client.rs",
+        "src/datastructure.rs",
         "src/lib.rs",
         "src/server.rs",
     ],
@@ -20,31 +21,31 @@ rust_library(
 )
 
 rust_test(
-    name = "rust_version",
-    crate = ":rust_psi",
+    name = "version",
+    crate = ":psi",
     deps = [
         "//third_party/cargo/cargo:semver",
     ],
 )
 
 rust_test(
-    name = "rust_integration",
+    name = "integration",
     srcs = ["tests/integration_test.rs"],
     deps = [
-        ":rust_psi",
+        ":psi",
     ],
 )
 
 rust_binary(
-    name = "rust_psi_bench",
-    srcs = ["benches/psi_bench.rs"],
+    name = "bench",
+    srcs = ["benches/bench.rs"],
     deps = [
-        ":rust_psi",
+        ":psi",
         "//third_party/cargo/cargo:bencher",
     ],
 )
 
 rust_doc(
-    name = "rust_psi_doc",
-    crate = ":rust_psi",
+    name = "doc",
+    crate = ":psi",
 )

@@ -6,7 +6,9 @@ use libc;
 // re-export protobufs so they can be used by the user
 pub use psi_rust_proto;
 pub mod client;
+pub mod datastructure;
 pub mod server;
+
 use std::ffi::CStr;
 
 extern "C" {

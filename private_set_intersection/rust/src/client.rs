@@ -395,7 +395,7 @@ mod tests {
 
     #[test]
     fn test_create() {
-        for &reveal in &[false, true] {
+        for reveal in [false, true] {
             let client = PsiClient::create_with_new_key(reveal).unwrap();
             client.create_request::<String>(&vec![]).unwrap();
 
@@ -415,7 +415,7 @@ mod tests {
 
     #[test]
     fn test_error() {
-        for &reveal in &[false, true] {
+        for reveal in [false, true] {
             assert!(PsiClient::create_from_key(&vec![0u8; 32], reveal).is_err());
         }
     }

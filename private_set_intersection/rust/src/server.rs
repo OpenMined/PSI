@@ -1,12 +1,12 @@
 //! Provides a way to create a `PsiServer` for the server side of the Private Set Intersection
 //! protocol.
 
+use crate::datastructure::PsiDataStructure;
 use libc::*;
 use protobuf::{self, Message};
 use psi_rust_proto::*;
 use std::ffi::CStr;
 use std::{error, fmt, ptr, slice};
-
 type PsiServerContext = *mut c_void;
 
 /// A handle for the C context of a PSI server.
@@ -42,6 +42,7 @@ extern "C" {
         output: *mut *mut c_char,
         output_len: *mut size_t,
         error_out: *mut *mut c_char,
+        ds: PsiDataStructure,
     ) -> c_int;
     fn psi_server_process_request(
         ctx: PsiServerContext,
@@ -139,6 +140,7 @@ impl PsiServer {
         fpr: f64,
         input_count: usize,
         raw_input: &[T],
+        ds: Option<PsiDataStructure>,
     ) -> ServerResult<ServerSetup> {
         let input: Vec<PsiServerBuffer> = raw_input
             .iter()
@@ -164,6 +166,7 @@ impl PsiServer {
                 out_ptr,
                 &mut out_len,
                 error_ptr,
+                ds.unwrap_or_default(),
             )
         };
 
@@ -319,10 +322,10 @@ mod tests {
 
     #[test]
     fn test_create() {
-        for &reveal in &[false, true] {
+        for reveal in [false, true] {
             let server = PsiServer::create_with_new_key(reveal).unwrap();
             server
-                .create_setup_message::<String>(0.001, 1000, &vec![])
+                .create_setup_message::<String>(0.001, 1000, &vec![], None)
                 .unwrap();
 
             let server = PsiServer::create_with_new_key(reveal).unwrap();
@@ -341,7 +344,7 @@ mod tests {
 
     #[test]
     fn test_error() {
-        for &reveal in &[false, true] {
+        for reveal in [false, true] {
             assert!(PsiServer::create_from_key(&vec![0u8; 32], reveal).is_err());
         }
     }

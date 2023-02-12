@@ -1,7 +1,7 @@
 #[macro_use]
 extern crate bencher;
 use bencher::{black_box, Bencher};
-use rust_psi::*;
+use psi::*;
 
 fn bench_client_create_request(reveal: bool, n: usize, b: &mut Bencher) {
     let mut elements = vec![];
