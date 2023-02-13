@@ -43,7 +43,7 @@ describe('PSI Server', () => {
 
   test('It should create a setup message (BloomFilter)', async () => {
     const server = psi.server!.createWithNewKey()
-    const fpr = 0.001
+    const fpr = 0.01
     const numClientElements = 10
     const serverInputs = Array.from({ length: 100 }, (_, i) => `Element ${i}`)
 
@@ -55,14 +55,14 @@ describe('PSI Server', () => {
     )
 
     const numHashFunctions = setup.getBloomFilter()!.getNumHashFunctions()
-    expect(numHashFunctions).toStrictEqual(14)
+    expect(numHashFunctions).toStrictEqual(10)
     const bits = setup.getBloomFilter()!.getBits()
     expect(bits.constructor).toStrictEqual(Uint8Array)
   })
 
   test('It should create a setup message (GCS)', async () => {
     const server = psi.server!.createWithNewKey()
-    const fpr = 0.001
+    const fpr = 0.01
     const numClientElements = 10
     const serverInputs = Array.from({ length: 100 }, (_, i) => `Element ${i}`)
 
@@ -74,14 +74,14 @@ describe('PSI Server', () => {
     )
 
     const hashRange = setup.getGcs()!.getHashRange()
-    expect(hashRange).toStrictEqual(1000000)
+    expect(hashRange).toStrictEqual(100000)
     const bits = setup.getGcs()!.getBits()
     expect(bits.constructor).toStrictEqual(Uint8Array)
   })
 
   test('It should create a setup message (Raw)', async () => {
     const server = psi.server!.createWithNewKey()
-    const fpr = 0.001
+    const fpr = 0.01
     const numClientElements = 10
     const serverInputs = Array.from({ length: 100 }, (_, i) => `Element ${i}`)
 
@@ -99,7 +99,7 @@ describe('PSI Server', () => {
 
   test('It should throw if attempting to create a setup message after deletion', async () => {
     const server = psi.server!.createWithNewKey()
-    const fpr = 0.001
+    const fpr = 0.01
     const numClientElements = 10
     const serverInputs = Array.from({ length: 100 }, (_, i) => `Element ${i}`)
 
@@ -117,7 +117,7 @@ describe('PSI Server', () => {
 
   test('It should fail to create a setup message', async () => {
     const server = psi.server!.createWithNewKey()
-    const fpr = 0.001
+    const fpr = 0.01
     const numClientElements = Infinity
     const serverInputs = Array.from({ length: 100 }, (_, i) => `Element ${i}`)
 

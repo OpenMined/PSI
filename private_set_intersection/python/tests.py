@@ -6,7 +6,7 @@ import private_set_intersection.python as psi
 
 client_key = bytes(range(32))
 server_key = bytes(range(1, 33))
-fpr = 0.001
+fpr = 0.01
 num_client_inputs = 10
 num_server_inputs = 100
 client_items = ["Element " + str(i) for i in range(num_client_inputs)]
