@@ -35,7 +35,7 @@ cc_test(
 )
 
 cc_library(
-    name = "internal_utils",
+    name = "c_internal_utils",
     srcs = ["internal_utils.cpp"],
     hdrs = ["internal_utils.h"],
     visibility = ["//visibility:private"],
@@ -49,7 +49,7 @@ cc_library(
     srcs = ["psi_client.cpp"],
     hdrs = ["psi_client.h"],
     deps = [
-        "//private_set_intersection/c:internal_utils",
+        ":c_internal_utils",
         "//private_set_intersection/cpp:psi_client",
         "//private_set_intersection/cpp/datastructure",
     ],
@@ -60,6 +60,7 @@ cc_test(
     srcs = ["psi_client_test.cpp"],
     deps = [
         ":c_psi_client",
+        ":c_psi_server",
         "//private_set_intersection/cpp/util:status_matchers",
         "@com_google_absl//absl/container:flat_hash_set",
         "@com_google_absl//absl/strings",
@@ -74,7 +75,7 @@ cc_library(
     srcs = ["psi_server.cpp"],
     hdrs = ["psi_server.h"],
     deps = [
-        "//private_set_intersection/c:internal_utils",
+        ":c_internal_utils",
         "//private_set_intersection/cpp:psi_server",
         "//private_set_intersection/cpp/datastructure",
     ],

@@ -1,3 +1,36 @@
+# Version 2.0.0
+
+Feat:
+
+- A `Raw` datastructure enum variant has been added which, when specified,
+  computes an intersection with no false-positives. It is intended for
+  applications that depend on 100% accuracy, but it have a performance impact.
+
+Bufgix:
+
+- Previously, only the `CPP` bindings supported the datastructure enum to allow
+  the user to select which backing datastructure to use in the protocol (`GCS`,
+  `BloomFilter`, and now `Raw`). This meant we were not feature compatable in
+  the languages that depended on the (incomplete) `C` bindings. In this release,
+  all languages support the same features, namely, we've updated the `C`
+  bindings which allowed us to get `Go` and `Rust` to be feature compatable.
+
+Breaking:
+
+- The protobuf schema has changed to support additional enum variants for
+  backing datastructures. This means prior protobufs using earlier versions of
+  the library will not work with `2.0.0+`. We make this change to add
+  flexibility for future enum variants. Additional variants will not break the
+  schema. In general, storing serialized protobufs is not a pattern the protocol
+  recommends since every intersection calculation should be a new protocol
+  exchange (setup, request, response, intersection).
+
+Chore:
+
+- Integrations tests have been added to all languages which use a common list of parameterized
+  tests that also test protobuf serialization.
+- Benchmarks have been updated in all languages to cover a unified suite of parameters.
+
 # Version 1.1.1
 
 Chore:
@@ -17,13 +50,20 @@ Bugfix:
 
 Bugfix:
 
-- The Python builds were using the older `manylinux2014` tagging convention which was causing issues on systems that expected a specific glibc version (Ubuntu 20.04 uses [2.31](https://launchpad.net/ubuntu/+source/glibc)). We now use the latest `manylinux_x_y` tagging convention to accomodate different glibc versions across linux when building wheels. This means we must support `python 3.8.10+, 3.9.5+, 3.10.0+` and `pip >= 20.3` in accordance with [PEP 600](https://github.com/pypa/manylinux)
+- The Python builds were using the older `manylinux2014` tagging convention
+  which was causing issues on systems that expected a specific glibc version
+  (Ubuntu 20.04 uses [2.31](https://launchpad.net/ubuntu/+source/glibc)). We now
+  use the latest `manylinux_x_y` tagging convention to accomodate different
+  glibc versions across linux when building wheels. This means we must support
+  `python 3.8.10+, 3.9.5+, 3.10.0+` and `pip >= 20.3` in accordance with [PEP
+  600](https://github.com/pypa/manylinux)
 
 # Version 1.0.2
 
 Feat:
 
-- This patch version relaxes the Python requirement to allow for older `protobuf` libraries to work with the PSI library.
+- This patch version relaxes the Python requirement to allow for older
+  `protobuf` libraries to work with the PSI library.
 
 # Version 1.0.1
 
@@ -32,8 +72,8 @@ Feat:
 - Update the Python bindings to take in an optional `DataStructure` argument for
   `CreateSetupMessage`. This allows the user to customize the behavior of the
   backing datastructure - i.e. to select between the default (`GCS`) or specify
-  `BLOOM_FILTER`. The previous behavior always selected `GCS` so if the parameter
-  is omitted, the behavior will remain the same.
+  `BLOOM_FILTER`. The previous behavior always selected `GCS` so if the
+  parameter is omitted, the behavior will remain the same.
 
   Ex:
 

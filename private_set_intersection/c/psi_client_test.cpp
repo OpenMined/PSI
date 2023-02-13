@@ -22,11 +22,15 @@
 #include "gtest/gtest.h"
 #include "private_join_and_compute/crypto/ec_commutative_cipher.h"
 #include "private_set_intersection/c/internal_utils.h"
+#include "private_set_intersection/c/psi_server.h"
 #include "private_set_intersection/cpp/datastructure/bloom_filter.h"
 #include "util/status_matchers.h"
 
 namespace private_set_intersection {
 namespace {
+
+const int num_client_inputs = 10, num_server_inputs = 100;
+const double fpr = 0.01;
 
 class PsiClientTest : public ::testing::Test {
  protected:
@@ -38,39 +42,42 @@ void test_corectness(bool reveal_intersection) {
   psi_client_ctx client;
 
   char *err;
-  int ret = psi_client_create_with_new_key(reveal_intersection, &client, &err);
+  int ok = psi_client_create_with_new_key(reveal_intersection, &client, &err);
   ASSERT_TRUE(client != nullptr);
-  ASSERT_TRUE(ret == 0);
-  constexpr int num_client_elements = 1000, num_server_elements = 10000;
-  double fpr = 0.01;
-  std::vector<psi_client_buffer_t> client_elements(num_client_elements);
-  std::vector<std::string> client_orig_elements(num_client_elements);
-  std::vector<std::string> server_elements(num_server_elements);
+  ASSERT_TRUE(ok == 0);
+
+  std::vector<std::string> client_orig_elements(num_client_inputs);
+  std::vector<psi_client_buffer_t> client_inputs(num_client_inputs);
+  std::vector<std::string> server_orig_elements(num_server_inputs);
+  std::vector<psi_server_buffer_t> server_inputs(num_server_inputs);
 
   // Create elements, such that 50% of the client's elements overlap with the
   // server.
-  for (int i = 0; i < num_client_elements; i++) {
+  for (int i = 0; i < num_client_inputs; i++) {
     client_orig_elements[i] = absl::StrCat("Element ", i);
-    client_elements[i] = {client_orig_elements[i].c_str(),
-                          client_orig_elements[i].size()};
+    client_inputs[i] = {client_orig_elements[i].c_str(),
+                        client_orig_elements[i].size()};
   }
-  for (int i = 0; i < num_server_elements; i++) {
-    server_elements[i] = absl::StrCat("Element ", 2 * i);
+  for (int i = 0; i < num_server_inputs; i++) {
+    server_orig_elements[i] = absl::StrCat("Element ", i * 2);
+    server_inputs[i] = {server_orig_elements[i].c_str(),
+                        server_orig_elements[i].size()};
   }
 
   // Insert server elements into Bloom filter.
   PSI_ASSERT_OK_AND_ASSIGN(
       auto bloom_filter,
-      BloomFilter::CreateEmpty(fpr / num_client_elements, num_server_elements));
+      BloomFilter::CreateEmpty(fpr / num_client_inputs, num_server_inputs));
 
   PSI_ASSERT_OK_AND_ASSIGN(
       auto server_ec_cipher,
       ::private_join_and_compute::ECCommutativeCipher::CreateWithNewKey(
           NID_X9_62_prime256v1,
           ::private_join_and_compute::ECCommutativeCipher::HashType::SHA256));
-  for (int i = 0; i < num_server_elements; i++) {
-    PSI_ASSERT_OK_AND_ASSIGN(std::string encrypted_element,
-                             server_ec_cipher->Encrypt(server_elements[i]));
+  for (int i = 0; i < num_server_inputs; i++) {
+    PSI_ASSERT_OK_AND_ASSIGN(
+        std::string encrypted_element,
+        server_ec_cipher->Encrypt(server_orig_elements[i]));
 
     bloom_filter->Add(encrypted_element);
   }
@@ -80,11 +87,11 @@ void test_corectness(bool reveal_intersection) {
   // Compute client request.
   char *client_request = {0};
   size_t req_len = 0;
-  ret = psi_client_create_request(client, client_elements.data(),
-                                  client_elements.size(), &client_request,
-                                  &req_len, &err);
+  ok = psi_client_create_request(client, client_inputs.data(),
+                                 client_inputs.size(), &client_request,
+                                 &req_len, &err);
 
-  ASSERT_TRUE(ret == 0) << err;
+  ASSERT_TRUE(ok == 0) << err;
   ASSERT_TRUE(req_len > 0);
   ASSERT_TRUE(client_request != nullptr);
 
@@ -98,7 +105,7 @@ void test_corectness(bool reveal_intersection) {
   psi_proto::Response response;
 
   // Re-encrypt the request's elements and add to the response
-  for (int i = 0; i < num_client_elements; i++) {
+  for (int i = 0; i < num_client_inputs; i++) {
     PSI_ASSERT_OK_AND_ASSIGN(std::string encrypted, server_ec_cipher->ReEncrypt(
                                                         encrypted_elements[i]));
     response.add_encrypted_elements(encrypted);
@@ -121,7 +128,7 @@ void test_corectness(bool reveal_intersection) {
                                                   intersection + intersectlen);
 
     // Test if all even elements are present.
-    for (int i = 0; i < num_client_elements; i++) {
+    for (int i = 0; i < num_client_inputs; i++) {
       if (i % 2) {
         EXPECT_FALSE(intersection_set.contains(i));
       } else {
@@ -130,16 +137,16 @@ void test_corectness(bool reveal_intersection) {
     }
   } else {
     int64_t intersection_size = 0;
-    ret = psi_client_get_intersection_size(
+    ok = psi_client_get_intersection_size(
         client, {server_setup_str.c_str(), server_setup_str.size()},
         {server_response_str.c_str(), server_response_str.size()},
         &intersection_size, &err);
-    ASSERT_TRUE(ret == 0) << err;
+    ASSERT_TRUE(ok == 0) << err;
     ASSERT_TRUE(intersection_size > 0);
     // Test if size is approximately as expected (up to 10%).
 
-    EXPECT_GE(intersection_size, num_client_elements / 2);
-    EXPECT_LT(intersection_size, (num_client_elements / 2) * 1.1);
+    EXPECT_GE(intersection_size, num_client_inputs / 2);
+    EXPECT_LT(intersection_size, (num_client_inputs / 2) * 1.1);
   }
   free(client_request);
 
