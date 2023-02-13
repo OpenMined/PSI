@@ -9,7 +9,7 @@ const serverKey = Uint8Array.from([
   1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22,
   23, 24, 25, 26, 27, 28, 29, 30, 31, 32
 ])
-const fpr = 0.001
+const fpr = 0.01
 const numClientElements = 10
 const numServerElements = 100
 const clientInputs = Array.from(
@@ -55,7 +55,21 @@ describe('PSI Integration', () => {
         psi.serverSetup.deserializeBinary(serverSetup),
         psi.response.deserializeBinary(serverResponse)
       )
-      expect(intersection.length).toEqual(numClientElements / 2)
+
+      const iset = new Set(intersection)
+      for (let idx = 0; idx < numClientElements; idx++) {
+        if (idx % 2 === 0) {
+          // eslint-disable-next-line jest/no-conditional-expect
+          expect(iset.has(idx)).toBeTruthy()
+        } else {
+          // eslint-disable-next-line jest/no-conditional-expect
+          expect(iset.has(idx)).toBeFalsy()
+        }
+      }
+
+      // Test that the intersection is within 10% error margin to match `fpr`
+      expect(intersection.length).toBeGreaterThanOrEqual(numClientElements / 2)
+      expect(intersection.length).toBeLessThan((numClientElements / 2) * 1.1)
     })
   })
   test('should return the intersection size (cardinality)', async () => {
@@ -66,8 +80,8 @@ describe('PSI Integration', () => {
         dataStructure: psi.dataStructure.BloomFilter
       }
     ].forEach(({ dataStructure }) => {
-      const client = psi.client!.createFromKey(clientKey, true)
-      const server = psi.server!.createFromKey(serverKey, true)
+      const client = psi.client!.createFromKey(clientKey, false)
+      const server = psi.server!.createFromKey(serverKey, false)
 
       const serverSetup = server
         .createSetupMessage(fpr, numClientElements, serverInputs, dataStructure)
@@ -82,7 +96,9 @@ describe('PSI Integration', () => {
         psi.serverSetup.deserializeBinary(serverSetup),
         psi.response.deserializeBinary(serverResponse)
       )
-      expect(intersection).toEqual(numClientElements / 2)
+      // Test that the intersection is within 10% error margin to match `fpr`
+      expect(intersection).toBeGreaterThanOrEqual(numClientElements / 2)
+      expect(intersection).toBeLessThan((numClientElements / 2) * 1.1)
     })
   })
 })

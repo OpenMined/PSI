@@ -18,6 +18,15 @@ const fpr = 0.001
 const numClientInputs = 10
 const numServerInputs = 100
 
+func generateSet(in []int64) map[int]struct{} {
+	out := map[int]struct{}{}
+	for _, item := range in {
+		out[int(item)] = struct{}{}
+	}
+
+	return out
+}
+
 func TestVersion(t *testing.T) {
 	version := psi_version.Version()
 	r, _ := regexp.Compile(`[0-9]+[.][0-9]+[.][0-9]+(-[A-Za-z0-9]+)?`)
@@ -135,19 +144,27 @@ func TestIntegrationIntersection(t *testing.T) {
 			if err != nil {
 				t.Errorf("failed to compute intersection %v", err)
 			}
-
-			if len(intersection) != len(clientInputs)/2 {
-				t.Errorf("Intersection size differs! %d", len(intersection))
+			intersectionSet := generateSet(intersection)
+			for idx := 0; idx < numClientInputs; idx++ {
+				_, ok := intersectionSet[idx]
+				if ok != (idx%2 == 0) {
+					t.Errorf("Invalid intersection for item %v %v", idx, ok)
+				}
 			}
 		} else {
-			cardinality, err := client.GetIntersectionSize(serverSetup, response)
+			intersectionCnt, err := client.GetIntersectionSize(serverSetup, response)
 			if err != nil {
-				t.Errorf("failed to compute intersection %v", err)
+				t.Errorf("failed to compute intersection size %v", err)
 			}
 
-			if cardinality != int64(len(clientInputs)/2) {
-				t.Errorf("Intersection cardinality differs! %d", cardinality)
+			if int(intersectionCnt) < (numClientInputs / 2) {
+				t.Errorf("Invalid intersection. expected lower bound %v. got %v", (numClientInputs / 2), intersectionCnt)
 			}
+
+			if float64(intersectionCnt) > float64(numClientInputs/2)*float64(1.1) {
+				t.Errorf("Invalid intersection. expected upper bound %v. got %v", float64(numClientInputs/2)*float64(1.1), intersectionCnt)
+			}
+
 		}
 
 		// cleanup
