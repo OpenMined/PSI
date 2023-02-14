@@ -28,10 +28,10 @@ namespace private_set_intersection {
 
 namespace {
 
-static const char client_key_buf[32] = {
+static const char client_key_buff[32] = {
     0,  1,  2,  3,  4,  5,  6,  7,  8,  9,  10, 11, 12, 13, 14, 15,
     16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31};
-psi_client_buffer_t client_key{*(&client_key_buf), sizeof(client_key_buf)};
+psi_client_buffer_t client_key{*(&client_key_buff), sizeof(client_key_buff)};
 
 static const char server_key_buff[32] = {
     1,  2,  3,  4,  5,  6,  7,  8,  9,  10, 11, 12, 13, 14, 15, 16,
@@ -80,6 +80,44 @@ class Correctness
   }
   void TearDown() {}
 };
+
+TEST_F(Correctness, TestCreatingFromKey) {
+  psi_client_ctx client2;
+  psi_server_ctx server2;
+  char *err;
+  int ok = 99;
+  ok = psi_client_create_from_key(client_key, false, &client2, &err);
+  ASSERT_TRUE(client2 != nullptr);
+  ASSERT_TRUE(ok == 0);
+
+  ok = psi_server_create_from_key(server_key, false, &server2, &err);
+  ASSERT_TRUE(server2 != nullptr);
+  ASSERT_TRUE(ok == 0);
+
+  char *client_key_buff2 = {0};
+  size_t key_len = 0;
+
+  ok = psi_client_get_private_key_bytes(client2, &client_key_buff2, &key_len,
+                                        &err);
+  ASSERT_TRUE(client_key_buff2 != nullptr);
+  ASSERT_TRUE(ok == 0);
+  ASSERT_TRUE(strncmp(client_key.buff, client_key_buff2, client_key.buff_len) ==
+              0);
+  EXPECT_EQ(key_len, 32);
+  free(client_key_buff2);
+
+  char *server_key_buff2 = {0};
+  key_len = 0;
+
+  ok = psi_server_get_private_key_bytes(server2, &server_key_buff2, &key_len,
+                                        &err);
+  ASSERT_TRUE(server_key_buff != nullptr);
+  ASSERT_TRUE(ok == 0);
+  ASSERT_TRUE(strncmp(server_key.buff, server_key_buff2, server_key.buff_len) ==
+              0);
+  EXPECT_EQ(key_len, 32);
+  free(server_key_buff2);
+}
 
 INSTANTIATE_TEST_CASE_P(
     Integration, Correctness,
