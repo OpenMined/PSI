@@ -33,12 +33,12 @@ bazel test -c opt //private_set_intersection/rust/...
 Run the benchmark:
 
 ```
-bazel run -c opt //private_set_intersection/rust:rust_psi_bench
+bazel run -c opt //private_set_intersection/rust:bench
 ```
 
 ## Use in other projects
 
-Add `deps = ["@org_openmined_psi//private_set_intersection/rust:rust_psi"]` to your Bazel rule
+Add `deps = ["@org_openmined_psi//private_set_intersection/rust:psi"]` to your Bazel rule
 in your project's `BUILD` file.
 
 ## Developing

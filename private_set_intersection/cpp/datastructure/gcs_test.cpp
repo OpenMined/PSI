@@ -14,7 +14,7 @@
 // limitations under the License.
 //
 
-#include "private_set_intersection/cpp/gcs.h"
+#include "private_set_intersection/cpp/datastructure/gcs.h"
 
 #include <iostream>
 
@@ -22,8 +22,8 @@
 #include "absl/strings/escaping.h"
 #include "absl/strings/str_cat.h"
 #include "gtest/gtest.h"
+#include "private_set_intersection/cpp/util/status_matchers.h"
 #include "private_set_intersection/proto/psi.pb.h"
-#include "util/status_matchers.h"
 
 namespace private_set_intersection {
 namespace {
@@ -107,7 +107,7 @@ TEST(GCSTest, TestToProtobuf) {
   psi_proto::ServerSetup encoded_gcs = gcs->ToProtobuf();
   EXPECT_EQ(encoded_gcs.gcs().div(), gcs->Div());
   EXPECT_EQ(encoded_gcs.gcs().hash_range(), gcs->HashRange());
-  EXPECT_EQ(encoded_gcs.bits(), gcs->Golomb());
+  EXPECT_EQ(encoded_gcs.gcs().bits(), gcs->Golomb());
 }
 
 TEST(GCSTest, TestCreateFromProtobuf) {

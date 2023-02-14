@@ -14,7 +14,7 @@
 // limitations under the License.
 //
 
-#include "private_set_intersection/cpp/golomb.h"
+#include "private_set_intersection/cpp/datastructure/golomb.h"
 
 #include <algorithm>
 #include <cmath>

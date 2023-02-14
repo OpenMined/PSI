@@ -1,12 +1,7 @@
 import * as psi from 'psi_'
 import { Loader } from '../main/loader'
 
-export type DataStructure = {
-  readonly BloomFilter: any
-  readonly GCS: any
-}
-
-export type DataStructureWrapper = DataStructure
+export type DataStructureWrapper = psi.DataStructure
 
 type DataStructureWrapperOptions = {
   readonly loader: Loader
@@ -15,7 +10,7 @@ type DataStructureWrapperOptions = {
 /**
  * @implements DataStructure
  */
-const DataStructureConstructor = (library: psi.Library): DataStructure => {
+const DataStructureConstructor = (library: psi.Library): psi.DataStructure => {
   const DataStructure: psi.DataStructure = library.DataStructure
 
   /**
@@ -23,17 +18,17 @@ const DataStructureConstructor = (library: psi.Library): DataStructure => {
    */
   return {
     /**
-     * Get the 'BloomFilter' enum
+     * Get the 'Raw' enum
      *
      * @function
-     * @name DataStructure.BloomFilter
-     * @type {DataStructure.BloomFilter}
+     * @name DataStructure.Raw
+     * @type {DataStructure.Raw}
      */
-    get BloomFilter(): DataStructure {
+    get Raw(): psi.DataStructure {
       /**
-       * @typedef {DataStructure.BloomFilter} DataStructure.BloomFilter
+       * @typedef {DataStructure.Raw} DataStructure.Raw
        */
-      return DataStructure.BloomFilter
+      return DataStructure.Raw
     },
     /**
      * Get the 'GCS' enum
@@ -42,11 +37,24 @@ const DataStructureConstructor = (library: psi.Library): DataStructure => {
      * @name DataStructure.GCS
      * @type {DataStructure.GCS}
      */
-    get GCS(): DataStructure {
+    get GCS(): psi.DataStructure {
       /**
        * @typedef {DataStructure.GCS} DataStructure.GCS
        */
       return DataStructure.GCS
+    },
+    /**
+     * Get the 'BloomFilter' enum
+     *
+     * @function
+     * @name DataStructure.BloomFilter
+     * @type {DataStructure.BloomFilter}
+     */
+    get BloomFilter(): psi.DataStructure {
+      /**
+       * @typedef {DataStructure.BloomFilter} DataStructure.BloomFilter
+       */
+      return DataStructure.BloomFilter
     }
   }
 }

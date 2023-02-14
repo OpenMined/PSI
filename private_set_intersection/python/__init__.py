@@ -15,6 +15,7 @@ __version__ = psi.__version__
 
 
 class DataStructure(Enum):
+    RAW = psi.data_structure.Raw
     GCS = psi.data_structure.GCS
     BLOOM_FILTER = psi.data_structure.BloomFilter
 

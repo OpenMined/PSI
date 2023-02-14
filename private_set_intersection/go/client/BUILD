@@ -8,9 +8,10 @@ go_library(
     importpath = "github.com/openmined/psi/client",
     visibility = ["//visibility:public"],
     deps = [
+        "//private_set_intersection/go/datastructure",
         "//private_set_intersection/go/version",
         "//private_set_intersection/proto:psi_go_proto",
-        "@com_github_golang_protobuf//proto:go_default_library",
+        "@org_golang_google_protobuf//proto:go_default_library",
     ],
 )
 

@@ -3,9 +3,11 @@
 #include <algorithm>
 
 #include "private_set_intersection/c/internal_utils.h"
+#include "private_set_intersection/cpp/datastructure/datastructure.h"
 #include "private_set_intersection/cpp/psi_server.h"
 
 namespace {
+using private_set_intersection::DataStructure;
 using private_set_intersection::PsiServer;
 using private_set_intersection::c_bindings_internal::generate_error;
 }  // namespace
@@ -42,11 +44,11 @@ void psi_server_delete(psi_server_ctx *ctx) {
   *ctx = nullptr;
 }
 
-int psi_server_create_setup_message(psi_server_ctx ctx, double fpr,
-                                    int64_t num_client_inputs,
-                                    psi_server_buffer_t *input,
-                                    size_t input_len, char **output,
-                                    size_t *output_len, char **error_out) {
+int psi_server_create_setup_message(
+    psi_server_ctx ctx, double fpr, int64_t num_client_inputs,
+    psi_server_buffer_t *input, size_t input_len, char **output,
+    size_t *output_len, char **error_out,
+    private_set_intersection::datastructure_t datastructure) {
   auto server = static_cast<PsiServer *>(ctx);
   if (server == nullptr) {
     return generate_error(absl::InvalidArgumentError("invalid server context"),
@@ -58,7 +60,8 @@ int psi_server_create_setup_message(psi_server_ctx ctx, double fpr,
     in.push_back(std::string(input[idx].buff, input[idx].buff_len));
   }
 
-  auto result = server->CreateSetupMessage(fpr, num_client_inputs, in);
+  auto result =
+      server->CreateSetupMessage(fpr, num_client_inputs, in, datastructure);
   if (!result.ok()) {
     return generate_error(result.status(), error_out);
   }

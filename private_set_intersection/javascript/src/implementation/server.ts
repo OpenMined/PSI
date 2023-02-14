@@ -1,7 +1,6 @@
 import * as psi from 'psi_'
 import { Loader } from '../main/loader'
 import { ERROR_INSTANCE_DELETED } from './constants'
-import { DataStructure } from './dataStructure'
 import { Request, Response, ServerSetup } from './proto/psi_pb'
 
 export type Server = {
@@ -10,7 +9,7 @@ export type Server = {
     fpr: number,
     numClientInputs: number,
     inputs: readonly string[],
-    dataStructure?: DataStructure
+    dataStructure?: psi.DataStructure
   ) => ServerSetup
   readonly processRequest: (clientRequest: Request) => Response
   readonly getPrivateKeyBytes: () => Uint8Array
@@ -32,7 +31,7 @@ type ServerWrapperOptions = {
  * @implements Server
  */
 const ServerConstructor = (
-  { DataStructure }: { DataStructure: DataStructure },
+  { DataStructure }: { DataStructure: psi.DataStructure },
   instance: psi.Server
 ): Server => {
   let _instance: psi.Server | null = instance
@@ -77,7 +76,7 @@ const ServerConstructor = (
       fpr: number,
       numClientInputs: number,
       inputs: readonly string[],
-      dataStructure: DataStructure = DataStructure.GCS
+      dataStructure: psi.DataStructure = DataStructure.GCS
     ): ServerSetup {
       if (!_instance) {
         throw new Error(ERROR_INSTANCE_DELETED)
@@ -140,7 +139,7 @@ const ServerConstructor = (
 }
 
 export type ServerConstructorDependencies = {
-  ({ DataStructure }: { DataStructure: DataStructure }): ServerWrapper
+  ({ DataStructure }: { DataStructure: psi.DataStructure }): ServerWrapper
 }
 
 export const ServerWrapperConstructor =

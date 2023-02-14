@@ -41,7 +41,8 @@ void bind(pybind11::module& m) {
   m.attr("__version__") = ::private_set_intersection::Package::kVersion;
 
   py::enum_<psi::DataStructure>(m, "data_structure", py::arithmetic())
-      .value("GCS", psi::DataStructure::GCS)
+      .value("Raw", psi::DataStructure::Raw)
+      .value("GCS", psi::DataStructure::Gcs)
       .value("BloomFilter", psi::DataStructure::BloomFilter);
 
   py::class_<psi_proto::ServerSetup>(m, "cpp_proto_server_setup")

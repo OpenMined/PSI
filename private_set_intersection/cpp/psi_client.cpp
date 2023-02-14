@@ -22,8 +22,9 @@
 #include "absl/strings/escaping.h"
 #include "absl/strings/str_cat.h"
 #include "openssl/obj_mac.h"
-#include "private_set_intersection/cpp/bloom_filter.h"
-#include "private_set_intersection/cpp/gcs.h"
+#include "private_set_intersection/cpp/datastructure/bloom_filter.h"
+#include "private_set_intersection/cpp/datastructure/gcs.h"
+#include "private_set_intersection/cpp/datastructure/raw.h"
 #include "private_set_intersection/proto/psi.pb.h"
 
 namespace private_set_intersection {
@@ -127,20 +128,29 @@ StatusOr<std::vector<int64_t>> PsiClient::ProcessResponse(
     decrypted.push_back(element);
   }
 
-  if (server_setup.data_structure_case() ==
-      psi_proto::ServerSetup::DataStructureCase::kGcs) {
-    // Decode GCS from the server setup.
-    ASSIGN_OR_RETURN(auto gcs, GCS::CreateFromProtobuf(server_setup));
-    return gcs->Intersect(absl::MakeConstSpan(&decrypted[0], decrypted.size()));
-  } else if (server_setup.data_structure_case() ==
-             psi_proto::ServerSetup::DataStructureCase::kBloomFilter) {
-    // Decode Bloom Filter from the server setup.
-    ASSIGN_OR_RETURN(auto filter,
-                     BloomFilter::CreateFromProtobuf(server_setup));
-    return filter->Intersect(
-        absl::MakeConstSpan(&decrypted[0], decrypted.size()));
-  } else {
-    return absl::InvalidArgumentError("Impossible");
+  switch (server_setup.data_structure_case()) {
+    case psi_proto::ServerSetup::DataStructureCase::kRaw: {
+      // Decode Bloom Filter from the server setup.
+      ASSIGN_OR_RETURN(auto container, Raw::CreateFromProtobuf(server_setup));
+      return container->Intersect(
+          absl::MakeConstSpan(&decrypted[0], decrypted.size()));
+    }
+    case psi_proto::ServerSetup::DataStructureCase::kGcs: {
+      // Decode GCS from the server setup.
+      ASSIGN_OR_RETURN(auto container, GCS::CreateFromProtobuf(server_setup));
+      return container->Intersect(
+          absl::MakeConstSpan(&decrypted[0], decrypted.size()));
+    }
+    case psi_proto::ServerSetup::DataStructureCase::kBloomFilter: {
+      // Decode Bloom Filter from the server setup.
+      ASSIGN_OR_RETURN(auto container,
+                       BloomFilter::CreateFromProtobuf(server_setup));
+      return container->Intersect(
+          absl::MakeConstSpan(&decrypted[0], decrypted.size()));
+    }
+    default: {
+      return absl::InvalidArgumentError("Impossible");
+    }
   }
 }
 

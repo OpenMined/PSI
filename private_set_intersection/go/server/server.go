@@ -71,9 +71,10 @@ import (
 	"runtime"
 	"unsafe"
 
-	"github.com/golang/protobuf/proto"
+	psi_ds "github.com/openmined/psi/datastructure"
 	psi_proto "github.com/openmined/psi/pb"
 	"github.com/openmined/psi/version"
+	"google.golang.org/protobuf/proto"
 )
 
 // PsiServer context for the server side of a Private Set Intersection protocol.
@@ -139,7 +140,7 @@ func CreateFromKey(key []byte, revealIntersection bool) (*PsiServer, error) {
 // `bits` is encoded as Base64.
 // The false-positive rate `fpr` is the probability that any query of size
 // `num_client_inputs` will result in a false positive.
-func (s *PsiServer) CreateSetupMessage(fpr float64, inputCount int64, rawInput []string) (*psi_proto.ServerSetup, error) {
+func (s *PsiServer) CreateSetupMessage(fpr float64, inputCount int64, rawInput []string, ds psi_ds.DataStructure) (*psi_proto.ServerSetup, error) {
 	if s.context == nil {
 		return nil, errors.New("invalid context")
 	}
@@ -160,7 +161,7 @@ func (s *PsiServer) CreateSetupMessage(fpr float64, inputCount int64, rawInput [
 	if len(input) > 0 {
 		inputPtr = &input[0]
 	}
-	rcode := C.psi_server_create_setup_message(s.context, C.double(fpr), C.int64_t(inputCount), inputPtr, C.size_t(len(input)), &out, &outlen, &err)
+	rcode := C.psi_server_create_setup_message(s.context, C.double(fpr), C.int64_t(inputCount), inputPtr, C.size_t(len(input)), &out, &outlen, &err, C.datastructure_t(ds))
 
 	for idx := range input {
 		C.free(unsafe.Pointer(input[idx].buff))

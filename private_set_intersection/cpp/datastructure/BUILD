@@ -13,8 +13,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-load("//tools:package.bzl", "VERSION_LABEL")
-load("//tools:common.bzl", "template_rule")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -28,95 +26,52 @@ PSI_LINKOPTS = select({
     ],
 })
 
-template_rule(
-    name = "package_h",
-    src = "package.h.templ",
-    out = "package.h",
-    substitutions = {
-        "@VERSION_LABEL@": "%s" % VERSION_LABEL,
-    },
+cc_library(
+    name = "datastructure",
+    hdrs = ["datastructure.h"],
 )
 
 cc_library(
-    name = "package",
-    srcs = ["package.cpp"],
-    hdrs = [":package_h"],
+    name = "golomb",
+    srcs = ["golomb.cpp"],
+    hdrs = ["golomb.h"],
+    visibility = ["//visibility:private"],
 )
 
 cc_test(
-    name = "package_test",
-    srcs = ["package_test.cpp"],
-    deps = [
-        ":package",
-        "@com_google_googletest//:gtest_main",
-    ],
-)
-
-cc_library(
-    name = "psi_client",
-    srcs = ["psi_client.cpp"],
-    hdrs = ["psi_client.h"],
-    includes = ["."],
-    deps = [
-        "//private_set_intersection/cpp/datastructure",
-        "//private_set_intersection/cpp/datastructure:bloom_filter",
-        "//private_set_intersection/cpp/datastructure:gcs",
-        "//private_set_intersection/cpp/datastructure:raw",
-        "//private_set_intersection/proto:psi_cc_proto",
-        "@boringssl//:crypto",
-        "@com_google_absl//absl/memory",
-        "@com_google_absl//absl/status:statusor",
-        "@com_google_absl//absl/strings",
-        "@com_google_absl//absl/types:span",
-        "@private_join_and_compute//private_join_and_compute/crypto:ec_commutative_cipher",
-    ],
-)
-
-cc_test(
-    name = "psi_client_test",
-    srcs = ["psi_client_test.cpp"],
+    name = "golomb_test",
+    srcs = ["golomb_test.cpp"],
     linkopts = PSI_LINKOPTS,
     deps = [
-        ":psi_client",
-        "//private_set_intersection/cpp/util:status_matchers",
-        "@com_google_absl//absl/container:flat_hash_set",
-        "@com_google_absl//absl/strings",
+        ":golomb",
         "@com_google_googletest//:gtest",
         "@com_google_googletest//:gtest_main",
-        "@private_join_and_compute//private_join_and_compute/crypto:ec_commutative_cipher",
     ],
 )
 
 cc_library(
-    name = "psi_server",
-    srcs = ["psi_server.cpp"],
-    hdrs = [
-        "psi_server.h",
-    ],
-    includes = ["."],
+    name = "gcs",
+    srcs = ["gcs.cpp"],
+    hdrs = ["gcs.h"],
     deps = [
-        "//private_set_intersection/cpp/datastructure",
-        "//private_set_intersection/cpp/datastructure:bloom_filter",
-        "//private_set_intersection/cpp/datastructure:gcs",
-        "//private_set_intersection/cpp/datastructure:raw",
+        ":golomb",
         "//private_set_intersection/proto:psi_cc_proto",
-        "@boringssl//:crypto",
         "@com_google_absl//absl/memory",
         "@com_google_absl//absl/status:statusor",
         "@com_google_absl//absl/strings",
         "@com_google_absl//absl/types:span",
-        "@private_join_and_compute//private_join_and_compute/crypto:ec_commutative_cipher",
+        "@private_join_and_compute//private_join_and_compute/crypto:bn_util",
     ],
 )
 
 cc_test(
-    name = "psi_server_test",
-    srcs = ["psi_server_test.cpp"],
+    name = "gcs_test",
+    srcs = ["gcs_test.cpp"],
     linkopts = PSI_LINKOPTS,
     deps = [
-        ":psi_client",
-        ":psi_server",
+        ":gcs",
         "//private_set_intersection/cpp/util:status_matchers",
+        "//private_set_intersection/proto:psi_cc_proto",
         "@com_google_absl//absl/container:flat_hash_set",
         "@com_google_absl//absl/strings",
         "@com_google_googletest//:gtest",
@@ -124,14 +79,58 @@ cc_test(
     ],
 )
 
-cc_binary(
-    name = "psi_benchmark",
-    srcs = ["psi_benchmark.cpp"],
+cc_library(
+    name = "bloom_filter",
+    srcs = ["bloom_filter.cpp"],
+    hdrs = ["bloom_filter.h"],
+    deps = [
+        "//private_set_intersection/proto:psi_cc_proto",
+        "@com_google_absl//absl/memory",
+        "@com_google_absl//absl/status:statusor",
+        "@com_google_absl//absl/strings",
+        "@com_google_absl//absl/types:span",
+        "@private_join_and_compute//private_join_and_compute/crypto:bn_util",
+    ],
+)
+
+cc_test(
+    name = "bloom_filter_test",
+    srcs = ["bloom_filter_test.cpp"],
     linkopts = PSI_LINKOPTS,
     deps = [
-        ":psi_client",
-        ":psi_server",
+        ":bloom_filter",
+        "//private_set_intersection/cpp/util:status_matchers",
+        "//private_set_intersection/proto:psi_cc_proto",
         "@com_google_absl//absl/strings",
-        "@com_google_benchmark//:benchmark_main",
+        "@com_google_googletest//:gtest",
+        "@com_google_googletest//:gtest_main",
+    ],
+)
+
+cc_library(
+    name = "raw",
+    srcs = ["raw.cpp"],
+    hdrs = ["raw.h"],
+    deps = [
+        "//private_set_intersection/proto:psi_cc_proto",
+        "@com_google_absl//absl/memory",
+        "@com_google_absl//absl/status:statusor",
+        "@com_google_absl//absl/strings",
+        "@com_google_absl//absl/types:span",
+        "@private_join_and_compute//private_join_and_compute/crypto:bn_util",
+    ],
+)
+
+cc_test(
+    name = "raw_test",
+    srcs = ["raw_test.cpp"],
+    linkopts = PSI_LINKOPTS,
+    deps = [
+        ":raw",
+        "//private_set_intersection/cpp/util:status_matchers",
+        "//private_set_intersection/proto:psi_cc_proto",
+        "@com_google_absl//absl/strings",
+        "@com_google_googletest//:gtest",
+        "@com_google_googletest//:gtest_main",
     ],
 )
