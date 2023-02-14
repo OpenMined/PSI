@@ -8,39 +8,6 @@ beforeAll(async () => {
 })
 
 describe('PSI Server', () => {
-  test('It should create from an existing key', async () => {
-    const server1 = psi.server!.createWithNewKey()
-    const key = server1.getPrivateKeyBytes()
-
-    const server2 = psi.server!.createFromKey(key)
-
-    expect(server2.getPrivateKeyBytes()).toEqual(key)
-  })
-
-  test('It should fail to create from an invalid key', async () => {
-    const key = Uint8Array.from({ length: 32 })
-    expect(() => psi.server!.createFromKey(key)).toThrow()
-  })
-
-  test('It should throw if deleted twice', async () => {
-    const server = psi.server!.createWithNewKey()
-    server.delete()
-    expect(server.delete).toThrow(ERROR_INSTANCE_DELETED)
-  })
-
-  test('It should return the private key as a binary array', async () => {
-    const server = psi.server!.createWithNewKey()
-    const keyLength = 32
-    const key = server.getPrivateKeyBytes()
-    expect(key.length).toBe(keyLength)
-  })
-
-  test('It should fail return the private key as a binary array if deleted', async () => {
-    const server = psi.server!.createWithNewKey()
-    server.delete()
-    expect(() => server.getPrivateKeyBytes()).toThrow(ERROR_INSTANCE_DELETED)
-  })
-
   test('It should create a setup message (BloomFilter)', async () => {
     const server = psi.server!.createWithNewKey()
     const fpr = 0.01

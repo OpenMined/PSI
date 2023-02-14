@@ -31,6 +31,21 @@ describe('PSI Integration', () => {
     expect(typeof psi.package.version).toBe('string')
   })
 
+  test('It should create from an existing key', async () => {
+    const server = psi.server!.createFromKey(serverKey, false)
+    expect(server.getPrivateKeyBytes()).toEqual(serverKey)
+    const client = psi.client!.createFromKey(clientKey, false)
+    expect(client.getPrivateKeyBytes()).toEqual(clientKey)
+  })
+
+  test('It should return the private key as a binary array', async () => {
+    const server = psi.server!.createWithNewKey()
+    expect(server.getPrivateKeyBytes().length).toBe(32)
+
+    const client = psi.client!.createWithNewKey()
+    expect(client.getPrivateKeyBytes().length).toBe(32)
+  })
+
   test('should compute the intersection', async () => {
     ;[
       { revealIntersection: true, dataStructure: psi.dataStructure.Raw },
@@ -58,12 +73,11 @@ describe('PSI Integration', () => {
         .processRequest(psi.request.deserializeBinary(clientRequest))
         .serializeBinary()
 
-      const intersection = client.getIntersection(
-        psi.serverSetup.deserializeBinary(serverSetup),
-        psi.response.deserializeBinary(serverResponse)
-      )
-
-      if (revealIntersection) {
+      if (revealIntersection === true) {
+        const intersection = client.getIntersection(
+          psi.serverSetup.deserializeBinary(serverSetup),
+          psi.response.deserializeBinary(serverResponse)
+        )
         const iset = new Set(intersection)
         for (let idx = 0; idx < numClientElements; idx++) {
           if (idx % 2 === 0) {
