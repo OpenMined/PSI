@@ -31,16 +31,23 @@ describe('PSI Integration', () => {
     expect(typeof psi.package.version).toBe('string')
   })
 
-  test('should return the intersection', async () => {
+  test('should compute the intersection', async () => {
     ;[
-      { dataStructure: psi.dataStructure.Raw },
-      { dataStructure: psi.dataStructure.GCS },
+      { revealIntersection: true, dataStructure: psi.dataStructure.Raw },
+      { revealIntersection: true, dataStructure: psi.dataStructure.GCS },
       {
+        revealIntersection: true,
+        dataStructure: psi.dataStructure.BloomFilter
+      },
+      { revealIntersection: false, dataStructure: psi.dataStructure.Raw },
+      { revealIntersection: false, dataStructure: psi.dataStructure.GCS },
+      {
+        revealIntersection: false,
         dataStructure: psi.dataStructure.BloomFilter
       }
-    ].forEach(({ dataStructure }) => {
-      const client = psi.client!.createFromKey(clientKey, true)
-      const server = psi.server!.createFromKey(serverKey, true)
+    ].forEach(({ revealIntersection, dataStructure }) => {
+      const client = psi.client!.createFromKey(clientKey, revealIntersection)
+      const server = psi.server!.createFromKey(serverKey, revealIntersection)
 
       const serverSetup = server
         .createSetupMessage(fpr, numClientElements, serverInputs, dataStructure)
@@ -56,49 +63,37 @@ describe('PSI Integration', () => {
         psi.response.deserializeBinary(serverResponse)
       )
 
-      const iset = new Set(intersection)
-      for (let idx = 0; idx < numClientElements; idx++) {
-        if (idx % 2 === 0) {
+      if (revealIntersection) {
+        const iset = new Set(intersection)
+        for (let idx = 0; idx < numClientElements; idx++) {
+          if (idx % 2 === 0) {
+            // eslint-disable-next-line jest/no-conditional-expect
+            expect(iset.has(idx)).toBeTruthy()
+          } else {
+            // eslint-disable-next-line jest/no-conditional-expect
+            expect(iset.has(idx)).toBeFalsy()
+          }
+          // Test that the intersection is within 10% error margin to match `fpr`
           // eslint-disable-next-line jest/no-conditional-expect
-          expect(iset.has(idx)).toBeTruthy()
-        } else {
+          expect(intersection.length).toBeGreaterThanOrEqual(
+            numClientElements / 2
+          )
           // eslint-disable-next-line jest/no-conditional-expect
-          expect(iset.has(idx)).toBeFalsy()
+          expect(intersection.length).toBeLessThan(
+            (numClientElements / 2) * 1.1
+          )
         }
+      } else {
+        const intersection = client.getIntersectionSize(
+          psi.serverSetup.deserializeBinary(serverSetup),
+          psi.response.deserializeBinary(serverResponse)
+        )
+        // Test that the intersection is within 10% error margin to match `fpr`
+        // eslint-disable-next-line jest/no-conditional-expect
+        expect(intersection).toBeGreaterThanOrEqual(numClientElements / 2)
+        // eslint-disable-next-line jest/no-conditional-expect
+        expect(intersection).toBeLessThan((numClientElements / 2) * 1.1)
       }
-
-      // Test that the intersection is within 10% error margin to match `fpr`
-      expect(intersection.length).toBeGreaterThanOrEqual(numClientElements / 2)
-      expect(intersection.length).toBeLessThan((numClientElements / 2) * 1.1)
-    })
-  })
-  test('should return the intersection size (cardinality)', async () => {
-    ;[
-      { dataStructure: psi.dataStructure.Raw },
-      { dataStructure: psi.dataStructure.GCS },
-      {
-        dataStructure: psi.dataStructure.BloomFilter
-      }
-    ].forEach(({ dataStructure }) => {
-      const client = psi.client!.createFromKey(clientKey, false)
-      const server = psi.server!.createFromKey(serverKey, false)
-
-      const serverSetup = server
-        .createSetupMessage(fpr, numClientElements, serverInputs, dataStructure)
-        .serializeBinary()
-
-      const clientRequest = client.createRequest(clientInputs).serializeBinary()
-      const serverResponse = server
-        .processRequest(psi.request.deserializeBinary(clientRequest))
-        .serializeBinary()
-
-      const intersection = client.getIntersectionSize(
-        psi.serverSetup.deserializeBinary(serverSetup),
-        psi.response.deserializeBinary(serverResponse)
-      )
-      // Test that the intersection is within 10% error margin to match `fpr`
-      expect(intersection).toBeGreaterThanOrEqual(numClientElements / 2)
-      expect(intersection).toBeLessThan((numClientElements / 2) * 1.1)
     })
   })
 })

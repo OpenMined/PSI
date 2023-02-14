@@ -26,7 +26,6 @@
 #ifdef __cplusplus
 extern "C" {
 namespace {
-using private_set_intersection::DataStructure;
 using private_set_intersection::datastructure_t;
 }  // namespace
 #endif

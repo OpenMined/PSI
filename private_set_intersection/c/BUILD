@@ -25,15 +25,6 @@ cc_library(
     ],
 )
 
-cc_test(
-    name = "c_package_test",
-    srcs = ["package_test.cpp"],
-    deps = [
-        ":c_package",
-        "@com_google_googletest//:gtest_main",
-    ],
-)
-
 cc_library(
     name = "c_internal_utils",
     srcs = ["internal_utils.cpp"],
@@ -55,21 +46,6 @@ cc_library(
     ],
 )
 
-cc_test(
-    name = "c_psi_client_test",
-    srcs = ["psi_client_test.cpp"],
-    deps = [
-        ":c_psi_client",
-        ":c_psi_server",
-        "//private_set_intersection/cpp/util:status_matchers",
-        "@com_google_absl//absl/container:flat_hash_set",
-        "@com_google_absl//absl/strings",
-        "@com_google_googletest//:gtest",
-        "@com_google_googletest//:gtest_main",
-        "@private_join_and_compute//private_join_and_compute/crypto:ec_commutative_cipher",
-    ],
-)
-
 cc_library(
     name = "c_psi_server",
     srcs = ["psi_server.cpp"],
@@ -82,9 +58,10 @@ cc_library(
 )
 
 cc_test(
-    name = "c_psi_server_test",
-    srcs = ["psi_server_test.cpp"],
+    name = "c_integration_test",
+    srcs = ["integration_test.cpp"],
     deps = [
+        ":c_package",
         ":c_psi_client",
         ":c_psi_server",
         "//private_set_intersection/cpp/util:status_matchers",
