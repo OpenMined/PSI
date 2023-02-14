@@ -3,12 +3,11 @@
 Breaking:
 
 - The protobuf schema has changed to support additional enum variants for
-  backing datastructures. This means prior protobufs using earlier versions of
-  the library will not work with `2.0.0+`. We made this change to ensure
-  additional variants will not break the schema. In general, storing serialized
-  protobufs is not a pattern the protocol recommends since every intersection
-  calculation should be a new protocol exchange (setup, request, response,
-  intersection).
+  backing datastructures. This means prior protobufs using earlier library
+  versions will not work with `2.0.0+`. We made this change to ensure additional
+  variants will not break the schema. In general, storing serialized protobufs
+  is not a pattern the protocol recommends since every intersection calculation
+  should be a new protocol exchange (setup, request, response, intersection).
 
 Feat:
 
@@ -21,19 +20,17 @@ Bufgix:
 
 - Previously, only the `CPP` bindings supported the datastructure enum to allow
   the user to select which backing datastructure to use in the protocol (`GCS`,
-  `BloomFilter`, and now `Raw`). This meant we were not feature compatable in
+  `BloomFilter`, and now `Raw`). This meant we were not feature-compatible in
   the languages that depended on the (incomplete) `C` bindings. In this release,
   all languages support the same features, namely, we've updated the `C`
-  bindings which allowed us to get `Go` and `Rust` to be feature compatable.
+  bindings which allowed us to get `Go` and `Rust` to be feature compatible.
 
 Chore:
 
-- All languages at now have common integration tests and make use of unit test
-  where relevant. We make a distiction between unit and integrations tests. Unit
-  tests are for language-specific edge cases whereas the integration tests will
-  test the common APIs for correctness.
-- Benchmarks have been updated in all languages to cover a unified suite of
-  parameters.
+- All languages now have common integration tests and use unit tests where
+  relevant. We make a distinction between unit and integration tests. Unit tests
+  are for language-specific edge cases whereas the integration tests will test
+  the common APIs for correctness.
 
 # Version 1.1.1
 
