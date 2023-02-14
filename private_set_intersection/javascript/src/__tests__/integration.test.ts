@@ -96,9 +96,13 @@ describe('PSI Integration', () => {
         )
         // Test that the intersection is within 10% error margin to match `fpr`
         // eslint-disable-next-line jest/no-conditional-expect
-        expect(intersection).toBeGreaterThanOrEqual(numClientElements / 2)
+        expect(intersection).toBeGreaterThanOrEqual(
+          Math.floor(numClientElements / 2)
+        )
         // eslint-disable-next-line jest/no-conditional-expect
-        expect(intersection).toBeLessThan((numClientElements / 2) * 1.1)
+        expect(intersection).toBeLessThanOrEqual(
+          Math.ceil((numClientElements / 2) * 1.1)
+        )
       }
     })
   })

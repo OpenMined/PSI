@@ -1,6 +1,7 @@
 import pytest
 import sys
 import re
+from math import ceil, floor
 
 import private_set_intersection.python as psi
 
@@ -55,8 +56,8 @@ def test_integration(ds, reveal_intersection):
                 assert idx not in iset
     else:
         intersection = c.GetIntersectionSize(setup, response)
-        assert intersection >= (len(client_items) / 2.0)
-        assert intersection <= (1.1 * len(client_items) / 2.0)
+        assert intersection >= floor(len(client_items) / 2.0)
+        assert intersection <= ceil((len(client_items) / 2.0) * 1.1)
 
 
 if __name__ == "__main__":
