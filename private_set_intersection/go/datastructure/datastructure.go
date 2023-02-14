@@ -6,8 +6,10 @@ package datastructure
 */
 import "C"
 
+// DataStructure enum type used to specify which backing datastructure to use
 type DataStructure int
 
+// Golang's way to define enums that are compatible with our C bindings
 const (
 	Raw         DataStructure = C.Raw
 	Gcs                       = C.Gcs
