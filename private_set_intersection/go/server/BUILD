@@ -21,7 +21,7 @@ go_test(
     embed = [":server"],
     deps = [
         "//private_set_intersection/go/client",
+        "//private_set_intersection/go/datastructure",
         "//private_set_intersection/proto:psi_go_proto",
-        "@com_github_golang_protobuf//proto:go_default_library",
     ],
 )

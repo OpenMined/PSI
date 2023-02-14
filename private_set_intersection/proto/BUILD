@@ -1,3 +1,5 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
 #
 # Copyright 2020 the authors listed in CONTRIBUTORS.md
 #
@@ -46,4 +48,16 @@ rust_proto_library(
 python_proto_library(
     name = "psi_python_proto",
     protos = [":psi_proto"],
+)
+
+go_proto_library(
+    name = "psi_proto_go_proto",
+    importpath = "private_set_intersection/proto",
+    proto = ":psi_proto",
+)
+
+go_library(
+    name = "proto",
+    embed = [":psi_proto_go_proto"],
+    importpath = "private_set_intersection/proto",
 )
