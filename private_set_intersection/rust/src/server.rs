@@ -321,28 +321,6 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_create() {
-        for reveal in [false, true] {
-            let server = PsiServer::create_with_new_key(reveal).unwrap();
-            server
-                .create_setup_message::<String>(0.001, 1000, &vec![], None)
-                .unwrap();
-
-            let server = PsiServer::create_with_new_key(reveal).unwrap();
-            let new_server =
-                PsiServer::create_from_key(&server.get_private_key_bytes().unwrap(), reveal)
-                    .unwrap();
-            assert_eq!(
-                server.get_private_key_bytes().unwrap(),
-                new_server.get_private_key_bytes().unwrap()
-            );
-
-            let server = PsiServer::create_from_key(&vec![1u8; 32], reveal).unwrap();
-            assert_eq!(server.get_private_key_bytes().unwrap(), vec![1u8; 32]);
-        }
-    }
-
-    #[test]
     fn test_error() {
         for reveal in [false, true] {
             assert!(PsiServer::create_from_key(&vec![0u8; 32], reveal).is_err());

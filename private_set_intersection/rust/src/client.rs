@@ -394,26 +394,6 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_create() {
-        for reveal in [false, true] {
-            let client = PsiClient::create_with_new_key(reveal).unwrap();
-            client.create_request::<String>(&vec![]).unwrap();
-
-            let client = PsiClient::create_with_new_key(reveal).unwrap();
-            let new_client =
-                PsiClient::create_from_key(&client.get_private_key_bytes().unwrap(), reveal)
-                    .unwrap();
-            assert_eq!(
-                client.get_private_key_bytes().unwrap(),
-                new_client.get_private_key_bytes().unwrap()
-            );
-
-            let client = PsiClient::create_from_key(&vec![1u8; 32], reveal).unwrap();
-            assert_eq!(client.get_private_key_bytes().unwrap(), vec![1u8; 32]);
-        }
-    }
-
-    #[test]
     fn test_error() {
         for reveal in [false, true] {
             assert!(PsiClient::create_from_key(&vec![0u8; 32], reveal).is_err());

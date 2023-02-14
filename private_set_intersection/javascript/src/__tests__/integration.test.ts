@@ -31,19 +31,11 @@ describe('PSI Integration', () => {
     expect(typeof psi.package.version).toBe('string')
   })
 
-  test('It should create from an existing key', async () => {
+  test('It should create from a static key', async () => {
     const server = psi.server!.createFromKey(serverKey, false)
     expect(server.getPrivateKeyBytes()).toEqual(serverKey)
     const client = psi.client!.createFromKey(clientKey, false)
     expect(client.getPrivateKeyBytes()).toEqual(clientKey)
-  })
-
-  test('It should return the private key as a binary array', async () => {
-    const server = psi.server!.createWithNewKey()
-    expect(server.getPrivateKeyBytes().length).toBe(32)
-
-    const client = psi.client!.createWithNewKey()
-    expect(client.getPrivateKeyBytes().length).toBe(32)
   })
 
   test('should compute the intersection', async () => {
@@ -61,8 +53,8 @@ describe('PSI Integration', () => {
         dataStructure: psi.dataStructure.BloomFilter
       }
     ].forEach(({ revealIntersection, dataStructure }) => {
-      const client = psi.client!.createFromKey(clientKey, revealIntersection)
-      const server = psi.server!.createFromKey(serverKey, revealIntersection)
+      const client = psi.client!.createWithNewKey(revealIntersection)
+      const server = psi.server!.createWithNewKey(revealIntersection)
 
       const serverSetup = server
         .createSetupMessage(fpr, numClientElements, serverInputs, dataStructure)

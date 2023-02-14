@@ -1,6 +1,7 @@
 package integration_test
 
 import (
+	"bytes"
 	psi_client "github.com/openmined/psi/client"
 	psi_ds "github.com/openmined/psi/datastructure"
 	psi_proto "github.com/openmined/psi/pb"
@@ -59,6 +60,36 @@ func TestVersion(t *testing.T) {
 	if version != clientVersion || version != serverVersion || clientVersion != serverVersion {
 		t.Errorf("Missmatched versions pkg (%s), client (%s), server (%s)", version, clientVersion, serverVersion)
 	}
+}
+
+func TestStaticKey(t *testing.T) {
+	client, err := psi_client.CreateFromKey(clientKey, false)
+	if err != nil || client == nil {
+		t.Errorf("Failed to create a PSI client from key %v", err)
+	}
+
+	newKey, err := client.GetPrivateKeyBytes()
+	if err != nil {
+		t.Errorf("Failed to create a new PSI client key %v", err)
+	}
+	if !bytes.Equal(clientKey, newKey) {
+		t.Errorf("new client invalid")
+	}
+	client.Destroy()
+
+	server, err := psi_server.CreateFromKey(serverKey, false)
+	if err != nil || server == nil {
+		t.Errorf("Failed to create a PSI server from key %v", err)
+	}
+
+	newKey, err = server.GetPrivateKeyBytes()
+	if err != nil {
+		t.Errorf("Failed to create a new PSI server key %v", err)
+	}
+	if !bytes.Equal(serverKey, newKey) {
+		t.Errorf("new server invalid")
+	}
+	server.Destroy()
 
 }
 func TestIntegrationIntersection(t *testing.T) {
@@ -74,11 +105,11 @@ func TestIntegrationIntersection(t *testing.T) {
 		{false, psi_ds.BloomFilter},
 	}
 	for _, tc := range testCases {
-		client, err := psi_client.CreateFromKey(clientKey, tc.revealIntersection)
+		client, err := psi_client.CreateWithNewKey(tc.revealIntersection)
 		if err != nil {
 			t.Errorf("Failed to create a PSI client %v", err)
 		}
-		server, err := psi_server.CreateFromKey(serverKey, tc.revealIntersection)
+		server, err := psi_server.CreateWithNewKey(tc.revealIntersection)
 		if err != nil {
 			t.Errorf("Failed to create a PSI server %v", err)
 		}

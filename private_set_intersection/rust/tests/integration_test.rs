@@ -1,3 +1,5 @@
+use psi::client::PsiClient;
+use psi::server::PsiServer;
 use psi::*;
 use std::collections::HashSet;
 use std::iter::FromIterator;
@@ -15,6 +17,15 @@ const NUM_CLIENT_ELEMENTS: usize = 10;
 const NUM_SERVER_ELEMENTS: usize = 100;
 
 #[test]
+fn test_static_key() {
+    let client = PsiClient::create_from_key(CLIENT_KEY, false).unwrap();
+    assert_eq!(client.get_private_key_bytes().unwrap(), CLIENT_KEY);
+
+    let server = PsiServer::create_from_key(SERVER_KEY, false).unwrap();
+    assert_eq!(server.get_private_key_bytes().unwrap(), SERVER_KEY);
+}
+
+#[test]
 fn integration_test() {
     for reveal in [false, true] {
         for ds in [
@@ -22,8 +33,8 @@ fn integration_test() {
             datastructure::PsiDataStructure::Gcs,
             datastructure::PsiDataStructure::BloomFilter,
         ] {
-            let client = client::PsiClient::create_from_key(CLIENT_KEY, reveal).unwrap();
-            let server = server::PsiServer::create_from_key(SERVER_KEY, reveal).unwrap();
+            let client = client::PsiClient::create_with_new_key(reveal).unwrap();
+            let server = server::PsiServer::create_with_new_key(reveal).unwrap();
 
             let client_elements: Vec<String> = (0..NUM_CLIENT_ELEMENTS)
                 .map(|i| format!("Element {}", i))
