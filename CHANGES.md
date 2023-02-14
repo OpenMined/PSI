@@ -16,7 +16,7 @@ Feat:
   false-positives (`fpr` is ignored). It is intended for applications that
   depend on 100% accuracy, but it may have a performance impact.
 
-Bufgix:
+Bugfix:
 
 - Previously, only the `CPP` bindings supported the datastructure enum to allow
   the user to select which backing datastructure to use in the protocol (`GCS`,
