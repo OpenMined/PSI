@@ -1,10 +1,21 @@
 # Version 2.0.0
 
+Breaking:
+
+- The protobuf schema has changed to support additional enum variants for
+  backing datastructures. This means prior protobufs using earlier versions of
+  the library will not work with `2.0.0+`. We made this change to ensure
+  additional variants will not break the schema. In general, storing serialized
+  protobufs is not a pattern the protocol recommends since every intersection
+  calculation should be a new protocol exchange (setup, request, response,
+  intersection).
+
 Feat:
 
-- A `Raw` datastructure enum variant has been added which, when specified,
-  computes an intersection with no false-positives. It is intended for
-  applications that depend on 100% accuracy, but it have a performance impact.
+- A `Raw` datastructure enum variant has been added which when specified,
+  computes an intersection against 'raw' encrypted strings, but with zero
+  false-positives (`fpr` is ignored). It is intended for applications that
+  depend on 100% accuracy, but it may have a performance impact.
 
 Bufgix:
 
@@ -15,21 +26,14 @@ Bufgix:
   all languages support the same features, namely, we've updated the `C`
   bindings which allowed us to get `Go` and `Rust` to be feature compatable.
 
-Breaking:
-
-- The protobuf schema has changed to support additional enum variants for
-  backing datastructures. This means prior protobufs using earlier versions of
-  the library will not work with `2.0.0+`. We make this change to add
-  flexibility for future enum variants. Additional variants will not break the
-  schema. In general, storing serialized protobufs is not a pattern the protocol
-  recommends since every intersection calculation should be a new protocol
-  exchange (setup, request, response, intersection).
-
 Chore:
 
-- Integrations tests have been added to all languages which use a common list of parameterized
-  tests that also test protobuf serialization.
-- Benchmarks have been updated in all languages to cover a unified suite of parameters.
+- All languages at now have common integration tests and make use of unit test
+  where relevant. We make a distiction between unit and integrations tests. Unit
+  tests are for language-specific edge cases whereas the integration tests will
+  test the common APIs for correctness.
+- Benchmarks have been updated in all languages to cover a unified suite of
+  parameters.
 
 # Version 1.1.1
 
