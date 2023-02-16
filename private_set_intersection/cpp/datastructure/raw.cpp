@@ -25,22 +25,25 @@
 
 namespace private_set_intersection {
 
-// Computes the intersection of two random access collections.
+// Computes the intersection of two collections. The first collection must be a
+// `pair<T, int64_t>` where `int64_t`. The `T` must be the same in the second
+// collection.
 //
-// Requires the collections to be sorted.
+// Requires both collections to be sorted.
 //
 // Complexity:
 // - O(max(n, m))
 template <class InputIt1, class InputIt2, class OutputIt>
 void custom_set_intersection(InputIt1 first1, InputIt1 last1, InputIt2 first2,
                              InputIt2 last2, OutputIt d_first) {
-  auto begin1 = first1;
   while (first1 != last1 && first2 != last2) {
-    if (*first1 < *first2)
+    if ((*first1).first < *first2)
       ++first1;
     else {
       // *first1 and *first2 are equivalent.
-      if (!(*first2 < *first1)) *d_first++ = first1++ - begin1;
+      if (!(*first2 < (*first1).first)) {
+        *d_first++ = (*first1++).second;
+      }
       ++first2;
     }
   }
@@ -69,15 +72,25 @@ StatusOr<std::unique_ptr<Raw>> Raw::CreateFromProtobuf(
   return absl::WrapUnique(new Raw(encrypted_elements));
 }
 
-std::vector<int64_t> Raw::Intersect(absl::Span<std::string> elements) const {
+std::vector<int64_t> Raw::Intersect(
+    absl::Span<const std::string> elements) const {
+  // This implementation creates a copy of `elements`, but the tradeoff is that
+  // we can compute the intersection in O(nlog(n) + max(n, m)) where `n` and `m`
+  // correspond to the number of client and server elements respectively.
+  std::vector<std::pair<std::string, int64_t>> vp(elements.size());
+
+  // Collect a pair with the index to track the original index after sorting.
+  for (size_t i = 0; i < elements.size(); ++i) {
+    vp[i] = make_pair(elements[i], (int64_t)i);
+  }
+
+  // Next, we sort the collection. O(nlog(n))
+  std::sort(vp.begin(), vp.end());
+
   std::vector<int64_t> res;
-
-  // the server's set is already sorted so we only need to sort the input
-  std::sort(elements.begin(), elements.end());
-  auto server = absl::MakeConstSpan(encrypted_);
-
-  custom_set_intersection(elements.begin(), elements.end(), server.begin(),
-                          server.end(), std::back_inserter(res));
+  // Compute intersection. O(max(m, n))
+  custom_set_intersection(vp.begin(), vp.end(), encrypted_.begin(),
+                          encrypted_.end(), std::back_inserter(res));
 
   return res;
 }

@@ -9,6 +9,7 @@ import (
 	psi_version "github.com/openmined/psi/version"
 	"google.golang.org/protobuf/proto"
 	"regexp"
+	"math"
 	"testing"
 )
 
@@ -124,7 +125,7 @@ func TestIntegrationIntersection(t *testing.T) {
 		}
 
 		// Create the setup
-		serverSetup, err := server.CreateSetupMessage(fpr, int64(len(clientInputs)), serverInputs, 0)
+		serverSetup, err := server.CreateSetupMessage(fpr, int64(len(clientInputs)), serverInputs, tc.ds)
 		if err != nil {
 			t.Errorf("Failed to create serverSetup: %v", err)
 		}
@@ -192,7 +193,7 @@ func TestIntegrationIntersection(t *testing.T) {
 				t.Errorf("Invalid intersection. expected lower bound %v. got %v", (numClientInputs / 2), intersectionCnt)
 			}
 
-			if float64(intersectionCnt) > float64(numClientInputs/2)*float64(1.1) {
+			if float64(intersectionCnt) > math.Ceil(float64(numClientInputs/2)*float64(1.1)) {
 				t.Errorf("Invalid intersection. expected upper bound %v. got %v", float64(numClientInputs/2)*float64(1.1), intersectionCnt)
 			}
 

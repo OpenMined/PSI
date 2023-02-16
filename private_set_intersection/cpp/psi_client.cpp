@@ -132,7 +132,7 @@ StatusOr<std::vector<int64_t>> PsiClient::ProcessResponse(
     case psi_proto::ServerSetup::DataStructureCase::kRaw: {
       // Decode Bloom Filter from the server setup.
       ASSIGN_OR_RETURN(auto container, Raw::CreateFromProtobuf(server_setup));
-      return container->Intersect(absl::MakeSpan(decrypted));
+      return container->Intersect(absl::MakeConstSpan(decrypted));
     }
     case psi_proto::ServerSetup::DataStructureCase::kGcs: {
       // Decode GCS from the server setup.
