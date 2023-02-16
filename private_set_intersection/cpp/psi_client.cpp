@@ -132,21 +132,18 @@ StatusOr<std::vector<int64_t>> PsiClient::ProcessResponse(
     case psi_proto::ServerSetup::DataStructureCase::kRaw: {
       // Decode Bloom Filter from the server setup.
       ASSIGN_OR_RETURN(auto container, Raw::CreateFromProtobuf(server_setup));
-      return container->Intersect(
-          absl::MakeConstSpan(&decrypted[0], decrypted.size()));
+      return container->Intersect(absl::MakeSpan(decrypted));
     }
     case psi_proto::ServerSetup::DataStructureCase::kGcs: {
       // Decode GCS from the server setup.
       ASSIGN_OR_RETURN(auto container, GCS::CreateFromProtobuf(server_setup));
-      return container->Intersect(
-          absl::MakeConstSpan(&decrypted[0], decrypted.size()));
+      return container->Intersect(absl::MakeConstSpan(decrypted));
     }
     case psi_proto::ServerSetup::DataStructureCase::kBloomFilter: {
       // Decode Bloom Filter from the server setup.
       ASSIGN_OR_RETURN(auto container,
                        BloomFilter::CreateFromProtobuf(server_setup));
-      return container->Intersect(
-          absl::MakeConstSpan(&decrypted[0], decrypted.size()));
+      return container->Intersect(absl::MakeConstSpan(decrypted));
     }
     default: {
       return absl::InvalidArgumentError("Impossible");

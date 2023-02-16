@@ -41,7 +41,8 @@ class Raw {
   static StatusOr<std::unique_ptr<Raw>> CreateFromProtobuf(
       const psi_proto::ServerSetup& encoded_filter);
 
-  std::vector<int64_t> Intersect(absl::Span<const std::string> elements) const;
+  // Calculates the intersection O(n + n*log(n))
+  std::vector<int64_t> Intersect(absl::Span<std::string> elements) const;
 
   // Returns the size of the encrypted elements
   size_t size() const;

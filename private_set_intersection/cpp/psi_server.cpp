@@ -77,21 +77,18 @@ StatusOr<psi_proto::ServerSetup> PsiServer::CreateSetupMessage(
   switch (ds) {
     case DataStructure::Gcs: {
       // Create a GCS and insert elements into it.
-      ASSIGN_OR_RETURN(
-          auto container,
-          GCS::Create(corrected_fpr, num_client_inputs,
-                      absl::MakeConstSpan(&encrypted[0], encrypted.size())));
+      ASSIGN_OR_RETURN(auto container,
+                       GCS::Create(corrected_fpr, num_client_inputs,
+                                   absl::MakeConstSpan(encrypted)));
 
       // Return the GCS as a Protobuf
       return container->ToProtobuf();
     }
     case DataStructure::BloomFilter: {
       // Create a Bloom Filter and insert elements into it.
-      ASSIGN_OR_RETURN(
-          auto container,
-          BloomFilter::Create(
-              corrected_fpr, num_client_inputs,
-              absl::MakeConstSpan(&encrypted[0], encrypted.size())));
+      ASSIGN_OR_RETURN(auto container,
+                       BloomFilter::Create(corrected_fpr, num_client_inputs,
+                                           absl::MakeConstSpan(encrypted)));
 
       // Return the Bloom Filter as a Protobuf
       return container->ToProtobuf();

@@ -36,12 +36,23 @@ class RawTest : public ::testing::Test {
   std::unique_ptr<Raw> container_;
 };
 
-TEST_F(RawTest, TestAdd) {
+TEST_F(RawTest, TestIntersection) {
   std::vector<std::string> server = {"a", "b", "c", "d", "e"};
-  std::vector<std::string> client = {"z", "b", "c", "d"};
+  std::vector<std::string> client = {"b", "c", "d", "z"};
 
   SetUp(static_cast<int64_t>(client.size()), server);
-  std::vector<int64_t> results = container_->Intersect(client);
+  std::vector<int64_t> results = container_->Intersect(absl::MakeSpan(client));
+  std::vector<int64_t> expected{0, 1, 2};
+  EXPECT_EQ(results.size(), 3);
+  EXPECT_EQ(results, expected);
+}
+
+TEST_F(RawTest, TestIntersectionLargerClient) {
+  std::vector<std::string> server = {"b", "c", "d", "z"};
+  std::vector<std::string> client = {"a", "b", "c", "d", "e"};
+
+  SetUp(static_cast<int64_t>(client.size()), server);
+  std::vector<int64_t> results = container_->Intersect(absl::MakeSpan(client));
   std::vector<int64_t> expected{1, 2, 3};
   EXPECT_EQ(results.size(), 3);
   EXPECT_EQ(results, expected);
@@ -49,7 +60,7 @@ TEST_F(RawTest, TestAdd) {
 
 TEST_F(RawTest, TestToProtobuf) {
   std::vector<std::string> server = {"b", "a", "c", "d", "e"};
-  std::vector<std::string> client = {"z", "b", "c", "d"};
+  std::vector<std::string> client = {"b", "c", "d", "z"};
 
   SetUp(static_cast<int64_t>(client.size()), server);
 
@@ -63,17 +74,17 @@ TEST_F(RawTest, TestToProtobuf) {
   EXPECT_EQ(encoded_filter.raw().encrypted_elements()[0], "a");
 }
 
-TEST_F(RawTest, TestCreateFromProtobuf) {
+TEST_F(RawTest, TestIntersectionFromProtobuf) {
   std::vector<std::string> server = {"a", "b", "c", "d", "e"};
-  std::vector<std::string> client = {"z", "b", "c", "d"};
+  std::vector<std::string> client = {"b", "c", "d", "z"};
 
   SetUp(static_cast<int64_t>(client.size()), server);
 
   // Create the protobuf from the Raw container and check if it matches.
   PSI_ASSERT_OK_AND_ASSIGN(auto container2,
                            Raw::CreateFromProtobuf(container_->ToProtobuf()));
-  std::vector<int64_t> results = container2->Intersect(client);
-  std::vector<int64_t> expected{1, 2, 3};
+  std::vector<int64_t> results = container2->Intersect(absl::MakeSpan(client));
+  std::vector<int64_t> expected{0, 1, 2};
   EXPECT_EQ(results.size(), 3);
   EXPECT_EQ(results, expected);
 }
