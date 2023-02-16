@@ -2,13 +2,15 @@
 
 Feat:
 
-- Improved the performance of the underlying `Raw` intersection computation from
-  `O(nmlog(m))` -> `O(nlog(n) + max(n, m))`.
+- The performance of the underlying `Raw` intersection computation has improved
+  from `O(nmlog(m))` -> `O(nlog(n) + max(n, m))`; however, internal protobuf
+  deserialization remains as the dominant performance inhibitor for the
+  `client->GetIntersection*` methods.
 
 Fix:
 
 - The `go` integration tests were not using the parameterized datastructure
-  param. There were no bugs upon identificication.
+  param. The fix did not result in any regression.
 
 # Version 2.0.0
 
