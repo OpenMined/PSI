@@ -1,3 +1,15 @@
+# Version 2.0.1
+
+Feat:
+
+- Improved the performance of the underlying `Raw` intersection computation from
+  `O(nmlog(m))` -> `O(nlog(n) + max(n, m))`.
+
+Fix:
+
+- The `go` integration tests were not using the parameterized datastructure
+  param. There were no bugs upon identificication.
+
 # Version 2.0.0
 
 Breaking:
