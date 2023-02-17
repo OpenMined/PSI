@@ -29,6 +29,15 @@
 
 namespace private_set_intersection {
 
+/**
+ * @brief Construct a new Psi Client:: Psi Client object
+ *
+ * @param ec_cipher A unique pointer to a commutative , which is used for
+ * encryption and decryption in the Private Set Intersection (PSI) protocol.
+ * @param reveal_intersection A boolean value indicating whether the
+ * intersection of the two sets should be revealed after the PSI protocol is
+ * completed.
+ */
 PsiClient::PsiClient(
     std::unique_ptr<::private_join_and_compute::ECCommutativeCipher> ec_cipher,
     bool reveal_intersection)
@@ -36,13 +45,12 @@ PsiClient::PsiClient(
       reveal_intersection(reveal_intersection) {}
 
 /**
- * Creates a new instance of the PsiClient class with a new key pair for
+ * @brief Creates a new instance of the PsiClient class with a new key pair for
  * encryption and decryption using ECCommutativeCipher.
  *
  * @param reveal_intersection A boolean indicating whether the client wants to
  * learn the intersection values or only its size (cardinality).
- * @return A StatusOr object containing a unique pointer to the newly created
- * instance of the PsiClient class, or a Status object indicating an error.
+ * @return StatusOr<std::unique_ptr<PsiClient>>
  */
 StatusOr<std::unique_ptr<PsiClient>> PsiClient::CreateWithNewKey(
     bool reveal_intersection) {
@@ -66,8 +74,7 @@ StatusOr<std::unique_ptr<PsiClient>> PsiClient::CreateWithNewKey(
  * @param key_bytes The bytes representing the key for the EC cipher.
  * @param reveal_intersection A boolean flag indicating whether the intersection
  * should be revealed.
- * @return A StatusOr object containing either a unique pointer to a PsiClient
- * instance or an error status.
+ * @return StatusOr<std::unique_ptr<PsiClient>>
  */
 StatusOr<std::unique_ptr<PsiClient>> PsiClient::CreateFromKey(
     const std::string& key_bytes, bool reveal_intersection) {
@@ -86,8 +93,7 @@ StatusOr<std::unique_ptr<PsiClient>> PsiClient::CreateFromKey(
  *
  * @param inputs The inputs to encrypt and add to the request protobuf.
  *
- * @return A StatusOr object containing the generated request protobuf if
- * successful, or an error Status if an error occurred.
+ * @return StatusOr<psi_proto::Request>
  */
 StatusOr<psi_proto::Request> PsiClient::CreateRequest(
     absl::Span<const std::string> inputs) const {
@@ -118,8 +124,7 @@ StatusOr<psi_proto::Request> PsiClient::CreateRequest(
  * @param server_setup The original server's setup
  * @param server_response The previous server's response
  *
- * @return A StatusOr object containing the intersection if successful, or an
- * error Status if an error occurred.
+ * @return StatusOr<std::vector<int64_t>>
  */
 StatusOr<std::vector<int64_t>> PsiClient::GetIntersection(
     const psi_proto::ServerSetup& server_setup,
@@ -141,8 +146,7 @@ StatusOr<std::vector<int64_t>> PsiClient::GetIntersection(
  * @param server_setup The original server's setup
  * @param server_response The previous server's response
  *
- * @return A StatusOr object containing the cardinality if successful, or an
- * error Status if an error occurred.
+ * @return StatusOr<int64_t>
  */
 StatusOr<int64_t> PsiClient::GetIntersectionSize(
     const psi_proto::ServerSetup& server_setup,
@@ -158,8 +162,7 @@ StatusOr<int64_t> PsiClient::GetIntersectionSize(
  * @param server_setup The original server's setup
  * @param server_response The previous server's response
  *
- * @return A StatusOr object containing the intersection if successful, or an
- * error Status if an error occurred.
+ * @return StatusOr<std::vector<int64_t>>
  */
 StatusOr<std::vector<int64_t>> PsiClient::ProcessResponse(
     const psi_proto::ServerSetup& server_setup,
