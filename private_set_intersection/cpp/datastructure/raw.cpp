@@ -26,8 +26,7 @@
 namespace private_set_intersection {
 
 // Computes the intersection of two collections. The first collection must be a
-// `pair<T, int64_t>` where `int64_t`. The `T` must be the same in the second
-// collection.
+// `pair<T, int64_t>`. The `T` must be the same in the second collection.
 //
 // Requires both collections to be sorted.
 //

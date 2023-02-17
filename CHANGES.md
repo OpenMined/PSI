@@ -9,8 +9,8 @@ Feat:
 
 Fix:
 
-- The `go` integration tests were not using the parameterized datastructure
-  param. The fix did not result in any regression.
+- The `go` integration tests were not using the datastructure param properly.
+  The fix did not result in any regression.
 
 # Version 2.0.0
 
