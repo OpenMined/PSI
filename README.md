@@ -6,29 +6,24 @@
 
 # PSI
 
-Private Set Intersection protocol based on ECDH and Golomb Compressed Sets, and
+Private Set Intersection protocol based on ECDH and Golomb Compressed Sets or
 Bloom Filters.
 
 ## Protocol
 
-In PSI, two parties (client and server) each hold a dataset, and at the end of
-the exchange, the client learns the intersection size (cardinality) or the
-intersection values of both datasets. The client doesn't learn the server's set
-and the server learns nothing from the client.
+The Private Set Intersection (PSI) protocol involves two parties, a client and a
+server, each holding a dataset. The goal of the protocol is for the client to
+determine the intersection between their dataset and the server's dataset,
+without revealing any information about their respective datasets to each other.
 
-In this library, there are several variants of PSI, some introduce a small
-false-positive rate (i.e., the reported intersection will be slightly larger
-than the actual cardinality), and others that do not generate false positives.
-This behavior is selective and the false-positive rate can be tuned.
-
-The protocol works as follows.
+The protocol proceeds as follows:
 
 1. Setup (server)
 
 The server encrypts all its elements `x` under a commutative encryption scheme,
 computing `H(x)^s` where `s` is its secret key. The encrypted elements are then
-inserted in a **container**, which is sent to the client in the form of a
-serialized protobuf and resembles the following:
+inserted into a container and sent to the client in the form of a serialized
+protobuf and resembles the following:
 
 ```
 [ H(x_1)^(s), H(x_2)^(s), ... , H(x_n)^(s) ]
@@ -37,11 +32,11 @@ serialized protobuf and resembles the following:
 2. Request (client)
 
 The client encrypts all their elements `x` using the commutative encryption
-scheme, computing `H(x)^c`, where `c` is its secret key. The encrypted elements
-are sent to the server with a boolean flag, `reveal_intersection`, that
-indicates whether the client wants to learn the elements in the intersection or
-only its size (cardinality). The payload is sent as a serialized protobuf and
-resembles the following:
+scheme, computing `H(x)^c`, where `c` is its secret key. The client sends its
+encrypted elements to the server along with a boolean flag,
+`reveal_intersection`, indicating whether the client wants to learn the elements
+in the intersection or only its size (cardinality). The payload is sent as a
+serialized protobuf and resembles the following:
 
 ```
 [ H(x_1)^(c), H(x_2)^(c), ... , H(x_n)^(c) ]
@@ -52,21 +47,22 @@ resembles the following:
 For each encrypted element `H(x)^c` received from the client, the server
 encrypts it again under the commutative encryption scheme with its secret key
 `s`, computing `(H(x)^c)^s = H(x)^(cs)`. The result is sent back to the client
-as a serialized protobuf and resembles the following:
+in a serialized protobuf and resembles the following:
 
 ```
 [ H(x_1)^(cs), H(x_2)^(cs), ... , H(x_n)^(cs) ]
 ```
 
-If `reveal_intersection` is `false`, the array is sorted to hide the order of
-entries from the client.
-
 4. Compute intersection (client)
 
 The client decrypts each element received from the server's response using its
-secret key `c`, computing `(H(x)^(cs))^(1/c) = H(x)^s`. It then checks if each
-element is present in the **container**, and reports the number of matches as
-the intersection size.
+secret key `c`, computing `(H(x)^(cs))^(1/c) = H(x)^s`. It then checks whether
+each decrypted element is present in the container received from the server, and
+reports the number of matches as the intersection size.
+
+It's worth noting that the protocol has several variants, some of which
+introduce a small false-positive rate, while others do not generate false
+positives. This behavior is selective, and the false-positive rate can be tuned.
 
 The protocol has configurable **containers**. Golomb Compressed Sets (`Gcs`) is
 the default container but it can be overridden to be `BloomFilter` or `Raw`

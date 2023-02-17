@@ -1,17 +1,17 @@
 //
 // Copyright 2020 the authors listed in CONTRIBUTORS.md
 //
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
+// Licensed under the Apache License, Version 2.0 (the "License"); you may not
+// use this file except in compliance with the License. You may obtain a copy of
+// the License at
 //
 //     http://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+// distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+// WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+// License for the specific language governing permissions and limitations under
+// the License.
 //
 
 #include "private_set_intersection/cpp/psi_client.h"
@@ -35,6 +35,15 @@ PsiClient::PsiClient(
     : ec_cipher_(std::move(ec_cipher)),
       reveal_intersection(reveal_intersection) {}
 
+/**
+ * Creates a new instance of the PsiClient class with a new key pair for
+ * encryption and decryption using ECCommutativeCipher.
+ *
+ * @param reveal_intersection A boolean indicating whether the client wants to
+ * learn the intersection values or only its size (cardinality).
+ * @return A StatusOr object containing a unique pointer to the newly created
+ * instance of the PsiClient class, or a Status object indicating an error.
+ */
 StatusOr<std::unique_ptr<PsiClient>> PsiClient::CreateWithNewKey(
     bool reveal_intersection) {
   // Create an EC cipher with curve P-256. This gives 128 bits of security.
@@ -43,10 +52,23 @@ StatusOr<std::unique_ptr<PsiClient>> PsiClient::CreateWithNewKey(
       ::private_join_and_compute::ECCommutativeCipher::CreateWithNewKey(
           NID_X9_62_prime256v1,
           ::private_join_and_compute::ECCommutativeCipher::HashType::SHA256));
+
+  // Create a new instance of the PsiClient class using the ECCommutativeCipher
+  // object and the reveal_intersection boolean.
   return absl::WrapUnique(
       new PsiClient(std::move(ec_cipher), reveal_intersection));
 }
 
+/**
+ * @brief Creates a new PsiClient instance using an EC cipher created from the
+ * provided key.
+ *
+ * @param key_bytes The bytes representing the key for the EC cipher.
+ * @param reveal_intersection A boolean flag indicating whether the intersection
+ * should be revealed.
+ * @return A StatusOr object containing either a unique pointer to a PsiClient
+ * instance or an error status.
+ */
 StatusOr<std::unique_ptr<PsiClient>> PsiClient::CreateFromKey(
     const std::string& key_bytes, bool reveal_intersection) {
   // Create an EC cipher with curve P-256. This gives 128 bits of security.
@@ -59,6 +81,14 @@ StatusOr<std::unique_ptr<PsiClient>> PsiClient::CreateFromKey(
       new PsiClient(std::move(ec_cipher), reveal_intersection));
 }
 
+/**
+ * @brief Creates a request protobuf with encrypted inputs and a reveal flag.
+ *
+ * @param inputs The inputs to encrypt and add to the request protobuf.
+ *
+ * @return A StatusOr object containing the generated request protobuf if
+ * successful, or an error Status if an error occurred.
+ */
 StatusOr<psi_proto::Request> PsiClient::CreateRequest(
     absl::Span<const std::string> inputs) const {
   // Encrypt inputs one by one.
@@ -82,6 +112,15 @@ StatusOr<psi_proto::Request> PsiClient::CreateRequest(
   return request;
 }
 
+/**
+ * @brief Compute the intersection
+ *
+ * @param server_setup The original server's setup
+ * @param server_response The previous server's response
+ *
+ * @return A StatusOr object containing the intersection if successful, or an
+ * error Status if an error occurred.
+ */
 StatusOr<std::vector<int64_t>> PsiClient::GetIntersection(
     const psi_proto::ServerSetup& server_setup,
     const psi_proto::Response& server_response) const {
@@ -96,6 +135,15 @@ StatusOr<std::vector<int64_t>> PsiClient::GetIntersection(
   return intersection;
 }
 
+/**
+ * @brief Compute the intersection (cardinality)
+ *
+ * @param server_setup The original server's setup
+ * @param server_response The previous server's response
+ *
+ * @return A StatusOr object containing the cardinality if successful, or an
+ * error Status if an error occurred.
+ */
 StatusOr<int64_t> PsiClient::GetIntersectionSize(
     const psi_proto::ServerSetup& server_setup,
     const psi_proto::Response& server_response) const {
@@ -104,6 +152,15 @@ StatusOr<int64_t> PsiClient::GetIntersectionSize(
   return static_cast<int64_t>(intersection.size());
 }
 
+/**
+ * @brief Process the server's response to obtain the intersection
+ *
+ * @param server_setup The original server's setup
+ * @param server_response The previous server's response
+ *
+ * @return A StatusOr object containing the intersection if successful, or an
+ * error Status if an error occurred.
+ */
 StatusOr<std::vector<int64_t>> PsiClient::ProcessResponse(
     const psi_proto::ServerSetup& server_setup,
     const psi_proto::Response& server_response) const {
@@ -151,6 +208,11 @@ StatusOr<std::vector<int64_t>> PsiClient::ProcessResponse(
   }
 }
 
+/**
+ * @brief Get the client's private key
+ *
+ * @return The private key as a null-terminated binary string
+ */
 std::string PsiClient::GetPrivateKeyBytes() const {
   std::string key = ec_cipher_->GetPrivateKeyBytes();
   key.insert(key.begin(), 32 - key.length(), '\0');
