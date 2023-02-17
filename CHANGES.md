@@ -12,6 +12,11 @@ Fix:
 - The `go` integration tests were not using the datastructure param properly.
   The fix did not result in any regression.
 
+Chore:
+
+- Update `C++` benchmarks to include the new `Raw` enum variant
+- Update the main README to include a description of the protocol
+
 # Version 2.0.0
 
 Breaking:
