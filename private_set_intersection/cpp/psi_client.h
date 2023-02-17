@@ -26,24 +26,25 @@ namespace private_set_intersection {
 
 using absl::StatusOr;
 
-// Client side of a Private Set Intersection protocol. In
-// PSI, two parties (client and server) each hold a dataset, and at
-// the end of the protocol the client learns the size of the intersection of
-// both datasets, while no party learns anything beyond that (cardinality mode).
+// Client side of a Private Set Intersection protocol. In PSI, two parties
+// (client and server) each hold a dataset, and at the end of the protocol the
+// client learns the size of the intersection of both datasets, while no party
+// learns anything beyond that (cardinality mode).
 //
-// This variant of PSI introduces a small false-positive rate (i.e.,
-// the reported cardinality will be slightly larger than the actual cardinality.
-// The false positive rate can be tuned by the server.
+// This container selected in this PSI library can introduce a small
+// false-positive rate (i.e., the reported cardinality will be slightly larger
+// than the actual cardinality. This false-positive rate can be tuned by the
+// server.
 //
 // The protocol works as follows.
-//
 //
 // 1. Setup phase
 //
 // The server encrypts all its elements x under a commutative encryption scheme,
-// computing H(x)^s where s is its secret key. The encrypted elements are then
-// inserted in a Bloom filter, which is sent to the client in the form of a
-// serialized protobuf. The protobuf has the following form:
+// computing `H(x)^s` where `s` is its secret key. The encrypted elements are
+// then inserted in a Bloom filter, which is sent to the client in the form of a
+// serialized protobuf. The example `BloomFilter` container protobuf has the
+// following form:
 //
 //   {
 //     "num_hash_functions": <int>,
@@ -70,30 +71,30 @@ using absl::StatusOr;
 //
 // 3. Server response
 //
-// For each encrypted element H(x)^c received from the client, the server
-// encrypts it again under the commutative encryption scheme with its secret
-// key s, computing (H(x)^c)^s = H(x)^(cs). The result is sent back to the
+// For each encrypted element `H(x)^c` received from the client, the server
+// encrypts it again under the commutative encryption scheme with its secret key
+// `s`, computing `(H(x)^c)^s = H(x)^(cs)`. The result is sent back to the
 // client as a serialized protobuf holding the following form:
 //
 //   {
 //     "encrypted_elements": [ H(x_1)^(cs), H(x_2)^(cs), ... ]
 //   }
 //
-// If reveal_intersection is false, the array is sorted to hide the order of
+// If `reveal_intersection` is false, the array is sorted to hide the order of
 // entries from the client.
 //
 // 4. Client computes intersection
 //
 // The client decrypts each element received from the server's response using
-// its secret key c, computing (H(x)^(cs))^(1/c) = H(x)^s. It then checks if
+// its secret key `c`, computing `(H(x)^(cs))^(1/c) = H(x)^s`. It then checks if
 // each element is present in the Bloom filter, and reports the number of
 // matches as the intersection size.
 class PsiClient {
  public:
   PsiClient() = delete;
 
-  // Creates and returns a new client instance with a fresh private key.
-  // If `reveal_intersection` is true, the client learns the elements in the
+  // Creates and returns a new client instance with a fresh private key. If
+  // `reveal_intersection` is true, the client learns the elements in the
   // intersection of the two datasets. Otherwise, only the intersection size is
   // learned.
   //
@@ -101,22 +102,23 @@ class PsiClient {
   static StatusOr<std::unique_ptr<PsiClient>> CreateWithNewKey(
       bool reveal_intersection);
 
-  // Creates and returns a new client instance with the provided private key.
-  // If `reveal_intersection` is true, the client learns the elements in the
+  // Creates and returns a new client instance with the provided private key. If
+  // `reveal_intersection` is true, the client learns the elements in the
   // intersection of the two datasets. Otherwise, only the intersection size is
   // learned.
   //
-  // WARNING: This function should be used with caution, since reusing the
-  // client key for multiple requests can reveal information about the input
-  // sets. If in doubt, use `CreateWithNewKey`.
+  // WARNING: This function is provided for use in deterministic testing and
+  // should be used with caution, since reusing the client key for multiple
+  // requests can reveal information about the input sets. If in doubt, use
+  // `CreateWithNewKey`.
   //
   // Returns INTERNAL if any OpenSSL crypto operations fail.
   static StatusOr<std::unique_ptr<PsiClient>> CreateFromKey(
       const std::string& key_bytes, bool reveal_intersection);
 
-  // Creates a request protobuf to be serialized and sent to the server.
-  // For each input element x, computes H(x)^c, where c is the secret
-  // key of ec_cipher_.
+  // Creates a request protobuf to be serialized and sent to the server. For
+  // each input element x, computes H(x)^c, where c is the secret key of
+  // ec_cipher_.
   //
   // Returns INTERNAL if encryption fails.
   StatusOr<psi_proto::Request> CreateRequest(
@@ -148,8 +150,8 @@ class PsiClient {
       const psi_proto::ServerSetup& server_setup,
       const psi_proto::Response& server_response) const;
 
-  // Returns this instance's private key. This key should only be used to
-  // create other client instances. DO NOT SEND THIS KEY TO ANY OTHER PARTY!
+  // Returns this instance's private key. This key should only be used to create
+  // other client instances. DO NOT SEND THIS KEY TO ANY OTHER PARTY!
   std::string GetPrivateKeyBytes() const;
 
  private:

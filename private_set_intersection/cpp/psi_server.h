@@ -27,32 +27,36 @@ namespace private_set_intersection {
 
 using absl::StatusOr;
 
-// The server side of a Private Set Intersection protocol.
-// See the documentation in PsiClient for a full description of the
-// protocol.
+// The server side of a Private Set Intersection protocol. See the documentation
+// in PsiClient for a full description of the protocol.
 class PsiServer {
  public:
   PsiServer() = delete;
 
-  // Creates and returns a new server instance with a fresh private key.
-  // If `reveal_intersection` indicates whether the client should learn the
+  // Creates and returns a new server instance with a fresh private key. If
+  // `reveal_intersection` indicates whether the client should learn the
   // intersection or only its size.
   //
   // Returns INTERNAL if any OpenSSL crypto operations fail.
   static StatusOr<std::unique_ptr<PsiServer>> CreateWithNewKey(
       bool reveal_intersection);
 
-  // Creates and returns a new server instance with the provided private key.
-  // If `reveal_intersection` indicates whether the client should learn the
+  // Creates and returns a new server instance with the provided private key. If
+  // `reveal_intersection` indicates whether the client should learn the
   // intersection or only its size.
+  //
+  // WARNING: This function is provided for use in deterministic testing and
+  // should be used with caution, since reusing the client key for multiple
+  // requests can reveal information about the input sets. If in doubt, use
+  // `CreateWithNewKey`.
   //
   // Returns INTERNAL if any OpenSSL crypto operations fail.
   static StatusOr<std::unique_ptr<PsiServer>> CreateFromKey(
       const std::string& key_bytes, bool reveal_intersection);
 
   // Creates a setup message from the server's dataset to be sent to the client.
-  // The setup message is a set containing H(x)^s for each element x in
-  // `inputs`, where s is the server's secret key. The setup is sent to the
+  // The setup message is a set containing `H(x)^s` for each element `x` in
+  // `inputs`, where `s` is the server's secret key. The setup is sent to the
   // client as a serialized protobuf with the following form:
   //
   //   {
@@ -82,10 +86,11 @@ class PsiServer {
       DataStructure ds = DataStructure::Gcs) const;
 
   // Processes a client query and returns the corresponding server response to
-  // be sent to the client. For each encrytped element H(x)^c in the decoded
-  // `client_request`, computes (H(x)^c)^s = H(X)^(cs) and returns these as an
+  // be sent to the client. For each encrytped element `H(x)^c` in the decoded
+  // `client_request`, computes `(H(x)^c)^s = H(X)^(cs)` and returns these as an
   // array inside a protobuf.
-  // If reveal_intersection == false, the resulting array is sorted, which
+  //
+  // If `reveal_intersection` == false, the resulting array is sorted, which
   // prevents the client from matching the individual response elements to the
   // ones in the request, ensuring that they can only learn the intersection
   // size but not individual elements in the intersection.
@@ -95,8 +100,8 @@ class PsiServer {
   StatusOr<psi_proto::Response> ProcessRequest(
       const psi_proto::Request& client_request) const;
 
-  // Returns this instance's private key. This key should only be used to
-  // create other server instances. DO NOT SEND THIS KEY TO ANY OTHER PARTY!
+  // Returns this instance's private key. This key should only be used to create
+  // other server instances. DO NOT SEND THIS KEY TO ANY OTHER PARTY!
   std::string GetPrivateKeyBytes() const;
 
  private:
