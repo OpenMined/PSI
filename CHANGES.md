@@ -15,6 +15,8 @@ Fix:
 Chore:
 
 - Update `C++` benchmarks to include the new `Raw` enum variant
+- Misc fixes to tests which were not rounding correctly and causing CI to fail
+  randomly
 - Update the main README to include a description of the protocol
 
 # Version 2.0.0
