@@ -14,6 +14,8 @@
 // limitations under the License.
 //
 
+#include <math.h>
+
 #include "absl/container/flat_hash_set.h"
 #include "absl/strings/str_cat.h"
 #include "gtest/gtest.h"
@@ -223,7 +225,8 @@ TEST_P(Correctness, intersection) {
 
     // Test if size is approximately as expected (up to 10%).
     EXPECT_GE(intersection_size, num_client_inputs / 2);
-    EXPECT_LT(intersection_size, (num_client_inputs / 2) * 1.1);
+    EXPECT_LT((double)intersection_size,
+              ceil((double(num_client_inputs) / 2.0) * 1.1));
   }
   free(server_setup);
   free(client_request);

@@ -1,3 +1,24 @@
+# Version 2.0.1
+
+Feat:
+
+- The complexity of the underlying `Raw` intersection computation has improved
+  from `O(nmlog(m))` -> `O(nlog(n) + max(n, m))`; however, internal protobuf
+  deserialization remains as the dominant performance inhibitor for the
+  `client->GetIntersection*` methods.
+
+Fix:
+
+- The `go` integration tests were not using the datastructure param properly.
+  The fix did not result in any regression.
+
+Chore:
+
+- Update `C++` benchmarks to include the new `Raw` enum variant
+- Misc fixes to tests which were not rounding correctly and causing CI to fail
+  randomly
+- Update the main README to include a description of the protocol
+
 # Version 2.0.0
 
 Breaking:

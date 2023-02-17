@@ -25,16 +25,34 @@
 
 namespace private_set_intersection {
 
+// Computes the intersection of two collections. The first collection must be a
+// `pair<T, int64_t>`. The `T` must be the same in the second collection.
+//
+// Requires both collections to be sorted.
+//
+// Complexity:
+// - O(max(n, m))
+template <class InputIt1, class InputIt2, class OutputIt>
+void custom_set_intersection(InputIt1 first1, InputIt1 last1, InputIt2 first2,
+                             InputIt2 last2, OutputIt d_first) {
+  while (first1 != last1 && first2 != last2) {
+    if ((*first1).first < *first2)
+      ++first1;
+    else {
+      // *first1 and *first2 are equivalent.
+      if (!(*first2 < (*first1).first)) {
+        *d_first++ = (*first1++).second;
+      }
+      ++first2;
+    }
+  }
+}
+
 Raw::Raw(std::vector<std::string> elements) : encrypted_(std::move(elements)) {}
 
 StatusOr<std::unique_ptr<Raw>> Raw::Create(int64_t num_client_inputs,
                                            std::vector<std::string> elements) {
-  auto num_server_inputs = static_cast<int64_t>(elements.size());
-
-  // If server inputs < client inputs, add random encrypted values
-  // ...
-
-  // Then we perform a sort to make intersections easier to find
+  // We sort to make intersections easier to find later
   std::sort(elements.begin(), elements.end());
 
   return absl::WrapUnique(new Raw(elements));
@@ -55,13 +73,23 @@ StatusOr<std::unique_ptr<Raw>> Raw::CreateFromProtobuf(
 
 std::vector<int64_t> Raw::Intersect(
     absl::Span<const std::string> elements) const {
-  std::vector<int64_t> res;
+  // This implementation creates a copy of `elements`, but the tradeoff is that
+  // we can compute the intersection in O(nlog(n) + max(n, m)) where `n` and `m`
+  // correspond to the number of client and server elements respectively.
+  std::vector<std::pair<std::string, int64_t>> vp(elements.size());
 
-  for (size_t i = 0; i < elements.size(); i++) {
-    if (std::binary_search(encrypted_.begin(), encrypted_.end(), elements[i])) {
-      res.push_back(i);
-    }
+  // Collect a pair with the index to track the original index after sorting.
+  for (size_t i = 0; i < elements.size(); ++i) {
+    vp[i] = make_pair(elements[i], (int64_t)i);
   }
+
+  // Next, we sort the collection. O(nlog(n))
+  std::sort(vp.begin(), vp.end());
+
+  std::vector<int64_t> res;
+  // Compute intersection. O(max(m, n))
+  custom_set_intersection(vp.begin(), vp.end(), encrypted_.begin(),
+                          encrypted_.end(), std::back_inserter(res));
 
   return res;
 }

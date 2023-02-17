@@ -6,8 +6,72 @@
 
 # PSI
 
-Private Set Intersection protocol based on ECDH, Bloom Filters, and Golomb
-Compressed Sets.
+Private Set Intersection protocol based on ECDH and Golomb Compressed Sets or
+Bloom Filters.
+
+## Protocol
+
+The Private Set Intersection (PSI) protocol involves two parties, a client and a
+server, each holding a dataset. The goal of the protocol is for the client to
+determine the intersection between their dataset and the server's dataset,
+without revealing any information about their respective datasets to each other.
+
+The protocol proceeds as follows:
+
+1. Setup (server)
+
+The server encrypts all its elements `x` under a commutative encryption scheme,
+computing `H(x)^s` where `s` is its secret key. The encrypted elements are then
+inserted into a container and sent to the client in the form of a serialized
+protobuf and resembles the following:
+
+```
+[ H(x_1)^(s), H(x_2)^(s), ... , H(x_n)^(s) ]
+```
+
+2. Request (client)
+
+The client encrypts all their elements `x` using the commutative encryption
+scheme, computing `H(x)^c`, where `c` is its secret key. The client sends its
+encrypted elements to the server along with a boolean flag,
+`reveal_intersection`, indicating whether the client wants to learn the elements
+in the intersection or only its size (cardinality). The payload is sent as a
+serialized protobuf and resembles the following:
+
+```
+[ H(x_1)^(c), H(x_2)^(c), ... , H(x_n)^(c) ]
+```
+
+3. Response (server)
+
+For each encrypted element `H(x)^c` received from the client, the server
+encrypts it again under the commutative encryption scheme with its secret key
+`s`, computing `(H(x)^c)^s = H(x)^(cs)`. The result is sent back to the client
+in a serialized protobuf and resembles the following:
+
+```
+[ H(x_1)^(cs), H(x_2)^(cs), ... , H(x_n)^(cs) ]
+```
+
+4. Compute intersection (client)
+
+The client decrypts each element received from the server's response using its
+secret key `c`, computing `(H(x)^(cs))^(1/c) = H(x)^s`. It then checks whether
+each decrypted element is present in the container received from the server, and
+reports the number of matches as the intersection size.
+
+It's worth noting that the protocol has several variants, some of which
+introduce a small false-positive rate, while others do not generate false
+positives. This behavior is selective, and the false-positive rate can be tuned.
+
+The protocol has configurable **containers**. Golomb Compressed Sets (`Gcs`) is
+the default container but it can be overridden to be `BloomFilter` or `Raw`
+encrypted strings. `Gcs` and `BloomFilter` will have false positives whereas
+`Raw` will not.
+
+## Security
+
+See [SECURITY.md](SECURITY.md).
 
 ## Requirements
 
