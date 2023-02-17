@@ -8,8 +8,8 @@ import (
 	psi_server "github.com/openmined/psi/server"
 	psi_version "github.com/openmined/psi/version"
 	"google.golang.org/protobuf/proto"
-	"regexp"
 	"math"
+	"regexp"
 	"testing"
 )
 
