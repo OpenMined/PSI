@@ -2,7 +2,7 @@
 
 Feat:
 
-- The performance of the underlying `Raw` intersection computation has improved
+- The complexity of the underlying `Raw` intersection computation has improved
   from `O(nmlog(m))` -> `O(nlog(n) + max(n, m))`; however, internal protobuf
   deserialization remains as the dominant performance inhibitor for the
   `client->GetIntersection*` methods.
