@@ -16,6 +16,8 @@
 
 #include "private_set_intersection/cpp/psi_client.h"
 
+#include <math.h>
+
 #include "absl/container/flat_hash_set.h"
 #include "absl/strings/escaping.h"
 #include "absl/strings/str_cat.h"
@@ -222,7 +224,8 @@ TEST_F(PsiClientTest, TestCorrectnessIntersectionSize) {
 
   // Test if size is approximately as expected (up to 10%).
   EXPECT_GE(intersection_size, num_client_elements / 2);
-  EXPECT_LT(intersection_size, (num_client_elements / 2) * 1.1);
+  EXPECT_LT((double)intersection_size,
+            ceil(((double)num_client_elements / 2.0) * 1.1));
 }
 
 TEST_F(PsiClientTest, FailIfRevealIntersectionDoesntMatch) {
