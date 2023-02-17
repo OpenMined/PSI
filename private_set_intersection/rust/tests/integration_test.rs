@@ -71,7 +71,9 @@ fn integration_test() {
                 let intersection_size = client.get_intersection_size(&setup, &response).unwrap();
 
                 assert!(intersection_size >= (NUM_CLIENT_ELEMENTS / 2));
-                assert!((intersection_size as f64) < ((NUM_CLIENT_ELEMENTS as f64) / 2.0 * 1.1));
+                assert!(
+                    (intersection_size as f64) < ((NUM_CLIENT_ELEMENTS as f64) / 2.0 * 1.1).ceil()
+                );
             }
         }
     }

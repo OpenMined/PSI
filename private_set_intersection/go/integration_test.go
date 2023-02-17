@@ -194,7 +194,7 @@ func TestIntegrationIntersection(t *testing.T) {
 			}
 
 			if float64(intersectionCnt) > math.Ceil(float64(numClientInputs/2)*float64(1.1)) {
-				t.Errorf("Invalid intersection. expected upper bound %v. got %v", float64(numClientInputs/2)*float64(1.1), intersectionCnt)
+				t.Errorf("Invalid intersection. expected upper bound %v. got %v", math.Ceil(float64(numClientInputs/2)*float64(1.1)), intersectionCnt)
 			}
 
 		}
