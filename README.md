@@ -23,7 +23,7 @@ The protocol proceeds as follows:
 The server encrypts all its elements `x` under a commutative encryption scheme,
 computing `H(x)^s` where `s` is its secret key. The encrypted elements are then
 inserted into a container and sent to the client in the form of a serialized
-protobuf and resembles the following:
+protobuf and resembles* the following:
 
 ```
 [ H(x_1)^(s), H(x_2)^(s), ... , H(x_n)^(s) ]
@@ -36,7 +36,7 @@ scheme, computing `H(x)^c`, where `c` is its secret key. The client sends its
 encrypted elements to the server along with a boolean flag,
 `reveal_intersection`, indicating whether the client wants to learn the elements
 in the intersection or only its size (cardinality). The payload is sent as a
-serialized protobuf and resembles the following:
+serialized protobuf and resembles* the following:
 
 ```
 [ H(x_1)^(c), H(x_2)^(c), ... , H(x_n)^(c) ]
@@ -47,7 +47,7 @@ serialized protobuf and resembles the following:
 For each encrypted element `H(x)^c` received from the client, the server
 encrypts it again under the commutative encryption scheme with its secret key
 `s`, computing `(H(x)^c)^s = H(x)^(cs)`. The result is sent back to the client
-in a serialized protobuf and resembles the following:
+in a serialized protobuf and resembles* the following:
 
 ```
 [ H(x_1)^(cs), H(x_2)^(cs), ... , H(x_n)^(cs) ]
@@ -62,12 +62,14 @@ reports the number of matches as the intersection size.
 
 It's worth noting that the protocol has several variants, some of which
 introduce a small false-positive rate, while others do not generate false
-positives. This behavior is selective, and the false-positive rate can be tuned.
+positives. This behavior is selective, and the false-positive rate can be tuned. The selection has implications on communication costs as well.
 
-The protocol has configurable **containers**. Golomb Compressed Sets (`Gcs`) is
-the default container but it can be overridden to be `BloomFilter` or `Raw`
-encrypted strings. `Gcs` and `BloomFilter` will have false positives whereas
-`Raw` will not.
+__NOTE resembles*__: The protocol has configurable **containers**. Golomb
+Compressed Sets (`Gcs`) is the default container but it can be overridden to be
+`BloomFilter` or `Raw` encrypted strings. `Gcs` and `BloomFilter` will have
+false positives whereas `Raw` will not. Using `Raw` increases the communication
+cost as it is sending raw strings over the wire while the other two options
+drastically reduce the cost at the price of having false positives.
 
 ## Security
 
