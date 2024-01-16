@@ -111,7 +111,7 @@ def psi_deps():
     pip_parse(
         name = "pip_deps",
         # Generated via pip-compile requirements.in
-        requirements_lock = "//private_set_intersection/python:requirements.txt",
+        requirements_lock = "@org_openmined_psi//private_set_intersection/python:requirements.txt",
     )
 
     # Protobuf.
