@@ -108,11 +108,6 @@ def psi_deps():
     python_configure(
         name = "local_config_python",
     )
-    pip_parse(
-        name = "pip_deps",
-        # Generated via pip-compile requirements.in
-        requirements_lock = "@org_openmined_psi//private_set_intersection/python:requirements.txt",
-    )
 
     # Protobuf.
     rules_proto_grpc_repos()
