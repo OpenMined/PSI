@@ -108,5 +108,3 @@ py_wheel(
         ":openmined_psi_pkg",
     ],
 )
-
-exports_files(["requirements.txt"])
