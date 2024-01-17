@@ -11,6 +11,14 @@ load("@org_openmined_psi//private_set_intersection:deps.bzl", "psi_deps")
 psi_deps()
 
 # Finish python setup
+load("@rules_python//python:pip.bzl", "pip_parse")
+
+pip_parse(
+    name = "pip_deps",
+    # Generated via pip-compile requirements.in
+    requirements_lock = "@org_openmined_psi//private_set_intersection/python:requirements.txt",
+)
+
 load("@pip_deps//:requirements.bzl", "install_deps")
 
 install_deps()

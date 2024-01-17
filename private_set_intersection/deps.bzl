@@ -31,7 +31,6 @@ load("@build_bazel_rules_nodejs//:repositories.bzl", "build_bazel_rules_nodejs_d
 
 # load("@rules_python//python/pip_install:repositories.bzl", "pip_install_dependencies")
 load("@pybind11_bazel//:python_configure.bzl", "python_configure")
-load("@rules_python//python:pip.bzl", "pip_parse")
 
 def psi_deps():
     # General dependencies.
@@ -108,11 +107,6 @@ def psi_deps():
     python_configure(
         name = "local_config_python",
     )
-    pip_parse(
-        name = "pip_deps",
-        # Generated via pip-compile requirements.in
-        requirements_lock = "//private_set_intersection/python:requirements.txt",
-    )
 
     # Protobuf.
     rules_proto_grpc_repos()
@@ -125,7 +119,7 @@ def psi_deps():
     # Golang.
     go_rules_dependencies()
 
-    go_register_toolchains(version = "1.19")
+    go_register_toolchains(version = "1.21.6")
 
     rules_pkg_dependencies()
 

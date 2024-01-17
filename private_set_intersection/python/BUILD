@@ -1,7 +1,7 @@
+load("@pip_deps//:requirements.bzl", "requirement")
 load("@pybind11_bazel//:build_defs.bzl", "pybind_extension")
 load("@rules_python//python:packaging.bzl", "py_package", "py_wheel")
 load("//tools:package.bzl", "VERSION_LABEL")
-load("@pip_deps//:requirements.bzl", "requirement")
 
 package(default_visibility = ["//visibility:public"])
 

@@ -1,3 +1,11 @@
+# Version 2.0.2
+
+Chore:
+
+- Update to use Bazel 6.4.0
+- Updated some of the Bazel dependencies for Golang and Python
+- Updated CI/CD to use python 3.10 for Bazel to work correctly.
+
 # Version 2.0.1
 
 Feat:

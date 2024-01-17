@@ -21,6 +21,9 @@ jobs:
         os: [ubuntu-22.04, macos-12]
     steps:
       - uses: actions/checkout@v3
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.10' 
       - name: Run tests nix
         timeout-minutes: 60
         run: .github/workflows/scripts/run_tests_core.sh
@@ -35,6 +38,9 @@ jobs:
         os: [ubuntu-22.04, macos-12]
     steps:
       - uses: actions/checkout@v3
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.10' 
       - name: Run tests nix
         timeout-minutes: 60
         run: .github/workflows/scripts/run_tests_js.sh
@@ -48,7 +54,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
       - name: Run tests nix
@@ -62,16 +68,19 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-22.04, macos-12]
-        golang-version: ['1.17', '1.18', '1.19']
+        golang-version: ['1.19', '1.20', '1.21']
     steps:
       - name: Set up Golang ${{ matrix.golang-version }}
-        uses: actions/setup-go@v3
+        uses: actions/setup-go@v5
         with:
           go-version: ${{ matrix.golang-version }}
         id: go
       - name: Install Go dependencies
         run: go install golang.org/x/lint/golint@latest
       - uses: actions/checkout@v3
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.10' 
       - name: Run tests nix
         timeout-minutes: 30
         run: .github/workflows/scripts/run_tests_go.sh
@@ -90,6 +99,9 @@ jobs:
           toolchain: stable
           default: true
       - uses: actions/checkout@v3
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.10' 
       - name: Run tests nix
         timeout-minutes: 30
         run: .github/workflows/scripts/run_tests_rust.sh
@@ -108,7 +120,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
       - name: Build and publish the python wheel
@@ -132,7 +144,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
       - name: Build and publish the python wheel
