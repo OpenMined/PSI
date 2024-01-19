@@ -125,8 +125,8 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - name: Build and publish the python wheel
         env:
-          TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
-          TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
+          TWINE_USERNAME: __token__
+          TWINE_PASSWORD: ${{ secrets.OM_PSI_PYPI_TOKEN }}
         run: |
           python -m pip install --upgrade pip
           pip install twine packaging
@@ -149,8 +149,8 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - name: Build and publish the python wheel
         env:
-          TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
-          TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
+          TWINE_USERNAME: __token__
+          TWINE_PASSWORD: ${{ secrets.OM_PSI_PYPI_TOKEN }}
         run: |
           python -m pip install --upgrade pip
           pip install twine packaging
