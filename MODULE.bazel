@@ -29,6 +29,10 @@ bazel_dep(name = "googletest", version = "1.15.2")
 bazel_dep(name = "google_benchmark", version = "1.8.5")
 bazel_dep(name = "glog", version = "0.7.1")
 bazel_dep(name = "rules_python_gazelle_plugin", version = "0.36.0")
+bazel_dep(name = "pybind11_bazel", version = "2.12.0")
+
+# TODO: Determine if we need 'upb' any more.
+bazel_dep(name = "upb", version = "0.0.0-20230907-e7430e6")
 
 # Grpc
 grpc_deps = use_extension(
@@ -37,22 +41,6 @@ grpc_deps = use_extension(
 )
 grpc_deps.load_dependencies()
 use_repo(grpc_deps)
-
-# Define your external repositories using http_archive with use_repo_rulefbazel_gazelle
-http_archive(
-    name = "pybind11_bazel",
-    urls = ["https://github.com/pybind/pybind11_bazel/archive/v2.12.0.zip"],
-    sha256 = "a58c25c5fe063a70057fa20cb8e15f3bda19b1030305bcb533af1e45f36a4a55",
-    strip_prefix = "pybind11_bazel-2.12.0",
-)
-
-http_archive(
-    name = "pybind11",
-    urls = ["https://github.com/pybind/pybind11/archive/v2.12.0.zip"],
-    sha256 = "411f77380c43798506b39ec594fc7f2b532a13c4db674fcf2b1ca344efaefb68",
-    build_file = "@pybind11_bazel//:pybind11-BUILD.bazel",
-    strip_prefix = "pybind11-2.12.0",
-)
 
 http_archive(
     name = "google_protobuf",
@@ -67,15 +55,6 @@ http_archive(
     sha256 = "9702d5e1e4deeb111e235952e1e831dc9d9f0127ed8a1a30112b235d11f3e937",
     strip_prefix = "private-join-and-compute-2f678958e1b5a1a86adf96830c7c21d9cb2075f3",
     url = "https://github.com/s0l0ist/private-join-and-compute/archive/2f678958e1b5a1a86adf96830c7c21d9cb2075f3.zip",
-)
-
-http_archive(
-    name = "upb",
-    sha256 = "69f1faa4b513a26759ed1153f29df67fc3722561d7d1c07e7f10ed7b17d47140",
-    strip_prefix = "upb-9e8914228337f5e4e725d7071e517c45e6dea435",
-    urls = [
-        "https://github.com/protocolbuffers/upb/archive/9e8914228337f5e4e725d7071e517c45e6dea435.tar.gz",
-    ],
 )
 
 # http_archive(
@@ -112,14 +91,11 @@ python.toolchain(
     python_version = "3.10",
 )
 python.toolchain(
+    is_default = True,
     configure_coverage_tool = True,
     python_version = "3.11",
 )
-python.toolchain(
-    is_default = True,
-    configure_coverage_tool = True,
-    python_version = "3.12",
-)
+
 use_repo(
     python,
     python = "python_versions",
@@ -146,11 +122,6 @@ pip.parse(
     hub_name = "psi_deps",
     python_version = "3.11",
     requirements_lock = "@org_openmined_psi//private_set_intersection/python/requirements:requirements_lock_3_11.txt",
-)
-pip.parse(
-    hub_name = "psi_deps",
-    python_version = "3.12",
-    requirements_lock = "@org_openmined_psi//private_set_intersection/python/requirements:requirements_lock_3_12.txt",
 )
 
 # Rust dependencies
