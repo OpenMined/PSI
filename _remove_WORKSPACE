@@ -2,17 +2,23 @@ workspace(
     name = "org_openmined_psi",
 )
 
+# Finish node setup
+load("@build_bazel_rules_nodejs//:index.bzl", "node_repositories", "npm_install")
+
+# Finish emsdk setup
+load("@emsdk//:emscripten_deps.bzl", emsdk_emscripten_deps = "emscripten_deps")
+load("@org_openmined_psi//private_set_intersection:deps.bzl", "psi_deps")
 load("@org_openmined_psi//private_set_intersection:preload.bzl", "psi_preload")
+load("@pip_deps//:requirements.bzl", "install_deps")
+load("@python_3_11//:defs.bzl", "interpreter")
+load("@rules_python//python:pip.bzl", "pip_parse")
+load("@rules_python//python:repositories.bzl", "py_repositories", "python_register_toolchains")
 
 psi_preload()
-
-load("@org_openmined_psi//private_set_intersection:deps.bzl", "psi_deps")
 
 psi_deps()
 
 # Finish python setup
-
-load("@rules_python//python:repositories.bzl", "py_repositories", "python_register_toolchains")
 
 py_repositories()
 
@@ -23,9 +29,6 @@ python_register_toolchains(
 
 register_toolchains("@python_3_11//:all")
 
-load("@python_3_11//:defs.bzl", "interpreter")
-load("@rules_python//python:pip.bzl", "pip_parse")
-
 pip_parse(
     name = "pip_deps",
     python_interpreter_target = interpreter,
@@ -33,12 +36,7 @@ pip_parse(
     requirements_lock = "@org_openmined_psi//private_set_intersection/python:requirements.txt",
 )
 
-load("@pip_deps//:requirements.bzl", "install_deps")
-
 install_deps()
-
-# Finish node setup
-load("@build_bazel_rules_nodejs//:index.bzl", "node_repositories", "npm_install")
 
 node_repositories()
 
@@ -47,8 +45,5 @@ npm_install(
     package_json = "//:package.json",
     package_lock_json = "//:package-lock.json",
 )
-
-# Finish emsdk setup
-load("@emsdk//:emscripten_deps.bzl", emsdk_emscripten_deps = "emscripten_deps")
 
 emsdk_emscripten_deps()

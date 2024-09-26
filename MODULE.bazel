@@ -28,6 +28,7 @@ bazel_dep(name = "grpc", version = "1.66.0.bcr.2", repo_name = "com_github_grpc_
 bazel_dep(name = "googletest", version = "1.15.2")
 bazel_dep(name = "google_benchmark", version = "1.8.5")
 bazel_dep(name = "glog", version = "0.7.1")
+bazel_dep(name = "rules_python_gazelle_plugin", version = "0.36.0")
 
 # Grpc
 grpc_deps = use_extension(
@@ -59,13 +60,6 @@ http_archive(
     sha256 = "8b28fdd45bab62d15db232ec404248901842e5340299a57765e48abe8a80d930",
     strip_prefix = "protobuf-3.20.1",
 )
-
-# http_archive(
-#     name = "google_benchmark",
-#     urls = ["https://github.com/google/benchmark/archive/d572f4777349d43653b21d6c2fc63020ab326db2.zip"],
-#     sha256 = "f6f62c4a1fc9b0a2edb70c77cdb9011b605430eabb4dddbb14d60fb492aea7bb",
-#     strip_prefix = "benchmark-d572f4777349d43653b21d6c2fc63020ab326db2",
-# )
 
 # TODO revert to the upstream repository when the https://github.com/google/private-join-and-compute/pull/21 is merged
 http_archive(
@@ -103,13 +97,61 @@ http_archive(
 #     package_lock_json = "//:package-lock.json",
 # )
 
-# # Pip dependencies
-# pip_parse = use_repo_rule("@rules_python//python:pip.bzl", "pip_parse")
-# pip_parse(
-#     name = "pip_deps",
-#     python_interpreter_target = "@python_3_11//:interpreter",
-#     requirements_lock = "@org_openmined_psi//private_set_intersection/python:requirements.txt",
-# )
+# Python
+python = use_extension("@rules_python//python/extensions:python.bzl", "python")
+python.toolchain(
+    configure_coverage_tool = True,
+    python_version = "3.8",
+)
+python.toolchain(
+    configure_coverage_tool = True,
+    python_version = "3.9",
+)
+python.toolchain(
+    configure_coverage_tool = True,
+    python_version = "3.10",
+)
+python.toolchain(
+    configure_coverage_tool = True,
+    python_version = "3.11",
+)
+python.toolchain(
+    is_default = True,
+    configure_coverage_tool = True,
+    python_version = "3.12",
+)
+use_repo(
+    python,
+    python = "python_versions",
+)
+
+pip = use_extension("@rules_python//python/extensions:pip.bzl", "pip")
+use_repo(pip, "psi_deps")
+pip.parse(
+    hub_name = "psi_deps",
+    python_version = "3.8",
+    requirements_lock = "@org_openmined_psi//private_set_intersection/python/requirements:requirements_lock_3_8.txt",
+)
+pip.parse(
+    hub_name = "psi_deps",
+    python_version = "3.9",
+    requirements_lock = "@org_openmined_psi//private_set_intersection/python/requirements:requirements_lock_3_9.txt",
+)
+pip.parse(
+    hub_name = "psi_deps",
+    python_version = "3.10",
+    requirements_lock = "@org_openmined_psi//private_set_intersection/python/requirements:requirements_lock_3_10.txt",
+)
+pip.parse(
+    hub_name = "psi_deps",
+    python_version = "3.11",
+    requirements_lock = "@org_openmined_psi//private_set_intersection/python/requirements:requirements_lock_3_11.txt",
+)
+pip.parse(
+    hub_name = "psi_deps",
+    python_version = "3.12",
+    requirements_lock = "@org_openmined_psi//private_set_intersection/python/requirements:requirements_lock_3_12.txt",
+)
 
 # Rust dependencies
 # raze_fetch_remote_crates = use_repo_rule("//third_party/cargo:crates.bzl", "raze_fetch_remote_crates")
@@ -135,13 +177,6 @@ crate = use_extension("@rules_rust//crate_universe:extension.bzl", "crate")
 # go_rules_dependencies()
 # go_register_toolchains(version = "1.21.6")
 
-# Register Python toolchains
-# python_register_toolchains = use_repo_rule("@rules_python//python:repositories.bzl", "python_register_toolchains")
-# python_register_toolchains(
-#     name = "python_3_11",
-#     python_version = "3.11",
-# )
-
 # Apple dependencies for macOS/iOS support
 # apple_rules_dependencies = use_repo_rule("@build_bazel_rules_apple//apple:repositories.bzl", "apple_rules_dependencies")
 # apple_rules_dependencies()
@@ -166,7 +201,3 @@ rust_proto.repositories()
 # # Gazelle dependencies
 # gazelle_dependencies = use_repo_rule("@bazel_gazelle//:deps.bzl", "gazelle_dependencies")
 # gazelle_dependencies()
-
-# Python
-python = use_extension("@rules_python//python/extensions:python.bzl", "python")
-python.toolchain(python_version = "3.11")

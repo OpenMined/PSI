@@ -1,4 +1,4 @@
-load("@pip_deps//:requirements.bzl", "requirement")
+load("@psi_deps//:requirements.bzl", "requirement")
 load("@pybind11_bazel//:build_defs.bzl", "pybind_extension")
 load("@rules_python//python:packaging.bzl", "py_package", "py_wheel")
 load("//tools:package.bzl", "VERSION_LABEL")
