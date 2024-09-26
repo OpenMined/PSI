@@ -44,8 +44,8 @@ cc_test(
     linkopts = PSI_LINKOPTS,
     deps = [
         ":golomb",
-        "@com_google_googletest//:gtest",
-        "@com_google_googletest//:gtest_main",
+        "@googletest//:gtest",
+        "@googletest//:gtest_main",
     ],
 )
 
@@ -56,10 +56,10 @@ cc_library(
     deps = [
         ":golomb",
         "//private_set_intersection/proto:psi_cc_proto",
-        "@com_google_absl//absl/memory",
-        "@com_google_absl//absl/status:statusor",
-        "@com_google_absl//absl/strings",
-        "@com_google_absl//absl/types:span",
+        "@abseil-cpp//absl/memory",
+        "@abseil-cpp//absl/status:statusor",
+        "@abseil-cpp//absl/strings",
+        "@abseil-cpp//absl/types:span",
         "@private_join_and_compute//private_join_and_compute/crypto:bn_util",
     ],
 )
@@ -72,10 +72,10 @@ cc_test(
         ":gcs",
         "//private_set_intersection/cpp/util:status_matchers",
         "//private_set_intersection/proto:psi_cc_proto",
-        "@com_google_absl//absl/container:flat_hash_set",
-        "@com_google_absl//absl/strings",
-        "@com_google_googletest//:gtest",
-        "@com_google_googletest//:gtest_main",
+        "@abseil-cpp//absl/container:flat_hash_set",
+        "@abseil-cpp//absl/strings",
+        "@googletest//:gtest",
+        "@googletest//:gtest_main",
     ],
 )
 
@@ -85,10 +85,10 @@ cc_library(
     hdrs = ["bloom_filter.h"],
     deps = [
         "//private_set_intersection/proto:psi_cc_proto",
-        "@com_google_absl//absl/memory",
-        "@com_google_absl//absl/status:statusor",
-        "@com_google_absl//absl/strings",
-        "@com_google_absl//absl/types:span",
+        "@abseil-cpp//absl/memory",
+        "@abseil-cpp//absl/status:statusor",
+        "@abseil-cpp//absl/strings",
+        "@abseil-cpp//absl/types:span",
         "@private_join_and_compute//private_join_and_compute/crypto:bn_util",
     ],
 )
@@ -101,9 +101,9 @@ cc_test(
         ":bloom_filter",
         "//private_set_intersection/cpp/util:status_matchers",
         "//private_set_intersection/proto:psi_cc_proto",
-        "@com_google_absl//absl/strings",
-        "@com_google_googletest//:gtest",
-        "@com_google_googletest//:gtest_main",
+        "@abseil-cpp//absl/strings",
+        "@googletest//:gtest",
+        "@googletest//:gtest_main",
     ],
 )
 
@@ -113,10 +113,10 @@ cc_library(
     hdrs = ["raw.h"],
     deps = [
         "//private_set_intersection/proto:psi_cc_proto",
-        "@com_google_absl//absl/memory",
-        "@com_google_absl//absl/status:statusor",
-        "@com_google_absl//absl/strings",
-        "@com_google_absl//absl/types:span",
+        "@abseil-cpp//absl/memory",
+        "@abseil-cpp//absl/status:statusor",
+        "@abseil-cpp//absl/strings",
+        "@abseil-cpp//absl/types:span",
         "@private_join_and_compute//private_join_and_compute/crypto:bn_util",
     ],
 )
@@ -129,8 +129,8 @@ cc_test(
         ":raw",
         "//private_set_intersection/cpp/util:status_matchers",
         "//private_set_intersection/proto:psi_cc_proto",
-        "@com_google_absl//absl/strings",
-        "@com_google_googletest//:gtest",
-        "@com_google_googletest//:gtest_main",
+        "@abseil-cpp//absl/strings",
+        "@googletest//:gtest",
+        "@googletest//:gtest_main",
     ],
 )

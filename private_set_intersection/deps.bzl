@@ -14,23 +14,24 @@
 # limitations under the License.
 #
 
-load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
-load("@rules_proto//proto:repositories.bzl", "rules_proto_dependencies", "rules_proto_toolchains")
-load("@io_bazel_rules_go//go:deps.bzl", "go_register_toolchains", "go_rules_dependencies")
-load("@rules_pkg//:deps.bzl", "rules_pkg_dependencies")
 load("@bazel_gazelle//:deps.bzl", "gazelle_dependencies")
-load("@rules_rust//rust:repositories.bzl", "rust_repositories")
-load("@rules_rust//proto:repositories.bzl", "rust_proto_repositories")
-load("@com_github_grpc_grpc//bazel:grpc_deps.bzl", "grpc_deps")
+load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 load("@build_bazel_rules_apple//apple:repositories.bzl", "apple_rules_dependencies")
-load("//third_party/cargo:crates.bzl", "raze_fetch_remote_crates")
-load("@rules_proto_grpc//:repositories.bzl", "rules_proto_grpc_repos", "rules_proto_grpc_toolchains")
-load("@rules_proto_grpc//python:repositories.bzl", rules_proto_grpc_python_repos = "python_repos")
-load("@emsdk//:deps.bzl", emsdk_deps = "deps")
 load("@build_bazel_rules_nodejs//:repositories.bzl", "build_bazel_rules_nodejs_dependencies")
+load("@com_github_grpc_grpc//bazel:grpc_deps.bzl", "grpc_deps")
+load("@emsdk//:deps.bzl", emsdk_deps = "deps")
+load("@io_bazel_rules_go//go:deps.bzl", "go_register_toolchains", "go_rules_dependencies")
 
 # load("@rules_python//python/pip_install:repositories.bzl", "pip_install_dependencies")
-load("@pybind11_bazel//:python_configure.bzl", "python_configure")
+# load("@pybind11_bazel//:python_configure.bzl", "python_configure")
+load("@rules_pkg//:deps.bzl", "rules_pkg_dependencies")
+load("@rules_proto//proto:repositories.bzl", "rules_proto_dependencies", "rules_proto_toolchains")
+load("@rules_proto_grpc//:repositories.bzl", "rules_proto_grpc_repos", "rules_proto_grpc_toolchains")
+load("@rules_proto_grpc//python:repositories.bzl", rules_proto_grpc_python_repos = "python_repos")
+load("@rules_python//python:repositories.bzl", "py_repositories")
+load("@rules_rust//proto:repositories.bzl", "rust_proto_repositories")
+load("@rules_rust//rust:repositories.bzl", "rust_repositories")
+load("//third_party/cargo:crates.bzl", "raze_fetch_remote_crates")
 
 def psi_deps():
     # General dependencies.
@@ -43,25 +44,25 @@ def psi_deps():
             url = "https://github.com/s0l0ist/private-join-and-compute/archive/f4571aca5e41d59b88b9b4b18f77645f9f473f2b.zip",
         )
 
-    if "com_google_absl" not in native.existing_rules():
+    if "abseil-cpp" not in native.existing_rules():
         http_archive(
-            name = "com_google_absl",
+            name = "abseil-cpp",
             sha256 = "31b0b6fe3f14875a27c48d5775d05e157bab233065f7c55f0e1f4991c5e95840",
             strip_prefix = "abseil-cpp-522606b7fae37836c138e83f6eec0eabb9947dc0",
             url = "https://github.com/abseil/abseil-cpp/archive/522606b7fae37836c138e83f6eec0eabb9947dc0.zip",
         )
 
-    if "com_google_googletest" not in native.existing_rules():
+    if "googletest" not in native.existing_rules():
         http_archive(
-            name = "com_google_googletest",
+            name = "googletest",
             sha256 = "81964fe578e9bd7c94dfdb09c8e4d6e6759e19967e397dbea48d1c10e45d0df2",
             strip_prefix = "googletest-release-1.12.1",
             url = "https://github.com/google/googletest/archive/refs/tags/release-1.12.1.tar.gz",
         )
 
-    if "com_google_benchmark" not in native.existing_rules():
+    if "google_benchmark" not in native.existing_rules():
         http_archive(
-            name = "com_google_benchmark",
+            name = "google_benchmark",
             sha256 = "f6f62c4a1fc9b0a2edb70c77cdb9011b605430eabb4dddbb14d60fb492aea7bb",
             strip_prefix = "benchmark-d572f4777349d43653b21d6c2fc63020ab326db2",
             url = "https://github.com/google/benchmark/archive/d572f4777349d43653b21d6c2fc63020ab326db2.zip",
@@ -75,9 +76,9 @@ def psi_deps():
             url = "https://github.com/google/boringssl/archive/0e2e48f9baa351c58fb68540332dc1382773699a.zip",
         )
 
-    if "com_github_google_glog" not in native.existing_rules():
+    if "glog" not in native.existing_rules():
         http_archive(
-            name = "com_github_google_glog",
+            name = "glog",
             sha256 = "42c7395b26f1aa2157015b7d7b811b799c9c477147f4239410bde48901f009c5",
             strip_prefix = "glog-c18db3903b9f0abd80ae740fde94f7e32aa40b92",
             urls = ["https://github.com/google/glog/archive/c18db3903b9f0abd80ae740fde94f7e32aa40b92.zip"],
@@ -104,9 +105,9 @@ def psi_deps():
     emsdk_deps()
 
     # Python.
-    python_configure(
-        name = "local_config_python",
-    )
+    # python_configure(
+    #     name = "local_config_python",
+    # )
 
     # Protobuf.
     rules_proto_grpc_repos()

@@ -11,10 +11,24 @@ load("@org_openmined_psi//private_set_intersection:deps.bzl", "psi_deps")
 psi_deps()
 
 # Finish python setup
+
+load("@rules_python//python:repositories.bzl", "py_repositories", "python_register_toolchains")
+
+py_repositories()
+
+python_register_toolchains(
+    name = "python_3_11",
+    python_version = "3.11",
+)
+
+register_toolchains("@python_3_11//:all")
+
+load("@python_3_11//:defs.bzl", "interpreter")
 load("@rules_python//python:pip.bzl", "pip_parse")
 
 pip_parse(
     name = "pip_deps",
+    python_interpreter_target = interpreter,
     # Generated via pip-compile requirements.in
     requirements_lock = "@org_openmined_psi//private_set_intersection/python:requirements.txt",
 )

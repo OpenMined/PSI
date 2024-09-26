@@ -16,11 +16,11 @@ load("@io_bazel_rules_go//go:def.bzl", "go_library")
 # limitations under the License.
 #
 
-load("@rules_proto//proto:defs.bzl", "proto_library")
-load("@rules_cc//cc:defs.bzl", "cc_proto_library")
 load("@io_bazel_rules_go//proto:def.bzl", "go_proto_library")
-load("@rules_rust//proto:proto.bzl", "rust_proto_library")
-load("@rules_proto_grpc//python:defs.bzl", "python_proto_library")
+load("@rules_cc//cc:defs.bzl", "cc_proto_library")
+load("@rules_proto//proto:defs.bzl", "proto_library")
+load("@rules_proto_grpc_python//:defs.bzl", "python_proto_library")
+load("@rules_rust//proto/protobuf:defs.bzl", "rust_proto_library")
 
 package(default_visibility = ["//visibility:public"])
 

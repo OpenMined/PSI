@@ -15,7 +15,7 @@ pybind_extension(
         "//private_set_intersection/cpp:psi_client",
         "//private_set_intersection/cpp:psi_server",
         "//private_set_intersection/proto:psi_cc_proto",
-        "@com_google_absl//absl/status:statusor",
+        "@abseil-cpp//absl/status:statusor",
     ],
 )
 

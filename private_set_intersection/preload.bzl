@@ -21,11 +21,20 @@ def psi_preload():
         http_archive(
             name = "platforms",
             urls = [
-                "https://mirror.bazel.build/github.com/bazelbuild/platforms/releases/download/0.0.6/platforms-0.0.6.tar.gz",
-                "https://github.com/bazelbuild/platforms/releases/download/0.0.6/platforms-0.0.6.tar.gz",
+                "https://mirror.bazel.build/github.com/bazelbuild/platforms/releases/download/0.0.10/platforms-0.0.10.tar.gz",
+                "https://github.com/bazelbuild/platforms/releases/download/0.0.10/platforms-0.0.10.tar.gz",
             ],
-            sha256 = "5308fc1d8865406a49427ba24a9ab53087f17f5266a7aabbfc28823f3916e1ca",
+            sha256 = "218efe8ee736d26a3572663b374a253c012b716d8af0c07e842e82f238a0a7ee",
         )
+
+    if "rules_cc" not in native.existing_rules():
+        http_archive(
+            name = "rules_cc",
+            urls = ["https://github.com/bazelbuild/rules_cc/releases/download/0.0.10/rules_cc-0.0.10.tar.gz"],
+            sha256 = "65b67b81c6da378f136cc7e7e14ee08d5b9375973427eceb8c773a4f69fa7e49",
+            strip_prefix = "rules_cc-0.0.10",
+        )
+
     if "rules_proto" not in native.existing_rules():
         http_archive(
             name = "rules_proto",
@@ -65,31 +74,31 @@ def psi_preload():
                 "https://github.com/bazelbuild/rules_pkg/releases/download/0.8.0/rules_pkg-0.8.0.tar.gz",
             ],
         )
+    pybind11_bazel_ver = "2.12.0"
 
     if "pybind11_bazel" not in native.existing_rules():
-        pybind11_bazel_rev = "faf56fb3df11287f26dbc66fdedf60a2fc2c6631"
         http_archive(
             name = "pybind11_bazel",
-            strip_prefix = "pybind11_bazel-" + pybind11_bazel_rev,
-            urls = ["https://github.com/pybind/pybind11_bazel/archive/" + pybind11_bazel_rev + ".zip"],
-            sha256 = "a185aa68c93b9f62c80fcb3aadc3c83c763854750dc3f38be1dadcb7be223837",
+            strip_prefix = "pybind11_bazel-" + pybind11_bazel_ver,
+            urls = ["https://github.com/pybind/pybind11_bazel/archive/v" + pybind11_bazel_ver + ".zip"],
+            sha256 = "a58c25c5fe063a70057fa20cb8e15f3bda19b1030305bcb533af1e45f36a4a55",
         )
 
     if "pybind11" not in native.existing_rules():
         http_archive(
             name = "pybind11",
-            build_file = "@pybind11_bazel//:pybind11.BUILD",
-            strip_prefix = "pybind11-2.10.1",
-            urls = ["https://github.com/pybind/pybind11/archive/v2.10.1.zip"],
-            sha256 = "fcf94065efcfd0a7a828bacf118fa11c43f6390d0c805e3e6342ac119f2e9976",
+            build_file = "@pybind11_bazel//:pybind11-BUILD.bazel",
+            strip_prefix = "pybind11-" + pybind11_bazel_ver,
+            urls = ["https://github.com/pybind/pybind11/archive/v" + pybind11_bazel_ver + ".zip"],
+            sha256 = "411f77380c43798506b39ec594fc7f2b532a13c4db674fcf2b1ca344efaefb68",
         )
 
     if "rules_python" not in native.existing_rules():
         http_archive(
             name = "rules_python",
-            sha256 = "497ca47374f48c8b067d786b512ac10a276211810f4a580178ee9b9ad139323a",
-            strip_prefix = "rules_python-0.16.1",
-            url = "https://github.com/bazelbuild/rules_python/archive/refs/tags/0.16.1.tar.gz",
+            sha256 = "ca77768989a7f311186a29747e3e95c936a41dffac779aff6b443db22290d913",
+            strip_prefix = "rules_python-0.36.0",
+            url = "https://github.com/bazelbuild/rules_python/releases/download/0.36.0/rules_python-0.36.0.tar.gz",
         )
 
     if "rules_rust" not in native.existing_rules():
@@ -124,19 +133,15 @@ def psi_preload():
     if "build_bazel_rules_apple" not in native.existing_rules():
         http_archive(
             name = "build_bazel_rules_apple",
-            sha256 = "f94e6dddf74739ef5cb30f000e13a2a613f6ebfa5e63588305a71fce8a8a9911",
-            urls = [
-                "https://github.com/bazelbuild/rules_apple/releases/download/1.1.3/rules_apple.1.1.3.tar.gz",
-            ],
+            sha256 = "86025f64d723a66438787d089bea4a7bc387877229f927dcb72ee26a8db96917",
+            url = "https://github.com/bazelbuild/rules_apple/releases/download/3.9.2/rules_apple.3.9.2.tar.gz",
         )
 
     if "build_bazel_apple_support" not in native.existing_rules():
         http_archive(
             name = "build_bazel_apple_support",
-            urls = [
-                "https://github.com/bazelbuild/apple_support/releases/download/1.3.2/apple_support.1.3.2.tar.gz",
-            ],
-            sha256 = "2e3dc4d0000e8c2f5782ea7bb53162f37c485b5d8dc62bb3d7d7fc7c276f0d00",
+            sha256 = "02f7456e589471dcfc73f1b9ca7f2c2ea5ca4aea999674abea9aebe818700b6e",
+            url = "https://github.com/bazelbuild/apple_support/releases/download/1.17.0/apple_support.1.17.0.tar.gz",
         )
 
     if "upb" not in native.existing_rules():

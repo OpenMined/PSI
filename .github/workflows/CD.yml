@@ -18,29 +18,29 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-22.04, macos-12]
+        os: [ubuntu-24.04, macos-14]
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.10' 
+          python-version: '3.12'
       - name: Run tests nix
         timeout-minutes: 60
         run: .github/workflows/scripts/run_tests_core.sh
       - name: Linters
         run: .github/workflows/scripts/lint_cpp.sh
-        if: ${{ matrix.os == 'ubuntu-22.04' }}
+        if: ${{ matrix.os == 'ubuntu-24.04' }}
 
   JS:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-22.04, macos-12]
+        os: [ubuntu-24.04, macos-14]
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.10' 
+          python-version: '3.12'
       - name: Run tests nix
         timeout-minutes: 60
         run: .github/workflows/scripts/run_tests_js.sh
@@ -49,8 +49,8 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-22.04, macos-12]
-        python-version: ['3.8', '3.9', '3.10']
+        os: [ubuntu-24.04, macos-14]
+        python-version: ['3.8', '3.9', '3.10', '3.12']
     steps:
       - uses: actions/checkout@v3
       - name: Set up Python ${{ matrix.python-version }}
@@ -67,7 +67,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-22.04, macos-12]
+        os: [ubuntu-24.04, macos-14]
         golang-version: ['1.19', '1.20', '1.21']
     steps:
       - name: Set up Golang ${{ matrix.golang-version }}
@@ -80,7 +80,7 @@ jobs:
       - uses: actions/checkout@v3
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.10' 
+          python-version: '3.12'
       - name: Run tests nix
         timeout-minutes: 30
         run: .github/workflows/scripts/run_tests_go.sh
@@ -91,7 +91,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-22.04, macos-12]
+        os: [ubuntu-24.04, macos-14]
     steps:
       - name: Install toolchains
         uses: actions-rs/toolchain@v1
@@ -101,7 +101,7 @@ jobs:
       - uses: actions/checkout@v3
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.10' 
+          python-version: '3.12'
       - name: Run tests nix
         timeout-minutes: 30
         run: .github/workflows/scripts/run_tests_rust.sh
@@ -139,8 +139,8 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        python-version: ['3.8', '3.9', '3.10']
-        os: [ubuntu-22.04, ubuntu-20.04, macos-12]
+        python-version: ['3.8', '3.9', '3.10', '3.11', '3.12']
+        os: [ubuntu-24.04, ubuntu-20.04, macos-12, macos-14]
     steps:
       - uses: actions/checkout@v3
       - name: Set up Python

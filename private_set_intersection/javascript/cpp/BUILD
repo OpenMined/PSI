@@ -113,7 +113,7 @@ cc_binary(
     deps = [
         "//private_set_intersection/cpp:psi_client",
         "//private_set_intersection/cpp:psi_server",
-        "@com_google_benchmark//:benchmark_main",
+        "@google_benchmark//:benchmark_main",
     ],
 )
 

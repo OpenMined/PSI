@@ -1,9 +1,13 @@
 # This file is used to rename the wheel generated via py_wheel with values
 # determined at runtime
-import sys, os, re, platform
-from packaging import tags, version
-from platform import python_version
+import os
+import platform
+import re
+import sys
 from enum import Enum
+from platform import python_version
+
+from packaging import tags, version
 
 
 class ABIVersion(Enum):
@@ -17,6 +21,8 @@ class ABIVersion(Enum):
 #
 # NOTE: Order matters
 python_versions = {
+    version.parse("3.12.0"): ABIVersion.MANY_LINUX_X_Y,
+    version.parse("3.11.0"): ABIVersion.MANY_LINUX_X_Y,
     version.parse("3.10.0"): ABIVersion.MANY_LINUX_X_Y,
     version.parse("3.9.5"): ABIVersion.MANY_LINUX_X_Y,
     version.parse("3.9.0"): ABIVersion.MANY_LINUX_2014,
@@ -30,7 +36,9 @@ def main():
     inputfile = ""
     for file in os.listdir("./bazel-bin/private_set_intersection/python"):
         if file.startswith("openmined.psi-") and file.endswith(".whl"):
-            inputfile = os.path.join("./bazel-bin/private_set_intersection/python", file)
+            inputfile = os.path.join(
+                "./bazel-bin/private_set_intersection/python", file
+            )
 
     if not inputfile:
         sys.exit(1)
@@ -49,7 +57,7 @@ def main():
     if system.lower() == "linux":
         current_version = version.parse(python_version())
         manylinux = ABIVersion.MANY_LINUX_X_Y.value
-        for (ver, ml) in python_versions.items():
+        for ver, ml in python_versions.items():
             if current_version >= ver:
                 manylinux = ml.value
                 break
