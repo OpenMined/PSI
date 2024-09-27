@@ -4,6 +4,8 @@ load("@python//3.10:defs.bzl", py_binary_3_10 = "py_binary", py_test_3_10 = "py_
 load("@python//3.11:defs.bzl", py_binary_3_11 = "py_binary", py_test_3_11 = "py_test")
 load("@python//3.8:defs.bzl", py_binary_3_8 = "py_binary", py_test_3_8 = "py_test")
 load("@python//3.9:defs.bzl", py_binary_3_9 = "py_binary", py_test_3_9 = "py_test")
+load("@python_abi//:abi.bzl", "python_abi")
+load("@python_platform//:platform.bzl", "python_platform")
 load("@rules_python//python:packaging.bzl", "py_package", "py_wheel")
 load("//tools:package.bzl", "VERSION_LABEL")
 
@@ -33,6 +35,7 @@ py_library(
     visibility = ["//visibility:private"],
     deps = [
         "//private_set_intersection/proto:psi_python_proto",
+        requirement("protobuf"),
     ],
 )
 
@@ -152,41 +155,9 @@ py_package(
     ],
 )
 
-def _make_variable_tags_impl(ctx):
-    vars = {}
-
-    # Determine ABI and Python Tag based on Python version or toolchain (example logic)
-    python_version = ctx.toolchains["//python:python_toolchain"].python_version
-    if python_version.startswith("3.8"):
-        vars["ABI"] = "cp38"
-        vars["PYTHON_TAG"] = "cp38"
-    elif python_version.startswith("3.9"):
-        vars["ABI"] = "cp39"
-        vars["PYTHON_TAG"] = "cp39"
-    else:
-        vars["ABI"] = "abi3"  # Fallback to abi3 if targeting a stable ABI
-
-    # Dynamically set version based on your versioning strategy
-    vars["VERSION"] = "0.99.0"
-
-    return [platform_common.TemplateVariableInfo(vars)]
-
-make_variable_tags = rule(
-    attrs = {},
-    doc = """Make variable tags to pass to a py_wheel rule.""",
-    implementation = _make_variable_tags_impl,
-)
-
-# This rule builds the wheel, but we need to change the name of the .whl before
-# we publish to PyPI using a separate publish script outside of bazel. The
-# output that gets generated looks like the following:
-# openmined.psi-1.0.0-INTERPRETER-ABI-PLATFORM.whl
-#
-# This rule also bundles protobuf, but it resides in an incorrect directy and
-# there doesn't seem to be a way to prevent it getting added to the wheel.
 py_wheel(
     name = "wheel",
-    abi = "$(ABI)",
+    abi = python_abi(),
     author = "OpenMined",
     classifiers = [
         "Programming Language :: Python :: 3",
@@ -206,13 +177,13 @@ py_wheel(
         "@bazel_tools//src/conditions:windows_arm64": "win_arm64",
         "@bazel_tools//src/conditions:darwin_x86_64": "macosx_12_0_x86_64",
         "@bazel_tools//src/conditions:darwin_arm64": "macosx_12_0_arm64",
-        "@bazel_tools//src/conditions:linux_x86_64": "LINUX_x86_64",
-        "@bazel_tools//src/conditions:linux_aarch64": "LINUX_aarch64",
+        "@bazel_tools//src/conditions:linux_x86_64": python_platform() + "_x86_64",
+        "@bazel_tools//src/conditions:linux_aarch64": python_platform() + "_aarch64",
     }),
     python_requires = ">=3.8.0",
-    python_tag = "$(PYTHON_TAG)",
-    requires = ["protobuf>=3.20"],
-    toolchains = [":make_variable_tags"],
+    python_tag = python_abi(),
+    # requires = ["protobuf>=3.20"],
+    toolchains = ["@rules_python//python:current_py_toolchain"],
     version = VERSION_LABEL,
     deps = [
         ":openmined_psi_pkg",

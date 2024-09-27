@@ -106,23 +106,36 @@ use_repo(pip, "psi_deps")
 pip.parse(
     hub_name = "psi_deps",
     python_version = "3.8",
-    requirements_lock = "@org_openmined_psi//private_set_intersection/python/requirements:requirements_lock_3_8.txt",
+    requirements_lock = "//private_set_intersection/python/requirements:requirements_lock_3_8.txt",
 )
 pip.parse(
     hub_name = "psi_deps",
     python_version = "3.9",
-    requirements_lock = "@org_openmined_psi//private_set_intersection/python/requirements:requirements_lock_3_9.txt",
+    requirements_lock = "//private_set_intersection/python/requirements:requirements_lock_3_9.txt",
 )
 pip.parse(
     hub_name = "psi_deps",
     python_version = "3.10",
-    requirements_lock = "@org_openmined_psi//private_set_intersection/python/requirements:requirements_lock_3_10.txt",
+    requirements_lock = "//private_set_intersection/python/requirements:requirements_lock_3_10.txt",
 )
 pip.parse(
     hub_name = "psi_deps",
     python_version = "3.11",
-    requirements_lock = "@org_openmined_psi//private_set_intersection/python/requirements:requirements_lock_3_11.txt",
+    requirements_lock = "//private_set_intersection/python/requirements:requirements_lock_3_11.txt",
 )
+
+# Call the repository rule to declare the Python platform information
+python_platform = use_extension(
+    "//private_set_intersection/python:platform.bzl",
+    "declare_python_platform",
+)
+use_repo(python_platform, "python_platform")
+
+python_abi = use_extension(
+    "//private_set_intersection/python:abi.bzl",
+    "declare_python_abi",
+)
+use_repo(python_abi, "python_abi")
 
 # Rust dependencies
 # raze_fetch_remote_crates = use_repo_rule("//third_party/cargo:crates.bzl", "raze_fetch_remote_crates")

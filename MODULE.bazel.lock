@@ -253,6 +253,44 @@
   },
   "selectedYankedVersions": {},
   "moduleExtensions": {
+    "//private_set_intersection/python:abi.bzl%declare_python_abi": {
+      "general": {
+        "bzlTransitiveDigest": "7cyg3M2MD+7Ew0pu9aphT6ndEVtCLBb74VYfiDtS+1I=",
+        "usagesDigest": "flGmnBa762FvD5KF9ilLufKk2+V4Yibgu/KisI8bpBA=",
+        "recordedFileInputs": {},
+        "recordedDirentsInputs": {},
+        "envVariables": {},
+        "generatedRepoSpecs": {
+          "python_abi": {
+            "bzlFile": "@@//private_set_intersection/python:abi.bzl",
+            "ruleClassName": "abi",
+            "attributes": {
+              "python_version": "3"
+            }
+          }
+        },
+        "recordedRepoMappingEntries": []
+      }
+    },
+    "//private_set_intersection/python:platform.bzl%declare_python_platform": {
+      "general": {
+        "bzlTransitiveDigest": "Hxl/26ndgbNxVMwabEoGQN60QZKSBQrZDEYrAM/LLJ0=",
+        "usagesDigest": "KbtwwajtARBSfEbQR76msqFOJ5vO+vObdpjz14qk7N8=",
+        "recordedFileInputs": {},
+        "recordedDirentsInputs": {},
+        "envVariables": {},
+        "generatedRepoSpecs": {
+          "python_platform": {
+            "bzlFile": "@@//private_set_intersection/python:platform.bzl",
+            "ruleClassName": "platform",
+            "attributes": {
+              "python_version": "3"
+            }
+          }
+        },
+        "recordedRepoMappingEntries": []
+      }
+    },
     "@@apple_support~//crosstool:setup.bzl%apple_cc_configure_extension": {
       "general": {
         "bzlTransitiveDigest": "7ii+gFxWSxHhQPrBxfMEHhtrGvHmBTvsh+KOyGunP/s=",
