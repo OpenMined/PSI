@@ -5,7 +5,8 @@ load("@python//3.11:defs.bzl", py_binary_3_11 = "py_binary", py_test_3_11 = "py_
 load("@python//3.8:defs.bzl", py_binary_3_8 = "py_binary", py_test_3_8 = "py_test")
 load("@python//3.9:defs.bzl", py_binary_3_9 = "py_binary", py_test_3_9 = "py_test")
 load("@python_abi//:abi.bzl", "python_abi")
-load("@python_platform//:platform.bzl", "python_platform")
+load("@python_platform_linux//:platform_linux.bzl", "python_platform_linux")
+load("@python_platform_mac//:platform_mac.bzl", "python_platform_mac")
 load("@rules_python//python:packaging.bzl", "py_package", "py_wheel")
 load("//tools:package.bzl", "VERSION_LABEL")
 
@@ -175,14 +176,14 @@ py_wheel(
     platform = select({
         "@bazel_tools//src/conditions:windows_x64": "win_amd64",
         "@bazel_tools//src/conditions:windows_arm64": "win_arm64",
-        "@bazel_tools//src/conditions:darwin_x86_64": "macosx_12_0_x86_64",
-        "@bazel_tools//src/conditions:darwin_arm64": "macosx_12_0_arm64",
-        "@bazel_tools//src/conditions:linux_x86_64": python_platform() + "_x86_64",
-        "@bazel_tools//src/conditions:linux_aarch64": python_platform() + "_aarch64",
+        "@bazel_tools//src/conditions:darwin_x86_64": python_platform_mac(),
+        "@bazel_tools//src/conditions:darwin_arm64": python_platform_mac(),
+        "@bazel_tools//src/conditions:linux_x86_64": python_platform_linux() + "_x86_64",
+        "@bazel_tools//src/conditions:linux_aarch64": python_platform_linux() + "_aarch64",
     }),
-    python_requires = ">=3.8.0",
+    python_requires = ">=3.8",
     python_tag = python_abi(),
-    # requires = ["protobuf>=3.20"],
+    requires = ["protobuf>=3.20"],
     toolchains = ["@rules_python//python:current_py_toolchain"],
     version = VERSION_LABEL,
     deps = [

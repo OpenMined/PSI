@@ -272,17 +272,36 @@
         "recordedRepoMappingEntries": []
       }
     },
-    "//private_set_intersection/python:platform.bzl%declare_python_platform": {
+    "//private_set_intersection/python:platform_linux.bzl%declare_python_platform_linux": {
       "general": {
-        "bzlTransitiveDigest": "Hxl/26ndgbNxVMwabEoGQN60QZKSBQrZDEYrAM/LLJ0=",
-        "usagesDigest": "KbtwwajtARBSfEbQR76msqFOJ5vO+vObdpjz14qk7N8=",
+        "bzlTransitiveDigest": "U6eHln56yYGjUegxH/kqI7cssm3q8U8V9jKiYdGtHTc=",
+        "usagesDigest": "PXuIY4nbyfFMu9lTFTyvxpH9C3dF+RqOn9CvRC3lAMQ=",
         "recordedFileInputs": {},
         "recordedDirentsInputs": {},
         "envVariables": {},
         "generatedRepoSpecs": {
-          "python_platform": {
-            "bzlFile": "@@//private_set_intersection/python:platform.bzl",
-            "ruleClassName": "platform",
+          "python_platform_linux": {
+            "bzlFile": "@@//private_set_intersection/python:platform_linux.bzl",
+            "ruleClassName": "platform_linux",
+            "attributes": {
+              "python_version": "3"
+            }
+          }
+        },
+        "recordedRepoMappingEntries": []
+      }
+    },
+    "//private_set_intersection/python:platform_mac.bzl%declare_python_platform_mac": {
+      "general": {
+        "bzlTransitiveDigest": "qN/1nZAxqxdoh+xmRiPCLamqqbYc3j7rrB7bQX4NBjE=",
+        "usagesDigest": "6Uzj7HiwoN22z2hM0SaZYO3th2/vrJfQJudBAigk+BE=",
+        "recordedFileInputs": {},
+        "recordedDirentsInputs": {},
+        "envVariables": {},
+        "generatedRepoSpecs": {
+          "python_platform_mac": {
+            "bzlFile": "@@//private_set_intersection/python:platform_mac.bzl",
+            "ruleClassName": "platform_mac",
             "attributes": {
               "python_version": "3"
             }

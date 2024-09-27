@@ -1,6 +1,6 @@
-platform_bzl_template = """\
-def python_platform():
-    return "{python_platform}"
+platform_linux_bzl_template = """\
+def python_platform_linux():
+    return "{python_platform_linux}"
 """
 
 # we reuse the PYTHON_BIN_PATH environment variable from pybind11 so that the
@@ -44,11 +44,11 @@ def _declare_python_platform_impl(rctx):
 
     python_platform = _get_python_platform(rctx, python_bin)
 
-    rctx.report_progress("Declaring repository: python_platform")
+    rctx.report_progress("Declaring repository: python_platform_linux")
     rctx.file("BUILD")
-    rctx.file("platform.bzl", platform_bzl_template.format(python_platform = python_platform))
+    rctx.file("platform_linux.bzl", platform_linux_bzl_template.format(python_platform_linux = python_platform))
 
-platform = repository_rule(
+platform_linux = repository_rule(
     implementation = _declare_python_platform_impl,
     attrs = {
         "python_version": attr.string(
@@ -59,8 +59,8 @@ platform = repository_rule(
 )
 
 def _platform_ext_impl(_rctx):
-    platform(name = "python_platform", python_version = "3")
+    platform_linux(name = "python_platform_linux", python_version = "3")
 
-declare_python_platform = module_extension(
+declare_python_platform_linux = module_extension(
     implementation = _platform_ext_impl,
 )

@@ -125,11 +125,17 @@ pip.parse(
 )
 
 # Call the repository rule to declare the Python platform information
-python_platform = use_extension(
-    "//private_set_intersection/python:platform.bzl",
-    "declare_python_platform",
+python_platform_linux = use_extension(
+    "//private_set_intersection/python:platform_linux.bzl",
+    "declare_python_platform_linux",
 )
-use_repo(python_platform, "python_platform")
+use_repo(python_platform_linux, "python_platform_linux")
+
+python_platform_mac = use_extension(
+    "//private_set_intersection/python:platform_mac.bzl",
+    "declare_python_platform_mac",
+)
+use_repo(python_platform_mac, "python_platform_mac")
 
 python_abi = use_extension(
     "//private_set_intersection/python:abi.bzl",

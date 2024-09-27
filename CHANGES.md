@@ -2,9 +2,9 @@
 
 Chore:
 
-- Add support for python 3.11, 3.12
+- Add support for python 3.11
 - Add support for Mac ARM64 builds
-- Updated CI/CD to use python 3.11/3.12 for Bazel to work correctly.
+- Updated CI/CD to use python 3.11 for Bazel to work correctly.
 
 # Version 2.0.2
 
