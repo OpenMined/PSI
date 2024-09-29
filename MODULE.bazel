@@ -49,7 +49,6 @@ http_archive(
     strip_prefix = "protobuf-3.20.1",
 )
 
-# TODO revert to the upstream repository when the https://github.com/google/private-join-and-compute/pull/21 is merged
 http_archive(
     name = "private_join_and_compute",
     sha256 = "9702d5e1e4deeb111e235952e1e831dc9d9f0127ed8a1a30112b235d11f3e937",
@@ -76,29 +75,37 @@ http_archive(
 #     package_lock_json = "//:package-lock.json",
 # )
 
-# Python
+## Python
 python = use_extension("@rules_python//python/extensions:python.bzl", "python")
 python.toolchain(
-    configure_coverage_tool = True,
     python_version = "3.8",
 )
 python.toolchain(
-    configure_coverage_tool = True,
     python_version = "3.9",
 )
 python.toolchain(
-    configure_coverage_tool = True,
     python_version = "3.10",
 )
 python.toolchain(
-    is_default = True,
-    configure_coverage_tool = True,
     python_version = "3.11",
 )
 
 use_repo(
     python,
-    python = "python_versions",
+    # register toolchains
+    "python_3_8",
+    "python_3_9",
+    "python_3_10",
+    "python_3_11",
+    # Handy helper for all
+    "python_versions",
+)
+
+register_toolchains(
+    "@python_3_8//:all",
+    "@python_3_9//:all",
+    "@python_3_10//:all",
+    "@python_3_11//:all",
 )
 
 pip = use_extension("@rules_python//python/extensions:pip.bzl", "pip")
@@ -124,37 +131,41 @@ pip.parse(
     requirements_lock = "//private_set_intersection/python/requirements:requirements_lock_3_11.txt",
 )
 
-# Call the repository rule to declare the Python platform information
-python_platform_linux = use_extension(
-    "//private_set_intersection/python:platform_linux.bzl",
-    "declare_python_platform_linux",
-)
-use_repo(python_platform_linux, "python_platform_linux")
-
-python_platform_mac = use_extension(
-    "//private_set_intersection/python:platform_mac.bzl",
-    "declare_python_platform_mac",
-)
-use_repo(python_platform_mac, "python_platform_mac")
-
-python_abi = use_extension(
-    "//private_set_intersection/python:abi.bzl",
-    "declare_python_abi",
-)
-use_repo(python_abi, "python_abi")
-
-# Rust dependencies
-# raze_fetch_remote_crates = use_repo_rule("//third_party/cargo:crates.bzl", "raze_fetch_remote_crates")
-# raze_fetch_remote_crates()
-
+## Rust
 rust = use_extension("@rules_rust//rust:extensions.bzl", "rust")
 rust.toolchain(
     edition = "2021",
-    versions = ["1.79.0"],
+    versions = ["1.80.1"],
 )
 use_repo(rust, "rust_toolchains")
+
 register_toolchains("@rust_toolchains//:all")
-crate = use_extension("@rules_rust//crate_universe:extension.bzl", "crate")
+
+# Proto toolchain
+register_toolchains("@rules_rust//proto/protobuf:default-proto-toolchain")
+rust_proto = use_extension("@rules_rust//proto:extensions.bzl", "rust_proto")
+rust_proto.repositories()
+
+# Rust Crates
+crate = use_extension("@rules_rust//crate_universe:extension.bzl", "crate", isolate = True)
+crate.spec(
+    package = "libc",
+    version = "0.2.159",
+)
+crate.spec(
+    package = "protobuf",
+    version = "3.5.1",
+)
+crate.spec(
+    package = "semver",
+    version = "1.0.23",
+)
+crate.spec(
+    package = "bencher",
+    version = "0.1.5",
+)
+crate.from_specs()
+use_repo(crate, "crates")
 
 # gRPC dependencies
 # grpc_deps = use_repo_rule("@com_github_grpc_grpc//bazel:grpc_deps.bzl", "grpc_deps")
@@ -181,13 +192,3 @@ crate = use_extension("@rules_rust//crate_universe:extension.bzl", "crate")
 
 # rules_proto_grpc_toolchains()
 # rules_proto_toolchains()
-
-# Rust Proto setup
-rust_proto = use_extension("@rules_rust//proto:extensions.bzl", "rust_proto")
-rust_proto.repositories()
-# rust_proto_repositories = use_repo_rule("@rules_rust//proto:repositories.bzl", "rust_proto_repositories")
-# rust_proto_repositories()
-
-# # Gazelle dependencies
-# gazelle_dependencies = use_repo_rule("@bazel_gazelle//:deps.bzl", "gazelle_dependencies")
-# gazelle_dependencies()

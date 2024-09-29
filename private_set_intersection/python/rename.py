@@ -35,12 +35,13 @@ python_versions = {
 def main():
     inputfile = ""
     for file in os.listdir("./bazel-bin/private_set_intersection/python"):
-        if file.startswith("openmined.psi-") and file.endswith(".whl"):
+        if file.startswith("openmined_psi-") and file.endswith(".whl"):
             inputfile = os.path.join(
                 "./bazel-bin/private_set_intersection/python", file
             )
 
     if not inputfile:
+        print("NOT FOUND")
         sys.exit(1)
 
     interpreter_name = tags.interpreter_name()
@@ -51,6 +52,7 @@ def main():
     # INTERPRETER and ABI should be the same value
     outfile = re.sub(r"INTERPRETER", abi_tag, inputfile)
     outfile = re.sub(r"ABI", abi_tag, outfile)
+    outfile = re.sub(r"openmined_psi", "openmined.psi", outfile)
     system = platform.system()
 
     # We rename the wheel depending on the version of python and glibc

@@ -18,7 +18,7 @@ import "github.com/openmined/psi/server"
 ## Tests
 
 ```
-bazel test -c opt --test_output=all //private_set_intersection/go/...
+bazel test --test_output=all //private_set_intersection/go/...
 ```
 
 ## Benchmarks

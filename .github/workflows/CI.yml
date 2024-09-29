@@ -31,7 +31,7 @@ jobs:
       python: ${{ steps.filter.outputs.python }}
       rust: ${{ steps.filter.outputs.rust }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       # For pull requests it's not necessary to checkout the code
       - uses: dorny/paths-filter@v2
         id: filter
@@ -82,12 +82,9 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-24.04, macos-14]
+        os: [ubuntu-24.04, macos-12]
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
+      - uses: actions/checkout@v4
       - name: Run tests nix
         timeout-minutes: 60
         run: .github/workflows/scripts/run_tests_core.sh
@@ -101,12 +98,9 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-24.04, macos-14]
+        os: [ubuntu-24.04, macos-12]
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
+      - uses: actions/checkout@v4
       - name: Run tests nix
         timeout-minutes: 60
         run: .github/workflows/scripts/run_tests_js.sh
@@ -117,19 +111,15 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-24.04, macos-14]
-        python-version: ['3.8', '3.9', '3.10', '3.11']
+        os:
+          [ubuntu-24.04, macos-12]
+          # Bazel uses hermetic python, these are just placeholders
+        python-version: ['3_8', '3_9', '3_10', '3_11']
     steps:
-      - uses: actions/checkout@v3
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v5
-        with:
-          python-version: ${{ matrix.python-version }}
+      - uses: actions/checkout@v4
       - name: Run tests nix
         timeout-minutes: 30
-        run: .github/workflows/scripts/run_tests_python.sh
-      - name: Python linters
-        run: .github/workflows/scripts/lint_python.sh
+        run: bazel test --test_output=all //private_set_intersection/python:test_${{ matrix.python-version }}
 
   Go:
     needs: changes
@@ -137,7 +127,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-24.04, macos-14]
+        os: [ubuntu-24.04, macos-12]
         golang-version: ['1.19', '1.20', '1.21']
     steps:
       - name: Set up Golang ${{ matrix.golang-version }}
@@ -147,10 +137,7 @@ jobs:
         id: go
       - name: Install Go dependencies
         run: go install golang.org/x/lint/golint@latest
-      - uses: actions/checkout@v3
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
+      - uses: actions/checkout@v4
       - name: Run tests nix
         timeout-minutes: 30
         run: .github/workflows/scripts/run_tests_go.sh
@@ -163,17 +150,14 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-24.04, macos-14]
+        os: [ubuntu-24.04, macos-12]
     steps:
       - name: Install toolchains
         uses: actions-rs/toolchain@v1
         with:
           toolchain: stable
           default: true
-      - uses: actions/checkout@v3
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
+      - uses: actions/checkout@v4
       - name: Run tests nix
         timeout-minutes: 30
         run: .github/workflows/scripts/run_tests_rust.sh

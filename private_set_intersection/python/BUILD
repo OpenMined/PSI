@@ -1,12 +1,9 @@
 load("@psi_deps//:requirements.bzl", "requirement")
 load("@pybind11_bazel//:build_defs.bzl", "pybind_extension")
-load("@python//3.10:defs.bzl", py_binary_3_10 = "py_binary", py_test_3_10 = "py_test")
-load("@python//3.11:defs.bzl", py_binary_3_11 = "py_binary", py_test_3_11 = "py_test")
-load("@python//3.8:defs.bzl", py_binary_3_8 = "py_binary", py_test_3_8 = "py_test")
-load("@python//3.9:defs.bzl", py_binary_3_9 = "py_binary", py_test_3_9 = "py_test")
-load("@python_abi//:abi.bzl", "python_abi")
-load("@python_platform_linux//:platform_linux.bzl", "python_platform_linux")
-load("@python_platform_mac//:platform_mac.bzl", "python_platform_mac")
+load("@python_versions//3.10:defs.bzl", py_binary_3_10 = "py_binary", py_test_3_10 = "py_test")
+load("@python_versions//3.11:defs.bzl", py_binary_3_11 = "py_binary", py_test_3_11 = "py_test")
+load("@python_versions//3.8:defs.bzl", py_binary_3_8 = "py_binary", py_test_3_8 = "py_test")
+load("@python_versions//3.9:defs.bzl", py_binary_3_9 = "py_binary", py_test_3_9 = "py_test")
 load("@rules_python//python:packaging.bzl", "py_package", "py_wheel")
 load("//tools:package.bzl", "VERSION_LABEL")
 
@@ -43,7 +40,6 @@ py_library(
 py_test_3_8(
     name = "test_3_8",
     srcs = ["tests.py"],
-    # https://github.com/bazelbuild/bazel/issues/10076
     legacy_create_init = False,
     main = "tests.py",
     srcs_version = "PY3",
@@ -56,7 +52,6 @@ py_test_3_8(
 py_test_3_9(
     name = "test_3_9",
     srcs = ["tests.py"],
-    # https://github.com/bazelbuild/bazel/issues/10076
     legacy_create_init = False,
     main = "tests.py",
     srcs_version = "PY3",
@@ -69,7 +64,6 @@ py_test_3_9(
 py_test_3_10(
     name = "test_3_10",
     srcs = ["tests.py"],
-    # https://github.com/bazelbuild/bazel/issues/10076
     legacy_create_init = False,
     main = "tests.py",
     srcs_version = "PY3",
@@ -82,7 +76,6 @@ py_test_3_10(
 py_test_3_11(
     name = "test_3_11",
     srcs = ["tests.py"],
-    # https://github.com/bazelbuild/bazel/issues/10076
     legacy_create_init = False,
     main = "tests.py",
     srcs_version = "PY3",
@@ -95,7 +88,6 @@ py_test_3_11(
 py_binary_3_8(
     name = "benchmark_3_8",
     srcs = ["benchmarks.py"],
-    # https://github.com/bazelbuild/bazel/issues/10076
     legacy_create_init = False,
     main = "benchmarks.py",
     srcs_version = "PY3",
@@ -109,7 +101,6 @@ py_binary_3_8(
 py_binary_3_9(
     name = "benchmark_3_9",
     srcs = ["benchmarks.py"],
-    # https://github.com/bazelbuild/bazel/issues/10076
     legacy_create_init = False,
     main = "benchmarks.py",
     srcs_version = "PY3",
@@ -123,7 +114,6 @@ py_binary_3_9(
 py_binary_3_10(
     name = "benchmark_3_10",
     srcs = ["benchmarks.py"],
-    # https://github.com/bazelbuild/bazel/issues/10076
     legacy_create_init = False,
     main = "benchmarks.py",
     srcs_version = "PY3",
@@ -137,7 +127,6 @@ py_binary_3_10(
 py_binary_3_11(
     name = "benchmark_3_11",
     srcs = ["benchmarks.py"],
-    # https://github.com/bazelbuild/bazel/issues/10076
     legacy_create_init = False,
     main = "benchmarks.py",
     srcs_version = "PY3",
@@ -156,9 +145,16 @@ py_package(
     ],
 )
 
+# This rule builds the wheel, but we need to change the name of the .whl before
+# we publish to PyPI using a separate publish script outside of bazel. The
+# output that gets generated looks like the following:
+# openmined.psi-1.0.0-INTERPRETER-ABI-PLATFORM.whl
+#
+# This rule also bundles protobuf, but it resides in an incorrect directy and
+# there doesn't seem to be a way to prevent it getting added to the wheel.
 py_wheel(
     name = "wheel",
-    abi = python_abi(),
+    abi = "ABI",
     author = "OpenMined",
     classifiers = [
         "Programming Language :: Python :: 3",
@@ -176,15 +172,14 @@ py_wheel(
     platform = select({
         "@bazel_tools//src/conditions:windows_x64": "win_amd64",
         "@bazel_tools//src/conditions:windows_arm64": "win_arm64",
-        "@bazel_tools//src/conditions:darwin_x86_64": python_platform_mac(),
-        "@bazel_tools//src/conditions:darwin_arm64": python_platform_mac(),
-        "@bazel_tools//src/conditions:linux_x86_64": python_platform_linux() + "_x86_64",
-        "@bazel_tools//src/conditions:linux_aarch64": python_platform_linux() + "_aarch64",
+        "@bazel_tools//src/conditions:darwin_x86_64": "macosx_12_0_x86_64",
+        "@bazel_tools//src/conditions:darwin_arm64": "macosx_12_0_arm64",
+        "@bazel_tools//src/conditions:linux_x86_64": "LINUX_x86_64",
+        "@bazel_tools//src/conditions:linux_aarch64": "LINUX_aarch64",
     }),
     python_requires = ">=3.8",
-    python_tag = python_abi(),
+    python_tag = "INTERPRETER",
     requires = ["protobuf>=3.20"],
-    toolchains = ["@rules_python//python:current_py_toolchain"],
     version = VERSION_LABEL,
     deps = [
         ":openmined_psi_pkg",
