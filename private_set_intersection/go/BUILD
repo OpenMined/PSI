@@ -19,13 +19,13 @@ go_test(
 )
 
 go_test(
-    name = "benchmark",
+    name = "benchmark_test",
     srcs = ["benchmark_test.go"],
     deps = [
         "//private_set_intersection/go/client",
         "//private_set_intersection/go/datastructure",
         "//private_set_intersection/go/server",
         "//private_set_intersection/proto:psi_go_proto",
-        # "@org_golang_google_protobuf//proto:go_default_library",
+        "@org_golang_google_protobuf//proto:go_default_library",
     ],
 )
