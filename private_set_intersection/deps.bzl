@@ -20,7 +20,7 @@ load("@build_bazel_rules_apple//apple:repositories.bzl", "apple_rules_dependenci
 load("@build_bazel_rules_nodejs//:repositories.bzl", "build_bazel_rules_nodejs_dependencies")
 load("@com_github_grpc_grpc//bazel:grpc_deps.bzl", "grpc_deps")
 load("@emsdk//:deps.bzl", emsdk_deps = "deps")
-load("@io_bazel_rules_go//go:deps.bzl", "go_register_toolchains", "go_rules_dependencies")
+load("@rules_go//go:deps.bzl", "go_register_toolchains", "go_rules_dependencies")
 
 # load("@rules_python//python/pip_install:repositories.bzl", "pip_install_dependencies")
 # load("@pybind11_bazel//:python_configure.bzl", "python_configure")

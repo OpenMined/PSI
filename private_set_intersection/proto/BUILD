@@ -1,5 +1,3 @@
-load("@io_bazel_rules_go//go:def.bzl", "go_library")
-
 #
 # Copyright 2020 the authors listed in CONTRIBUTORS.md
 #
@@ -16,9 +14,10 @@ load("@io_bazel_rules_go//go:def.bzl", "go_library")
 # limitations under the License.
 #
 
-load("@io_bazel_rules_go//proto:def.bzl", "go_proto_library")
 load("@rules_cc//cc:defs.bzl", "cc_proto_library")
+load("@rules_go//go:def.bzl", "go_library")
 load("@rules_proto//proto:defs.bzl", "proto_library")
+load("@rules_proto_grpc_go//:defs.bzl", "go_proto_library")
 load("@rules_proto_grpc_python//:defs.bzl", "python_proto_library")
 load("@rules_rust//proto/protobuf:defs.bzl", "rust_proto_library")
 
@@ -53,7 +52,7 @@ python_proto_library(
 go_proto_library(
     name = "psi_proto_go_proto",
     importpath = "private_set_intersection/proto",
-    proto = ":psi_proto",
+    protos = [":psi_proto"],
 )
 
 go_library(

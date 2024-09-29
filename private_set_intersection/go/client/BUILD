@@ -1,4 +1,4 @@
-load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+load("@rules_go//go:def.bzl", "go_library", "go_test")
 
 go_library(
     name = "client",
@@ -10,7 +10,7 @@ go_library(
     deps = [
         "//private_set_intersection/go/version",
         "//private_set_intersection/proto:psi_go_proto",
-        "@org_golang_google_protobuf//proto:go_default_library",
+        # "@org_golang_google_protobuf//proto:go_default_library",
     ],
 )
 

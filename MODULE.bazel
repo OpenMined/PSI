@@ -13,8 +13,9 @@ bazel_dep(name = "rules_proto", version = "6.0.2")
 bazel_dep(name = "rules_proto_grpc", version = "5.0.0")
 bazel_dep(name = "rules_proto_grpc_cpp", version = "5.0.0")
 bazel_dep(name = "rules_proto_grpc_python", version = "5.0.0")
-bazel_dep(name = "rules_go", version = "0.50.1", repo_name = "io_bazel_rules_go")
-bazel_dep(name = "gazelle", version = "0.39.0", repo_name = "bazel_gazelle")
+bazel_dep(name = "rules_proto_grpc_go", version = "5.0.0")
+bazel_dep(name = "rules_go", version = "0.50.1")
+bazel_dep(name = "gazelle", version = "0.39.0")
 bazel_dep(name = "rules_pkg", version = "1.0.1")
 bazel_dep(name = "rules_python", version = "0.36.0")
 bazel_dep(name = "rules_rust", version = "0.51.0")
@@ -167,6 +168,24 @@ crate.spec(
 crate.from_specs()
 use_repo(crate, "crates")
 
+## Golang
+
+go_sdk = use_extension("@rules_go//go:extensions.bzl", "go_sdk")
+
+# Download an SDK for the host OS & architecture as well as common remote execution platforms.
+go_sdk.download(version = "1.23.1")
+use_repo(
+    go_sdk,
+    "go_toolchains",
+)
+register_toolchains("@go_toolchains//:all")
+go_deps = use_extension("@gazelle//:extensions.bzl", "go_deps")
+
+go_deps.from_file(go_mod = "//private_set_intersection/go:go.mod")
+use_repo(
+    go_deps,
+    "org_golang_google_protobuf",
+)
 # gRPC dependencies
 # grpc_deps = use_repo_rule("@com_github_grpc_grpc//bazel:grpc_deps.bzl", "grpc_deps")
 # grpc_deps()
