@@ -1,8 +1,10 @@
 #!/usr/bin/env bash
-set -euo pipefail
+set -euxo pipefail
+
+PATH="$PATH:$(pwd)/node_modules/.bin"
 
 # Path to this plugin.
-PROTOC_GEN_TS_PATH="./node_modules/.bin/protoc-gen-ts"
+PROTOC_GEN_TS_PATH="./node_modules/ts-protoc-gen/bin/protoc-gen-ts"
 
 # Directory to write generated code to (.js and .d.ts files).
 OUT_DIR_JS="./private_set_intersection/javascript/bin"
@@ -17,5 +19,5 @@ PROTOC_BINARY="./bazel-bin/external/protobuf~/protoc"
     --plugin="protoc-gen-ts=${PROTOC_GEN_TS_PATH}" \
     --proto_path="${PROTO_DIR}" \
     --js_out="import_style=commonjs,binary:${OUT_DIR_JS}" \
-    --ts_out="${OUT_DIR_TS}" \
+    --ts_out="service=grpc-web:${OUT_DIR_TS}" \
     psi.proto

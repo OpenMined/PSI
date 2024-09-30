@@ -1,7 +1,7 @@
-import PSI from '../wasm_node'
 import { ERROR_INSTANCE_DELETED } from '../implementation/constants'
-import { PSILibrary } from '../implementation/psi'
 import { Response, ServerSetup } from '../implementation/proto/psi_pb'
+import { PSILibrary } from '../implementation/psi'
+import PSI from '../wasm_node'
 
 let psi: PSILibrary
 beforeAll(async () => {
