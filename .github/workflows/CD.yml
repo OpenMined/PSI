@@ -99,7 +99,7 @@ jobs:
       matrix:
         # Handling boundary conditions of: https://github.com/pypa/manylinux
         python-version: ['3.8.0', '3.8.4', '3.9.0']
-        os: [ubuntu-20.04]
+        os: [ubuntu-20.04, macos-12]
     steps:
       - uses: actions/checkout@v4
       - name: Set up Python
@@ -112,10 +112,9 @@ jobs:
           TWINE_PASSWORD: ${{ secrets.OM_PSI_PYPI_TOKEN }}
         run: |
           python -m pip install --upgrade pip
-          pip install twine packaging
-          bazel build -c opt //private_set_intersection/python:wheel
-          python private_set_intersection/python/rename.py
-          twine upload --skip-existing bazel-bin/private_set_intersection/python/openmined_psi-*
+          pip install packaging
+          bazel run -c opt //private_set_intersection/python:wheel.publish  -- --verbose --skip-existing
+
   Publish-python:
     needs: [Core, JS, Go, Python, Rust]
     if: ${{ github.event_name == 'release' }}
@@ -123,7 +122,7 @@ jobs:
     strategy:
       matrix:
         python-version: ['3.8', '3.9', '3.10', '3.11']
-        os: [ubuntu-24.04, ubuntu-22.04, ubuntu-20.04, macos-14]
+        os: [ubuntu-24.04, ubuntu-22.04, ubuntu-20.04, macos-14, macos-12]
     steps:
       - uses: actions/checkout@v4
       - name: Set up Python
@@ -136,7 +135,5 @@ jobs:
           TWINE_PASSWORD: ${{ secrets.OM_PSI_PYPI_TOKEN }}
         run: |
           python -m pip install --upgrade pip
-          pip install twine packaging
-          bazel build -c opt //private_set_intersection/python:wheel
-          python private_set_intersection/python/rename.py
-          twine upload --skip-existing bazel-bin/private_set_intersection/python/openmined_psi-*
+          pip install packaging
+          bazel run -c opt //private_set_intersection/python:wheel.publish  -- --verbose --skip-existing
