@@ -2,6 +2,7 @@ load("@psi_deps//:requirements.bzl", "requirement")
 load("@pybind11_bazel//:build_defs.bzl", "pybind_extension")
 load("@python_versions//3.10:defs.bzl", py_binary_3_10 = "py_binary", py_test_3_10 = "py_test")
 load("@python_versions//3.11:defs.bzl", py_binary_3_11 = "py_binary", py_test_3_11 = "py_test")
+load("@python_versions//3.12:defs.bzl", py_binary_3_12 = "py_binary", py_test_3_12 = "py_test")
 load("@python_versions//3.8:defs.bzl", py_binary_3_8 = "py_binary", py_test_3_8 = "py_test")
 load("@python_versions//3.9:defs.bzl", py_binary_3_9 = "py_binary", py_test_3_9 = "py_test")
 load("@rules_python//python:packaging.bzl", "py_package", "py_wheel")
@@ -85,6 +86,18 @@ py_test_3_11(
     ],
 )
 
+py_test_3_12(
+    name = "test_3_12",
+    srcs = ["tests.py"],
+    legacy_create_init = False,
+    main = "tests.py",
+    srcs_version = "PY3",
+    deps = [
+        ":openmined_psi",
+        requirement("pytest"),
+    ],
+)
+
 py_binary_3_8(
     name = "benchmark_3_8",
     srcs = ["benchmarks.py"],
@@ -137,6 +150,19 @@ py_binary_3_11(
     ],
 )
 
+py_binary_3_12(
+    name = "benchmark_3_12",
+    srcs = ["benchmarks.py"],
+    legacy_create_init = False,
+    main = "benchmarks.py",
+    srcs_version = "PY3",
+    deps = [
+        ":openmined_psi",
+        requirement("pytest-benchmark"),
+        requirement("pytest"),
+    ],
+)
+
 py_package(
     name = "openmined_psi_pkg",
     visibility = ["//visibility:private"],
@@ -172,14 +198,14 @@ py_wheel(
     platform = select({
         "@bazel_tools//src/conditions:windows_x64": "win_amd64",
         "@bazel_tools//src/conditions:windows_arm64": "win_arm64",
-        "@bazel_tools//src/conditions:darwin_x86_64": "macosx_12_0_x86_64",
-        "@bazel_tools//src/conditions:darwin_arm64": "macosx_12_0_arm64",
+        "@bazel_tools//src/conditions:darwin_x86_64": "macosx_14_0_x86_64",
+        "@bazel_tools//src/conditions:darwin_arm64": "macosx_14_0_arm64",
         "@bazel_tools//src/conditions:linux_x86_64": "LINUX_x86_64",
         "@bazel_tools//src/conditions:linux_aarch64": "LINUX_aarch64",
     }),
     python_requires = ">=3.8",
     python_tag = "INTERPRETER",
-    requires = ["protobuf>=3.20"],
+    requires = ["protobuf"],
     version = VERSION_LABEL,
     deps = [
         ":openmined_psi_pkg",

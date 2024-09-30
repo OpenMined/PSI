@@ -101,7 +101,7 @@ jobs:
         python-version: ['3.8.0', '3.8.4', '3.9.0']
         os: [ubuntu-20.04]
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
@@ -123,7 +123,7 @@ jobs:
     strategy:
       matrix:
         python-version: ['3.8', '3.9', '3.10', '3.11']
-        os: [ubuntu-24.04, ubuntu-22.04, ubuntu-20.04, macos-14]
+        os: [ubuntu-24.04, ubuntu-22.04, ubuntu-20.04, macos-14, macos-14-large]
     steps:
       - uses: actions/checkout@v4
       - name: Set up Python

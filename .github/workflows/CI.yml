@@ -82,7 +82,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-24.04, macos-12]
+        os: [ubuntu-24.04, macos-14]
     steps:
       - uses: actions/checkout@v4
       - name: Run tests nix
@@ -98,7 +98,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-24.04, macos-12]
+        os: [ubuntu-24.04, macos-14]
     steps:
       - uses: actions/checkout@v4
       - name: Run tests nix
@@ -112,7 +112,7 @@ jobs:
     strategy:
       matrix:
         os:
-          [ubuntu-24.04, macos-12]
+          [ubuntu-24.04, macos-14]
           # Bazel uses hermetic python, these are just placeholders
         python-version: ['3_8', '3_9', '3_10', '3_11']
     steps:
@@ -127,8 +127,8 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-24.04, macos-12]
-        golang-version: ['1.19', '1.20', '1.21']
+        os: [ubuntu-24.04, macos-14]
+        golang-version: ['1.21', '1.22', '1.23']
     steps:
       - name: Set up Golang ${{ matrix.golang-version }}
         uses: actions/setup-go@v5
@@ -150,7 +150,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-24.04, macos-12]
+        os: [ubuntu-24.04, macos-14]
     steps:
       - name: Install toolchains
         uses: actions-rs/toolchain@v1

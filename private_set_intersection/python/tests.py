@@ -1,7 +1,8 @@
-import pytest
-import sys
 import re
+import sys
 from math import ceil, floor
+
+import pytest
 
 import private_set_intersection.python as psi
 
@@ -37,7 +38,9 @@ def test_integration(ds, reveal_intersection):
 
     setup = psi.ServerSetup()
     setup.ParseFromString(
-        s.CreateSetupMessage(fpr, len(client_items), server_items, ds).SerializeToString()
+        s.CreateSetupMessage(
+            fpr, len(client_items), server_items, ds
+        ).SerializeToString()
     )
 
     request = psi.Request()
