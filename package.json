@@ -19,6 +19,7 @@
   "files": [
     "**/*"
   ],
+  "types": "combined_wasm_node.d.ts",
   "scripts": {
     "benchmark": "node -r esm private_set_intersection/javascript/benchmark.js",
     "build": "npm run build:psi",
