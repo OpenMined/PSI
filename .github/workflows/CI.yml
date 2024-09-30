@@ -48,6 +48,8 @@ jobs:
               - '.clang-format'
               - '.bazelrc'
               - '.bazelversion'
+              - 'MODULE.bazel'
+              - 'MODULE.bazel.lock'
               - 'WORKSPACE'
             go:
               - 'private_set_intersection/go/**'
@@ -62,6 +64,8 @@ jobs:
               - '.eslint*'
               - '.bazelrc'
               - '.bazelversion'
+              - 'MODULE.bazel'
+              - 'MODULE.bazel.lock'
               - 'WORKSPACE'
             python:
               - 'private_set_intersection/python/**'
@@ -69,12 +73,16 @@ jobs:
               - '.pyproject.toml'
               - '.bazelrc'
               - '.bazelversion'
+              - 'MODULE.bazel'
+              - 'MODULE.bazel.lock'
               - 'WORKSPACE'
             rust:
               - 'private_set_intersection/rust/**'
               - 'third_party/**'
               - '.bazelrc'
               - '.bazelversion'
+              - 'MODULE.bazel'
+              - 'MODULE.bazel.lock'
               - 'WORKSPACE'
   Core:
     needs: changes

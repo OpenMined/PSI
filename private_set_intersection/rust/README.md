@@ -26,7 +26,7 @@ bazel test //private_set_intersection/rust/...
 Run the benchmark:
 
 ```
-bazel run -c opt //private_set_intersection/rust:bench --experimental_isolated_extension_usages
+bazel run -c opt //private_set_intersection/rust:bench
 ```
 
 ## Developing
