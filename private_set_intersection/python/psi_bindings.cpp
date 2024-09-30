@@ -102,7 +102,7 @@ void bind(pybind11::module& m) {
           "CreateRequest",
           [](const psi::PsiClient& obj,
              const std::vector<std::string>& inputs) {
-            return throwOrReturn(obj.CreateRequest(inputs));
+            return throwOrReturn(obj.CreateRequest(absl::MakeSpan(inputs)));
           },
           py::call_guard<py::gil_scoped_release>())
       .def(
@@ -154,8 +154,8 @@ void bind(pybind11::module& m) {
           "CreateSetupMessage",
           [](const psi::PsiServer& obj, double fpr, int64_t num_client_inputs,
              const std::vector<std::string>& inputs, psi::DataStructure ds) {
-            return throwOrReturn(
-                obj.CreateSetupMessage(fpr, num_client_inputs, inputs, ds));
+            return throwOrReturn(obj.CreateSetupMessage(
+                fpr, num_client_inputs, absl::MakeSpan(inputs), ds));
           },
           py::call_guard<py::gil_scoped_release>())
       .def(

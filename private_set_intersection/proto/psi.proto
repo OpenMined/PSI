@@ -16,6 +16,7 @@
 syntax = "proto3";
 
 package psi_proto;
+option go_package = "github.com/openmined/psi/pb";
 
 // Setup phase message for server.
 message ServerSetup {

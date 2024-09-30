@@ -62,7 +62,8 @@ reports the number of matches as the intersection size.
 
 It's worth noting that the protocol has several variants, some of which
 introduce a small false-positive rate, while others do not generate false
-positives. This behavior is selective, and the false-positive rate can be tuned. The selection has implications on communication costs as well.
+positives. This behavior is selective, and the false-positive rate can be tuned.
+The selection has implications on communication costs as well.
 
 __NOTE resembles*__: The protocol has configurable **containers**. Golomb
 Compressed Sets (`Gcs`) is the default container but it can be overridden to be
@@ -130,39 +131,26 @@ git_repository(
    branch = "master",
 )
 
-load("@org_openmined_psi//private_set_intersection:preload.bzl", "psi_preload")
+load("@bazel_tools//tools/build_defs/repo:git.bzl", "git_repository")
 
-psi_preload()
-
-load("@org_openmined_psi//private_set_intersection:deps.bzl", "psi_deps")
-
-psi_deps()
-
-load("@rules_python//python:pip.bzl", "pip_parse")
-
-pip_parse(
-    name = "pip_deps",
-    # Generated via pip-compile requirements.in
-    requirements_lock = "@org_openmined_psi//private_set_intersection/python:requirements.txt",
+git_repository(
+    name = "emsdk",
+    remote = "https://github.com/emscripten-core/emsdk.git",
+    strip_prefix = "bazel",
+    tag = "3.1.67",
 )
 
-load("@pip_deps//:requirements.bzl", "install_deps")
+load("@emsdk//:deps.bzl", emsdk_deps = "deps")
 
-install_deps()
-
-load("@build_bazel_rules_nodejs//:index.bzl", "node_repositories", "npm_install")
-
-node_repositories()
-
-npm_install(
-    name = "npm",
-    package_json = "//:package.json",
-    package_lock_json = "//:package-lock.json",
-)
+emsdk_deps()
 
 load("@emsdk//:emscripten_deps.bzl", emsdk_emscripten_deps = "emscripten_deps")
 
-emsdk_emscripten_deps()
+emsdk_emscripten_deps(emscripten_version = "3.1.67")
+
+load("@emsdk//:toolchains.bzl", "register_emscripten_toolchains")
+
+register_emscripten_toolchains()
 ```
 
 A full description of the protocol can be found in the documentation of the

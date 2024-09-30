@@ -1,0 +1,5 @@
+pytest
+pytest-benchmark
+twine
+packaging
+protobuf

@@ -243,33 +243,33 @@ Ensure your environment has the following global dependencies:
 
 Now, install the rest of the dev dependencies
 
-```
+```bash
 npm install
 ```
 
 To compile the client, server, or psi (both client and server) for WebAssembly
 and pure JS
 
-```
+```bash
 npm run build
 ```
 
 Now, build the JS protobufs for TypeScript.
 
-```
+```bash
 npm run build:proto
 ```
 
 Compile TypeScript to JS (sanity checking)
 
-```
+```bash
 npm run compile
 ```
 
 Run the tests or generate coverage reports. **Note** tests are run using the
 WASM variant.
 
-```
+```bash
 npm run test
 npm run coverage
 ```
@@ -278,16 +278,15 @@ npm run coverage
 
 Build the benchmark for WebAssembly and pure JS
 
-```
+```bash
 npm run compile
 npm run build:benchmark
 ```
 
 Finally, run the benchmark for WebAssembly or pure JS
 
-```
+```bash
 npm run benchmark:wasm
-npm run benchmark:js
 ```
 
 ### Publishing

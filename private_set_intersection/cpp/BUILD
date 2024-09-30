@@ -13,8 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-load("//tools:package.bzl", "VERSION_LABEL")
 load("//tools:common.bzl", "template_rule")
+load("//tools:package.bzl", "VERSION_LABEL")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -48,7 +48,7 @@ cc_test(
     srcs = ["package_test.cpp"],
     deps = [
         ":package",
-        "@com_google_googletest//:gtest_main",
+        "@googletest//:gtest_main",
     ],
 )
 
@@ -63,11 +63,11 @@ cc_library(
         "//private_set_intersection/cpp/datastructure:gcs",
         "//private_set_intersection/cpp/datastructure:raw",
         "//private_set_intersection/proto:psi_cc_proto",
+        "@abseil-cpp//absl/memory",
+        "@abseil-cpp//absl/status:statusor",
+        "@abseil-cpp//absl/strings",
+        "@abseil-cpp//absl/types:span",
         "@boringssl//:crypto",
-        "@com_google_absl//absl/memory",
-        "@com_google_absl//absl/status:statusor",
-        "@com_google_absl//absl/strings",
-        "@com_google_absl//absl/types:span",
         "@private_join_and_compute//private_join_and_compute/crypto:ec_commutative_cipher",
     ],
 )
@@ -79,10 +79,10 @@ cc_test(
     deps = [
         ":psi_client",
         "//private_set_intersection/cpp/util:status_matchers",
-        "@com_google_absl//absl/container:flat_hash_set",
-        "@com_google_absl//absl/strings",
-        "@com_google_googletest//:gtest",
-        "@com_google_googletest//:gtest_main",
+        "@abseil-cpp//absl/container:flat_hash_set",
+        "@abseil-cpp//absl/strings",
+        "@googletest//:gtest",
+        "@googletest//:gtest_main",
         "@private_join_and_compute//private_join_and_compute/crypto:ec_commutative_cipher",
     ],
 )
@@ -100,11 +100,11 @@ cc_library(
         "//private_set_intersection/cpp/datastructure:gcs",
         "//private_set_intersection/cpp/datastructure:raw",
         "//private_set_intersection/proto:psi_cc_proto",
+        "@abseil-cpp//absl/memory",
+        "@abseil-cpp//absl/status:statusor",
+        "@abseil-cpp//absl/strings",
+        "@abseil-cpp//absl/types:span",
         "@boringssl//:crypto",
-        "@com_google_absl//absl/memory",
-        "@com_google_absl//absl/status:statusor",
-        "@com_google_absl//absl/strings",
-        "@com_google_absl//absl/types:span",
         "@private_join_and_compute//private_join_and_compute/crypto:ec_commutative_cipher",
     ],
 )
@@ -117,10 +117,10 @@ cc_test(
         ":psi_client",
         ":psi_server",
         "//private_set_intersection/cpp/util:status_matchers",
-        "@com_google_absl//absl/container:flat_hash_set",
-        "@com_google_absl//absl/strings",
-        "@com_google_googletest//:gtest",
-        "@com_google_googletest//:gtest_main",
+        "@abseil-cpp//absl/container:flat_hash_set",
+        "@abseil-cpp//absl/strings",
+        "@googletest//:gtest",
+        "@googletest//:gtest_main",
     ],
 )
 
@@ -131,7 +131,7 @@ cc_binary(
     deps = [
         ":psi_client",
         ":psi_server",
-        "@com_google_absl//absl/strings",
-        "@com_google_benchmark//:benchmark_main",
+        "@abseil-cpp//absl/strings",
+        "@google_benchmark//:benchmark_main",
     ],
 )

@@ -1,3 +1,6 @@
 # There are many warnings that lead to errors on Clang and GCC (maybe even MSVC)
 # because of the compiler and version disparity, we're opting to eat the risk and silence all warnings
-build --cxxopt="-std=c++17" --copt="-w"
+build --cxxopt="-std=c++17" --copt="-w" --experimental_isolated_extension_usages
+
+build:wasm --incompatible_enable_cc_toolchain_resolution=false
+build:wasm --platforms=@emsdk//:platform_wasm

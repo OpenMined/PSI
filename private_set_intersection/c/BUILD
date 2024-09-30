@@ -31,7 +31,7 @@ cc_library(
     hdrs = ["internal_utils.h"],
     visibility = ["//visibility:private"],
     deps = [
-        "@com_google_absl//absl/status:statusor",
+        "@abseil-cpp//absl/status:statusor",
     ],
 )
 
@@ -65,10 +65,10 @@ cc_test(
         ":c_psi_client",
         ":c_psi_server",
         "//private_set_intersection/cpp/util:status_matchers",
-        "@com_google_absl//absl/container:flat_hash_set",
-        "@com_google_absl//absl/strings",
-        "@com_google_googletest//:gtest",
-        "@com_google_googletest//:gtest_main",
+        "@abseil-cpp//absl/container:flat_hash_set",
+        "@abseil-cpp//absl/strings",
+        "@googletest//:gtest",
+        "@googletest//:gtest_main",
     ],
 )
 
@@ -78,7 +78,7 @@ cc_binary(
     deps = [
         ":c_psi_client",
         ":c_psi_server",
-        "@com_google_absl//absl/strings",
-        "@com_google_benchmark//:benchmark_main",
+        "@abseil-cpp//absl/strings",
+        "@google_benchmark//:benchmark_main",
     ],
 )

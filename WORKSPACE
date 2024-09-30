@@ -2,39 +2,24 @@ workspace(
     name = "org_openmined_psi",
 )
 
-load("@org_openmined_psi//private_set_intersection:preload.bzl", "psi_preload")
+# Emsdk
+load("@bazel_tools//tools/build_defs/repo:git.bzl", "git_repository")
 
-psi_preload()
-
-load("@org_openmined_psi//private_set_intersection:deps.bzl", "psi_deps")
-
-psi_deps()
-
-# Finish python setup
-load("@rules_python//python:pip.bzl", "pip_parse")
-
-pip_parse(
-    name = "pip_deps",
-    # Generated via pip-compile requirements.in
-    requirements_lock = "@org_openmined_psi//private_set_intersection/python:requirements.txt",
+git_repository(
+    name = "emsdk",
+    remote = "https://github.com/emscripten-core/emsdk.git",
+    strip_prefix = "bazel",
+    tag = "3.1.67",
 )
 
-load("@pip_deps//:requirements.bzl", "install_deps")
+load("@emsdk//:deps.bzl", emsdk_deps = "deps")
 
-install_deps()
+emsdk_deps()
 
-# Finish node setup
-load("@build_bazel_rules_nodejs//:index.bzl", "node_repositories", "npm_install")
-
-node_repositories()
-
-npm_install(
-    name = "npm",
-    package_json = "//:package.json",
-    package_lock_json = "//:package-lock.json",
-)
-
-# Finish emsdk setup
 load("@emsdk//:emscripten_deps.bzl", emsdk_emscripten_deps = "emscripten_deps")
 
-emsdk_emscripten_deps()
+emsdk_emscripten_deps(emscripten_version = "3.1.67")
+
+load("@emsdk//:toolchains.bzl", "register_emscripten_toolchains")
+
+register_emscripten_toolchains()

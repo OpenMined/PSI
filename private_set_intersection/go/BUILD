@@ -1,11 +1,11 @@
-load("@bazel_gazelle//:def.bzl", "gazelle")
-load("@io_bazel_rules_go//go:def.bzl", "go_test")
+load("@gazelle//:def.bzl", "gazelle")
+load("@rules_go//go:def.bzl", "go_test")
 
 # gazelle:prefix github.com/openmined/psi
 gazelle(name = "gazelle")
 
 go_test(
-    name = "integration_test",
+    name = "test",
     srcs = ["integration_test.go"],
     importpath = "github.com/openmined/psi",
     deps = [

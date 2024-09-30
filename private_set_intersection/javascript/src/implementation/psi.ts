@@ -1,8 +1,8 @@
-import { PackageWrapper } from './package'
 import { ClientWrapper } from './client'
-import { ServerWrapper } from './server'
-import { ServerSetup, Request, Response } from './proto/psi_pb'
 import { DataStructureWrapper } from './dataStructure'
+import { PackageWrapper } from './package'
+import { Request, Response, ServerSetup } from './proto/psi_pb'
+import { ServerWrapper } from './server'
 
 export type PSILibrary = {
   readonly serverSetup: typeof ServerSetup

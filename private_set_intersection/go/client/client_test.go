@@ -1,8 +1,9 @@
 package client
 
 import (
-	psi_proto "github.com/openmined/psi/pb"
 	"testing"
+
+	psi_proto "github.com/openmined/psi/pb"
 )
 
 func testClientFailure(t *testing.T, revealIntersection bool) {

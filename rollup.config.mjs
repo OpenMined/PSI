@@ -1,9 +1,8 @@
-import terser from '@rollup/plugin-terser'
 import alias from '@rollup/plugin-alias'
 import commonjs from '@rollup/plugin-commonjs'
 import resolve from '@rollup/plugin-node-resolve'
 import replace from '@rollup/plugin-replace'
-import globals from 'rollup-plugin-node-globals'
+import terser from '@rollup/plugin-terser'
 import builtins from 'rollup-plugin-node-builtins'
 import typescript from 'rollup-plugin-typescript2'
 
@@ -74,7 +73,6 @@ const outputs = [
       // Depending on the format, we need to correctly transform the build for brower or nodejs
       resolve({ preferBuiltins: true }), // needed to include the external google-protobuf module in the bundle
       commonjs(), // needed to convert commonjs to es6 for protobuf
-      globals({ global: true, buffer: true }),
       builtins({ fs: true }),
       alias({
         entries: [
@@ -115,7 +113,6 @@ const outputs = [
       // Depending on the format, we need to correctly transform the build for brower or nodejs
       resolve({ preferBuiltins: true }), // needed to include the external google-protobuf module in the bundle
       commonjs(), // needed to convert commonjs to es6 for protobuf
-      globals({ global: true, buffer: true }),
       builtins({ fs: true }),
       alias({
         entries: [

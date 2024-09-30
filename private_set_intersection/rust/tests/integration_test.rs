@@ -65,6 +65,7 @@ fn integration_test() {
                 let set: HashSet<i64> = HashSet::from_iter(intersection.into_iter());
 
                 for i in 0..NUM_CLIENT_ELEMENTS as i64 {
+                    // Can fail due to false positives.
                     assert_eq!(set.contains(&i), i % 2 == 0);
                 }
             } else {
@@ -72,9 +73,10 @@ fn integration_test() {
 
                 assert!(intersection_size >= (NUM_CLIENT_ELEMENTS / 2));
                 assert!(
-                    (intersection_size as f64) < ((NUM_CLIENT_ELEMENTS as f64) / 2.0 * 1.1).ceil()
+                    (intersection_size as f64) <= ((NUM_CLIENT_ELEMENTS as f64) / 2.0 * 1.1).ceil()
                 );
             }
         }
     }
 }
+

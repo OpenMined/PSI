@@ -1,10 +1,11 @@
 package server
 
 import (
+	"testing"
+
 	"github.com/openmined/psi/client"
 	psi_ds "github.com/openmined/psi/datastructure"
 	psi_proto "github.com/openmined/psi/pb"
-	"testing"
 )
 
 func generateItems(cnt int, m int) (int, []string) {
