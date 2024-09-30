@@ -38,7 +38,7 @@ __forceinline static int bsf(unsigned int x) {
 #define CTZ(x) __builtin_ctz(x)
 #endif
 
-#define DIV_CEIL(a, b) (((a) + (b)-1) / (b))
+#define DIV_CEIL(a, b) (((a) + (b) - 1) / (b))
 
 struct GolombCompressed {
   int64_t div;
