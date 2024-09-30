@@ -5,7 +5,7 @@ git_repository(
     name = "emsdk",
     remote = "https://github.com/emscripten-core/emsdk.git",
     strip_prefix = "bazel",
-    tag = "3.1.64",
+    tag = "3.1.67",
 )
 
 load("@emsdk//:deps.bzl", emsdk_deps = "deps")
@@ -14,7 +14,7 @@ emsdk_deps()
 
 load("@emsdk//:emscripten_deps.bzl", emsdk_emscripten_deps = "emscripten_deps")
 
-emsdk_emscripten_deps(emscripten_version = "3.1.64")
+emsdk_emscripten_deps(emscripten_version = "3.1.67")
 
 load("@emsdk//:toolchains.bzl", "register_emscripten_toolchains")
 
