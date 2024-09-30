@@ -6,7 +6,7 @@ Compressed Sets.
 ## Installation
 
 ```bash
-pip install openmined_psi
+pip install openmined-psi
 ```
 
 ## Developing
