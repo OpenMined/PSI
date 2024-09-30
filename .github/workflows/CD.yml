@@ -115,7 +115,7 @@ jobs:
           pip install twine packaging
           bazel build -c opt //private_set_intersection/python:wheel
           python private_set_intersection/python/rename.py
-          twine upload --skip-existing bazel-bin/private_set_intersection/python/openmined.psi-*
+          twine upload --skip-existing bazel-bin/private_set_intersection/python/openmined_psi-*
   Publish-python:
     needs: [Core, JS, Go, Python, Rust]
     if: ${{ github.event_name == 'release' }}
@@ -139,4 +139,4 @@ jobs:
           pip install twine packaging
           bazel build -c opt //private_set_intersection/python:wheel
           python private_set_intersection/python/rename.py
-          twine upload --skip-existing bazel-bin/private_set_intersection/python/openmined.psi-*
+          twine upload --skip-existing bazel-bin/private_set_intersection/python/openmined_psi-*
