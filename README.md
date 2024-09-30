@@ -62,7 +62,8 @@ reports the number of matches as the intersection size.
 
 It's worth noting that the protocol has several variants, some of which
 introduce a small false-positive rate, while others do not generate false
-positives. This behavior is selective, and the false-positive rate can be tuned. The selection has implications on communication costs as well.
+positives. This behavior is selective, and the false-positive rate can be tuned.
+The selection has implications on communication costs as well.
 
 __NOTE resembles*__: The protocol has configurable **containers**. Golomb
 Compressed Sets (`Gcs`) is the default container but it can be overridden to be

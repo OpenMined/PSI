@@ -1,10 +1,21 @@
 # Version 2.0.3
 
-Chore:
+Feat:
 
 - Add support for python 3.11
 - Add support for Mac ARM64 builds
-- Updated CI/CD to use python 3.11 for Bazel to work correctly.
+
+Chore:
+
+- Use Bazel 7.3.1 with `bzlmod`
+- Updated all Bazel dependencies for all languages.
+- Updated the fork of private_join_and_compute (PCJ) to use Bazel 7+
+  with`bzlmod` and updated all dependencies.
+- Refactored CI/CD scripts to remove explicit python version in CI/CD as Bazel
+  can pick up the local python within the runner. Tests on Python are hermetic
+  so the local version is only important when publishing wheels.
+- Minor fixes that the cpp linter was reporting and a fix in the python cpp
+  bindings to use absl::MakeSpan instead of passing a std::vector.
 
 # Version 2.0.2
 

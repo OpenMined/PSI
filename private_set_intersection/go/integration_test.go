@@ -2,15 +2,16 @@ package integration_test
 
 import (
 	"bytes"
+	"math"
+	"regexp"
+	"testing"
+
 	psi_client "github.com/openmined/psi/client"
 	psi_ds "github.com/openmined/psi/datastructure"
 	psi_proto "github.com/openmined/psi/pb"
 	psi_server "github.com/openmined/psi/server"
 	psi_version "github.com/openmined/psi/version"
 	"google.golang.org/protobuf/proto"
-	"math"
-	"regexp"
-	"testing"
 )
 
 var clientKey = []byte{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31}
@@ -189,12 +190,12 @@ func TestIntegrationIntersection(t *testing.T) {
 				t.Errorf("failed to compute intersection size %v", err)
 			}
 
-			if int(intersectionCnt) < (numClientInputs / 2) {
-				t.Errorf("Invalid intersection. expected lower bound %v. got %v", (numClientInputs / 2), intersectionCnt)
+			if intersectionCnt < int64(numClientInputs/2) {
+				t.Errorf("Invalid intersection. expected lower bound %v. got %v", int64(numClientInputs/2), intersectionCnt)
 			}
 
-			if float64(intersectionCnt) > math.Ceil(float64(numClientInputs/2)*float64(1.1)) {
-				t.Errorf("Invalid intersection. expected upper bound %v. got %v", math.Ceil(float64(numClientInputs/2)*float64(1.1)), intersectionCnt)
+			if float64(intersectionCnt) > math.Ceil(float64(numClientInputs)/2.0*1.1) {
+				t.Errorf("Invalid intersection. expected upper bound %v. got %v", math.Ceil(float64(numClientInputs)/2.0*1.1), intersectionCnt)
 			}
 
 		}
