@@ -23,7 +23,7 @@
     "rootDir": "./private_set_intersection/javascript/src",
     "sourceMap": true,
     "strict": true,
-    "target": "ES2019",
+    "target": "ES2020",
     "typeRoots": [
       "./private_set_intersection/javascript/custom_types",
       "./node_modules/@types"

@@ -6,30 +6,31 @@ module(
 http_archive = use_repo_rule("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 
 # Core Bazel dependencies from Bazel Central Repository
+bazel_dep(name = "abseil-cpp", version = "20240722.0")
+bazel_dep(name = "apple_support", version = "1.17.0")
+bazel_dep(name = "bazel_skylib", version = "1.7.1")
+bazel_dep(name = "boringssl", version = "0.20240913.0")
+bazel_dep(name = "gazelle", version = "0.39.0")
+bazel_dep(name = "glog", version = "0.7.1")
+bazel_dep(name = "google_benchmark", version = "1.8.5")
+bazel_dep(name = "googletest", version = "1.15.2")
+bazel_dep(name = "grpc", version = "1.66.0.bcr.2", repo_name = "com_github_grpc_grpc")  # aliased for PCJ
 bazel_dep(name = "platforms", version = "0.0.10")
+bazel_dep(name = "protobuf", version = "28.2")
+bazel_dep(name = "pybind11_bazel", version = "2.12.0")
+bazel_dep(name = "rules_apple", version = "3.9.2")
 bazel_dep(name = "rules_cc", version = "0.0.10")
+bazel_dep(name = "rules_go", version = "0.50.1")
+bazel_dep(name = "rules_java", version = "7.12.0")
+bazel_dep(name = "rules_pkg", version = "1.0.1")
 bazel_dep(name = "rules_proto", version = "6.0.2")
 bazel_dep(name = "rules_proto_grpc", version = "5.0.0")
 bazel_dep(name = "rules_proto_grpc_cpp", version = "5.0.0")
-bazel_dep(name = "rules_proto_grpc_python", version = "5.0.0")
 bazel_dep(name = "rules_proto_grpc_go", version = "5.0.0")
-bazel_dep(name = "rules_go", version = "0.50.1")
-bazel_dep(name = "gazelle", version = "0.39.0")
-bazel_dep(name = "rules_pkg", version = "1.0.1")
+bazel_dep(name = "rules_proto_grpc_python", version = "5.0.0")
 bazel_dep(name = "rules_python", version = "0.36.0")
-bazel_dep(name = "rules_rust", version = "0.51.0")
-bazel_dep(name = "bazel_skylib", version = "1.7.1")
-bazel_dep(name = "rules_apple", version = "3.9.2")
-bazel_dep(name = "apple_support", version = "1.17.0")
-bazel_dep(name = "abseil-cpp", version = "20240722.0")
-bazel_dep(name = "protobuf", version = "28.2")
-bazel_dep(name = "boringssl", version = "0.20240913.0")
-bazel_dep(name = "grpc", version = "1.66.0.bcr.2", repo_name = "com_github_grpc_grpc")  # aliased for PCJ
-bazel_dep(name = "googletest", version = "1.15.2")
-bazel_dep(name = "google_benchmark", version = "1.8.5")
-bazel_dep(name = "glog", version = "0.7.1")
 bazel_dep(name = "rules_python_gazelle_plugin", version = "0.36.0")
-bazel_dep(name = "pybind11_bazel", version = "2.12.0")
+bazel_dep(name = "rules_rust", version = "0.51.0")
 
 # Grpc
 grpc_deps = use_extension(
@@ -38,13 +39,6 @@ grpc_deps = use_extension(
 )
 grpc_deps.load_dependencies()
 use_repo(grpc_deps)
-
-http_archive(
-    name = "google_protobuf",
-    urls = ["https://github.com/protocolbuffers/protobuf/archive/refs/tags/v3.20.1.tar.gz"],
-    sha256 = "8b28fdd45bab62d15db232ec404248901842e5340299a57765e48abe8a80d930",
-    strip_prefix = "protobuf-3.20.1",
-)
 
 http_archive(
     name = "private_join_and_compute",
@@ -169,15 +163,3 @@ use_repo(
     go_deps,
     "org_golang_google_protobuf",
 )
-
-# NodeJS repository setup
-# npm_install = use_repo_rule("@build_bazel_rules_nodejs//:index.bzl", "npm_install")
-# npm_install(
-#     name = "npm",
-#     package_json = "//:package.json",
-#     package_lock_json = "//:package-lock.json",
-# )
-
-# EMSDK setup
-# emscripten_deps = use_repo_rule("@emsdk//:emscripten_deps.bzl", "emscripten_deps")
-# emscripten_deps()
