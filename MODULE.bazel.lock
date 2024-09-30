@@ -265,7 +265,7 @@
   "moduleExtensions": {
     "//private_set_intersection/python:extensions.bzl%python_abi": {
       "general": {
-        "bzlTransitiveDigest": "j+mf3P6yDvCJrRY+9TmAnr6vv07JLa0YddgX9qYWTcs=",
+        "bzlTransitiveDigest": "/j1w4W5sUuN7E9JYl8j3f/50hEjbrIbg7MFqTI9CN3Y=",
         "usagesDigest": "cKJRlA8WsE6pvdthCKvWrIIFaMlbTSe2wkr6zwXG6uM=",
         "recordedFileInputs": {},
         "recordedDirentsInputs": {},
@@ -284,7 +284,7 @@
     },
     "//private_set_intersection/python:extensions.bzl%python_platform": {
       "general": {
-        "bzlTransitiveDigest": "j+mf3P6yDvCJrRY+9TmAnr6vv07JLa0YddgX9qYWTcs=",
+        "bzlTransitiveDigest": "/j1w4W5sUuN7E9JYl8j3f/50hEjbrIbg7MFqTI9CN3Y=",
         "usagesDigest": "0lp1Pcd1P0HowS3wGChzpVW1j1BKRf/AYHJSNX1h2rU=",
         "recordedFileInputs": {},
         "recordedDirentsInputs": {},
