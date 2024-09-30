@@ -225,7 +225,7 @@ TEST_P(Correctness, intersection) {
 
     // Test if size is approximately as expected (up to 10%).
     EXPECT_GE(intersection_size, num_client_inputs / 2);
-    EXPECT_LT((double)intersection_size,
+    EXPECT_LE((double)intersection_size,
               ceil((double(num_client_inputs) / 2.0) * 1.1));
   }
   free(server_setup);

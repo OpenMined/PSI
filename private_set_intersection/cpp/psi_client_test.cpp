@@ -224,7 +224,7 @@ TEST_F(PsiClientTest, TestCorrectnessIntersectionSize) {
 
   // Test if size is approximately as expected (up to 10%).
   EXPECT_GE(intersection_size, num_client_elements / 2);
-  EXPECT_LT((double)intersection_size,
+  EXPECT_LE((double)intersection_size,
             ceil(((double)num_client_elements / 2.0) * 1.1));
 }
 

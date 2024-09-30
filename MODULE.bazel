@@ -32,14 +32,7 @@ bazel_dep(name = "rules_python", version = "0.36.0")
 bazel_dep(name = "rules_python_gazelle_plugin", version = "0.36.0")
 bazel_dep(name = "rules_rust", version = "0.51.0")
 
-# Grpc
-grpc_deps = use_extension(
-    "//bazel:grpc_deps.bzl",
-    "grpc_extension",
-)
-grpc_deps.load_dependencies()
-use_repo(grpc_deps)
-
+## PCJ
 http_archive(
     name = "private_join_and_compute",
     sha256 = "9702d5e1e4deeb111e235952e1e831dc9d9f0127ed8a1a30112b235d11f3e937",

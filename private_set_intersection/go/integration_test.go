@@ -180,6 +180,7 @@ func TestIntegrationIntersection(t *testing.T) {
 			intersectionSet := generateSet(intersection)
 			for idx := 0; idx < numClientInputs; idx++ {
 				_, ok := intersectionSet[idx]
+				// Can fail due to false positives
 				if ok != (idx%2 == 0) {
 					t.Errorf("Invalid intersection for item %v %v", idx, ok)
 				}
@@ -194,7 +195,7 @@ func TestIntegrationIntersection(t *testing.T) {
 				t.Errorf("Invalid intersection. expected lower bound %v. got %v", int64(numClientInputs/2), intersectionCnt)
 			}
 
-			if float64(intersectionCnt) >= math.Ceil(float64(numClientInputs)/2.0*1.1) {
+			if float64(intersectionCnt) > math.Ceil(float64(numClientInputs)/2.0*1.1) {
 				t.Errorf("Invalid intersection. expected upper bound %v. got %v", math.Ceil(float64(numClientInputs)/2.0*1.1), intersectionCnt)
 			}
 

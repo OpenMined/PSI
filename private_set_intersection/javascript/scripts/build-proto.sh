@@ -19,5 +19,5 @@ PROTOC_BINARY="./bazel-bin/external/protobuf~/protoc"
     --plugin="protoc-gen-ts=${PROTOC_GEN_TS_PATH}" \
     --proto_path="${PROTO_DIR}" \
     --js_out="import_style=commonjs,binary:${OUT_DIR_JS}" \
-    --ts_out="service=grpc-web:${OUT_DIR_TS}" \
+    --ts_out="${OUT_DIR_TS}" \
     psi.proto

@@ -1,5 +1,3 @@
-load("//tools:common.bzl", "template_rule")
-
 #
 # Copyright 2020 the authors listed in CONTRIBUTORS.md
 #
@@ -15,6 +13,7 @@ load("//tools:common.bzl", "template_rule")
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+load("//tools:common.bzl", "template_rule")
 load("//tools:package.bzl", "VERSION_LABEL")
 
 package(default_visibility = ["//visibility:public"])
