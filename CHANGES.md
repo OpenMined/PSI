@@ -17,6 +17,11 @@ Chore:
 - Minor fixes that the cpp linter was reporting and a fix in the python cpp
   bindings to use absl::MakeSpan instead of passing a std::vector.
 
+Breaking:
+
+- The **python** package has been renamed to `openmined_psi` to comply with the
+  bazel toolchain naming conventions.
+
 # Version 2.0.2
 
 Chore:

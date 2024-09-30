@@ -174,7 +174,7 @@ py_package(
 # This rule builds the wheel, but we need to change the name of the .whl before
 # we publish to PyPI using a separate publish script outside of bazel. The
 # output that gets generated looks like the following:
-# openmined.psi-1.0.0-INTERPRETER-ABI-PLATFORM.whl
+# openmined_psi-1.0.0-INTERPRETER-ABI-PLATFORM.whl
 #
 # This rule also bundles protobuf, but it resides in an incorrect directy and
 # there doesn't seem to be a way to prevent it getting added to the wheel.
@@ -188,7 +188,7 @@ py_wheel(
         "Topic :: Security :: Cryptography",
     ],
     description_file = "DESCRIPTION.md",
-    distribution = "openmined.psi",
+    distribution = "openmined_psi",
     extra_distinfo_files = {
         "//:LICENSE": "LICENSE",
         "//private_set_intersection/python:README.md": "README",

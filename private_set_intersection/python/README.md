@@ -3,7 +3,15 @@
 Private Set Intersection protocol based on ECDH, Bloom Filters, and Golomb
 Compressed Sets.
 
-## Tests
+## Installation
+
+```bash
+pip install openmined_psi
+```
+
+## Developing
+
+### Tests
 
 ```bash
 bazel test --test_output=all //private_set_intersection/python:test_3_8
@@ -13,7 +21,7 @@ bazel test --test_output=all //private_set_intersection/python:test_3_11
 ...
 ```
 
-## Benchmarks
+### Benchmarks
 
 ```bash
 bazel run -c opt --test_output=all //private_set_intersection/python:benchmark_3_8
@@ -23,7 +31,7 @@ bazel run -c opt --test_output=all //private_set_intersection/python:benchmark_3
 ...
 ```
 
-## Updating dependencies
+### Updating dependencies
 
 Add any dependencies to `requirements.in`, then run:
 
@@ -35,7 +43,7 @@ bazel run //private_set_intersection/python/requirements:requirements_3_11.updat
 ...
 ```
 
-## Publishing
+### Publishing
 
 We first build the wheel
 

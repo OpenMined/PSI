@@ -48,11 +48,10 @@ def main():
     interpreter_version = tags.interpreter_version()
     abi_tag = interpreter_name + interpreter_version
 
-    # openmined.psi-1.0.0-INTERPRETER-ABI-PLATFORM-ARCH.whl
+    # openmined_psi-1.0.0-INTERPRETER-ABI-PLATFORM-ARCH.whl
     # INTERPRETER and ABI should be the same value
     outfile = re.sub(r"INTERPRETER", abi_tag, inputfile)
     outfile = re.sub(r"ABI", abi_tag, outfile)
-    outfile = re.sub(r"openmined_psi", "openmined.psi", outfile)
     system = platform.system()
 
     # We rename the wheel depending on the version of python and glibc
