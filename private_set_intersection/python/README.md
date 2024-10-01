@@ -45,10 +45,14 @@ bazel run //private_set_intersection/python/requirements:requirements_3_11.updat
 
 ### Publishing
 
-We first build the wheel
+Build the wheel
 
 ```bash
 bazel build -c opt //private_set_intersection/python:wheel
 ```
 
-Then, rename the wheel using the `rename.py` script, and finally publish using `twine`.
+Or build and publish in one go to test PyPi:
+
+```bash
+bazel run -c opt //private_set_intersection/python:wheel.publish  -- --repository testpypi --verbose --skip-existing
+```

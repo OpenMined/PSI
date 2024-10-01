@@ -125,6 +125,15 @@ jobs:
         python-version: ['3_8', '3_9', '3_10', '3_11']
     steps:
       - uses: actions/checkout@v4
+      # configuring python for bazel abi and platform repo rules
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Python deps
+        run: |
+          python -m pip install --upgrade pip
+          pip install --upgrade packaging
       - name: Run tests nix
         timeout-minutes: 30
         run: bazel test --test_output=all //private_set_intersection/python:test_${{ matrix.python-version }}

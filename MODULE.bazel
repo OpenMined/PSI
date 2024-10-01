@@ -70,14 +70,6 @@ use_repo(
     "python_versions",
 )
 
-register_toolchains(
-    "@python_3_8//:all",
-    "@python_3_9//:all",
-    "@python_3_10//:all",
-    "@python_3_11//:all",
-    "@python_3_12//:all",
-)
-
 pip = use_extension("@rules_python//python/extensions:pip.bzl", "pip")
 use_repo(pip, "psi_deps")
 pip.parse(
@@ -105,6 +97,12 @@ pip.parse(
     python_version = "3.12",
     requirements_lock = "//private_set_intersection/python/requirements:requirements_lock_3_12.txt",
 )
+
+python_abi = use_extension("//private_set_intersection/python:extensions.bzl", "python_abi")
+use_repo(python_abi, "python_abi")
+
+python_platform = use_extension("//private_set_intersection/python:extensions.bzl", "python_platform")
+use_repo(python_platform, "python_platform")
 
 ## Rust
 rust = use_extension("@rules_rust//rust:extensions.bzl", "rust")
