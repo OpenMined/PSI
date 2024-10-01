@@ -1,3 +1,10 @@
+# Version 2.0.4
+
+Chore:
+
+- No changes, but some published python wheels may have the wrong wheel
+  specifications due to a potential publishing bug in the previous release.
+
 # Version 2.0.3
 
 Feat:
