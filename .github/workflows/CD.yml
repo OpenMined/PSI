@@ -53,6 +53,10 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
+      - name: Python deps
+        run: |
+          python -m pip install --upgrade pip
+          pip install --upgrade packaging
       - name: Run tests nix
         timeout-minutes: 30
         run: bazel test --test_output=all //private_set_intersection/python:test_${{ matrix.python-version }}
@@ -117,7 +121,7 @@ jobs:
           TWINE_PASSWORD: ${{ secrets.OM_PSI_PYPI_TOKEN }}
         run: |
           python -m pip install --upgrade pip
-          pip install packaging
+          pip install --upgrade packaging
           bazel run -c opt //private_set_intersection/python:wheel.publish  -- --verbose --skip-existing
 
   Publish-python:
@@ -140,5 +144,5 @@ jobs:
           TWINE_PASSWORD: ${{ secrets.OM_PSI_PYPI_TOKEN }}
         run: |
           python -m pip install --upgrade pip
-          pip install packaging
+          pip install --upgrade packaging
           bazel run -c opt //private_set_intersection/python:wheel.publish  -- --verbose --skip-existing
