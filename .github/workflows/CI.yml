@@ -122,7 +122,7 @@ jobs:
         os:
           [ubuntu-24.04, macos-14]
           # Bazel uses hermetic python, these are just placeholders
-        python-version: ['3_8', '3_9', '3_10', '3_11']
+        python-version: ['3_8', '3_9', '3_10', '3_11', '3_12']
     steps:
       - uses: actions/checkout@v4
       # configuring python for bazel abi and platform repo rules
