@@ -1,3 +1,9 @@
+# Version 2.0.5
+
+Feat:
+
+- Add support for python 3.12
+
 # Version 2.0.4
 
 Chore:

@@ -1,6 +1,6 @@
 module(
     name = "org_openmined_psi",
-    version = "2.0.4",
+    version = "2.0.5",
 )
 
 http_archive = use_repo_rule("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
@@ -29,15 +29,14 @@ bazel_dep(name = "rules_proto_grpc_cpp", version = "5.0.0")
 bazel_dep(name = "rules_proto_grpc_go", version = "5.0.0")
 bazel_dep(name = "rules_proto_grpc_python", version = "5.0.0")
 bazel_dep(name = "rules_python", version = "0.36.0")
-bazel_dep(name = "rules_python_gazelle_plugin", version = "0.36.0")
 bazel_dep(name = "rules_rust", version = "0.51.0")
 
 ## PCJ
 http_archive(
     name = "private_join_and_compute",
-    sha256 = "9702d5e1e4deeb111e235952e1e831dc9d9f0127ed8a1a30112b235d11f3e937",
-    strip_prefix = "private-join-and-compute-2f678958e1b5a1a86adf96830c7c21d9cb2075f3",
-    url = "https://github.com/s0l0ist/private-join-and-compute/archive/2f678958e1b5a1a86adf96830c7c21d9cb2075f3.zip",
+    sha256 = "4a2916c42af1d32d3a94799703a81b11e05dbf1d4e0021e25f181d5921f667bf",
+    strip_prefix = "private-join-and-compute-1225a27f13fb39359242db3da3c090b81d24cced",
+    url = "https://github.com/s0l0ist/private-join-and-compute/archive/1225a27f13fb39359242db3da3c090b81d24cced.zip",
 )
 
 ## Python
@@ -108,7 +107,7 @@ use_repo(python_platform, "python_platform")
 rust = use_extension("@rules_rust//rust:extensions.bzl", "rust")
 rust.toolchain(
     edition = "2021",
-    versions = ["1.80.1"],
+    versions = ["1.81.0"],
 )
 use_repo(rust, "rust_toolchains")
 
