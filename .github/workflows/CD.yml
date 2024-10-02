@@ -44,22 +44,26 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-24.04, macos-14]
-        # Bazel uses hermetic python, these are just placeholders
-        python-version: ['3_8', '3_9', '3_10', '3_11']
+        python-version:
+          - { X_Y: '3_8', X_DOT_Y: '3.8' }
+          - { X_Y: '3_9', X_DOT_Y: '3.9' }
+          - { X_Y: '3_10', X_DOT_Y: '3.10' }
+          - { X_Y: '3_11', X_DOT_Y: '3.11' }
+          - { X_Y: '3_12', X_DOT_Y: '3.12' }
     steps:
       - uses: actions/checkout@v4
       # configuring python for bazel abi and platform repo rules
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: '3.12'
       - name: Python deps
         run: |
           python -m pip install --upgrade pip
           pip install --upgrade packaging
       - name: Run tests nix
         timeout-minutes: 30
-        run: bazel test --test_output=all //private_set_intersection/python:test_${{ matrix.python-version }}
+        run: bazel test --test_output=all //private_set_intersection/python:test_${{ matrix.python-version.X_Y }} --@rules_python//python/config_settings:python_version=${{ matrix.python-version.X_DOT_Y }}
 
   Go:
     runs-on: ${{ matrix.os }}
@@ -122,7 +126,7 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install --upgrade packaging
-          bazel run -c opt //private_set_intersection/python:wheel.publish  -- --verbose --skip-existing
+          bazel run -c opt //private_set_intersection/python:wheel.publish --@rules_python//python/config_settings:python_version=${{ matrix.python-version }} -- --verbose --skip-existing
 
   Publish-python:
     needs: [Core, JS, Go, Python, Rust]
@@ -145,4 +149,4 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install --upgrade packaging
-          bazel run -c opt //private_set_intersection/python:wheel.publish  -- --verbose --skip-existing
+          bazel run -c opt //private_set_intersection/python:wheel.publish --@rules_python//python/config_settings:python_version=${{ matrix.python-version }} -- --verbose --skip-existing
