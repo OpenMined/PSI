@@ -23,7 +23,6 @@ bazel_dep(name = "rules_cc", version = "0.0.10")
 bazel_dep(name = "rules_go", version = "0.50.1")
 bazel_dep(name = "rules_java", version = "7.12.0")
 bazel_dep(name = "rules_pkg", version = "1.0.1")
-bazel_dep(name = "rules_proto", version = "6.0.2")
 bazel_dep(name = "rules_proto_grpc", version = "5.0.0")
 bazel_dep(name = "rules_proto_grpc_cpp", version = "5.0.0")
 bazel_dep(name = "rules_proto_grpc_go", version = "5.0.0")
@@ -34,9 +33,9 @@ bazel_dep(name = "rules_rust", version = "0.51.0")
 ## PCJ
 http_archive(
     name = "private_join_and_compute",
-    sha256 = "4a2916c42af1d32d3a94799703a81b11e05dbf1d4e0021e25f181d5921f667bf",
-    strip_prefix = "private-join-and-compute-1225a27f13fb39359242db3da3c090b81d24cced",
-    url = "https://github.com/s0l0ist/private-join-and-compute/archive/1225a27f13fb39359242db3da3c090b81d24cced.zip",
+    sha256 = "a53b9db35ad42aaf8a778a859915e5cca08f33800c314f04b3fcb0f2c5e148b3",
+    strip_prefix = "private-join-and-compute-e81563e0e3caa0f6178e8668be8a4434d2cef352",
+    url = "https://github.com/s0l0ist/private-join-and-compute/archive/e81563e0e3caa0f6178e8668be8a4434d2cef352.zip",
 )
 
 ## Python

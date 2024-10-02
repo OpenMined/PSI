@@ -1,5 +1,4 @@
 pytest
 pytest-benchmark
-twine
-packaging
-protobuf
+# This is the latest version specified by rules_proto_grpc_python
+protobuf==5.27.2

@@ -204,7 +204,8 @@ py_wheel(
     }),
     python_requires = ">=3.8",
     python_tag = python_abi(),
-    requires = ["protobuf"],
+    # NOTE: Keep this in sync with `requirements.in`
+    requires = ["protobuf==5.27.2"],
     twine = "@publish_deps//twine",
     version = VERSION_LABEL,
     deps = [
