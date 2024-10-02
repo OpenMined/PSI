@@ -86,8 +86,7 @@ void bind(pybind11::module& m) {
             if (!client.ok())
               throw std::runtime_error(std::string(client.status().message()));
             return std::move(*client);
-          },
-          py::call_guard<py::gil_scoped_release>())
+          })
       .def_static(
           "CreateFromKey",
           [](const std::string& key_bytes, bool reveal_intersection) {
@@ -96,39 +95,29 @@ void bind(pybind11::module& m) {
             if (!client.ok())
               throw std::runtime_error(std::string(client.status().message()));
             return std::move(*client);
-          },
-          py::call_guard<py::gil_scoped_release>())
-      .def(
-          "CreateRequest",
-          [](const psi::PsiClient& obj,
-             const std::vector<std::string>& inputs) {
-            return throwOrReturn(obj.CreateRequest(absl::MakeSpan(inputs)));
-          },
-          py::call_guard<py::gil_scoped_release>())
-      .def(
-          "GetIntersection",
-          [](const psi::PsiClient& obj,
-             const psi_proto::ServerSetup& server_setup,
-             const psi_proto::Response& server_response) {
-            return throwOrReturn(
-                obj.GetIntersection(server_setup, server_response));
-          },
-          py::call_guard<py::gil_scoped_release>())
-      .def(
-          "GetIntersectionSize",
-          [](const psi::PsiClient& obj,
-             const psi_proto::ServerSetup& server_setup,
-             const psi_proto::Response& server_response) {
-            return throwOrReturn(
-                obj.GetIntersectionSize(server_setup, server_response));
-          },
-          py::call_guard<py::gil_scoped_release>())
-      .def(
-          "GetPrivateKeyBytes",
-          [](const psi::PsiClient& obj) {
-            return py::bytes(obj.GetPrivateKeyBytes());
-          },
-          py::call_guard<py::gil_scoped_release>());
+          })
+      .def("CreateRequest",
+           [](const psi::PsiClient& obj,
+              const std::vector<std::string>& inputs) {
+             return throwOrReturn(obj.CreateRequest(absl::MakeSpan(inputs)));
+           })
+      .def("GetIntersection",
+           [](const psi::PsiClient& obj,
+              const psi_proto::ServerSetup& server_setup,
+              const psi_proto::Response& server_response) {
+             return throwOrReturn(
+                 obj.GetIntersection(server_setup, server_response));
+           })
+      .def("GetIntersectionSize",
+           [](const psi::PsiClient& obj,
+              const psi_proto::ServerSetup& server_setup,
+              const psi_proto::Response& server_response) {
+             return throwOrReturn(
+                 obj.GetIntersectionSize(server_setup, server_response));
+           })
+      .def("GetPrivateKeyBytes", [](const psi::PsiClient& obj) {
+        return py::bytes(obj.GetPrivateKeyBytes());
+      });
 
   py::class_<psi::PsiServer>(m, "cpp_server")
       .def_static(
@@ -138,8 +127,7 @@ void bind(pybind11::module& m) {
             if (!server.ok())
               throw std::runtime_error(std::string(server.status().message()));
             return std::move(*server);
-          },
-          py::call_guard<py::gil_scoped_release>())
+          })
       .def_static(
           "CreateFromKey",
           [](const std::string& key_bytes, bool reveal_intersection) {
@@ -148,29 +136,21 @@ void bind(pybind11::module& m) {
             if (!server.ok())
               throw std::runtime_error(std::string(server.status().message()));
             return std::move(*server);
-          },
-          py::call_guard<py::gil_scoped_release>())
-      .def(
-          "CreateSetupMessage",
-          [](const psi::PsiServer& obj, double fpr, int64_t num_client_inputs,
-             const std::vector<std::string>& inputs, psi::DataStructure ds) {
-            return throwOrReturn(obj.CreateSetupMessage(
-                fpr, num_client_inputs, absl::MakeSpan(inputs), ds));
-          },
-          py::call_guard<py::gil_scoped_release>())
-      .def(
-          "ProcessRequest",
-          [](const psi::PsiServer& obj,
-             const psi_proto::Request& client_request) {
-            return throwOrReturn(obj.ProcessRequest(client_request));
-          },
-          py::call_guard<py::gil_scoped_release>())
-      .def(
-          "GetPrivateKeyBytes",
-          [](const psi::PsiServer& obj) {
-            return py::bytes(obj.GetPrivateKeyBytes());
-          },
-          py::call_guard<py::gil_scoped_release>());
+          })
+      .def("CreateSetupMessage",
+           [](const psi::PsiServer& obj, double fpr, int64_t num_client_inputs,
+              const std::vector<std::string>& inputs, psi::DataStructure ds) {
+             return throwOrReturn(obj.CreateSetupMessage(
+                 fpr, num_client_inputs, absl::MakeSpan(inputs), ds));
+           })
+      .def("ProcessRequest",
+           [](const psi::PsiServer& obj,
+              const psi_proto::Request& client_request) {
+             return throwOrReturn(obj.ProcessRequest(client_request));
+           })
+      .def("GetPrivateKeyBytes", [](const psi::PsiServer& obj) {
+        return py::bytes(obj.GetPrivateKeyBytes());
+      });
 }
 
 PYBIND11_MODULE(openmined_psi, m) { bind(m); }
