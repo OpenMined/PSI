@@ -124,12 +124,7 @@ jobs:
         os:
           [ubuntu-24.04, macos-14]
           # Bazel uses hermetic python, these are just placeholders
-        python-version:
-          - { X_Y: '3_8', X_DOT_Y: '3.8' }
-          - { X_Y: '3_9', X_DOT_Y: '3.9' }
-          - { X_Y: '3_10', X_DOT_Y: '3.10' }
-          - { X_Y: '3_11', X_DOT_Y: '3.11' }
-          - { X_Y: '3_12', X_DOT_Y: '3.12' }
+        python-version: ['3_8', '3_9', '3_10', '3_11', '3_12']
     steps:
       - uses: actions/checkout@v4
       # configuring python for bazel abi and platform repo rules
@@ -143,7 +138,7 @@ jobs:
           pip install --upgrade packaging
       - name: Run tests nix
         timeout-minutes: 30
-        run: bazel test --test_output=all //private_set_intersection/python:test_${{ matrix.python-version.X_Y }} --@rules_python//python/config_settings:python_version=${{ matrix.python-version.X_DOT_Y }}
+        run: bazel test --test_output=all //private_set_intersection/python:test_${{ matrix.python-version }}
 
   Go:
     needs: changes
