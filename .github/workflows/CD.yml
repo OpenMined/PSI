@@ -122,7 +122,7 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install --upgrade packaging
-          bazel run -c opt //private_set_intersection/python:wheel.publish --@rules_python//python/config_settings:python_version=${{ matrix.python-version }} -- --verbose --skip-existing
+          bazel run -c opt //private_set_intersection/python:wheel.publish -- --verbose --skip-existing
 
   Publish-python:
     needs: [Core, JS, Go, Python, Rust]
