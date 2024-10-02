@@ -2,7 +2,24 @@
 
 Feat:
 
-- Add support for python 3.12
+- Add support for Python 3.12
+
+Fix:
+
+- There was a bug in the pybind11 bindings involving incorrect usage for
+  releasing the GIL lock which led to a segfault when using Python 3.12.
+  Previous versions remain unaffected.
+- Pin the python `protobuf` version to match
+  [`rules_proto_grpc_python`](https://github.com/rules-proto-grpc/rules_proto_grpc/blob/master/modules/python/requirements.in#L3)
+  to remove runtime warnings.
+
+Chore:
+
+- Removed `macos-12` from the `CD` GHA as it was building with an incorrect
+  wheel name for the given OS. We're only building/publishing wheels for
+  `macos-14`.
+- Removed unused pip deps from `requirements.in` and updated lock files
+  accordingly.
 
 # Version 2.0.4
 
