@@ -108,7 +108,7 @@ jobs:
       matrix:
         # Handling boundary conditions of: https://github.com/pypa/manylinux
         python-version: ['3.8.0', '3.8.4', '3.9.0']
-        os: [ubuntu-20.04, macos-14]
+        os: [ubuntu-20.04]
     steps:
       - uses: actions/checkout@v4
       - name: Set up Python
