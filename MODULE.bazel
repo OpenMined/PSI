@@ -1,6 +1,6 @@
 module(
     name = "org_openmined_psi",
-    version = "2.0.5",
+    version = "2.0.6",
 )
 
 http_archive = use_repo_rule("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
@@ -55,6 +55,9 @@ python.toolchain(
 python.toolchain(
     python_version = "3.12",
 )
+python.toolchain(
+    python_version = "3.13",
+)
 
 use_repo(
     python,
@@ -64,6 +67,7 @@ use_repo(
     "python_3_10",
     "python_3_11",
     "python_3_12",
+    "python_3_13",
     # Handy helper for all
     "python_versions",
 )
@@ -94,6 +98,11 @@ pip.parse(
     hub_name = "psi_deps",
     python_version = "3.12",
     requirements_lock = "//private_set_intersection/python/requirements:requirements_lock_3_12.txt",
+)
+pip.parse(
+    hub_name = "psi_deps",
+    python_version = "3.13",
+    requirements_lock = "//private_set_intersection/python/requirements:requirements_lock_3_13.txt",
 )
 
 python_abi = use_extension("//private_set_intersection/python:extensions.bzl", "python_abi")
