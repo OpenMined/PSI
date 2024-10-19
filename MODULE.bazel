@@ -27,7 +27,7 @@ bazel_dep(name = "rules_proto_grpc", version = "5.0.0")
 bazel_dep(name = "rules_proto_grpc_cpp", version = "5.0.0")
 bazel_dep(name = "rules_proto_grpc_go", version = "5.0.0")
 bazel_dep(name = "rules_proto_grpc_python", version = "5.0.0")
-bazel_dep(name = "rules_python", version = "0.36.0")
+bazel_dep(name = "rules_python", version = "0.37.0")
 bazel_dep(name = "rules_rust", version = "0.51.0")
 
 ## PCJ
