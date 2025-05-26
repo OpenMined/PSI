@@ -20,7 +20,7 @@ struct PsiServerBuffer {
     len: size_t,
 }
 
-extern "C" {
+unsafe extern "C" {
     fn psi_server_create_with_new_key(
         reveal_intersection: bool,
         ctx: *mut PsiServerContext,
@@ -321,10 +321,9 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_error() {
+    fn test_create_client_from_key_error() {
         for reveal in [false, true] {
             assert!(PsiServer::create_from_key(&vec![0u8; 32], reveal).is_err());
         }
     }
 }
-

@@ -11,7 +11,7 @@ pub mod server;
 
 use std::ffi::CStr;
 
-extern "C" {
+unsafe extern "C" {
     fn psi_version() -> *const libc::c_char;
 }
 

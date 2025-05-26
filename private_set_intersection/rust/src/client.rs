@@ -21,7 +21,7 @@ struct PsiClientBuffer {
     len: size_t,
 }
 
-extern "C" {
+unsafe extern "C" {
     fn psi_client_create_with_new_key(
         reveal_intersection: bool,
         ctx: *mut PsiClientContext,
@@ -394,7 +394,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_error() {
+    fn test_create_client_from_key() {
         for reveal in [false, true] {
             assert!(PsiClient::create_from_key(&vec![0u8; 32], reveal).is_err());
         }
