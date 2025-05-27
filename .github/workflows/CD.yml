@@ -88,12 +88,9 @@ jobs:
       matrix:
         os: [ubuntu-24.04, macos-14]
     steps:
-      - name: Install toolchains
-        uses: actions-rs/toolchain@v1
-        with:
-          toolchain: stable
-          default: true
       - uses: actions/checkout@v4
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
       - name: Run tests nix
         timeout-minutes: 30
         run: .github/workflows/scripts/run_tests_rust.sh
