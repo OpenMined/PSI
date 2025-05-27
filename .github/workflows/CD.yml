@@ -107,7 +107,7 @@ jobs:
     strategy:
       matrix:
         # Handling boundary conditions of: https://github.com/pypa/manylinux
-        python-version: ['3.8.0', '3.8.4', '3.9.0']
+        python-version: ['3.9.0']
         os: [ubuntu-20.04]
     steps:
       - uses: actions/checkout@v4
@@ -130,7 +130,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        python-version: ['3.8', '3.9', '3.10', '3.11', '3.12', '3.13']
+        python-version: ['3.9', '3.10', '3.11', '3.12', '3.13']
         os: [ubuntu-24.04, ubuntu-22.04, ubuntu-20.04, macos-14]
     steps:
       - uses: actions/checkout@v4
