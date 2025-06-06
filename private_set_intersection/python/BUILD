@@ -1,8 +1,7 @@
 load("@psi_deps//:requirements.bzl", "requirement")
 load("@pybind11_bazel//:build_defs.bzl", "pybind_extension")
-
-# load("@python_abi//:abi.bzl", "python_abi")
-# load("@python_platform//:platform.bzl", "python_platform")
+load("@python_abi//:abi.bzl", "python_abi")
+load("@python_platform//:platform.bzl", "python_platform")
 load("@python_versions//3.10:defs.bzl", py_binary_3_10 = "py_binary", py_test_3_10 = "py_test")
 load("@python_versions//3.11:defs.bzl", py_binary_3_11 = "py_binary", py_test_3_11 = "py_test")
 load("@python_versions//3.12:defs.bzl", py_binary_3_12 = "py_binary", py_test_3_12 = "py_test")
@@ -181,7 +180,7 @@ py_package(
 # openmined_psi-1.0.0-INTERPRETER-ABI-PLATFORM.whl
 py_wheel(
     name = "wheel",
-    # abi = python_abi(),
+    abi = python_abi(),
     author = "OpenMined",
     classifiers = [
         "Programming Language :: Python :: 3",
@@ -201,11 +200,11 @@ py_wheel(
         "@bazel_tools//src/conditions:windows_arm64": "win_arm64",
         "@bazel_tools//src/conditions:darwin_x86_64": "macosx_14_0_x86_64",
         "@bazel_tools//src/conditions:darwin_arm64": "macosx_14_0_arm64",
-        # "@bazel_tools//src/conditions:linux_x86_64": python_platform() + "_x86_64",
-        # "@bazel_tools//src/conditions:linux_aarch64": python_platform() + "_aarch64",
+        "@bazel_tools//src/conditions:linux_x86_64": python_platform() + "_x86_64",
+        "@bazel_tools//src/conditions:linux_aarch64": python_platform() + "_aarch64",
     }),
     python_requires = ">=3.9",
-    # python_tag = python_abi(),
+    python_tag = python_abi(),
     # NOTE: Keep this in sync with `requirements.in`
     requires = ["protobuf==6.30.2"],
     twine = "@publish_deps//twine",

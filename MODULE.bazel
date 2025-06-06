@@ -44,12 +44,12 @@ emscripten_deps = use_extension(
 )
 emscripten_deps.config(version = emsdk_version)
 
-emscripten_cache = use_extension(
-    "@emsdk//:emscripten_cache.bzl",
-    "emscripten_cache",
-)
-emscripten_cache.configuration(flags = ["--lto"])
-emscripten_cache.targets()
+# emscripten_cache = use_extension(
+#     "@emsdk//:emscripten_cache.bzl",
+#     "emscripten_cache",
+# )
+# emscripten_cache.configuration(flags = ["--lto"])
+# emscripten_cache.targets()
 
 ## PCJ
 http_archive(
@@ -117,11 +117,11 @@ pip.parse(
 )
 use_repo(pip, "psi_deps")
 
-# python_abi = use_extension("//private_set_intersection/python:extensions.bzl", "python_abi")
-# use_repo(python_abi, "python_abi")
+python_abi = use_extension("//private_set_intersection/python:extensions.bzl", "python_abi")
+use_repo(python_abi, "python_abi")
 
-# python_platform = use_extension("//private_set_intersection/python:extensions.bzl", "python_platform")
-# use_repo(python_platform, "python_platform")
+python_platform = use_extension("//private_set_intersection/python:extensions.bzl", "python_platform")
+use_repo(python_platform, "python_platform")
 
 ## Rust
 rust = use_extension("@rules_rust//rust:extensions.bzl", "rust")
