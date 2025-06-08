@@ -112,6 +112,11 @@ jobs:
         os: [ubuntu-24.04, macos-14]
     steps:
       - uses: actions/checkout@v4
+        # configuring python for bazel + emscripten cache
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
       - uses: bazel-contrib/setup-bazel@0.15.0
         with:
           bazelisk-cache: true
