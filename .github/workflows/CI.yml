@@ -112,16 +112,12 @@ jobs:
         os: [ubuntu-24.04, macos-14]
     steps:
       - uses: actions/checkout@v4
-        # configuring python for bazel + emscripten cache
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.13'
       - uses: bazel-contrib/setup-bazel@0.15.0
         with:
-          bazelisk-cache: true
+          bazelisk-version: '1.26'
+          bazelisk-cache: false
           disk-cache: js-a-${{ github.workflow }}
-          repository-cache: true
+          repository-cache: false
       - name: Run tests nix
         timeout-minutes: 60
         run: .github/workflows/scripts/run_tests_js.sh
