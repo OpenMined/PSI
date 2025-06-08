@@ -115,12 +115,14 @@ jobs:
       - uses: bazel-contrib/setup-bazel@0.15.0
         with:
           bazelisk-version: '1.26'
-          bazelisk-cache: false
+          bazelisk-cache: true
           disk-cache: js-a-${{ github.workflow }}
-          repository-cache: false
+          repository-cache: true
       - name: Run tests nix
         timeout-minutes: 60
         run: .github/workflows/scripts/run_tests_js.sh
+        env:
+          EMCC_FROZEN_CACHE: '0'
 
   # Python:
   #   needs: changes
