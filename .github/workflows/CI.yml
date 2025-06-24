@@ -121,8 +121,6 @@ jobs:
       - name: Run tests nix
         timeout-minutes: 60
         run: .github/workflows/scripts/run_tests_js.sh
-        env:
-          EM_FROZEN_CACHE: 0
 
   # Python:
   #   needs: changes
