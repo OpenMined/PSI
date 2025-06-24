@@ -24,3 +24,6 @@ __pycache__/
 
 # C extensions
 *.so
+
+# MacOS
+.DS_Store

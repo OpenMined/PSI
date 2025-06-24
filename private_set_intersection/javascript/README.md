@@ -283,10 +283,10 @@ npm run compile
 npm run build:benchmark
 ```
 
-Finally, run the benchmark for WebAssembly or pure JS
+Finally, run the benchmark for WebAssembly
 
 ```bash
-npm run benchmark:wasm
+npm run benchmark
 ```
 
 ### Publishing

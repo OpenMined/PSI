@@ -1,34 +1,70 @@
 module(
     name = "org_openmined_psi",
-    version = "2.0.5",
+    version = "2.0.6",
 )
 
 http_archive = use_repo_rule("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 
-# Core Bazel dependencies from Bazel Central Repository
-bazel_dep(name = "abseil-cpp", version = "20240722.0")
-bazel_dep(name = "apple_support", version = "1.17.0")
+bazel_dep(name = "abseil-cpp", version = "20250512.0")
+bazel_dep(name = "apple_support", version = "1.22.0")
 bazel_dep(name = "bazel_skylib", version = "1.7.1")
-bazel_dep(name = "boringssl", version = "0.20240913.0")
-bazel_dep(name = "gazelle", version = "0.39.0")
+bazel_dep(name = "boringssl", version = "0.20250514.0")
+bazel_dep(name = "gazelle", version = "0.43.0")
 bazel_dep(name = "glog", version = "0.7.1")
-bazel_dep(name = "google_benchmark", version = "1.8.5")
-bazel_dep(name = "googletest", version = "1.15.2")
-bazel_dep(name = "grpc", version = "1.66.0.bcr.2", repo_name = "com_github_grpc_grpc")  # aliased for PCJ
-bazel_dep(name = "platforms", version = "0.0.10")
-bazel_dep(name = "protobuf", version = "28.2")
-bazel_dep(name = "pybind11_bazel", version = "2.12.0")
-bazel_dep(name = "rules_apple", version = "3.9.2")
-bazel_dep(name = "rules_cc", version = "0.0.10")
-bazel_dep(name = "rules_go", version = "0.50.1")
-bazel_dep(name = "rules_java", version = "7.12.0")
-bazel_dep(name = "rules_pkg", version = "1.0.1")
-bazel_dep(name = "rules_proto_grpc", version = "5.0.0")
-bazel_dep(name = "rules_proto_grpc_cpp", version = "5.0.0")
-bazel_dep(name = "rules_proto_grpc_go", version = "5.0.0")
-bazel_dep(name = "rules_proto_grpc_python", version = "5.0.0")
-bazel_dep(name = "rules_python", version = "0.36.0")
-bazel_dep(name = "rules_rust", version = "0.51.0")
+bazel_dep(name = "google_benchmark", version = "1.9.2")
+bazel_dep(name = "googletest", version = "1.17.0")
+bazel_dep(name = "grpc", version = "1.72.0", repo_name = "com_github_grpc_grpc")  # aliased for PCJ
+bazel_dep(name = "platforms", version = "0.0.11")
+bazel_dep(name = "protobuf", version = "30.2")  # NOTE: keep insync with requirements.in and rules_proto_grpc_python's version
+bazel_dep(name = "pybind11_bazel", version = "2.13.6")
+bazel_dep(name = "rules_apple", version = "3.22.0")
+bazel_dep(name = "rules_cc", version = "0.1.1")
+bazel_dep(name = "rules_go", version = "0.54.1")
+bazel_dep(name = "rules_java", version = "8.12.0")
+bazel_dep(name = "rules_pkg", version = "1.1.0")
+bazel_dep(name = "rules_proto_grpc", version = "5.1.0")
+bazel_dep(name = "rules_proto_grpc_cpp", version = "5.1.0")
+bazel_dep(name = "rules_proto_grpc_go", version = "5.1.0")
+bazel_dep(name = "rules_proto_grpc_python", version = "5.1.0")
+bazel_dep(name = "rules_python", version = "1.4.1")
+bazel_dep(name = "rules_rust", version = "0.53.0")
+
+## EMSDK
+emsdk_version = "4.0.10"
+bazel_dep(name = "emsdk", version = emsdk_version)
+git_override(
+    module_name = "emsdk",
+    remote = "https://github.com/emscripten-core/emsdk.git",
+    strip_prefix = "bazel",
+    tag = emsdk_version,
+)
+emscripten_deps = use_extension(
+    "@emsdk//:emscripten_deps.bzl",
+    "emscripten_deps",
+)
+emscripten_deps.config(version = emsdk_version)
+
+emscripten_cache = use_extension(
+    "@emsdk//:emscripten_cache.bzl",
+    "emscripten_cache",
+)
+emscripten_cache.configuration(flags = ["--lto"])
+emscripten_cache.targets(targets = [
+    "libGL-getprocaddr",
+    "libal",
+    "libc",
+    "libc++-noexcept",
+    "libc++abi-noexcept",
+    "libcompiler_rt",
+    "libembind-rtti",
+    "libemmalloc",
+    "libhtml5",
+    "libnoexit",
+    "libprintf_long_double",
+    "libsockets",
+    "libstubs",
+    "crtbegin",
+])
 
 ## PCJ
 http_archive(
@@ -41,9 +77,6 @@ http_archive(
 ## Python
 python = use_extension("@rules_python//python/extensions:python.bzl", "python")
 python.toolchain(
-    python_version = "3.8",
-)
-python.toolchain(
     python_version = "3.9",
 )
 python.toolchain(
@@ -55,26 +88,23 @@ python.toolchain(
 python.toolchain(
     python_version = "3.12",
 )
+python.toolchain(
+    python_version = "3.13",
+)
 
 use_repo(
     python,
     # register toolchains
-    "python_3_8",
     "python_3_9",
     "python_3_10",
     "python_3_11",
     "python_3_12",
+    "python_3_13",
     # Handy helper for all
     "python_versions",
 )
 
 pip = use_extension("@rules_python//python/extensions:pip.bzl", "pip")
-use_repo(pip, "psi_deps")
-pip.parse(
-    hub_name = "psi_deps",
-    python_version = "3.8",
-    requirements_lock = "//private_set_intersection/python/requirements:requirements_lock_3_8.txt",
-)
 pip.parse(
     hub_name = "psi_deps",
     python_version = "3.9",
@@ -95,6 +125,12 @@ pip.parse(
     python_version = "3.12",
     requirements_lock = "//private_set_intersection/python/requirements:requirements_lock_3_12.txt",
 )
+pip.parse(
+    hub_name = "psi_deps",
+    python_version = "3.13",
+    requirements_lock = "//private_set_intersection/python/requirements:requirements_lock_3_13.txt",
+)
+use_repo(pip, "psi_deps")
 
 python_abi = use_extension("//private_set_intersection/python:extensions.bzl", "python_abi")
 use_repo(python_abi, "python_abi")
@@ -105,8 +141,8 @@ use_repo(python_platform, "python_platform")
 ## Rust
 rust = use_extension("@rules_rust//rust:extensions.bzl", "rust")
 rust.toolchain(
-    edition = "2021",
-    versions = ["1.81.0"],
+    edition = "2024",
+    versions = ["1.87.0"],
 )
 use_repo(rust, "rust_toolchains")
 
@@ -119,15 +155,15 @@ rust_proto.repositories()
 crate = use_extension("@rules_rust//crate_universe:extension.bzl", "crate", isolate = True)
 crate.spec(
     package = "libc",
-    version = "0.2.159",
+    version = "0.2.172",
 )
 crate.spec(
     package = "protobuf",
-    version = "3.5.1",
+    version = "3.7.2",
 )
 crate.spec(
     package = "semver",
-    version = "1.0.23",
+    version = "1.0.26",
 )
 crate.spec(
     package = "bencher",
@@ -139,7 +175,7 @@ use_repo(crate, "crates")
 ## Golang
 go_sdk = use_extension("@rules_go//go:extensions.bzl", "go_sdk")
 
-go_sdk.download(version = "1.23.0")
+go_sdk.download(version = "1.24.3")
 use_repo(
     go_sdk,
     "go_toolchains",

@@ -1,3 +1,21 @@
+# Version 2.0.6
+
+Feat:
+
+- Support Python 3.13
+- Support Rust 1.86
+- Support Go 1.24
+
+Chore:
+
+- Bazel 8
+- Update all dependency deps
+
+Breaking:
+
+- Removed support for Python 3.8 due to grpc/protobuf incompatabilities and EOL
+- Removed Bazel WORKSPACE
+
 # Version 2.0.5
 
 Feat:

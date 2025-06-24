@@ -45,14 +45,14 @@ jobs:
       matrix:
         os: [ubuntu-24.04, macos-14]
         # Bazel uses hermetic python, these are just placeholders
-        python-version: ['3_8', '3_9', '3_10', '3_11', '3_12']
+        python-version: ['3_9', '3_10', '3_11', '3_12', '3_13']
     steps:
       - uses: actions/checkout@v4
       # configuring python for bazel abi and platform repo rules
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.12'
+          python-version: '3.13'
       - name: Python deps
         run: |
           python -m pip install --upgrade pip
@@ -88,12 +88,9 @@ jobs:
       matrix:
         os: [ubuntu-24.04, macos-14]
     steps:
-      - name: Install toolchains
-        uses: actions-rs/toolchain@v1
-        with:
-          toolchain: stable
-          default: true
       - uses: actions/checkout@v4
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
       - name: Run tests nix
         timeout-minutes: 30
         run: .github/workflows/scripts/run_tests_rust.sh
@@ -107,7 +104,7 @@ jobs:
     strategy:
       matrix:
         # Handling boundary conditions of: https://github.com/pypa/manylinux
-        python-version: ['3.8.0', '3.8.4', '3.9.0']
+        python-version: ['3.9.0']
         os: [ubuntu-20.04]
     steps:
       - uses: actions/checkout@v4
@@ -130,7 +127,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        python-version: ['3.8', '3.9', '3.10', '3.11', '3.12']
+        python-version: ['3.9', '3.10', '3.11', '3.12', '3.13']
         os: [ubuntu-24.04, ubuntu-22.04, ubuntu-20.04, macos-14]
     steps:
       - uses: actions/checkout@v4

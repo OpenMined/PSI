@@ -119,40 +119,6 @@ See the [Rust README.md](private_set_intersection/rust/README.md)
 
 ## Usage
 
-To use this library in another Bazel project, add the following to your
-WORKSPACE file:
-
-```
-load("@bazel_tools//tools/build_defs/repo:git.bzl", "git_repository")
-
-git_repository(
-   name = "org_openmined_psi",
-   remote = "https://github.com/OpenMined/PSI",
-   branch = "master",
-)
-
-load("@bazel_tools//tools/build_defs/repo:git.bzl", "git_repository")
-
-git_repository(
-    name = "emsdk",
-    remote = "https://github.com/emscripten-core/emsdk.git",
-    strip_prefix = "bazel",
-    tag = "3.1.67",
-)
-
-load("@emsdk//:deps.bzl", emsdk_deps = "deps")
-
-emsdk_deps()
-
-load("@emsdk//:emscripten_deps.bzl", emsdk_emscripten_deps = "emscripten_deps")
-
-emsdk_emscripten_deps(emscripten_version = "3.1.67")
-
-load("@emsdk//:toolchains.bzl", "register_emscripten_toolchains")
-
-register_emscripten_toolchains()
-```
-
 A full description of the protocol can be found in the documentation of the
 [PsiClient](private_set_intersection/cpp/psi_client.h) class. The corresponding
 server class is [PsiServer](private_set_intersection/cpp/psi_server.h). An
