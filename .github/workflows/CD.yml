@@ -95,32 +95,6 @@ jobs:
         timeout-minutes: 30
         run: .github/workflows/scripts/run_tests_rust.sh
 
-  # Publish python releases only if all other tests have passed after creating a
-  # release.
-  Publish-python-legacy:
-    needs: [Core, JS, Go, Python, Rust]
-    if: ${{ github.event_name == 'release' }}
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        # Handling boundary conditions of: https://github.com/pypa/manylinux
-        python-version: ['3.9.0']
-        os: [ubuntu-20.04]
-    steps:
-      - uses: actions/checkout@v4
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: ${{ matrix.python-version }}
-      - name: Build and publish the python wheel
-        env:
-          TWINE_USERNAME: __token__
-          TWINE_PASSWORD: ${{ secrets.OM_PSI_PYPI_TOKEN }}
-        run: |
-          python -m pip install --upgrade pip
-          pip install --upgrade packaging
-          bazel run -c opt //private_set_intersection/python:wheel.publish -- --verbose --skip-existing
-
   Publish-python:
     needs: [Core, JS, Go, Python, Rust]
     if: ${{ github.event_name == 'release' }}
@@ -128,7 +102,7 @@ jobs:
     strategy:
       matrix:
         python-version: ['3.9', '3.10', '3.11', '3.12', '3.13']
-        os: [ubuntu-24.04, ubuntu-22.04, ubuntu-20.04, macos-14]
+        os: [ubuntu-24.04, ubuntu-22.04, macos-14]
     steps:
       - uses: actions/checkout@v4
       - name: Set up Python
