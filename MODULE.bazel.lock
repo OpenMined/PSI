@@ -759,7 +759,7 @@
     "@@emsdk+//:emscripten_cache.bzl%emscripten_cache": {
       "general": {
         "bzlTransitiveDigest": "uqDvXmpTNqW4+ie/Fk+xC3TrFrKvL+9hNtoP51Kt2oo=",
-        "usagesDigest": "LgvY6qTIoWFbr1lnGCT2K2d9iZgXkz/8Rwfg/rOLPjc=",
+        "usagesDigest": "E9SSk42ID2yswH3zg0LNM1trLwVVADETtX0EEehLEzw=",
         "recordedFileInputs": {},
         "recordedDirentsInputs": {},
         "envVariables": {},
@@ -771,20 +771,20 @@
                 "--lto"
               ],
               "targets": [
-                "crtbegin",
-                "libstubs",
-                "libnoexit",
-                "libc",
-                "libcompiler_rt",
-                "libembind-rtti",
                 "libGL-getprocaddr",
                 "libal",
-                "libhtml5",
-                "libprintf_long_double",
-                "libemmalloc",
+                "libc",
                 "libc++-noexcept",
                 "libc++abi-noexcept",
-                "libsockets"
+                "libcompiler_rt",
+                "libembind-rtti",
+                "libemmalloc",
+                "libhtml5",
+                "libnoexit",
+                "libprintf_long_double",
+                "libsockets",
+                "libstubs",
+                "crtbegin"
               ]
             }
           }
